@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd" label="Customer My Account (All Pages)" design_abstraction="custom">
+<update handle="customer_account"/>
+<head>
+    <!-- <script src="Sttl_Customerorder::js/highlight.js" /> -->
+    <!-- <script src="Sttl_Customerorder::js/dataTables.searchHighlight.min.js" /> -->
+    <!-- <script src="Sttl_Customerorder::js/dataTables.buttons.js" />
+    <script src="Sttl_Customerorder::js/jszip.js" /> -->
+    <script src="Sttl_Customerorder::js/inventory-data.js" />
+    <css src="WeltPixel_Quickview/css/magnific-popup.css"/>
+    <!-- <script src="Sttl_Customerorder/js/demohightlight.js" /> -->
+
+</head>
+<body>
+     <referenceContainer name="content">
+    	<referenceBlock name="page.main.title" remove="true" />
+        <block class="Sttl\Customerorder\Block\Inventorystatus" name="neworder" template="Sttl_Customerorder::inventorydata.phtml">
+        </block>
+    </referenceContainer>   
+</body>
+</page>

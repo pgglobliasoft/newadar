@@ -1,0 +1,136 @@
+.download-categoty {
+	padding-top: 30px;
+}
+.download-categoty-span {
+    background: #dcdcdc78;
+    border-radius: 10px;
+    height: 100px;
+    margin: 9px;
+    border: 1px solid #f8f8f8;
+}
+
+/*@media (max-width: 1139px) and (min-width: 768px){
+	.download-categoty-span {
+		max-width: 44.5%;
+	}
+}*/
+
+.download-categoty-span i {
+	display: block;
+	text-align: center;
+	font-size: 20px;	
+}
+
+.download-categoty-span span {
+	display: flex;
+	justify-content: center;
+	margin: 0;
+	font-size: 11pt;
+}
+.download-categoty-span span .alignRight-cat-right i {
+	margin: 0 !important;
+	padding-left: 5px;
+}
+
+.download-categoty-span a {
+	text-decoration: none;
+}
+
+.download-categoty-span a > i:before{
+	color: black;
+} 
+
+.download-categoty-span:hover{
+    border: 1px solid #648ba8;
+}
+
+.download-categoty-span:hover i:before, .download-categoty-span:hover span{
+    color: #648ba8 !important;
+}
+
+/*.page-title .page_title {
+	text-transform: capitalize;
+	font-family: 'Futura PT Medium';
+	font-size: 32px;
+}*/
+
+.downloadButtons .breadcrumDwnld-content.custom-flex-grow-1 {
+	text-align: initial;
+}
+
+.downloadButtons .breadcrumDwnld-content.custom-flex-grow-1 a:first-child {
+	color: #0c4269 !important;
+	text-decoration: underline;
+}
+
+.downloadButtons .breadcrumDwnld-content.custom-flex-grow-1 a {
+	color: #949ea7;
+	text-decoration: none;
+	margin-right: 2px;
+    margin-left: 2px;
+}
+
+.downloadButtons .breadcrumDwnld-content.custom-flex-grow-1 a:last-of-type {
+	color: black !important;
+	text-decoration: none;
+}
+
+.downloadlibrary-category-index.account.page-layout-2columns-left .column.main {
+	/*padding: 20px 60px !important;*/
+	overflow: auto;
+}
+
+/*.row.accountDownloadCont .downloadThumb1 {
+	height: 290px !important;
+}*/
+
+.downProTitle h4 {
+	text-transform: capitalize;
+}
+
+.download-library-img .row {
+	margin-left: 0;
+	margin-right: 0;
+}
+
+.zero-items {
+    display: flex;
+    justify-content: center;
+}
+
+.item-not-found {
+    width: 30%;
+    display: flex;
+    justify-content: center;
+    padding: 68px;
+    border: 1px solid #0000001f;
+    border-radius: 3px;
+    font-size: 16px;
+    color: #0c4269;
+    font-family: 'Futura PT bold'
+}
+
+
+@media (min-width: 1200px){
+	.download-categoty-span {
+		max-width: calc(25% - 20px);
+	}
+}
+
+@media (min-width: 992px) and (max-width: 1199px){
+	.download-categoty-span {
+		max-width: calc(33.33% - 20px);
+	}
+}
+
+@media (min-width: 768px) and (max-width: 991px){
+	.download-categoty-span {
+		max-width: calc(50% - 20px);
+	}
+}
+
+@media (max-width: 767px){
+	.download-categoty-span {
+		
+	}
+}

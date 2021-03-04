@@ -1,0 +1,80 @@
+<?php
+	$eBizCharge = $this->helper('Sttl\Adaruniforms\Helper\Ebizcharge');
+	$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+	$customer_number = $block->getCustomernumber();
+	$search_query=array(
+	array(
+	'Field'=>'CustomerID',  
+	'Type'=>'eq',
+	'Value'=>$customer_number)
+	);
+	
+	if(isset($customer_number) && $customer_number != '')
+	{
+		$objCustomers = $eBizCharge->searchCustomerByParams($search_query,true,0,1);
+	}
+	$custNum = '';
+	if(isset($objCustomers->Customers) && count($objCustomers->Customers) > 0)
+	{
+		$objCustomer = $objCustomers->Customers;
+		$objCustomer = $objCustomer[0];
+		if (isset($objCustomer->CustNum)) {
+			$custNum = $objCustomer->CustNum;
+		}
+	}
+	
+	$saved_cards = (isset($objCustomer->PaymentMethods) && count($objCustomer->PaymentMethods) > 0) ? $objCustomer->PaymentMethods : array();
+?>
+	<div class="response-msg"></div>
+	<?= $block->getBlockHtml('formkey') ?>
+	<div class="field field-name-fullname required carnames">
+		<!--<label class="label " for="fullname"><span><?= $block->escapeHtml(__('Choose One:')) ?></span></label>-->
+		<div class="control">
+			<div>
+				<input type="hidden" id="ebiz_customer_number" name="ebiz_customer_number" value="<?php echo $custNum;?>">
+				<input type="hidden" id="viewmode" name="viewmode" value="paymentview">
+				<input type="radio" id="card_type_visa" name="card_type" disabled ="true" value="VI" class="input-text required-entry valid" data-validate="{required:true}" aria-required="true">
+				<span class="defaultImg"><img src= "<?php echo $this->getViewFileUrl('images/visa-card.jpg');?>" alt="Visa"></span>
+				<input type="radio" id="card_type_mc" name="card_type" value="MC"  disabled ="true" class="input-text required-entry valid" data-validate="{required:true}" aria-required="true">
+				<span class="defaultImg"><img src= "<?php echo $this->getViewFileUrl('images/master-card.jpg');?>" alt="Master Card"></span>
+				<input type="radio" id="card_type_dc" name="card_type" value="DI"  disabled ="true" class="input-text required-entry valid" data-validate="{required:true}" aria-required="true">
+				<span class="defaultImg"><img src= "<?php echo $this->getViewFileUrl('images/discover.jpg');?>" alt="Discover"></span>
+				<input type="radio" id="card_type_ae" name="card_type" value="AE"  disabled ="true" class="input-text required-entry valid" data-validate="{required:true}" aria-required="true">
+				<span class="defaultImg"><img src= "<?php echo $this->getViewFileUrl('images/american-express.jpg');?>" alt="Amrican Express"></span>
+			</div>
+		</div>
+	</div>
+	<div class="field field-name-fullname required">
+		<label class="label " for="fullname"><span><?= $block->escapeHtml(__("Full Name")) ?></span><span class="reqField">*</span></label>
+		<div class="control">
+			<input type="text" id="fullname" name="fullname" value="" title="Full Name" class="input-text required-entry validate-no-html-tags validate-alphanum-with-spaces valid" data-validate="{required:true}" aria-required="true" placeholder="FULL NAME">
+		</div>
+	</div>
+	<div class="field field-name-card_no required">
+		<label class="label " for="card_no"><span><?= $block->escapeHtml(__('Credit Card Number')) ?></span><span class="reqField">*</span></label>
+		<div class="control">
+			<input type="text" id="card_no" name="card_no" title="Credit Card Number" class="input-text valid required-entry  validate-cc-number validate-no-html-tags" data-validate="{'required':true, 'validate-cc-number' : true, 'validate-number':true}" maxlength="19"  aria-required="true" placeholder="CREDIT CARD NUMBER">
+		</div>
+	</div>
+	<div class="row">
+		<div class="field field-name-security-code required col-md-6">
+			<label class="label " for="security_code"><span><?= $block->escapeHtml(__('Security Code')) ?></span><span class="reqField">*</span></label>
+			<div class="control">
+				<input type="text" id="security_code" name="security_code" value="" title="Security Code" class="input-text required-entry valid adar_cc_cvv" data-validate="{required:true}" aria-required="true" placeholder="SECURITY CODE">
+			</div>
+		</div>
+		<div class="field field-name-expiration-date col-md-6">
+			<label class="label " for="expiration_date"><span><?= $block->escapeHtml(__('Expiration Date')) ?></span><span class="reqField">*</span></label>
+			<div class="control">
+				<input type="text" id="expiration_date" name="expiration_date" value="" title="Expiration Date" class="input-text validate-no-html-tags validate-cc-exp adar_cc_exp valid" maxlength="5" data-validate="{required:true}" aria-required="true" placeholder="MM/YY">
+			</div>
+		</div>									
+	</div>
+	<div class="row saveCard">
+		<div class="field field-name-security-code required col-md-12">
+			<div class="control">
+				<input type="checkbox" id="cc_default" name="cc_default" value="1" class="input-text">&nbsp;<label class="label"><span><?= $block->escapeHtml(__('Save this card for future use')) ?></span></label>
+			</div>
+		</div>
+	</div>
+	<?= $block->getChildHtml('form_additional_info') ?>

@@ -1,0 +1,13 @@
+<?php 
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$customerSession = $objectManager->get('Magento\Customer\Model\Session');
+if($customerSession->isLoggedIn()) {
+   // customer login action
+     echo $this->getChildHtml('mobile_account_navq') ;
+
+}else{
+	?>
+	<div class="login">
+		<?php echo $this->getChildHtml('newfooter') ; ?>
+	</div>
+<?php } ?>

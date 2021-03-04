@@ -1,0 +1,109 @@
+<div id="popup-modal" style="display: none;" >
+    <div class="edit_size_navigation">
+      <span class="previous_size">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 70" width="16" height="70">
+          <style>
+            tspan { white-space:pre }
+            .shp0 { fill: #3D5C73 }
+          </style>
+          <path id="Background" class="shp0" d="M15 1L1 35" />
+          <path id="Layer 1" class="shp0" d="M15 1L1 35" />
+          <path id="Shape 1" class="shp0" d="M14 1L0 35L14 69L16 67L3 35L16 4L14 1Z" />
+        </svg>
+      </span>
+      <span class="next_size">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 70" width="16" height="70">
+          <style>
+            tspan { white-space:pre }
+            .shp0 { fill: #3D5C73 }
+          </style>
+          <path id="Background" class="shp0" d="M1 69L15 35" />
+          <path id="Layer 1" class="shp0" d="M1 69L15 35" />
+          <path id="Shape 1" class="shp0" d="M2 69L16 35L2 1L0 3L13 35L0 66L2 69Z" />
+        </svg>
+      </span>
+    </div>
+    <div class="qty-label">
+      <label class="qty_for_size">QTY for </label>
+    </div>
+    <div class="available_qty_section" >
+      <span class="qty_label">Available Qty:<span class="available_qty_popup"></span></span>
+    </div>
+    <div class="num-block skin-2">
+      <div class="num-in">
+        <span class="minus dis"></span>
+        <input type="number" class="in-num qty_num" value="1" >
+        <input type="hidden" class="in-num style" value="">
+        <input type="hidden" class="in-num size" value="">
+        <input type="hidden" class="in-num color" value="">
+        <input name="showprice" id="showprice" type="hidden" value="">
+        <input name="selectcolor" id="selectcolor" type="hidden" value="">
+        <input name="selectsize" id="selectsize" type="hidden" value="">
+        <input name="itemscode" id="itemscode" type="hidden" value="">
+        <input name="colorcode" id="colorcode" type="hidden" value="">
+        <input name="mainprice" id="mainprice" type="hidden" value="">
+        <input name="DiscountPer" id="DiscountPer" type="hidden" value="">
+        <input name="DiscountPrice" id="DiscountPrice" type="hidden" value="">
+        <input name="id" id="id" type="hidden" value="">
+        <input name="itemscode" id="itemscode" type="hidden" value="">
+        <span class="plus"></span>
+      </div>
+    </div>
+    <div class="eta_info">
+      <span class="eta_info_label">Next Restock Date</span>
+      <span class="eta_info_detailed"></span>
+      <span class="input_click_event"></span>
+    </div>
+    <div class="user_note_for_qty">
+      <span class="note_label">Set <span class="highlight_note">0</span> to remove Size <span class="current_note_size"></span> from PO</span>
+    </div>
+</div>
+<div id="posuccess-message" style="display: none;" >
+  <p>Opertaion Successfully complated..</p>
+</div>
+<div id="qty-add-popup-modal" style="display: none;" >
+    <div class="size_navigation">
+      <span class="previous_size">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 70" width="16" height="70">
+          <style>
+            tspan { white-space:pre }
+            .shp0 { fill: #3D5C73 }
+          </style>
+          <path id="Background" class="shp0" d="M15 1L1 35" />
+          <path id="Layer 1" class="shp0" d="M15 1L1 35" />
+          <path id="Shape 1" class="shp0" d="M14 1L0 35L14 69L16 67L3 35L16 4L14 1Z" />
+        </svg>
+      </span>
+      <span class="next_size">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 70" width="16" height="70">
+          <style>
+            tspan { white-space:pre }
+            .shp0 { fill: #3D5C73 }
+          </style>
+          <path id="Background" class="shp0" d="M1 69L15 35" />
+          <path id="Layer 1" class="shp0" d="M1 69L15 35" />
+          <path id="Shape 1" class="shp0" d="M2 69L16 35L2 1L0 3L13 35L0 66L2 69Z" />
+        </svg>
+      </span>
+    </div>
+    <div class="qty-label">
+      <label class="qty_for_size">QTY for </label>
+    </div>
+    <div class="available_qty_section" >
+      <span class="qty_label">Available Qty:<span class="available_qty_popup"></span></span>
+    </div>
+    <div class="num-block skin-2">
+      <div class="num-in">
+          <span class="minus dis"></span>
+          <input type="number" placeholder="Qty" inputmode="numeric" class="qty_add_num" value="0" min="0">
+          <input name="addstyleqty" id="addstyleqty" type="hidden" value="">
+          <input name="currenstylesku" id="currenstylesku" type="hidden" value="">
+          <span class="plus"></span>
+      </div>
+    </div>
+    <div class="eta_info">
+      <span class="eta_info_label">Next Restock Date</span>
+      <span class="eta_info_detailed"></span>
+      <span class="input_click_event"></span>
+    </div>
+</div>

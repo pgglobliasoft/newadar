@@ -1,0 +1,345 @@
+<?php 
+$eBizCharge = $this->helper('Sttl\Adaruniforms\Helper\Ebizcharge');
+$customer_number = $block->getCustomernumber();
+$AllInvoiceData = $block->getAllInvoiceData();
+$search_query=array(
+array(
+'Field'=>'CustomerID',  
+'Type'=>'eq',
+'Value'=>$customer_number)
+);
+if(isset($customer_number) && $customer_number != '')
+{
+	$objCustomers = $eBizCharge->searchCustomerByParams($search_query,true,0,1);
+}
+
+$custNum = '';
+	if(isset($objCustomers->Customers) && count($objCustomers->Customers) > 0)
+	{
+		$objCustomer = $objCustomers->Customers;
+		$objCustomer = $objCustomer[0];
+		if (isset($objCustomer->CustNum)) {
+			$custNum = $objCustomer->CustNum;
+		}
+	}
+	
+	$saved_cards = (isset($objCustomer->PaymentMethods) && count($objCustomer->PaymentMethods) > 0) ? $objCustomer->PaymentMethods : array();
+	$cardCount = count($saved_cards);
+	$addclass = '';
+	if($cardCount > 0)
+	{
+		$addclass= "add-new-payment";
+	}
+?>
+
+<div class="modal fade block comingSoon trackingPopup block-customer-add-payment commonPopup1" id="pay-invoice" tabindex="-1" role="dialog" aria-labelledby="addressModal" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog modal-dialog-centered trackingPopupModal" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="modalContainer block-content" aria-labelledby="block-customer-login-heading">
+					<div class="messages">
+						<div class="message message-error error">
+							<div></div>
+						</div>
+					</div>
+					<input type="hidden" id="payment_success">
+					<div class="quickViewCont">        
+						<div class="container bg-primary p-2">
+							<div class="row">
+								<div class="col-md-12 text-center customer-edit-title">
+										<span class="popUpTitle">Pay Invoice</span>
+										<button type="button" data-dismiss="modal" class="close mfp-close-inside"><i class="fa fa-times"></i></button>
+								</div>
+							</div>
+						</div>
+						<div class="removeand_updatehtml">
+						<div class="invoicePayPopupCont comingSoonTxt" id="comingSoonForm">
+
+							<form class="form custom-customer-add-payment" action="<?php echo $this->getBaseUrl().'customerinvoices/customer/payinvoice'; ?>" method="post" id="customer-add-payment-validate" enctype="multipart/form-data" data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>" autocomplete="off" data-mage-init='{"validation": {"errorClass": "mage-error"}, "theAdarValidationMethod":{}}'>
+							<p class="text-center">Total Amount</p>
+							<h3 class="text-center pay-invoice-price"></h3>
+							<input type="hidden" name="pay_invoice_price" id="pay_invoice_price" />
+							<input type="hidden" name="is_full_pay" id="is_full_pay" value="0" />
+								<div class="paymentAddress">
+								<input type="hidden" id="cardCount" name="cardCount" value="<?php echo $cardCount;?>">
+								<?php 
+									$i = 0;
+									foreach($saved_cards as $card)
+									{
+										$card_expiry = (isset($card->CardExpiration) && !empty($card->CardExpiration)) ? date("m/Y", strtotime($card->CardExpiration)) : NULL;
+										$cardType = "";
+										if($card->CardType == "V"){
+										$cardType =  $this->getViewFileUrl('images/visa-card.jpg');
+										}
+										if($card->CardType == "M"){
+										$cardType =  $this->getViewFileUrl('images/master-card.jpg');
+										}
+										if($card->CardType == "A"){
+										$cardType =  $this->getViewFileUrl('images/american-express.jpg');
+										}
+										if($card->CardType == "DS"){
+										$cardType =  $this->getViewFileUrl('images/discover.jpg');
+										}
+									?>
+									<div class="invoicePayInput">
+										<input type="radio" name="card_number" id="card_number" class="card_number validate-field" value="<?php echo $card->MethodID;?>" attr-ccno = "<?php echo $card->CardNumber;?>" attr-MethodName = "<?php echo $card->MethodName;?>" attr-ccexpiry = "<?php echo $card_expiry;?>" attr-cctype = "<?php echo $card->CardType;?>" attr-avszip = "<?php echo ((isset($card->AvsZip) && $card->AvsZip != "")) ? $card->AvsZip : '';?>" attr-avsatreet = "<?php echo (isset($card->AvsStreet) && $card->AvsStreet != "") ? $card->AvsStreet : '';?>" required> 									
+										<div class="paymentImage">
+										 <img src="<?php echo $cardType; ?>" >
+											<div class="cardNumber">
+											<span>CARD NUMBER</span>
+											<?php echo $card->CardNumber; ?>
+											</div>
+											<div class="cardExpiry">
+											<span>EXPIRES ON</span>
+											<?php echo $card_expiry ?>
+											</div>
+										</div>
+									</div>
+								  <?php } ?>
+								  	
+							  </div>
+							  <div class="addAnother invoicePayInput" <?php echo ($addclass != '') ? '':'style="display: none;"' ; ?>>
+										<input type="radio" name="card_number" id="card_number" value="add_new"   <?php echo ($addclass != '') ? '':'checked' ; ?> required>Add Another Payment Method
+									</div>
+								<div class="<?php echo $addclass;?> add-new-pay-class">
+								<?php echo $this->getLayout()->createBlock("Magento\Framework\View\Element\Template")->setCustomernumber($customer_number)->setTemplate("Sttl_Customerinvoices::paymentcardform.phtml")->toHtml();?>
+								</div>
+								<input type="hidden" id="cc_no_hidden" name="cc_no_hidden" value="">
+								<input type="hidden" id="cc_expiry_hidden" name="cc_expiry_hidden" value="">
+								<input type="hidden" id="cc_attrMethodName_hidden" name="cc_attrMethodName_hidden" value="">
+								<input type="hidden" id="cc_card_type_hidden" name="cc_card_type_hidden" value="">
+								<input type="hidden" id="cc_avszip_hidden" name="cc_avszip_hidden" value="">
+								<input type="hidden" id="cc_avsatreet_hidden" name="cc_avsatreet_hidden" value="">
+								<div class="actions-toolbar mt-2 show-button">
+									<div class="text-center">
+										<button type="submit" class="themeBtn action save" title="<?= $block->escapeHtmlAttr(__('Submit')) ?>"><span><?= $block->escapeHtml(__('Submit')) ?></span></button>
+									</div>
+								</div>
+								</form>
+							</div>
+							</div> 
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+require([
+    'jquery',
+    'mage/mage',
+    'mage/calendar'
+    ], function($){
+         $(document).ready(function() {
+			
+			setTimeout(function(){ 
+         		if(jQuery(".paymentAddress").length){
+					jQuery(".paymentAddress").mCustomScrollbar();				
+				}
+         	}, 300);
+         	var changeText = "<?php echo __('Please Wait...') ?>";
+			var changeSubmit = "<?php echo __('Submit') ?>";
+			var findButton = $('#customer-add-payment-validate').find('button[type=submit]'),
+			form = $('#customer-add-payment-validate');
+			form.submit(function (e) {
+				var error = false;
+			    var error_message = '';
+				var radioField = $("input[type='radio'][name='card_number']");
+				var radioFieldValue = $("input[type='radio'][name='card_number']:checked").val();
+				var errorMessageDiv = $(".paymentAddress");
+			    errorMessageDiv.parent().find('.custom_error').remove();
+			    if ( radioField.hasClass('mage-error') || radioFieldValue == undefined) {
+			        error = true;
+			        error_message = 'Please select existing card OR add another payment method.';  
+			    } 
+
+			    if (error) {
+			    	errorMessageDiv.prepend('<div class="custom_error" style="color: #e02b27;display: block !important;">'+ error_message +'</div>');
+			    }
+
+				if (form.validation('isValid')) {
+					findButton.text(changeText);
+					findButton.attr("disabled", "disabled");
+					var url = form.attr('action');
+					var formData = getFormData($(this));
+					var formInvoiceData = getInvoiceFormData();
+					e.preventDefault();
+					$.ajax({
+						type: "POST",
+						url: url,
+						showLoader: true,
+						data: {formInvoiceData:formInvoiceData ,formData:formData},
+						success: function(data) 
+						{
+							
+							if(data.success && data.apiResponce != '')
+							{
+								var obj = JSON.parse(data.apiResponce);
+								$('#payment_success').val('1');
+								$('#is_full_pay').val(0);
+								$('#pay-invoice .popUpTitle').text('Payment Successful');
+								$('.removeand_updatehtml').html('');
+								$('.removeand_updatehtml').html('<div class="paymentCompletion"><div class="statusIcon"></div><h4>Your payment has been successfully submitted!</h4><h5>Please allow up to 5 minutes for the payment to reflect on your account.</h5><p>Your payment confirmation number is<span class="confirmationNum">'+obj.RefNum+'</span></div>');
+							}else if(data.noites && data.apiResponce != '')
+							{
+								var obj = JSON.parse(data.apiResponce);
+								$('#payment_success').val('1');
+								$('#is_full_pay').val(0);
+								$('#pay-invoice .popUpTitle').text('Payment Alert');
+								$('.removeand_updatehtml').html('');
+								$('.removeand_updatehtml').html('<div class="paymentCompletion"><div class="paymentalert"></div><h4>Payment Alert!</h4><h5>Payment in process for invoice number</br>'+obj.doclist+'</h5><p>Please allow up to 5 minutes for the payment to reflect on your account.</div>');
+							}
+							else
+							{
+								findButton.text(changeSubmit);
+								findButton.removeAttr('disabled');
+								var obj = JSON.parse(data.apiResponce);
+								$('.removeand_updatehtml').html('');
+								$('#pay-invoice .popUpTitle').text('Payment Failed');
+								$('.removeand_updatehtml').html('<div class="paymentCompletion"><div class="errorIcon"></div><h4>Payment Failed!</h4><h5>Please try again.</h5><p>Error! <span class="confirmationNum">'+obj.Error+'</span></div>');
+							}
+							$('body').trigger('processStop');
+								/*setTimeout(function(){ location.reload(); }, 3000);*/
+						}
+					});
+				}
+			});
+
+			function getFormData(formElem){
+				var unindexed_array = formElem.serializeArray();
+				var indexed_array = {};
+				
+				jQuery.map(unindexed_array, function(n, i){
+					indexed_array[n['name']] = n['value'];
+				});
+				
+				return indexed_array;
+			}
+
+			function getInvoiceFormData(){
+				var taskArray = {};
+					jsonObj = [];
+					var withoutDollers = $(".invoiceList").find('.withoutDoller');
+					const allinvoicedata = <?=json_encode($AllInvoiceData);?>;
+
+					console.log(allinvoicedata);
+
+					if($("#is_full_pay").val() != 1 && allinvoicedata.length == 0){
+						$(withoutDollers).each(function() {
+						  var id = $(this).attr("title");
+						  var Amount = $(this).val();
+						  var docNum = $(this).attr('option-docNum');
+						  var poNumber = $(this).attr('option-poNumber');
+						  
+						  if(Amount != "" && Amount != "Undefined" && Amount != 'NaN')
+						  {
+						  	item = {}
+					        item[docNum] = Amount;
+					        item['poNumber'] = poNumber;
+					        jsonObj.push(item);
+						  }
+
+						});
+					}else{
+						allinvoicedata.forEach(function(item, index) {
+
+							var Amount = parseFloat(item.DocTotal);
+							var docNum = parseInt(item.DocNum);
+							var poNumber = item.NumatCardPo;
+							 
+			                item = {}
+					        item[docNum] = Amount;
+					        item['poNumber'] = poNumber;
+					        jsonObj.push(item);
+			            });
+					}
+					return jsonObj;
+
+			}
+
+         	$(".add-new-payment").hide();
+         	//$(".show-button").hide();
+           $(document).on("click","#card_number",function(){
+           		var card_type = $(this).val();
+           		//var card_type = $("input[type='radio'][name='card_number']:checked").val();
+           			//$(".show-button").show();
+           		if(card_type == "add_new"){
+           			$(".add-new-payment").show();
+           			$("#cc_no_hidden").val('');
+           			$("#cc_expiry_hidden").val('');
+           			$("#cc_attrMethodName_hidden").val('');
+           			$("#cc_card_type_hidden").val('');
+           			$("#cc_avszip_hidden").val('');
+           			$("#cc_avsatreet_hidden").val('');
+           		}else{
+           			var cc_no = $(this).attr("attr-ccno");
+					var cc_expiry = $(this).attr("attr-ccexpiry");
+					var attrMethodName = $(this).attr("attr-MethodName");
+					var cctype = $(this).attr("attr-cctype");
+           			var avszip = $(this).attr("attr-avszip ");
+					var avsatreet = $(this).attr(" attr-avsatreet");
+					
+					$("#cc_no_hidden").val(cc_no);
+           			$("#cc_expiry_hidden").val(cc_expiry);
+           			$("#cc_attrMethodName_hidden").val(attrMethodName);
+           			$("#cc_card_type_hidden").val(cctype);
+           			$("#cc_avszip_hidden").val(avszip);
+           			$("#cc_avsatreet_hidden").val(avsatreet);
+           			$(".add-new-payment").hide();
+           		}
+           });
+
+           $(document).on("keyup", "#card_no", function(){
+			var value = $(this).val();
+			var ctype = '';
+			// visa
+			var re = new RegExp("^4");
+			if (value.match(re) != null)
+				ctype =  "VI";
+			if (/^(5[1-5][0-9]{14}|2(22[1-9][0-9]{12}|2[3-9][0-9]{13}|[3-6][0-9]{14}|7[0-1][0-9]{13}|720[0-9]{12}))$/.test(value)) 
+				ctype =  "MC";
+			// AMEX
+			re = new RegExp("^3[47]");
+			if (value.match(re) != null)
+				ctype = "AE";
+			
+			// Discover
+			re = new RegExp("^(6011|622(12[6-9]|1[3-9][0-9]|[2-8][0-9]{2}|9[0-1][0-9]|92[0-5]|64[4-9])|65)");
+			if (value.match(re) != null)
+				ctype = "DI";
+			$("input[name='card_type']").removeClass("selected_cc").prop('checked', false).attr("disabled", true).next('span').removeClass("img-container selected_cc");
+			if(value != ''){
+				$("input[name='card_type'][value='"+ctype+"']").prop('disabled', false).prop('checked', true).addClass("selected_cc").next('span').addClass("img-container selected_cc");
+			}
+
+		});
+		
+		$(document).on("keyup", "#expiration_date", function(){
+			var value = $(this).val().replace("/","");
+			var str = '';
+			for (var i=0,ic=value.length;i<ic;i++) {
+				str += value[i];
+				if (str.length == 2)
+					str += "/";
+			}
+			$(this).val(str);
+		});	
+
+     });
+	
+	$(function() {
+			$('.modal.block-customer-add-payment').on('hidden.bs.modal', function(){
+				if($("#payment_success").val() == 1){
+					$('.loading-mask').show();
+					location.reload();
+				}
+				$('#customer-add-payment-validate').find('input[type="text"]').val('');
+				var validator = $("#customer-add-payment-validate").validate();
+				validator.resetForm();
+
+				$("input[name='card_type']").removeClass("selected_cc").prop('checked', false).attr("disabled", true).next('span').removeClass("img-container");
+			});
+			
+			$(".paymentMethod").change();
+		});
+});
+</script>

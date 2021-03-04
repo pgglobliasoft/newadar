@@ -1,0 +1,102 @@
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+
+$this->request = $objectManager->get('\Magento\Framework\App\Request\Http');
+$this->Session = $objectManager->get('\Magento\Customer\Model\Session');
+
+$action = $this->request->getRouteName()."-".$this->request->getControllerName()."-".$this->request->getActionName();
+
+if ($this->Session->isLoggedIn()) {
+  $login = 1;
+}else{
+  $login = 0;
+}
+
+?>
+
+<div class="QuickViewContenthtml">
+  <div class="modal fade" id="quickviewpopup1" tabindex="-1" data-keyboard="false" data-backdrop="static" role="dialog" aria-labelledby="loginModal" aria-hidden="true" style="z-index: 1400;">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+          <div class="modal-content">
+              <div class="modal-body">
+  				 <div class="modalContainer quickViewCont">
+  				 	<div class="container bg-primary p-2">
+  						<div class="row">
+  							<div class="col-md-4 offset-md-4 text-center">
+  								<img src="<?php echo $this->getViewFileUrl('images/mobile-logo-white.png');?>">
+  							</div>
+  							<div class="col-md-4">
+  								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></button>
+  							</div>
+  						</div>
+  					</div>
+                     <div id ="featuredproductpopupdata">
+                      
+  	               </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+   <div class="fabriccarepopupContainer"><div class="modal fade" id="fabriccarePopupModal" tabindex="-1" role="dialog" aria-labelledby="fabriccarePopupModal" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog fabric-care-modal" role="document" style="margin: 1.75rem auto;">
+          <div class="modal-content quickViewCont">
+            <div class="container">
+              <button type="button" data-dismiss="modal" class="close-size-chhart-popup"><i class="fa fa-times"></i></button>
+                      <img class="fabric_pop_img" src="<?= $this->getBaseUrl(); ?>/pub/media/fabricurl/placeholder/fabric_placeholder_text.svg" alt="Image Not Available...">
+                    </div>
+          </div>
+        </div>
+      </div>
+  </div>
+          <div class="sizechartpopupContainer"><div class="modal fade" id="sizechartPopupModal" tabindex="-1" role="dialog" aria-labelledby="sizechartPopupModal" aria-hidden="true">
+              <div class="modal-dialog size-chart-modal" role="document" style="margin: 1.75rem auto;">
+                <div class="modal-content quickViewCont">
+                  <div class="container bg-primary p-2">
+                    <div class="row">
+                      <div class="col-md-4 offset-md-4 text-center">
+                            <img src="<?= $this->getViewFileUrl('/images/mobile-logo-white.png'); ?>">
+                      </div>
+                      <div class="col-md-4">
+                        <button type="button" data-dismiss="modal" class="close-size-chhart-popup"><i class="fa fa-times"></i></button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="container size-image">
+                     <img src="<?= $this->getBaseUrl(); ?>/ftp_images/sizecharts/adar_womens_size_chart_fit_guide.jpg">
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+</div>
+
+<?php
+
+if($action === "dashboard-index-index"){
+?>
+  <script type="text/x-magento-init">
+  {
+      ".QuickViewContenthtml": {
+          "WeltPixel_Quickview/js/render_quickview": {         
+              "viewfileurl" : "<?= $this->getViewFileUrl('/'); ?>",
+              "baseurl" : "<?= $this->getBaseUrl(); ?>",
+              "action" : "<?= $action; ?>",
+              "login" : "<?= $login; ?>",
+              "customersFlatDiscount" : <?= $block->getCustomersFlatDiscount(); ?>
+          }
+      }
+  }</script>
+<?php }else{ ?>
+    <script type="text/x-magento-init">
+    {
+        ".QuickViewContenthtml": {
+            "WeltPixel_Quickview/js/render_quickview_categorypage": {         
+                "viewfileurl" : "<?= $this->getViewFileUrl('/'); ?>",
+                "baseurl" : "<?= $this->getBaseUrl(); ?>",
+                "action" : "<?= $action; ?>",
+                "login" : "<?= $login; ?>"
+            }
+        }
+    }</script>
+<?php } ?>

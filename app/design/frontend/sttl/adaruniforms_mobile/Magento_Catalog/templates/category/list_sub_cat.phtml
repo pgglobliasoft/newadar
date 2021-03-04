@@ -1,0 +1,49 @@
+<style>
+main.innerPageContent{ display:none; }
+</style>
+<?php
+echo "123132";exit;
+// call current category and sub category
+
+$categoryHelper_sub = $this->helper('Magento\Catalog\Helper\Category');
+$_category  = $block->getCurrentCategory();
+
+$objectManager_sub = $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$imagehelper = $objectManager->create('Magento\Catalog\Helper\Image');
+$category = $objectManager_sub->get('Magento\Catalog\Model\Category');
+$categories_sub = $category->getCollection()->addAttributeToSelect('*')->addAttributeToFilter('is_active',
+1)->addIdFilter($_category->getChildren())->setOrder('position', 'DESC');
+$count = 1;
+?>
+
+<?php if(!empty($categories_sub->getData())){ ?>
+<div class="row">
+    <div class="col-lg-12">
+	<?php foreach($categories_sub as $category_sub): ?>
+	<?php 
+		$category_sub->getParentId();
+		$categoryobj = $objectManager->create('Magento\Catalog\Model\CategoryFactory');
+		$category = $objectManager->get('Magento\Framework\Registry')->registry('current_category');//get current category
+		$category_sub->getChildren();?>
+		<div class="productSection">
+		<div class="productText">
+			<h3><?php echo $category_sub->getName()?></h3>
+			<?php echo $category_sub->getDescription(); ?>
+		</div>
+		<div class="productImage bgHover<?php echo $count; ?>">
+			<img src="<?php echo $category_sub->getImageUrl()?>" alt="<?php echo $category_sub->getName()?>"></img>
+			<div class="thumbTitle">
+			  <h3><?php echo $category_sub->getName()?></h3>
+			  <a href="<?php echo $categoryHelper_sub->getCategoryUrl($category_sub);?>" class="shopBtn">Shop</a>
+			</div>
+		 </div>
+		</div>
+	<?php $count++; 
+	if($count == 6)
+	 {
+		 $count = 1;
+	 }
+	endforeach; ?>
+	</div>
+</div>
+<?php } ?>

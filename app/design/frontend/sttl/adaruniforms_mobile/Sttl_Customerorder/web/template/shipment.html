@@ -1,0 +1,193 @@
+<% if(shipData.length != 0)
+
+{console.log(shipData); %>
+<input type="hidden" id="popup_tracking_id" value="<%=shipData[0].SODocEntry%>">
+<div class="trackIDList">
+    <h4>Tracking Number:</h4>
+    <div class="trackPack">
+    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+        <%  var active = 'true';
+            _.each(shipData, function(value, index) {  
+                    var $shipDataArray = value.shipDataArray;
+					var $TrackingData = value;
+					var current = '';
+					if(active == 'true')
+					{
+						current = 'active';
+					}
+					$TrackingNumber = $TrackingData.TrackingNumber;	
+                    $TrackingNumber = $TrackingData.TrackingNumber; %>
+                    <a class="nav-link <%=current%>" id="v-pills-home-tab-<%=index%>" data-toggle="pill" href="#v-pills-home-<%=index%>" role="tab" aria-controls="v-pills-home" aria-selected="true">
+                        <span data-toggle="tooltip" class="tooltipdesign" data-placement="bottom" title="<%=$TrackingNumber%>">
+                            <span><%=$TrackingNumber%></span>
+                        </span>
+                        <% var  $ship_date = ''; %>
+                        <% if($shipDataArray.status_description && $shipDataArray.status_description !='Unknown') {%>                                                    
+                        <span>Shipped: 
+                        <%  if($shipDataArray.ship_date && $shipDataArray.ship_date != ''){
+                                $ship_date = $shipDataArray.ship_date;
+                            }else{
+                                if($TrackingData.ShipDate && $TrackingData.ShipDate != '')
+                                    {
+                                        $ship_date = $TrackingData.ShipDate;
+                                    }
+                                }
+                            } 
+                            if($ship_date){
+                                 var date = new Date($ship_date); 
+                                 var shi_date = ("0" + (date.getMonth() + 1)).slice(-2) + '/' + date.getDate().toString().padStart(2, "0") + '/' +  date.getFullYear().toString().substr(-2);
+                            }
+                            %>
+                            <%=shi_date%>
+                        </span>
+                    </a>
+					<% active = 'false';
+            });
+        %>   
+    </div>
+    </div>
+</div>
+<div class="trackIDDetails">
+    <div class="tab-content" id="v-pills-tabContent">
+    <% active = 'true'; 
+    _.each(shipData, function(value, index) {              
+                var step1 = 'stepInprogress';
+                var step2 = '';
+                var step3 = '';
+                var step4 = '';
+                var $shipDataArray = value.shipDataArray;
+                
+                    var delivery_date = $shipDataArray['estimated_delivery_date'];
+                    console.log("$shipDataArray",$shipDataArray.status_code)
+                    if(($shipDataArray.status_code) && ($shipDataArray.status_code == 'AC' || $shipDataArray.status_code == 'UN'))
+                    {
+                        step1 = 'stepCompleted';
+                        step2 = '';
+                        step3 = '';
+                        step4 = 'step1';
+                    }
+                    if(($shipDataArray.status_code) && ($shipDataArray.status_code == 'IT' || $shipDataArray.status_code == 'EX'))
+                    {
+
+                        step1 = 'stepCompleted';
+                        step2 = 'stepInprogress';
+                        step3 = '';
+                        step4 = 'step2';                        
+                    }
+                    if(($shipDataArray.status_code) && $shipDataArray.status_code == 'DE')
+                    {
+                        var delivery_date = $shipDataArray.actual_delivery_date;
+                        step1 = 'stepCompleted';
+                        step2 = 'stepCompleted';
+                        step3 = 'stepCompleted';
+                        step4 = 'step3';                        
+                    }
+                    if($shipDataArray.status_description =='Unknown')
+                    {
+                        step1 = '';
+                        step2 = '';
+                        step3 = '';
+                    }
+                    var $TrackingData = value;
+                    var current = '';
+                    var status = '';   
+                    if(active == 'true')
+                    {
+                        current = 'active';
+                    }
+                    if($shipDataArray['actual_delivery_date'] != '' && $shipDataArray['actual_delivery_date'] != null && ($shipDataArray['status_description'] != 'In Transit' || $shipDataArray['status_description'] != 'Unknown') ){
+                          status = 'Delivered';
+                    }else{
+                         status = 'Scheduled Delivery';
+                    }
+                    var delivery_date_txt = ''; %>
+                    <div class="tab-pane fade show <%=current%>" id="v-pills-home-<%=index%>" role="tabpanel" aria-labelledby="v-pills-home-tab-<%=index%>">
+                        <div class="cf delSchedule">
+                            <input type="hidden" name="ship_shiowdata" id="ship_shiowdata" value="1">
+                            <h4><%=status%></h4>
+                            <%  
+                            if(delivery_date == '' || delivery_date === null)
+                            {
+                                 delivery_date_txt =  'Not Available Yet';
+                            }
+                            else
+                            {
+                                var now =  new Date(delivery_date);
+                                var description = '';
+                                var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                                <!-- const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; -->
+                                var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                                var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                                function ordinal_suffix_of(i) {
+                                    var j = i % 10,
+                                        k = i % 100;
+                                    if (j == 1 && k != 11) {
+                                        return i + "st";
+                                    }
+                                    if (j == 2 && k != 12) {
+                                        return i + "nd";
+                                    }
+                                    if (j == 3 && k != 13) {
+                                        return i + "rd";
+                                    }
+                                    return i + "th";
+                                }
+                                var dd = ordinal_suffix_of(now.getDate());
+                                delivery_date_txt = days[now.getDay()] + ' ' + months[now.getMonth()] + ' ' + dd + ', ' + now.getFullYear();
+                            }
+                            %>
+                            <%=delivery_date_txt%>
+                        </div>
+                        <div class="cf">
+                            <div class="trackingStatusBar <%=step4%>">
+                                <div class="step1 step <%=step1%>"></div>
+                                <div class="step2 step <%=step2%>"></div>
+                                <div class="step3 step <%=step3%>"></div>
+                                
+                                <span class="shipStatus">
+                                <% if($shipDataArray.status_code == 'EX')
+                                {
+                                    description =  $shipDataArray.exception_description;
+                                }else{
+                                    description =  $shipDataArray.carrier_status_description;
+                                }
+                                var Service = $TrackingData.Service; %>
+                                <%=description%>
+                                </span>
+                            </div>
+                        </div>
+                        <ul class="delStatusTxt">
+                            <li><span>Shipped via</span><div><%=Service%></div></li>
+                            <li><span>Shipped to</span><div class="delvAdd"><span> 
+                            <%
+                            var ShipToCity = $TrackingData.ShipToCity !='' ? $TrackingData.ShipToCity : "";
+                            var ShipToState = $TrackingData.ShipToState !='' ? $TrackingData.ShipToState : "";
+                            var ShipToZipCode = $TrackingData.ShipToZipCode !='' ? $TrackingData.ShipToZipCode : "";
+                            
+                            function capitalizeFirstLetters(str){
+                              return str.toLowerCase().replace(/^\w|\s\w/g, function (letter) {
+                                  return letter.toUpperCase();
+                              })
+                            }
+                            var $status_description = $shipDataArray.status_description; %>
+                            <%=capitalizeFirstLetters(ShipToCity)%> <%=capitalizeFirstLetters(ShipToState)%>,<%=ShipToZipCode%></span></div></li>
+                            <li><span>Status</span><div><%=$status_description%></div></li>
+                        </ul>
+                    </div>
+                    <% active = 'false';                   
+
+            });%>
+    </div>
+</div>  
+<% } else{ %>
+    <div class="col-12"><div class="cf delSchedule"><h4><span>No shipment tracking information available.</span></h4></div></div>
+<% } %>
+<script type="text/javascript">
+    require([
+    'jquery'
+    ], function($){
+    $('.tooltipdesign').tooltip({
+          template: '<div class="tooltip tooltipdesigntooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+        })
+});
+</script>

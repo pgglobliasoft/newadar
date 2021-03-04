@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+	<router id="admin">
+		<route frontName="sttl_importproductbrand" id="sttl_importproductbrand">
+			<module before="Magento_Backend" name="Sttl_Importproductbrand"/>
+		</route>
+		<route frontName="importproductbrand" id="importproductbrand">
+			<module before="Magento_Backend" name="Sttl_Importproductbrand"/>
+		</route>
+	</router>
+</config>

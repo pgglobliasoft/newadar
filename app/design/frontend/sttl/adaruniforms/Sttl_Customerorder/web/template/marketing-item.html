@@ -1,0 +1,51 @@
+<%
+	<!-- Formate the DATA START -->
+		var ItemName = data.item_name ? data.item_name : '',
+			placeholder = baseurl+'pub/media/catalog/product/placeholder/default/image.jpg',
+			itemnameforalt = ItemName,
+			DisPercent = data.DisPercent,
+			imagurltag= baseurl+'pub/media/Sttl_Customerorder/discount.png',
+			itemPrice = currencyconvert(data.price),
+			ItemName_trimmed = itemnameforalt.replace(/ /g,''),
+			plus =  data.Size,
+			pro_img = data.item_url ? data.item_url : placeholder,
+			ItemCode = data.item_code,
+			is_catalog = data.file_url ? true : false;
+	<!-- Formate the DATA END -->
+%>
+<div class='item product product-item' gname='' id="<%=ItemCode%>">
+	<a class='product-item-link'>
+		<span class='product-image-wrapper' style='padding-bottom: 133.94495412844%; width: auto;'>
+			<img class='img-responsive owl-lazys' src='<%=pro_img%>' width='218' height='292' alt="<%=ItemName_trimmed%>" />
+		</span>
+	</a>
+	<div class='product details product-item-details'>
+		<strong class='product name product-item-name'>
+			<a class='product-item-link' title="<%=ItemName%>" ><%=ItemName%></a>
+		</strong>
+		<div class="flex-markitem-align">
+			<div class="description">				
+				
+				<div class="d-flex">
+					<span class="hover-info"  data-toggle="tooltip" data-placement="top" data-html="true" title="<%=description%>"><i class="fa fa-info" aria-hidden="true"></i></span>					
+					<span class='product price product-item-price'>$<%=itemPrice%></span>
+					<%
+						if(is_catalog){ %>
+							<a href="<%=data.file_url%>" target="_blank" class="openPdf-link"><span>View</span></a>
+						<% }
+					%>
+					
+				</div>
+			</div>
+			<div class="num-in"> 
+				<span class="minus dis disable"></span> 
+				<input type="number" placeholder="Qty" inputmode="numeric" class="qty_add_num" is_free='false' readonly value="0" min="0"> 
+				<input name="mark_item_sku" id="mark_sku[<%=ItemCode%>]" type="hidden" value="<%=ItemCode%>"> 
+				<input name="mark_item_price" id="mark_price[<%=ItemCode%>]" type="hidden" value="<%=itemPrice%>"> 
+				<span class="plus disable" max-plus="<%=data.maximum_pre_order%>"></span> 
+			</div>
+		</div>
+	</div>
+</div>
+
+

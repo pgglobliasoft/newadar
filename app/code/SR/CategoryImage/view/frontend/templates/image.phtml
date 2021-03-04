@@ -1,0 +1,99 @@
+<!-- <style>
+main.innerPageContent{ display:none; }
+</style> -->
+<?php
+// call current category and sub category
+$categoryHelper_sub = $this->helper('Magento\Catalog\Helper\Category');
+$_category  = $block->getCurrentCategory();
+
+$objectManager_sub = $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$imagehelper = $objectManager->create('Magento\Catalog\Helper\Image');
+$category = $objectManager_sub->get('Magento\Catalog\Model\Category');
+$categories_sub = $category->getCollection()->addAttributeToSelect('*')->addAttributeToFilter('is_active',
+1)->addIdFilter($_category->getChildren())->setOrder('position', 'ASC');
+$count = 1;
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+  	//echo   $storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+ 	// echo "<br />";
+	$basemedia_URL = $storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+
+$objectEav = $objectManager->get('\Magento\Eav\Model\Config'); 
+$attributeCollections = $objectEav->getAttribute('catalog_product', 'collecttion');
+$collectionObj = $attributeCollections->getSource()->getAllOptions();
+?>
+
+<?php
+     $cid = 2;
+     $c = $objectManager->create('Magento\Catalog\Model\Category')->load($cid);
+     // echo $c->getResource()->getAttribute('category_name')->getFrontend()->getValue($c);die;
+?>
+
+<?php if(!empty($categories_sub->getData())){ ?>
+<div class="row">
+    <div class="col-lg-12">
+	<?php 
+	$attar_val_array = array(1=>14,2=>15,3=>16,4=>17,5=>18);
+	foreach($categories_sub as $category_sub): ?>
+	<?php 
+	
+		$category_sub->getParentId();
+		$categoryobj = $objectManager->create('Magento\Catalog\Model\CategoryFactory');
+		$category = $objectManager->get('Magento\Framework\Registry')->registry('current_category');//get current category
+		$category_sub->getChildren();
+		$categorythumburl = '';
+		$categorythumburl = $basemedia_URL.'catalog/category/addition-product_1.jpg';
+		// print_r($categories_sub->getData());die;
+		if(!empty($category_sub->getThumbnail())){
+			$categorythumburl = $basemedia_URL.'catalog/category/'.$category_sub->getThumbnail();
+		}		
+		?>	
+		
+		<div class="productSection">
+		<div class="productText">
+			<h3><?php echo $category_sub->getName()?></h3>
+			<?php echo $category_sub->getDescription(); ?>
+		</div>
+		<div class="productImage bgHover<?php echo $count; ?>">
+			<img src="<?php echo $categorythumburl ?>" alt="<?php echo $category_sub->getName()?>"></img>
+			<div class="thumbTitle">
+
+
+				<?php
+
+					$catName = trim(strtolower($category_sub->getName()));
+                     if($catName){
+                    		$catName = strtolower($catName) == 'universal' ? 'universal by adar' : $catName;
+                   	
+                        $logoimage = $this->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId(strtolower(str_replace(' ', '_', $catName)).'_collection')->toHtml();
+           
+                        // echo strtolower(str_replace(' ', '_', $catName)).'_collection';
+                        // die;
+
+                        echo $logoimage;
+                    }
+                ?>
+
+
+				<!-- <?php $catName = trim(strtolower($category_sub->getName()));
+					if($catName == 'universal by adar'){ ?>
+						<img src='<?php echo $this->getViewFileUrl('images/universal-by-adar.png'); ?>' alt="<?php echo $catName; ?>" />
+				<?php } else{ ?>
+				 		<h3><?php echo $catName;?></h3>
+				<?php }?> -->
+
+				  <a href="<?php echo $categoryHelper_sub->getCategoryUrl($category_sub);?>" class="shopBtn">Shop</a>
+				 <?php if($category_sub->getData('category_name') !== ' '){ ?> <a href="<?php echo $category_sub->getData('category_name'); ?>" target="_blank" class="catalogsBtn">View Catalog</a><?php } ?>
+				  <?php /* echo $this->getBaseUrl(); ?>catalogsearch/result/?q=&collecttion=<?php echo $attar_val_array[$count]; */?>
+			</div>
+		 </div>
+		 <h3 class="mobCatTitle"><?php echo $category_sub->getName()?></h3>
+		</div>
+	<?php $count++; 
+	if($count == 6)
+	 {
+		 $count = 1;
+	 }
+	endforeach; ?>
+	</div>
+</div>
+<?php } ?>

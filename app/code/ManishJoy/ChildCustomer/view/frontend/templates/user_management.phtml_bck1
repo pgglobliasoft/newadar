@@ -1,0 +1,28 @@
+<?php $items = []; ?>
+ <div class="modal fade" id="user-Modal" tabindex="-1" role="dialog" aria-labelledby="user-ModalLabel" aria-hidden="true" data-action=''>
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="user-ModalLabel">Create A New User</h3>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body user-input-container">      
+          <?php echo $block->getChildHtml('create_custome_index_registartion'); ?>
+        </div>
+      </div>
+    </div>
+  </div>
+    <script type="text/x-magento-init">
+      {
+          "*": {
+              "ManishJoy_ChildCustomer/js/child_customer_data":{      
+                  "result" : <?php /* @escapeNotVerified */  echo json_encode($this->getCustomerAlldata()->getData()); ?>,
+                  "actionDurl" : "<?php /* @escapeNotVerified */  echo $this->getDelActionUrl(); ?>",
+                  "dataurl":"<?php /* @escapeNotVerified */  echo $this->getDataActionUrl(); ?>"
+              }
+
+          }
+      }        
+  </script>

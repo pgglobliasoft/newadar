@@ -1,0 +1,16 @@
+<ul class="nav nav-tabs" id="mediaTab" role="tablist">
+  <li class="nav-item">
+	<a class="nav-link active" id="blog-tab" data-toggle="tab" href="#blog" role="tab" aria-controls="blog" aria-selected="true">Blog</a>
+  </li>
+  <li class="nav-item">
+	<a class="nav-link" id="press-tab" data-toggle="tab" href="#press" role="tab" aria-controls="press" aria-selected="false">Press</a>
+  </li>
+  <li class="nav-item">
+	<a class="nav-link" id="gallery-tab" data-toggle="tab" href="#gallery" role="tab" aria-controls="gallery" aria-selected="false">Gallery</a>
+  </li>
+</ul>
+<?php 
+echo $this->getLayout()->createBlock("Magefan\Blog\Block\Widget\Recent")->setDisplayType("Magefan_Blog::widget/recent_masonry.phtml")->_toHtml();
+// Press
+//echo $this->getLayout()->createBlock("Magefan\Blog\Block\Widget\Recent")->setDisplayType("Magefan_Blog::widget/press.phtml")->toHtml();
+?>

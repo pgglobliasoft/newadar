@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+	<acl>
+		<resources>
+			<resource id="Magento_Backend::admin">
+				<resource id="Sttl_Importproductbrand::Importproductbrand" sortOrder="10" title="Importproductbrand">
+					<resource id="Sttl_Importproductbrand::Importproductbrand_save" sortOrder="10" title="Save Importproductbrand"/>
+					<resource id="Sttl_Importproductbrand::Importproductbrand_delete" sortOrder="20" title="Delete Importproductbrand"/>
+					<resource id="Sttl_Importproductbrand::Importproductbrand_update" sortOrder="30" title="Update Importproductbrand"/>
+					<resource id="Sttl_Importproductbrand::Importproductbrand_view" sortOrder="40" title="View Importproductbrand"/>
+				</resource>
+			</resource>
+		</resources>
+	</acl>
+</config>

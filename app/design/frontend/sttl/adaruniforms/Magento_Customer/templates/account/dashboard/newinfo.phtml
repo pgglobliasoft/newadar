@@ -1,0 +1,183 @@
+<?php	
+	$data = $this->getCustomerDetails();
+	if(isset($data) && !isset($data['errors'])) {
+		$permission =  $this->getPermissionJson();
+		$Statement = $payment = $shipping = $umanagement = true;
+		if($permission){
+			 $permissionarray = json_decode($permission, true); 
+			$Statement = $payment = $shipping = $umanagement = false;
+			 if (array_key_exists("accountinfo",$permissionarray) && $permissionarray['accountinfo']){
+			 	$accountinfo = $permissionarray['accountinfo'];
+			 	if(in_array("view_customer", $accountinfo)){
+	                $Statement = true;
+	             }
+	             if (in_array("payment_info", $accountinfo)) {
+	                $payment = true;
+	             }
+	             if (in_array("shipping_info", $accountinfo)) {
+	                $shipping = true;
+	             }
+	             if (in_array("user_manage", $accountinfo)) {
+	                $umanagement = true;
+	             }
+			 }
+		}
+	// print_r($readNoJson);die;
+?>	
+	<?php echo $block->getChildHtml('notes_section'); ?>
+		<div class="myaccount-search">
+			<div class="user-search">
+				<div class="page-title-wrapper-myaccout">
+			   		 <h1 class="page-title"> <span class="base" data-ui-id="page-title-wrapper">My Account</span></h1>
+			    </div>
+				<div class="d-flex">
+					<div class="accountStatus"> Account Status: <span><?php echo $status = (trim(strtolower(isset($data['Active']))) == 'y' || trim(strtolower(isset($data['Active']))) == 1) ?  'Active' :
+					 'Inactive' ;?></span>
+					</div>
+					<div class="code accountStatus">
+						Customer Code: <?= $this->getCustomerCustomerNumber(); ?>
+					</div>
+					<div class="name accountStatus">
+						Customer Name: <?= $data['CardName'];?>
+					</div>
+
+					
+					
+				</div>			
+			</div>		
+        </div>        
+        <div class="all-user">
+        <div class="user-1">
+	        <div class="block account-grid-block" id="accordionExample">
+				<div class="blocktitle"><strong class="upperCaseText"><?= $block->escapeHtml(__('Account Details')) ?></strong></div>
+				<div id="collapseOne" class="block-content accountDtlSection">
+					<div class="box box-information col-md-3 col-sm-6"> 
+						<strong class="box-title"> <span>Full Name:</span> </strong>
+						<div class="box-content">
+							<p><?= $this->getCustomerInfo()->getName();?><br>
+							</p>
+						</div>
+						<div class="box-actions">
+							<a class="action edit" data-toggle="modal" attr-type = "fullname" data-target="#customer-edit"><span><?= $block->escapeHtml(__('Edit')) ?></span></a>
+						</div>
+					</div>
+					<div class="box-information emailBox col-md-3 col-sm-6"> <strong class="box-title"> <span>Email/User ID:</span></strong>
+						<div class="box-content emailVal">
+							<p>
+								<?= $this->getCustomerInfo()->getEmail();?><br>
+							</p>
+						</div>
+						<div class="box-actions">
+							<a class="action edit" data-toggle="modal"  attr-type = "email" data-target="#customer-edit"><span><?= $block->escapeHtml(__('Edit')) ?></span></a>
+						</div>
+					</div>
+					<div class="box box-information pswdBox col-md-3 col-sm-6"> <strong class="box-title"> <span>Password:</span> </strong>
+						<div class="box-content">
+							<p>*****</p>
+						</div>
+						<div class="box-actions">
+							<?php if(!$this->getAdminCustomer()){ ?>
+							<a class="action edit" data-toggle="modal" attr-type = "password" data-target="#customer-edit"><span><?= $block->escapeHtml(__('Edit')) ?></span></a>
+							<?php }else{ ?>
+								<a class="action edit adminloginpassword"><span><?=  $block->escapeHtml(__('Edit')) ?></span></a>
+							<?php } ?>
+						</div>
+					</div>				
+					<div class="box box-information col-md-3 col-sm-6"> 
+						<strong class="box-title"> <span>Phone Number:</span> </strong>
+						<div class="box-content">
+							<p><?= $this->getCustomerPhoneNo();?></p>
+						</div>
+					</div>
+				</div>
+	         </div>
+         
+		<?php 
+		if($umanagement){?>
+			<div class="block child-user account-grid-block" id="user-management"> 
+				<div class="blocktitle"> 
+					<strong class="upperCaseText"><?= $block->escapeHtml(__('User Management')) ?></strong> 
+					<div class="add-user">
+						<a class="action added userbtn themeBtn alignRight"  attr-type = "user-management"  data-toggle="modal" data-target="#user-Modal"><span><i class="fa fa-plus" aria-hidden="true"></i>  <?= $block->escapeHtml(__(' Add a new User')) ?></span></a>				
+					</div>
+				</div>
+				<div id="collapseFive" class="management-section">
+					<div class="management-conatiner">
+						
+			      <div class="table-conatiner">
+			        <span class="action reloadbtn"> <i class="fa fa-refresh" aria-hidden="true"></i> </span>
+			  			<div class="user-gird-conatiner">
+			          <?php echo $block->getChildHtml('create_custome_index_childusertable'); ?>
+			  			</div>
+			      </div>
+					</div>		
+				</div>
+			</div>
+		<?php }?>        
+        
+        </div>
+
+        <div class="user-2">
+        	<?php 
+		if($payment){?>
+			<div class="block paymentBlock account-grid-block" id="paymentBlock">
+				<div class="blocktitle"><strong class="upperCaseText"><?= $block->escapeHtml(__('Payment Information')) ?></strong> </div>
+				<div id="collapseThree" class="paymentBlock-section paddL15">
+				<div class="orderItem-loader">
+		            <div class="loader">
+		                <img src='<?php echo $this->getViewFileUrl('images/loader-image.gif'); ?>' alt="loading">
+		            </div>
+		        </div>
+				 </div>
+			</div> <?php } ?>
+	       <!--  <?php if($Statement){?>
+			<div class="block customerstatement-section account-grid-block" id="customerstatement"> 
+				<div class="blocktitle" ><strong class="upperCaseText"><?= $block->escapeHtml(__('Customer Statement')) ?></strong>
+	    		</div>
+	    		<div id="collapseTwo" class="customerStatement">
+				</div>
+			</div>
+	        <?php }?> -->
+        <?php 
+			if($shipping){?>
+			<div class="block shippingBlock account-grid-block" id="customershipping">
+				<div class="blocktitle"><strong class="upperCaseText"><?= $block->escapeHtml(__('Shipping Information')) ?></strong>
+				</div>
+			    <div id="collapseFour" class="customershipping-section addL15"> 
+		    	<div class="orderItem-loader">
+	            	<div class="loader">
+	                	<img src='<?php echo $this->getViewFileUrl('images/loader-image.gif'); ?>' alt="loading">
+	            	</div>
+	        	</div>
+			    </div>
+			 </div>
+		 <?php } ?>
+		
+        </div>
+
+		 <div id="editpopup"></div>
+		
+        </div>
+     
+<script type="text/x-magento-init">
+	{
+	    ".all-user": {
+	        "Magento_Customer/js/account-renderer": {        	
+	            "customer_phone": "<?= $this->getCustomerPhoneNo();?>",
+                "admincustomer":  "<?= $this->getAdminCustomer();?>",
+                "customerdata": <?= json_encode($data,true);?>,
+                "shippingdata": <?= json_encode($this->getCustomerShippingAddressDetails(),true);?>,
+                "savedcard": <?= json_encode($block->getSaveCardDetails(),true);?>,
+                "formkey": <?= json_encode($block->getBlockHtml('formkey'))?>,
+                "objCustomers": <?= json_encode($block->getEbizcustomerDetails(), true)?>,
+                "CountryList" :  <?=json_encode($block->getCountryList())?>,
+                "StateListarray" :  <?=json_encode($block->getStateList())?>,
+                "baseurl" : "<?= $block->getBaseUrl(); ?>",
+                "viewfileurl" : "<?= $this->getViewFileUrl('/'); ?>",
+                "permission" : <?= $this->getPermissionJson() ? $this->getPermissionJson() : '{}';?>
+	        }
+	    }
+	}</script>
+
+
+<?php }?>

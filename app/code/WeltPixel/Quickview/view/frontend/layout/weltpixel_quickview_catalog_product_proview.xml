@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <!-- <update handle="catalog_product_view"/> -->
+    <body>
+		
+		 
+		 <referenceContainer name="main.content">
+            <block class="WeltPixel\Quickview\Block\Initialize" name="welpixel.quickview.button_close" template="WeltPixel_Quickview::close_button.phtml" before="-" />			
+			<referenceBlock name="product.info.sku">
+				<action method="setTemplate">
+					<argument name="template" xsi:type="helper" helper="WeltPixel\Quickview\Helper\Data::getSkuTemplate">
+					</argument>
+				</action>
+			</referenceBlock>
+         </referenceContainer>
+		 
+		 <referenceContainer name="product.info.main">
+		 		<block class="Magento\Catalog\Block\Product\View" name="productview.main.title" template="WeltPixel_Quickview::title.phtml"/>
+            <block class="WeltPixel\Quickview\Block\Initialize" name="welpixel.quickview.action_button" cacheable="false" template="WeltPixel_Quickview::actions_button.phtml" after="-" />				
+			<block class="Magento\Catalog\Block\Product\View" name="welpixel.quickview.product_options" template="WeltPixel_Quickview::product_options.phtml" before="welpixel.quickview.button_close" />
+			<container name="product.info.main.sizechartpopup" htmlTag="div" htmlClass="sizechartpopupContainer" after="-">
+                <block class="Magento\ConfigurableProduct\Block\Product\View\Type\Configurable" name="product.info.main.sizechartpopup.block"  template="Magento_Catalog::product/view/sizechartpopup.phtml" />
+            </container>	
+         </referenceContainer>
+		 <referenceContainer name="product.info.media">
+         	<block class="Magento\Catalog\Block\Product\View\Gallery" name="product.info.media.image.quickview" template="WeltPixel_Quickview::product/view/gallery.phtml" after="skip_gallery_after.target"/>
+          </referenceContainer>
+		 <referenceBlock name="product.info.feature">
+			<arguments>
+				<argument name="at_label" xsi:type="string"></argument>
+			</arguments>
+		</referenceBlock>
+		 
+		
+    </body>
+</page>

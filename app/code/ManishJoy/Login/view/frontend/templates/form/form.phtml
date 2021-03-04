@@ -1,0 +1,41 @@
+
+<div class="login-overlay">
+		<div class="cf">
+			<div class="cf" id="customer-loginModal">
+				<form class="form-login popup-login-form" method="POST" action="" data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>" data-mage-init='{"validation":{}}'>
+				<div class="response-msg"></div>
+					<div class="container">
+					<div class="cf">
+	                    <span class="close cancelbtn">
+	                      <span class="fa fa-close"></span>
+	                    </span>
+	                </div>
+					<h3>   <span id="block-customer-login-heading" role="heading" aria-level="2"><?php /* @escapeNotVerified */ echo __('Welcome Back') ?></span></h3>
+     
+	                <div class="inputArea field required">
+						<label class="label" for="username"><?php echo __('Login Email') ?></label>
+						<input  class=" required-entry textInput input-text" type="email" placeholder="<?php echo __('Enter Email') ?>" name="username" id="username" data-validate="{required:true, 'validate-email':true}">
+					</div>	
+					<div class="inputArea field password required">
+						<label class="label" for="password"><?php echo __('Password') ?></label>
+						<input  class=" required-entry textInput input-text" type="password" placeholder="<?php echo __('Enter Password') ?>" name="password" id="password" data-validate="{required:true}">
+					</div>
+					<div class="secondary right forgot-link">
+						<a class="action remind" href="javascript:void(0);"><span><?php /* @escapeNotVerified */ echo __('Forgot Password?') ?></span></a></div> <?php /*echo $block->getForgotPasswordUrl()*/ ?>
+					</div>
+					<div class="btnRow actions-toolbar">
+						<button class="signupBtn action login primary" type="submit"><?php echo __('Log in') ?></button>
+						<!--<div class="register-link"><span><?php echo __('New Here?') ?></span>&nbsp;<a href="#"><?php echo __('Register') ?></a></div>-->
+
+						<span class="note right">Don't have an account? Click <a href="<?= $block->getUrl('') ?>customer/account/create">Here</a> to register</span>
+					</div>
+
+
+					<!--<div class="container" style="background-color:#f1f1f1">
+						<button title="<?php echo __('Click to close') ?>" type="button" class="cancelbtn"><?php echo __('Cancel') ?></button>
+						<span class="psw"><?php echo __('Forgot') ?> <a href="<?php echo $block->getUrl('customer/account/forgotpassword') ?>"><?php echo __('password') ?>?</a></span>
+					</div>-->
+				</form>
+			</div>
+		</div>
+	</div>

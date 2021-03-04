@@ -1,0 +1,469 @@
+<% 
+var core_avaialble = false;
+var fashion_avaialble = false;
+var temp_core_sku = [];
+var temp_other_sku = [];
+var activecolor = '';
+var isanyStyleAvail = true;
+_.each(data, function(value, index) {
+	if(value.ColorStatus == "Core"){
+		core_avaialble = true;
+		temp_core_sku.push(value.ItemCode);
+	}else if(value.ColorStatus != ""){
+		fashion_avaialble = true;
+		temp_other_sku.push(value.ItemCode);
+	}else{
+		isanyStyleAvail = false;
+	}
+});
+%>
+
+<input type="hidden" name="order_id" id="order_id" value="">
+<input type="hidden" name="base64_order_id" id="base64_order_id" value="">
+<input type="hidden" name="base64_ncp_id" id="base64_ncp_id" value="">
+<div class="renderAllHtml" data-value="new">
+	<div class="colorSwatches">
+		<div class="colorSwatches product-info-container">
+			<div class="option-thumbnail" id="myTask">
+				<% var main_color_array = []; %>
+				<% var size_char_i = 0; %>
+				<% var activeClass = ''; 
+					var placeholderurl = baseurl+'pub/media/catalog/product/placeholder/default/image-placeholder.jpg';
+
+				%>
+			    <% _.each(data, function(value, index) { %>
+					
+					<% if(size_char_i === 0) {
+						activeClass = 'active';
+					}else{
+						activeClass = '';
+					} %>
+
+			    	<% if(value.Color != '' && value.ColorSwatch != '') { %>
+			    		<% if(!_.contains(main_color_array, value.ColorCode)) { %>
+		    				<div id="DR<%=value.ColorCode %>" class="<%=activeClass%>" data-toggle="modal" data-target="#myModal">
+				    			<a class="btn-gallery">
+				    				<% if(value.U_WImage1) { %>
+					    					<img class="popupImage" src="<%=value.U_WImage1 %>" alt="<%=value.ColorCode %>"  />
+				    				<% }else{ %>
+				    					<img class="popupImage" src="<%=placeholderurl %>" alt="<%=value.ColorCode %>"  />
+				    				<% } %>
+				    			</a>
+				    		</div>
+				    		<% size_char_i++; %>
+		    				<% main_color_array.push(value.ColorCode); %>
+						<% } %>
+				    <% } %>
+			    <% }); %>
+			</div>
+			<div class="product_info">
+				<h3 class="page-title">
+		           <span class="base" data-ui-id="page-title-wrapper"><%=data[0].ShortDesc %></span>
+		        </h3>
+		        <div class="show-product-dis-box">
+		            <p><strong><%=data[0].Collection %> collection </strong></p>
+		        </div>
+		        <div class="show-product-dis-box-more">
+		            <p class="style"><strong> <lable>Style: </lable> </strong> <span><%=parent_color%></span></p>
+		            <p class="status"><strong> Status: </strong>
+		            <span id="showStyleStatus"><%=data[0].StyleStatus %></span></p>
+		        </div>
+		        <!-- RPT Switchers START -->
+					<%
+						if(rptswitcher.petite && rptswitcher.petite != '' || rptswitcher.tall && rptswitcher.tall != ''){ %>
+							<div class="catBtns">
+								<% if(rptswitcher.regular && rptswitcher.regular != ''){ %>
+									<a href="javascript:void(0)" product-sku="<%=rptswitcher.regular%>" class="customBtns <% if( parent_color == rptswitcher.regular){%>activeCat<%} %>">Regular</a>
+								<% } %>
+								<% if(rptswitcher.petite && rptswitcher.petite != ''){ %>
+									<a href="javascript:void(0)" product-sku="<%=rptswitcher.petite%>" class="customBtns <% if( parent_color == rptswitcher.petite){%>activeCat<%} %>">Petite</a>
+								<% } %>
+								<% if(rptswitcher.tall && rptswitcher.tall != ''){ %>
+									<a href="javascript:void(0)" product-sku="<%=rptswitcher.tall%>" class="customBtns <% if( parent_color == rptswitcher.tall){%>activeCat<%} %>">Tall</a>
+								<% } %>
+							</div>
+					<% } %>
+				<!-- RPT Switchers END -->
+			</div>
+		</div>
+		<!-- Product Info Section Start -->
+		<div id="<%=parent_color%>" class="product_options createOrder">
+			<div class="swatch-attribute color">
+				<div class="swatch-attribute-options clearfix">
+					<div id="toolTipContainer" style="display: none;">
+		                <div id="toolTipsHeader"></div><input name="changed_cart" class="changed_cart" id="changed_cart" type="hidden" value="0">
+		            </div>
+		            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+		            	<!-- Swatch Section Start -->
+		            	<div class="swtach">
+		            		<% 
+							var main_swatch_color_array = []; 
+							var size_char_i = 0;
+							var main_color_class = '';
+							var main_color_aria = '';
+							var main_color_i = fashionColor_i = 0;
+						%>
+						<% if(core_avaialble) { %>
+							<div class="customorder-color core-color-section">
+								<div id="coreClass" class="colorImage active">
+									<span>Core Colors: </span>
+									<span class="core-color-name"></span>
+								</div>
+								<div class="swatch-color-container">
+									<% _.each(data, function(value, index) { %>
+										<% if(value.Color != '' && value.ColorSwatch != '') { %>
+										<% if(!_.contains(main_swatch_color_array, value.ColorCode)) { %>
+											<%
+												var option_tooltip_thumb = (value.ColorSwatch).toLowerCase();
+												var option_tooltip_value = (value.ColorSwatch).toLowerCase();
+												var product_image_thumb = (value.U_WImage1).toLowerCase();
+												var swatch_background_url = (value.ColorSwatch).toLowerCase();
+											%>
+											<% if(main_color_i != 0) {
+												main_color_class = '';
+												main_color_aria = 'true';
+											} %>
+											<% if(main_color_i == 0) {
+												activecolor = value.ColorCode;
+												main_color_class = 'active';
+												main_color_aria = 'false';
+											} %>
+											<% if(value.ColorStatus == 'Core') { %>
+												<div id="core" class="<%=main_color_class%> swatch-option image" data-toggle="tab" href="#<%=value.ColorCode%>" option-color-code="<%=value.ColorCode%>" option-color-status="<%=value.ColorStatus%>" option-style-status="<%=value.StyleStatus%>" tabindex="<%=index%>" option-id="<%=value.Style%>" option-core-color-name ="<%=value.Color%>" product-image-thumb="<%=product_image_thumb%>" option-tooltip-value="<%=option_tooltip_value%>" role="tab" aria-controls="<%=value.ColorCode%>" aria-selected="<%=main_color_aria%>" style="background:url('<%=swatch_background_url%>') no-repeat center; background-size: 105%;"  >
+													<span class="swatch_img">
+														<input name="style" type="hidden" value ="<%=parent_color%>">
+														<input name="qty_change_<%=value.ColorCode%>"class="qty_change" id="qty_change_<%=value.ColorCode%>" type="hidden" value ="0">
+													</span>
+												</div>
+												<% main_swatch_color_array.push(value.ColorCode); %>
+												<% main_color_i++; %>
+											<% } %>
+										<% } }%>
+									<% }); %>
+								</div>
+							</div>
+						<% } %>
+						<% if(fashion_avaialble) { %>
+							<div class="customorder-color fashion-color-section">
+								<div id="fashionClass" class="colorImage">
+									<span>Fashion/Seasonal Colors: </span>
+									<span class="fashion-color-name">Khaki</span>
+								</div>
+								<div>
+									<% _.each(data, function(value, index) { %>
+									<% if(value.Color != '' && value.ColorSwatch != '') { %>
+										<% if(!_.contains(main_swatch_color_array, value.ColorCode)) { %>
+											<%
+												var option_tooltip_thumb = (value.ColorSwatch).toLowerCase();
+												var option_tooltip_value = (value.ColorSwatch).toLowerCase();
+												var product_image_thumb = (value.U_WImage1).toLowerCase();
+												var swatch_background_url = (value.ColorSwatch).toLowerCase();
+											%>
+											<% if(main_color_i != 0) {
+												main_color_class = '';
+												main_color_aria = 'true';
+											} %>
+											<% if(main_color_i == 0) {
+												activecolor = value.ColorCode;
+												main_color_class = 'active';
+												main_color_aria = 'false';
+											} %>
+
+											<% if(_.contains(temp_other_sku, value.ItemCode)) { %>
+												<div id="fashion" class="<%=main_color_class%> swatch-option image" data-toggle="tab" href="#<%=value.ColorCode%>" option-color-code="<%=value.ColorCode%>" option-color-status="<%=value.ColorStatus%>" option-style-status="<%=value.StyleStatus%>" tabindex="<%=index%>" option-id="<%=value.Style%>" option-fashion-color-name="<%=value.Color%>" product-image-thumb="<%=product_image_thumb%>" option-tooltip-value="<%=option_tooltip_value%>" role="tab" aria-controls="<%=value.ColorCode%>" aria-selected="<%=main_color_aria%>" style="background:url('<%=swatch_background_url%>') no-repeat center; background-size: 105%;" >
+													<span class="swatch_img">
+														<input name="style" type="hidden" value ="<%=parent_color%>">
+														<input name="qty_change_<%=value.ColorCode%>"class="qty_change" id="qty_change_<%=value.ColorCode%>" type="hidden" value ="0">
+													</span>
+												</div>
+												<% main_color_i++; %>
+												<% main_swatch_color_array.push(value.ColorCode); %>
+											<% } %>
+										<% }} %>
+									<% }); %>
+								</div>
+							</div>
+							<div class="colorstatus">
+								<span id="colorstatus">Selected Color Status:</span>
+								<span id="Status">Core</span>
+							</div>
+						<% } %>
+						<% if(!isanyStyleAvail) { %>
+							<span class="style-notfound custom-error message-error error">Item not found.</span>
+						<% } %>
+		            	</div>
+		            	<!-- Swatch Section END -->
+		            </div>
+		            <% 
+						var main_size_array = []; 
+						var style_size_char_i = 0;
+						var size_activeclass = '';
+						var eta_row_avail_to_show = false;
+						var eta_availtoshow_styles = [];
+						_.each(data, function(parenvalue, index) {
+							eta_row_avail_to_show = false;
+							if(!_.contains(eta_availtoshow_styles, parenvalue.ColorCode)) {
+								var filterBy = parenvalue.ColorCode;
+								colorcode_array = _.filter(data, function(parenvalue) {
+									return parenvalue['ColorCode'] === filterBy;
+								});
+								_.each(colorcode_array, function(value, index) {
+									var ETA1_DATE = new Date(value.ETA1);
+									var ETA2_DATE = new Date(value.ETA2);
+									var ETA3_DATE = new Date(value.ETA3);
+									var currentdate = new Date();
+									var sysDate = new Date("1900/01/01");
+									var eta_date = {
+										'ETA1' : {
+											"Date" : ETA1_DATE,
+											"Qty" : value.EtaQty1
+										},
+										'ETA2' : {
+											"Date" : ETA2_DATE,
+											"Qty" : value.EtaQty2
+										},
+										'ETA3' : {
+											"Date" : ETA3_DATE,
+											"Qty" : value.EtaQty3
+										},
+
+									};
+									if(!_.isEmpty(eta_date)){
+						                var eta_avail_to_show = false;
+						                _.each(eta_date, function(value, index) {
+						                	var current_itration_date = value.Date;
+						                    if(value.Date != sysDate && current_itration_date.getTime() && value.Qty > 0 && eta_avail_to_show == false){
+						                    	eta_avail_to_show = true;
+												eta_row_avail_to_show = true;
+						                    }
+						                });
+						        	}
+								});
+				                if(eta_row_avail_to_show){
+									eta_availtoshow_styles.push(parenvalue.ColorCode);
+					            }
+						    }
+
+						});
+					%>
+		            <div class="tab-content order-table" id="nav-tabContent">
+		            	<div class="tab-content" id="nav-tabContent">
+							<% _.each(data, function(value, index) { 
+								if(!_.contains(main_size_array, value.ColorCode)) {
+									var filterBy = value.ColorCode;
+									colorcode_array = _.filter(data, function(value) {
+										return value['ColorCode'] === filterBy;
+									});
+
+									var parent_color_code = value.ColorCode;
+									var parent_color_value = value.Color;
+
+									if(parent_color_code === activecolor){
+										size_activeclass = 'active';
+									}else{
+										size_activeclass = '';
+									}
+
+									%>
+										<div class="tab-pane fade show <%=size_activeclass%>" id="<%=parent_color_code%>" role="tabpanel">
+											<div class='colorContainer'>
+												<table class='table table-bordered table-responsive'>
+													<tbody>
+														<tr class="header">
+															<th>Size</th>
+															<th>Price</th>
+															<th>Stock</th>
+															<th>Qty</th>
+															<th>Total</th>
+														</tr>
+														<% _.each(colorcode_array, function(value, index) { %>
+															<tr>
+																<td align="center"><%=value.Size%></td>
+																<% var cstomer_price_group = customersFlatDiscount[0].PriceList;
+																	if(cstomer_price_group == 'Institutional Price List'){ %>
+																		<td align="center">$<%=value.InsPrice%></td>
+																	<% }else{
+																		if(value.DisPrice < value.UnitPrice){ %>
+																			<td align="center" class="disprice" style="white-space: nowrap;">
+																				<span>$<%=value.DisPrice%></span>
+																				<span class="mainprice">$<%=value.UnitPrice%></span>
+																			</td>
+																		<% }else{ %>
+																			<td align="center">$<%=value.UnitPrice%></td>
+																		<% }
+																	}
+																%>
+																<% var qty = (typeof value.ActualQty !== 'undefined' && value.ActualQty != '') ? value.ActualQty : 0.00;
+																	if(qty > 500){
+																		qty = "500+"
+																	}
+																	%>
+
+																<!-- ETA SECTIOIN START -->
+																<%
+																	var ETA1_DATE = new Date(value.ETA1),
+																		ETA2_DATE = new Date(value.ETA2),
+																		ETA3_DATE = new Date(value.ETA3),
+																		currentdate = new Date(),
+																		sysDate = new Date("1900/01/01"),
+																		eta_avail_to_show = false;
+																	var eta_date = {
+																		'ETA1' : {
+																			"Date" : ETA1_DATE,
+																			"Qty" : value.EtaQty1
+																		},
+																		'ETA2' : {
+																			"Date" : ETA2_DATE,
+																			"Qty" : value.EtaQty2
+																		},
+																		'ETA3' : {
+																			"Date" : ETA3_DATE,
+																			"Qty" : value.EtaQty3
+																		},
+
+																	};
+																	if(!_.isEmpty(eta_date)){
+														                var eta_avail_to_show = false;
+														                _.each(eta_date, function(value, index) {
+														                	var current_itration_date = value.Date;
+														                    if(value.Date != sysDate && current_itration_date.getTime() && value.Qty > 0 && eta_avail_to_show == false){
+														                    	eta_avail_to_show = true;
+														                    }
+														                });
+														        	}
+
+														        	var eta_count_top = 0;
+
+														        	if(eta_avail_to_show){ %>
+														        		<td class="eta-tooltip" align="center"><%=qty%>
+														        			<% _.each(eta_date, function(value, index) {
+															                	var current_itration_date = value.Date,
+															                		temp_eta_date = value.Date,
+																					temp_eta_day = temp_eta_date.getDate(),
+																					temp_eta_month = temp_eta_date.getMonth()+1;
+
+																				if(temp_eta_day < 10 && temp_eta_day > 0){
+																					temp_eta_day = "0"+temp_eta_day;
+																				}
+
+																				if(temp_eta_month < 10 && temp_eta_month > 0){
+																					temp_eta_month = "0"+temp_eta_month;
+																				}
+
+																				var ETA_Actual_print = (temp_eta_month + "-" + temp_eta_day + "-" + temp_eta_date.getFullYear().toString().substr(-2));
+
+																				var eta_qty_show = value.Qty;
+																				if(eta_qty_show > 500){
+																					eta_qty_show = '500+';
+																				}
+
+																				if(value.Date != sysDate && current_itration_date.getTime() && value.Qty > 0 && eta_count_top==0){ %>
+																					<span class="eta-date" style="display:none;">
+																						<span>Restock Date - Qty</span>
+																				<%	eta_count_top++;
+																				}
+
+
+															                    if(value.Date != sysDate && current_itration_date.getTime() && value.Qty > 0 ){
+															                    	var qty = (value.Qty > 500) ? '500+' : value.Qty; %>
+														                    		<% if(value.Date < new Date()){ %>
+														                    			<p class="eta_date_product_option_span eta_date_past_date">
+																						<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 286.054 286.054" style="enable-background:new 0 0 286.054 286.054;" xml:space="preserve">
+								                                                        <g>
+								                                                            <path style="fill:#E2574C;" d="M143.027,0C64.04,0,0,64.04,0,143.027c0,78.996,64.04,143.027,143.027,143.027
+								                                                                c78.996,0,143.027-64.022,143.027-143.027C286.054,64.04,222.022,0,143.027,0z M143.027,259.236
+								                                                                c-64.183,0-116.209-52.026-116.209-116.209S78.844,26.818,143.027,26.818s116.209,52.026,116.209,116.209
+								                                                                S207.21,259.236,143.027,259.236z M143.036,62.726c-10.244,0-17.995,5.346-17.995,13.981v79.201c0,8.644,7.75,13.972,17.995,13.972
+								                                                                c9.994,0,17.995-5.551,17.995-13.972V76.707C161.03,68.277,153.03,62.726,143.036,62.726z M143.036,187.723
+								                                                                c-9.842,0-17.852,8.01-17.852,17.86c0,9.833,8.01,17.843,17.852,17.843s17.843-8.01,17.843-17.843
+								                                                                C160.878,195.732,152.878,187.723,143.036,187.723z"/>
+								                                                        </g>
+								                                                        </svg>
+								                                                        <span><%=ETA_Actual_print%> - <%=eta_qty_show%></span>
+																					</p>
+															                    	<% }else{ %>
+															                    		<p class="eta-date-list"><%=ETA_Actual_print%> - <%=eta_qty_show%></p>
+																                    <% } %>
+													                    	<% }});
+												                    		if(eta_count_top > 0){ %>
+												                    			</span>
+													                    	<% } %>
+														        		</td>
+															        <% }else{ %>
+																		<td align="center"><%=qty%></td>
+																    <% }
+																%>
+																<!-- ETA SECTIOIN END -->
+
+
+
+																<% var qty = (typeof value.ActualQty !== 'undefined' && value.ActualQty != '') ? value.ActualQty : 0.00;
+
+																	var cstomer_price_group = customersFlatDiscount[0].PriceList;
+																	if(cstomer_price_group == 'Institutional Price List'){
+																	%>
+																	<td align="center" class="qtyTd">
+																		<input name="qty[<%=value.Color%>][<%=value.Size%>]" type="text" pattern="[0-9]" min="1" class="checkvalue" autocomplete="off" max="<%=parseFloat(qty)%>" itemscode="<%=value.ItemCode%>"  readonly>
+																		<span class="maxqtyvaldi"></span>
+																		<input name="showprice[<%=value.Color%>][<%=value.Size%>]" type="hidden" value ="<%=parseFloat(value.InsPrice)%>">
+																		<input name="selectcolor" type="hidden" value ="<%=value.Color%>">
+																		<input name="selectsize" type="hidden" value ="<%=value.Size%>">
+																		<input name="itemscode[<%=value.Color%>][<%=value.Size%>]" type="hidden" value ="<%=value.ItemCode%>">
+																		<input name="colorcode[<%=value.Color%>][<%=value.Size%>]" type="hidden" value ="<%=value.ColorCode%>">
+																		<input name="mainprice[<%=value.Color%>][<%=value.Size%>]" type="hidden" value ="<%=parseFloat(value.InsPrice)%>">
+																		<input name="DiscountPer[<%=value.Color%>][<%=value.Size%>]" type="hidden" value ="<%=parseFloat(0.00)%>">
+																		<input name="DiscountPrice[<%=value.Color%>][<%=value.Size%>]" type="hidden" value ="<%=parseFloat(value.InsPrice)%>">
+																		<input name="ColorStatus[<%=value.Color%>][<%=value.Size%>]" type="hidden" value ="<%=value.ColorStatus%>">
+																		<input name="StyleStatus[<%=value.Color%>][<%=value.Size%>]" type="hidden" value ="<%=value.StyleStatus%>">
+																	</td>
+																<% }else{ %>
+																		<td align="center" class="qtyTd">
+																		<input name="qty[<%=value.Color%>][<%=value.Size%>]" type="text" pattern="[0-9]" min="1" class="checkvalue" autocomplete="off" itemscode="<%=value.ItemCode%>" max="<%=parseFloat(qty)%>" readonly>
+																		<span class="maxqtyvaldi"></span>
+																		<input name="showprice[<%=value.Color%>][<%=value.Size%>]" type="hidden" value ="<%=parseFloat(value.DisPrice)%>">
+																		<input name="selectcolor" type="hidden" value ="<%=value.Color%>">
+																		<input name="selectsize" type="hidden" value ="<%=value.Size%>">
+																		<input name="itemscode[<%=value.Color%>][<%=value.Size%>]" type="hidden" value ="<%=value.ItemCode%>">
+																		<input name="colorcode[<%=value.Color%>][<%=value.Size%>]" type="hidden" value ="<%=value.ColorCode%>">
+																		<input name="mainprice[<%=value.Color%>][<%=value.Size%>]" type="hidden" value ="<%=parseFloat(value.UnitPrice)%>">
+																		<input name="DiscountPer[<%=value.Color%>][<%=value.Size%>]" type="hidden" value ="<%=parseFloat(value.DisPercent)%>">
+																		<input name="DiscountPrice[<%=value.Color%>][<%=value.Size%>]" type="hidden" value ="<%=parseFloat(value.DisPrice)%>">
+																		<input name="ColorStatus[<%=value.Color%>][<%=value.Size%>]" type="hidden" value ="<%=value.ColorStatus%>">
+																		<input name="StyleStatus[<%=value.Color%>][<%=value.Size%>]" type="hidden" value ="<%=value.StyleStatus%>">
+																	</td>
+																	<% } %>
+																	<td align="center" class="total">
+																		<input class="unittotal" name="inpprice[<%=value.Color%>][<%=value.Size%>]" type="hidden" value ="">
+																		<span class="showprice"></span>
+																	</td>
+															</tr>
+														<% }); %>
+													</tbody>
+												</table>
+												<input name="submitcolor" type="hidden" value ="<%=parent_color_value%>">
+												<input id="closepopup" name="closepopup" type="hidden" value="">
+											</div>
+										</div>
+									<%	style_size_char_i++;
+									main_size_array.push(value.ColorCode);
+								}
+							}); %>
+						</div>
+		            </div>
+		            <div class="cf width_full">
+		                <div class="alignCenter">
+		                    <input type="hidden" id="activetab_id" name="activetab_id" value="">
+		                    <input type="hidden" id="flatDiscount" name="flatDiscount" value="7.00">
+		                    <a href="javascript:void(0);" class="themeBtn disabled scroll-to-po" style="pointer-events: all; opacity: 1; width: 100%;">Enter or Select P.O. To Add Items <i class="fa fa-caret-up check-valid-po" aria-hidden="true"></i></a>
+		                </div>
+		            </div>
+				</div>
+			</div>
+		</div>
+		<!-- Product Info Section End -->	
+	</div>
+	<div id="message" class="messages">
+      <div id="msg_text"></div>
+   </div>
+   <div class="sizeTable"></div>
+</div>

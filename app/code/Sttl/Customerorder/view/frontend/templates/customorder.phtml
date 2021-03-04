@@ -1,0 +1,333 @@
+<?php 
+    $request = $block->getRequest();
+    $order_id = base64_decode($request->getParam('id'));
+    $po_number = base64_decode($request->getParam('ncp'));
+     $request = \Magento\Framework\App\ObjectManager::getInstance()->get('Magento\Framework\App\Request\Http');
+	$url = $request->getActionName();
+?>
+<h1>hello</h1>
+<div class="accountPageContainer newproduct-item-details" data-role="sap_collection_list" style = "<?php echo ($url != 'customorder') ? 'display:none' : ''; ?>">
+	<form name="createorder" id="createorder" method="POST"  enctype="multipart/form-data"  data-mage-init='{"validation":{}}' action="<?php echo $this->getPostUrl(); ?>">
+	<h1 class="page-title">New Order</h1>
+	<div class="block block-dashboard-info cf newOrderStep1">
+		<!-- <div id='customLoader' class="showposec">
+          <img src='<?php echo $this->getViewFileUrl('images/loader-image.gif'); ?>' alt="loading">
+        </div> -->
+		<div class="block-title">
+			<strong>STEP 1: Enter your PO number to begin creating a new order.</strong>
+		</div>
+		<div class="box box-information">
+            <strong class="box-title">
+                <span>PO Number:</span>
+            </strong>
+            <span class="po-exist custom-error"></span>
+            <div class="box-content">
+            	<div class="po_sec">
+	                <input type="text" value="<?php echo $po_number;?>" name="po_number" id="po_number" class="required" placeholder="PURCHASE ORDER # " readonly="readonly" style="opacity:0.5" />
+	                <input type="hidden" name="order_for" value="web">
+                </div>
+	            <div class="box-actions checkPoAndInsert" style="<?php echo ($order_id > 0) ? 'pointer-events: none; opacity: 0.5;' : ''; ?>" >
+	                <a class="themeBtn alignRight" href="javascript:void(0);">
+	                    Next
+	                </a>
+	            </div>
+            </div>
+        </div>
+	</div>
+	<div class="block block-dashboard-info cf newOrderStep2" style="<?php echo ($order_id > 0) ? '' : 'opacity: 0.5; pointer-events: none;'; ?>">
+		<div class="block-title" id="block-title">
+			<strong>STEP 2: Add products to your purchase order.</strong>
+		</div>
+		<ul class="optionTabs nav nav-tabs" role="tablist">
+			<input type="hidden" name="activeoption" id="activeoption" value="">
+			<input type="hidden" name="nextstep" id="nextstep" value="">
+			<input type="hidden" name="nextstyleserach" id="nextstyleserach" value="">
+			<input type="hidden" name="nextcolorserach" id="nextcolorserach" value="">
+			<li class="nav-item">
+				<a class="nav-link active" data-toggle="tab" id="option1" href="#option1Cont" role="tab" aria-controls="option1Cont" aria-selected="true">Option 1 <span>Add products by style number.</span></a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" data-toggle="tab" id="option2" href="#option2Cont" role="tab" aria-controls="option2Cont" aria-selected="false">Option 2 <span>Add products manually by SKU number.</span></a>
+			 </li>
+			<li class="nav-item">
+				<a class="nav-link" data-toggle="tab" id="option3" href="#option3Cont" role="tab" aria-controls="option3Cont" aria-selected="false">Option 3 <span>Add products by uploading spreadsheet.</span></a>
+			</li>
+		</ul>
+		<div class="tab-content" id="newOrderTab">
+			<div class="tab-pane fade show active" id="option1Cont" role="tabpanel" aria-labelledby="option1Cont">
+				<div class="cf">
+					<div class="box box-information option" id="opt_one">
+					<strong class="box-title">
+						<span>Style Number:</span>
+					</strong>
+					<div class="box-content">
+						<div class="box-input-content">
+							<input type="text" class="dropdown" name="show_style" id="show_style" placeholder="STYLE # " autocomplete="off" data-option = "1" />
+							<input type="hidden" name="style" id="style" placeholder="STYLE # "/>
+						</div>
+						<div class="box-actions">
+							<a class="themeBtn alignRight searchFromStyle" href="javascript:void(0);" data-action = "1">
+								Search Stock & Price
+							</a>
+						</div>
+					</div>
+					<span class="style-notfound custom-error"></span>
+				 </div>
+				</div>
+				<ul class="collectionTabs nav nav-tabs" role="tablist">
+					<input type="hidden" name="activeoption" id="activeoption" value="">
+					<li class="nav-item">
+						<a class="nav-link active" data-toggle="tab" id="browse_collection_tab" href="#browse_collection" role="tab" aria-controls="browse_collection" aria-selected="true">Browse Collections</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" data-toggle="tab" id="marketing_materials_tab" href="#marketing_materials" role="tab" aria-controls="marketing_materials" aria-selected="false">Marketing Materials</a>
+					 </li>
+				</ul>
+				<div class="tab-content" id="collectionTabs">
+					<div class="tab-pane fade show active" id="browse_collection" role="tabpanel" aria-labelledby="browse_collection">
+						<!-- option 1collection slider -->
+						<div id="user-gird-conatiner">
+						   <div class="collection-owlslider">
+						      <ul class="Collections">
+						      </ul>
+						   </div>
+						   <div class="product-group">
+						      <div class="product-group-slider">		
+						      </div>
+						   </div>
+						   <div class = "pro-slider">
+						      <div class="product-slider">	
+						      </div>
+						   </div>
+						</div>
+						<!-- done -->
+						<div class="cf catalog-product-view mrgB10">
+							<div class='renderAllHtml'>
+				        		<div id="option1ContStyle"  class="colorSwatches"></div>
+				        	</div>
+				        </div>
+					</div>
+					<div class="tab-pane fade" id="marketing_materials" role="tabpanel" aria-labelledby="marketing_materials">
+						<!-- Marketing Material Slider START -->
+						<div id="material-gird-conatiner">
+						   <div class="material-group">
+						      <div class="material-group-slider">		
+						      </div>
+						   </div>
+						   <div class = "mark-slider">
+						      <div class="material-slider">	
+						      </div>
+						   </div>
+						</div>
+						<!-- Marketing Material Slider END -->
+					</div>
+				</div>
+				
+			</div>
+			<div class="tab-pane fade" id="option2Cont" role="tabpanel" aria-labelledby="option2Cont">
+				<div class="cf">
+					<div class="box box-information row option" id="opt_tow">
+						<div class="input_section_option2 row">
+							<div class="col-lg-9 col-md-9 col-sm-6 col-6 padding0">
+								<strong class="box-title">
+									<span>Product SKU Number:</span>
+								</strong>
+								<div class="box-content">
+									<input type="text" name="opt_two_sku" id="opt_two_sku" class="disabled dropdown" placeholder="SKU # " autocomplete="off" autocomplete="off" tabindex="1"  data-option = "2" />
+									<input type="hidden" id="opt_two_sku_previous"/>
+									<input type="hidden" name="opt_style" id="option2_submit" value="" placeholder=""/>
+								</div>
+							</div>
+							<div class="col-lg-3 col-md-3 col-sm-6 col-6 paddingL0 qtySection">
+								<strong class="box-title">
+									<span>Order Quantity</span>
+								</strong>
+								<div class="box-content rltv">
+									<input type="number" name="opt_two_qty" id="opt_two_qty" class="disabled" placeholder="QTY" min='1' autocomplete="off" tabindex="2"/>
+									<input type="hidden" id="opt_two_qty_previous"/>
+									<div class="qtyDetailPop" id="qtyDetailPop" style="display: none;">
+										<p>
+											<span class="unitPrice">Unit Price:
+											<span class="disprice">
+												<span id="disprice"></span>
+												<span id="unitPrice_op2">
+												</span>
+											</span>
+											<span>
+											<span class="inStock">
+												<span id="inStock_op2">219</span> In Stock
+											</span>
+											<span class="reStock" id="reStock">Restock Date :
+												<span id="eta_op2">10/10/19</span>
+											</span>
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="add_to_order-option2" id="add-order-section">
+	                        <div class="cf">
+	                            <div class="box-actions add-to-order-main">
+	                                <a class="themeBtn alignRight" name="add-to-order" id="sku_addorder" href="javascript:void(0);">
+	                                    Add to Order
+	                                </a>
+	                            </div>    
+	                        </div>
+	                    </div>
+					</div>
+					<div class="marketing_materials_note">
+						<i>Note: Marketing Materials available in OPTION1</i>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane fade" id="option3Cont" role="tabpanel" aria-labelledby="option3Cont">
+				<div class="cf">
+					<div class="box box-information">
+						<strong class="box-title">
+							<span>Select File:</span>
+						</strong>
+						<div class="box-content uploadBtn">
+							<input type="hidden"  id="submitfileuploadvalues" name="submitfileuploadvalues" value="">
+							<input type="hidden"  id="stopprogress" name="stopprogress" value="">
+							<a href="#" class="themeBtn" id="fileupload_text">UPLOAD A FILE</a>
+							<input type="file" id="files_upload" name="files_upload" class="themeBtn"  data-option = "3" />
+							<span class="or_span">Or</span>
+							<a href="<?php echo $block->getBaseUrl().'pub/media/adar-sample-upload-sheet.csv' ?>" class="downloadTemplate" download>Download Template</a>
+						</div>
+					</div>
+					<div class="option3_action_btn_sec d-flex">
+						<div id="file_show_name">
+							<span id="file_name"></span>
+							<span id="file_size"></span>
+							<span id="file_close" class="fa fa-close"></span>
+						</div>
+						<button class="themeBtn alignRight" name="add-to-order" id="file_addorder" style="display: none;" type="button">Submit File</button>
+					</div>
+					<div class="progress" style="display:none; ">
+						    <div class="progress-bar progress-bar-success myprogress" role="progressbar" style="width:0%;">0%</div>
+                    </div>
+                    <span id="file_cancel_upload" class="file_cancel_upload downloadTemplate" style="display:none;">Cancel Upload</span>
+                    <div class="marketing_materials_note">
+						<i>Note: Marketing Materials available in OPTION1</i>
+					</div>
+				</div>
+			</div>
+			<div id="opt_two_message" class="messages">
+                <div class="option3_error_message">
+                     <div id="opt_two_msg_text"></div>
+                        <div class="option1Cont"></div>
+                        <div class="option2Cont"></div>
+                        <div class="option3Cont"></div>
+                </div>
+			</div>
+		</div>
+
+		<div class="cf mrgB40">
+			<input type="hidden" name="is_edit_order" id="is_edit_order" value="0">
+			<input type="hidden" name="order_id" id="order_id" value="<?php echo ($order_id > 0) ? $order_id : ''; ?>">
+			<input type="hidden" name="base64_order_id" id="base64_order_id" value=" <?= @$GET['id'];?>"/>
+			<input type="hidden" name="base64_ncp_id" id="base64_ncp_id" value="<?= @$GET['id']; ?>"/>
+	        <div class='renderAllHtml'>
+	        	<div id="message" class="messages">
+                    <div id="msg_text"></div>
+				</div>
+	        	<div class="sizeTable"></div>
+	        </div>
+		</div>
+		<div class="cf loaderAdd">
+		<div class="lds-ellipsis">
+		<h1>Adding</h1>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+		</div>
+		<div class="cf line-item" style="display: none;">
+		<div id='customLoader' style='display:none'>
+		  <img src='<?php echo $this->getViewFileUrl('images/loader-image.gif'); ?>' alt="loading">
+		</div>
+			<h3 class="subTitle">Line Items</h3>
+			<div class="orderListing">
+			</div>
+		</div>
+		<div class="cf delOrdLink" style="display: none;">
+			<a href="javascript:void(0);" class="delUrl deleteorder newLinkText">
+				<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" enable-background="new 0 0 512 512" viewBox="0 0 512 512"><path d="M424 64h-88v-16c0-26.51-21.49-48-48-48h-64c-26.51 0-48 21.49-48 48v16h-88c-22.091 0-40 17.909-40 40v32c0 8.837 7.163 16 16 16h384c8.837 0 16-7.163 16-16v-32c0-22.091-17.909-40-40-40zm-216-16c0-8.82 7.18-16 16-16h64c8.82 0 16 7.18 16 16v16h-96zM78.364 184c-2.855 0-5.13 2.386-4.994 5.238l13.2 277.042c1.22 25.64 22.28 45.72 47.94 45.72h242.98c25.66 0 46.72-20.08 47.94-45.72l13.2-277.042c.136-2.852-2.139-5.238-4.994-5.238zm241.636 40c0-8.84 7.16-16 16-16s16 7.16 16 16v208c0 8.84-7.16 16-16 16s-16-7.16-16-16zm-80 0c0-8.84 7.16-16 16-16s16 7.16 16 16v208c0 8.84-7.16 16-16 16s-16-7.16-16-16zm-80 0c0-8.84 7.16-16 16-16s16 7.16 16 16v208c0 8.84-7.16 16-16 16s-16-7.16-16-16z" fill="#0c4269" class="color000 svgShape"></path></svg>
+				<span>Delete Order</span>
+			</a>
+			<div class="alignRight">
+				<a href="javascript:void(0);" class="themeBtn saveasdraft" title="Save as draft">Save as draft</a>
+				<!--<a href="#" class="themeBtn contopayment">Continue to Payment</a>-->
+				<button type="submit" class="themeBtn action save contopayment" title="Continue To Checkout"><span>Continue To Checkout</span></button>
+			</div>
+		</div>
+	</div>
+	<input type="hidden" name="fromCreatOrder" value="1">
+	</form>
+
+	<div class="modal fade" id="removeUser" role="dialog" style="z-index: 1600;">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="quickViewCont">
+					<div class="container bg-primary p-2">
+						<div class="row">
+							<div class="col-md-4 offset-md-4 text-center">
+								<a href="#" title="" class="mobileLogo" style="display:inline;" height="37" width="37"><img height="37" width="37" src="https://www.adaruniforms.com/pub/static/frontend/sttl/adaruniforms/en_US/images/mobile-logo-white.png"></a>
+							</div>
+							<div class="col-md-4">
+								<button type="button" data-dismiss="modal" class="close mfp-close-inside"><i class="fa fa-times"></i></button>
+							</div>
+						</div>
+					</div>
+					<div class="comingSoonTxt center">
+						<div class="comingSoonTxt center">
+							<p  class="mrgT20 padB20">Do you want to save and continue?</p>
+							<input type="hidden" name="next_color_item" id="next_color_item" value="">
+							<input type="hidden" id="clickOnSaveAndDraft" value="">
+							<input type="hidden" id="contopaymentredirect" value="">
+						</div>
+						<div class="center mrgB20">
+							<button class="themeBtn" id="goback" data-dismiss="modal" type="button">Go Back</button>
+							<button class="themeBtn mrgL20 " id="savecontinue" type="submit">Save & Continue</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/x-magento-init">
+{
+    "[data-role=sap_collection_list]": {
+        "Sttl_Customerorder/js/customorder-renderer": {        	
+            "selectorProduct": ".newproduct-item-details",
+            "poConfig" : <?= /* @noEscape */ $block->getPoSwatchConfig(); ?>,
+            "mediaCallback": "<?= $block->escapeJs($block->escapeUrl($block->getBaseUrl())) ?>",            
+            "magento" :<?= /* @noEscape */ $block->getMagentoProduct() ?>,
+            "baseurl" : "<?= $block->getBaseUrl(); ?>",
+            "customersFlatDiscount" : <?= $block->getCustomersFlatDiscount(); ?>,
+            "logos" : <?= $block->getCollectionslider(); ?>,
+            "base_order_id": "<?= $order_id ?>",
+            "customersBulcDiscount" : <?= $block->getCustomersBulkDiscount(); ?>,
+            "conditionjson": <?= $block->getConditionJson(); ?>,
+            "marketData": <?= $block->getMarketData(); ?>    
+            
+        }
+    }
+}</script>
+<div id="quick-popup" class="white-popup mfp-hide">
+  <p>Some text here..</p>
+</div>
+
+
+<div class="quickViewbodyloader">
+    <div data-role="loader" class="loading-mask lezzy-popup" >
+        <div class="loader"> <img src="<?= $this->getViewFileUrl('') ?>/images/loader-1.gif" alt="Loading..."> </div>
+    </div>
+</div>
+
+<!--  -->

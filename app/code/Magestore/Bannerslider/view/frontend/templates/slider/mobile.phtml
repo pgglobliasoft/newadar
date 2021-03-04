@@ -1,0 +1,40 @@
+<?php
+
+/** @var \Magestore\Bannerslider\Block\SliderItem $block */
+$displayId = $this->getSliderId();
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$Collection = $objectManager->get('\Magestore\Bannerslider\Model\ResourceModel\Banner\CollectionFactory');
+$SliderCollection = $objectManager->get('\Magestore\Bannerslider\Model\SliderFactory');
+$SliderData =  $this->getSliderData($displayId);
+// echo $SliderData->getSliderSpeed();die;
+$bannerCollection = $this->getBannerColltion($displayId);
+// echo "aaaaaaaaa";
+
+function cmp($a, $b) {
+  return $a['order_banner'] > $b['order_banner'];
+}
+$array = $bannerCollection->getData();
+usort($array, "cmp");
+
+
+// echo "<pre>";
+// print_r($array);die;
+if (count($bannerCollection) > 0) :
+?>	
+
+		<?php
+				$banner_cnt = 0;
+				foreach ($bannerCollection as $banner): ?>
+					<?php if($banner['video_iframe'] !=''){?>
+						<div class="item video-item">					
+							<?php echo $banner['video_iframe'];?>
+						</div>
+					<?php }else{?>
+					<div class="item">
+						<a href="<?php echo $banner['click_url'];?>">					
+							<img src="<?php echo $this->getBaseUrlMedia($banner['image']); ?>" alt="<?php echo $banner->getImageAlt() ?>">
+						</a>
+					</div>
+				<?php }?>
+			<?php $banner_cnt++; endforeach;?>
+<?php endif;?>

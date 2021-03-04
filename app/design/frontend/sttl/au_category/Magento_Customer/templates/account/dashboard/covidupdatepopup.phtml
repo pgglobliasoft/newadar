@@ -1,0 +1,44 @@
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+// $product = $objectManager->get('Magento\Framework\Registry')->registry('current_product');
+
+?>
+<div class="modal fade" id="notificationPopupModal" tabindex="-1" role="dialog" aria-labelledby="notificationPopupModal" aria-hidden="true">
+  <div class="modal-dialog dashboard-notification-modal" role="document">
+    <div class="modal-content quickViewCont">
+      <div class="col-md-12 close-button-section">
+        <button type="button" data-dismiss="modal" class="close-notification-popup"></button>
+      </div>
+      <div class="container">
+        <div>
+          <?php
+            $cms_block = $this->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('dashboard_notification')->toHtml();
+            echo $cms_block;
+          ?>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  .dashboard-notification-modal{
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    min-height: calc(100% - (.5rem * 2));
+   }
+  #notificationPopupModal .container { padding: 10px;}
+</style>
+<script>
+   requirejs(["jquery"], function($, magnificPopup) {
+      $(document).on('click','a',function(e){
+        if($("#notificationPopupModal").is(":visible")){
+          var isopeninnew = $(this).attr("target");
+          if(isopeninnew != "_blank" || isopeninnew == "undefined"){
+            $(this).attr("target","_blank");
+          }
+        }
+     	});
+   });
+
+</script>

@@ -1,0 +1,98 @@
+<?php if($block->customerLoggedIn()){ ?>
+	<style type="text/css"> #homeProductSlider{ margin-bottom: 80px; }</style>
+	<div class="avatar__thumbnail customerLoggedIn" data-name="IS">
+		<a>
+			<!-- <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="36" height="38" viewBox="0 0 36 38">
+			  <image x="3" y="6" width="32" height="32" xlink:href="data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB0AAAAdCAYAAABWk2cPAAACt0lEQVRIiaWXz0tVQRzFPz5LdPXA7Ic9IUjalJaFK6EwaFFERLQT2lVCu2jVf9AiW+Sq2tcqXEQJrnIVSGCBCysqKYzSQgxKLe3E+L7Xd9/9zvuBHjjqfOfMOfPezJ07NkiiDuwFLgIngG5gD5AHFoF54DUwDjwGvtS0C6FV2CNpRNKq6sOa6XuqeFYMbZZ010wCViSNShqUdFhS3nR5aw9a/4rpw7hh83H+riCpIGnSBv+V9EBSe0QXY9Ddt3Eyn0Kt0A5JMzbgraSjEeN6GMa9MZ8Z842Gtkh6ZcIJSa2bDEzYaj4y35ZY6LAJpiXtjJgkbJN0ytgW6c9qp813OBt6zBb/T42dNyBpIbWPF2wTxbQJj5jvmuVshI6YyVBkUMKrkv5VeHBuRfRpDpluJAkt2CyWJe2KDAjslLTkospxJjIu4W7zDzmFHHABCL+fAHPu9CjiCtDsquW45iolfDP/9bzwo9+6njlpCb2u4nHQVcrx1FonQ2iXNV46WQlLruLx01XKkfgfCqHt1vjkZCVMuYrHC1cpx2drtZPaCrENkLC7ys5N0BcZl+VG0KL9nY+I0nzoYkoYi+izzJt6kdSJ0R0RphkerXkXV5z0/og+yy7TT+dsLT4CB9wqlGMWuOSqxcfpg6t6HAFWw/4IN4cOoAn4Zc9TLWSvGg019An6gIHwIeu9riRotNmm0QIsO2UcYYKNuXifQw9wx77iLH4D74DbQKfrLYfWJx1Z8ITb7K0y4bZOZYQbwz1JOyJ+G3QFCwtvlPcVrWvjq6TTEe+KoeNbCEsjvFFuRvyJremoq2wOuchOLyI2E0mX7f23lU95I+Jb8etN2CtpytnVxpyk85JymwkNbJJ0XdJsHWHhv4BHkvrtplDRt97DIZxY54CzwHFgH7Ad+GFH6CQwBjwHvld1Av4D4LYfyyVnjAsAAAAASUVORK5CYII="/>
+			</svg> -->
+			<img src="<?= $this->getBaseUrl().'pub/media/muser.png';?>" alt="user" />
+		</a>
+
+	</div>
+	<nav class="user-logout" style="display: none;">
+			<ul>
+				<li>
+					<a href="<?=  $this->getBaseUrl(); ?>customerlogin/account/logout/" >
+					logout
+					</a>
+				</li>
+			</ul>
+		</nav>
+<?php }else{ ?>
+	<div class="avatar__thumbnail login" data-name="IS">
+		<a href="<?=  $this->getBaseUrl(); ?>login" >B2B Login</a>
+
+	</div>
+<?php } ?>
+
+<script>
+	require([
+		'jquery'
+		], function($){
+			$(".customerLoggedIn").click(function() {
+				$(".user-logout").slideToggle(300);
+			});
+			
+			$(".nav-toggle.action").click(function() {
+				if(!$(this).hasClass("closeToggle")){
+					if($(".user-logout").css("display") === "block"){
+						$(".user-logout").hide(300);
+					}
+				}
+			});
+		});
+</script>
+<!-- <style>
+	
+.search-product .cf.sidebarSearch {
+    
+    left: 0;
+    height: -webkit-fill-available;
+    border-radius: 0;
+    background-color: #00000052;
+    width: 100%;
+    position: absolute;    
+    display: flex;
+    margin: 0px;
+}
+
+.search-product .form#search_mini_form {
+    width: 100%;
+    position: absolute;
+    width: 90%;
+    position: absolute;
+    background: #fff;
+    top: 70px;
+    border-radius: 10px;
+    left: 15px;
+}
+.search-product input {
+    width: 100% !important;
+	padding: 10px 20px;
+	    max-width: 100%;
+	    border: 0;
+	    height: 53px;
+	    border-radius: 10px;
+	    background: #fff;
+	    font-size: 16px;
+}
+li#search_product_button svg {
+    width: 28px !important;
+}
+.search-product button.search{     position: absolute !important;
+    right: 0 !important;
+    top: 10px !important; }
+.search-product input::placeholder{ font-weight:700;}
+/*#mainNav .cf.sidebarSearch{ display: none; }*/
+/*.cf.sidebarSearch {
+    display: none;
+}*/
+.search-product button:active {
+    background-color: #fff !important;
+    color: #0b4269 !important;
+    border: unset;
+}
+
+</style>
+ -->
+

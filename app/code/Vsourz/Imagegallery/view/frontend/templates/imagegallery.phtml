@@ -1,0 +1,140 @@
+<?php
+	if($block->getCategoryId()) {
+		$category_id = $block->getCategoryId();
+		
+		$om = \Magento\Framework\App\ObjectManager::getInstance();
+		$sc = $om->get('\Magento\Framework\App\Config\ScopeConfigInterface');
+		$isEnabled = $sc->getValue('imagegallery/general/enabled',Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+		
+		if($isEnabled == 1){
+			
+			$getCategorytitle       =  $this->helper('Vsourz\Imagegallery\Helper\Data')->getCategorytitle();
+			$getCategorydescription =  $this->helper('Vsourz\Imagegallery\Helper\Data')->getCategorydescription();
+			$getImagetitle          =  $this->helper('Vsourz\Imagegallery\Helper\Data')->getImagetitle();
+			$getImagedescription    =  $this->helper('Vsourz\Imagegallery\Helper\Data')->getImagedescription();
+			
+			$imagegallerydata  = $block->getImageGalleryCollection();
+			$imageData         = $block->getImageCollection();
+			// echo '<pre>';print_r($imageData);die;
+			$catData           = $block->getCategoryCollection();
+			
+			$catid="";
+		?>
+		
+		
+		<div class="row" id="addgallery">	
+			<input type="hidden" name="pagenumber" value="1" id="pagenumber">
+			<?php $cnt = 1; $class = ''; foreach($imageData as $data) : ?>
+			<?php if($data['image_photo']) : 
+				if ($cnt <= 2 )
+				$class = 'col-md-6 grid-item--width2';
+				if ($cnt <= 5 && $cnt > 2 )
+				$class = 'col-md-4 grid-item--width3';
+				if ($cnt <= 6 && $cnt > 5 ) {
+					$cnt = 0;
+					$class = 'col-md-12 grid-item--width1';
+				}
+			?>
+			
+			<div class="grid-item grid-sizer <?php echo $class;?>">
+				<?php if($data['image_type'] == 0) : ?>
+					<img src="<?php echo $this->getUrl('pub/media/').$data['image_photo']; ?>" alt="<?php echo $data['image_title']; ?>" />
+				<?php elseif($data['image_type'] == 1) : ?>
+					<?php echo $data['image_photo'];?>
+				<?php endif;?>
+			</div>
+			<?php $cnt++; endif;?>	
+			<?php endforeach;?>
+		</div>
+		<div class="center mfblog-autoloader">
+				<!-- <a href="javascript:void(0)" id="gallery-media-custom" class="showmore  gallery-hide-onloadcustom">Show More</a> -->
+
+				<img id="gallery-loder" class="posts-loader gallery-show-onloadcustom" src="<?php echo $block->getViewFileUrl('images/loader-2.gif') ?>" alt="<?php echo __('Posts loader') ?>" style="
+				display: none;" />
+			</div>
+	<?php } } ?>
+	<script type="text/javascript" charset="utf-8">
+		require(["jquery","mediaimage","freewalljs"],function($,mediaimage,freewalljs){	
+
+			$("#gallery-media-custom").on('click', function(e) {
+			$(".gallery-show-onloadcustom").show();
+			$(".gallery-hide-onloadcustom").hide();
+			
+			var customurl = "<?php echo $block->getAjaxUrl();?>";
+			var page = $("#pagenumber").val();
+			//$('body').loader('show');
+			$.ajax({
+                url: customurl,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    pages: page,
+                  	category_id: "<?php echo $category_id?>",
+                },
+            complete: function(response) {     
+            		var data = response.responseJSON;
+            		$("#addgallery").append(data.html)
+            		$(".gallery-show-onloadcustom").hide();
+            		if(data.lastpages > data.page)
+            		{
+            				if(data.button == 'show')
+			            	{
+			            		$(".gallery-hide-onloadcustom").show();
+		            		}
+		            		$("#pagenumber").val(data.page);
+			        }
+	            	      		masoneryGrid();
+		          		
+
+    			},
+                error: function (xhr, status, errorThrown) {
+                    console.log('Error happens. Try again.');
+					//$('body').loader('hide');
+                }
+
+            	});
+				
+  			 });
+
+			$( window ).load(function() {
+				$("#gallery-tab").trigger( "click" );
+			});
+			$(document).ready(function(){
+				$("#gallery-tab").on("click",function(e){
+					if(e.target.hash == '#gallery') {
+						setTimeout(function(){
+							masoneryGrid();
+						},1000);
+					}					
+				});
+			});
+			$(window).resize(function(){
+				masoneryGrid();
+			});
+			function masoneryGrid(){
+				var wall = new Freewall(".grid");
+				var $grid = $('.grid');
+				$grid.imagesLoaded(function() {
+					wall.reset({
+							selector: '.grid-item',
+							animate: false,
+							//cellW: '20',
+							//cellH: '20',
+							gutterY: 8,
+					gutterX:8,
+					columnWidth: function( containerWidth ) {
+						return containerWidth / 3;
+					  },
+							onResize: function() {
+								//wall.fitWidth();
+							}
+						});
+					//wall.fitWidth();
+				});
+			}
+
+			
+		});
+		
+	</script>
+	

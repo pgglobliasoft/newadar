@@ -1,0 +1,208 @@
+	<?php
+	/**
+	 * Copyright © Magento, Inc. All rights reserved.
+	 * See COPYING.txt for license details.
+	 */
+
+	?>
+	<?php /** @var $block \Magento\Catalog\Block\Product\Image */ 
+	$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+	$product = $objectManager->create('Magento\Catalog\Model\Product')->load($block->getProductId());
+	$category = $objectManager->get('Magento\Framework\Registry')->registry('current_category');//get current category
+	  
+	$Request = $objectManager->create('\Magento\Framework\App\Request\Http');
+	$maincolorvalues = array();
+	if($Request->getParam('color') != '')
+	{
+		$maincolorvalues = array_reverse(explode('_', $Request->getParam('color')));
+	}
+	$key = '';
+	$query = strtolower($Request->getParam('q'));
+	if($product->getTypeId() !== 'simple'){
+		$productTypeInstance = $product->getTypeInstance();
+		$usedProducts = $productTypeInstance? @$productTypeInstance->getUsedProducts($product) : '' ;
+	}
+	$i = 0;
+	$childimages = array();
+
+	$ObjEavAttr = $objectManager->create('Magento\Eav\Model\Config');
+
+	$attribute = $ObjEavAttr->getAttribute('catalog_product', 'color');
+	$maincolors = $attribute->getSource()->getAllOptions();
+	// echo '<pre>'; echo $query; print_r($maincolors);
+	if(isset($query) && $query != '')
+	{
+
+		$key = array_search(ucfirst($query), array_column($maincolors, 'label'));
+		
+	}
+	// echo $key;
+	// if($key < 1){
+		 // $i = 0;
+		 foreach($maincolors as $k => $a) {
+		 	
+		 	if(strtolower($a['label']) === strtolower($query)){
+		 
+			    $key = $k;
+		 	}
+			elseif (@strpos(@strtolower($a['label']), strtolower($query)) !== false) {
+				
+			    $key = $k;
+			    // echo 'key value--'.$a['value'];
+			    break;
+			}
+			// $i = ++;
+	    }
+	// }
+	// echo '<pre>'; print_r($maincolors);
+	// echo $key; die;
+	if(isset($key) && !empty($key))
+	{
+		if(isset($maincolorvalues) && !empty($maincolorvalues))
+		{
+			array_push($maincolorvalues,$maincolors[$key]['value']);
+		}
+		else
+		{
+			$maincolorvalues[] = $maincolors[$key]['value'];
+		}
+	}
+	if($product->getTypeId() !== 'simple'){
+
+
+	foreach($maincolorvalues as $maincolor)
+	{
+		foreach ($usedProducts  as $child) 
+		{
+			// echo 'test1';
+			$heather =  $child->getResource()->getAttribute('heather_colors')->getFrontend()->getValue($child);
+		    $seasonal =  $child->getResource()->getAttribute('seasonalcolors')->getFrontend()->getValue($child);
+		    $corecolor =  $child->getResource()->getAttribute('color')->getFrontend()->getValue($child);
+			if(@strpos(@strtolower($heather), strtolower($query)) !== false || @strpos(@strtolower($seasonal), strtolower($query)) !== false ||@strpos(@strtolower($corecolor), strtolower($query)) !== false )
+		    {
+		    	// $child->getData('heather_colors') == $maincolor ||$child->getData('seasonalcolors') == $maincolor ||
+		    	
+		    	// echo $child->getData('heather_colors');
+
+		    	if($i == 0)
+		    	{
+		    		$childMedia = $child->getData('media_gallery');
+		    		$j = 0;
+		    		foreach ($childMedia['images'] as $key => $value) {
+		    			if($j < 2)
+		    			{
+		    				$childimages[$j] = $value['file'];
+		    				$j++;	
+		    			}
+		    			else
+		    			{
+		    				break;
+		    			}
+		    		}
+		    		$i++;	
+		    	}
+		    }
+		    if(isset($childimages) && !empty($childimages))
+		    {
+		    	break;
+		    }
+		}
+		if(isset($childimages) && !empty($childimages))
+	    {
+	    	break;
+	    }
+	}
+
+	}
+
+	$images = $product->getMediaGalleryImages();
+	$imgCNT = 1;
+	// $imgurl2 = $block->getImageUrl();
+	$imgurl2 = $imgurl1 ='';
+	foreach ($images as $child) {
+		if ($imgCNT == 1) {
+			$imgurl1 = ($child->getUrl() != '') ? $child->getUrl() : $block->getImageUrl();	
+		}	
+		if ($imgCNT == 2) {
+			$imgurl2 = ($child->getUrl() != '') ? $child->getUrl() : '';
+			break;
+		}
+		$imgCNT++;
+	}	
+	$store = $objectManager->get('Magento\Store\Model\StoreManagerInterface')->getStore();
+	$tempUrl = $store->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA) . 'catalog/product';
+	//$tempUrl = "http://127.0.0.1/adar/pub/media/catalog/product/";
+
+	if($category && $category->getId() === '86'){
+		$_children = $product->getTypeInstance()->getUsedProducts($product);
+		if(@$product['listing_page_image'] )
+		    foreach ($_children as $child){
+	    		$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+	    	
+	            $headtherprodut = $objectManager->create('Magento\Catalog\Model\Product')->load($child->getId());
+	            if(@$headtherprodut['heather_colors']  && $headtherprodut['heather_colors'] === $product['listing_page_image'] && $headtherprodut['heather_colors'] != 26341){
+	            		// echo $child->getId().'=='. $product['listing_page_image'];
+	            	if($i == 0)
+			    	{
+			    		$childMedia = $child->getData('media_gallery');
+			    		$j = 0;
+			    		foreach ($childMedia['images'] as $key => $value) {
+			    			// echo  $value['file'];
+			    			if($j < 2)
+			    			{
+			    				$childimages[$j] = $value['file'];
+			    				$j++;
+			    			}
+			    			else
+			    			{
+			    				break;
+			    			}
+			    		}
+			    		$i++;	
+			    	}
+	            	break;
+	            }
+	            
+	        }
+	 }
+	// echo '<pre>'; print_r($_children)
+	?>
+	<!-- <?php echo $key; ?> -->
+	<span class="product-image-container" id="<?=  $product->getId() ?>"
+	      style="width:<?= /* @escapeNotVerified */ $block->getWidth() ?>px;">
+	  <a class="product-item-link" href="<?= /* @escapeNotVerified */ $product->getProductUrl() ?>">
+		    <span class="product-image-wrapper"
+		          style="padding-bottom: <?= /* @escapeNotVerified */ ($block->getRatio() * 100) ?>%;">
+		          <?php 
+				if(count($childimages) == 1)
+				{
+					$childimages[1] = $childimages[0];
+				}
+				  if(!empty($childimages) && count($childimages) >= 2){ ?>
+		          	<img class="product-image-photo 123132131"
+		            <?= /* @escapeNotVerified */ $block->getCustomAttributes() ?>
+		            src="<?=  /* @escapeNotVerified */ $tempUrl.$childimages[0] ?>"
+		            width="<?= /* @escapeNotVerified */ $block->getResizedImageWidth() ?>"
+		            height="<?= /* @escapeNotVerified */ $block->getResizedImageHeight() ?>"
+		            alt="<?= /* @escapeNotVerified */ $block->stripTags($block->getLabel(), null, true) ?>"/>
+					<img class="product-image-photo product-hove-image" 
+					src="<?php echo $tempUrl.$childimages[1]; ?>" 
+					width="<?= /* @escapeNotVerified */ $block->getResizedImageWidth() ?>"
+					height="<?= /* @escapeNotVerified */ $block->getResizedImageHeight() ?>"/>
+		
+		          <?php }else{ ?>
+		        <img class="product-image-photo"
+		            <?= /* @escapeNotVerified */ $block->getCustomAttributes() ?>
+		            src="<?= /* @escapeNotVerified */ $imgurl1; ?>"
+		            width="<?= /* @escapeNotVerified */ $block->getResizedImageWidth() ?>"
+		            height="<?= /* @escapeNotVerified */ $block->getResizedImageHeight() ?>"
+		            alt="<?= /* @escapeNotVerified */ $block->stripTags($block->getLabel(), null, true) ?>"/>
+		            <?php if($imgurl2 == ''){ $imgurl2 = $imgurl1;}  ?>
+					<img class="product-image-photo product-hove-image" 
+					src="<?php echo $imgurl2; ?>" 
+					width="<?= /* @escapeNotVerified */ $block->getResizedImageWidth() ?>"
+					height="<?= /* @escapeNotVerified */ $block->getResizedImageHeight() ?>"/>
+					<?php } ?> 
+			</span>
+		</a>
+	</span>

@@ -1,0 +1,112 @@
+<?php
+	/**
+		* Copyright © Magento, Inc. All rights reserved.
+		* See COPYING.txt for license details.
+	*/
+	
+	$curren_url =  $this->getUrl('*/*/*', ['_current' => true, '_use_rewrite' => true]);
+	$base_url = $block->getBaseUrl();
+	$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+	$request = $objectManager->get('Magento\Framework\App\Action\Context')->getRequest();
+	$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+    $base_url = $storeManager->getStore()->getBaseUrl();
+	
+?>
+<style>#signUpModal .modal-content .messages, #loginModal .modal-content .messages {display: none;}</style>
+<div class="copyRight">
+	<div class="container"><?= /* @escapeNotVerified */ $block->getCopyright() ?>
+        <ul class="bottomLinks">
+			<?php echo $this->getLayout()
+				->createBlock('Magento\Cms\Block\Block')
+				->setBlockId('copyright_link')
+			->toHtml(); ?>
+		</ul>
+	</div>
+</div>
+<!-- Coming Soon popup -->
+<div class="modal fade block block-customer-login comingSoon" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModal" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="modalContainer block-content" aria-labelledby="block-customer-login-heading">
+					<div class="messages">
+						<div class="message message-error error">
+							<div></div>
+						</div>
+					</div>
+					<div class="quickViewCont">        
+						<div class="container bg-primary p-2">
+							
+							<div class="row">
+								<div class="col-md-4 offset-md-4 text-center">
+									<a href="#" title="" class="mobileLogo" style="display:inline;"  height="37" width="37"><img height="37" width="37" src="<?php echo $this->getViewFileUrl('images/mobile-logo-white.png'); ?>"></a>
+								</div>
+								<div class="col-md-4">
+									<button type="button" data-dismiss="modal" class="close mfp-close-inside"><i class="fa fa-times"></i></button>
+								</div>
+							</div>
+						</div>
+						<div class="comingSoonTxt center" id="comingSoonForm">
+							<h3>Coming Soon!</h3>
+							<p>Our online Customer Portal will be available soon.
+							Sign up below to stay updated!</p>
+							<form novalidate id="coming-validate-detail" action="<?php echo $base_url; ?>newsletter/subscriber/new/" method="post" data-mage-init='{"validation": {"errorClass": "mage-error"}}' >
+								<span class="news-coming-show-message subscribeNote"></span>
+								<div class="comingSoonForm left" >
+									
+									<label>Email</label>
+									<input  name="email" id="comingemail" type="email"
+									data-validate="{required:true, 'validate-email':true}"/>
+									<input type="hidden" name="submitby" value="Customer Portal">
+									<div class="center">
+										<button class="themeBtn" title="<?= $block->escapeHtmlAttr(__('Subscribe')) ?>" >
+											<span><?= $block->escapeHtml(__('Submit')) ?></span>
+										</button>
+									</div>
+								</div>
+							</form>
+							
+						</div>
+					</div>   
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+    require(["jquery"],function($) {
+        $(document).ready(function() {
+            var self = this,
+			message_show = $('.news-coming-show-message'),
+			form = $('#coming-validate-detail');
+            form.submit(function (e) {
+                if (form.validation('isValid')) {
+                    var email = $("#comingemail").val();
+                    var url = form.attr('action');
+                    e.preventDefault();
+                    $.ajax({
+                        url: url,
+                        dataType: 'json',
+                        type: 'POST',
+                        showLoader: true,
+                        data: {email: email}
+						}).done(function (data) {
+                        message_show.html(data.msg);
+                        if (data.error) {
+                            message_show.addClass('message-error error');
+                            message_show.removeClass('message-success');
+                            message_show.show();
+							} else {
+                            $("#comingemail").val('');
+                            message_show.removeClass('message-error error');
+                            message_show.addClass('message-success');
+                            $('#comingSoonForm').html('<h3>THANK YOU</h3><p>Thank you for signing up! Check your inbox soon for special offers, our latest innovation and products, and more!</p><div class="inputArea"><button class="signupBtn newsclosebtn" title="Close" data-dismiss="modal" type="submit"> <span>Close</span> </button></div>');
+						}
+					});
+				}
+			});
+			
+		});
+	});
+</script>

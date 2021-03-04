@@ -1,0 +1,486 @@
+<?php
+
+$permission =  $this->getPermissionJson();
+// AB for user permisson
+$order = true;
+$invoice = true;
+$downlaod_library = true;
+$create_order = true;
+if($permission){
+    
+    $order = false;
+    $invoice = false;
+    // $downlaod_library = false;
+    $create_order = false;
+    $permissionarray = json_decode($permission, true);
+    foreach ($permissionarray as $value) { 
+        foreach ($value as $upermission) { 
+            if($upermission === 'place_oder'){
+                $create_order = true;
+            }
+            if($upermission === 'view_order'){
+                $order = true;
+            }
+            if($upermission === 'pay_invoice' || $upermission === 'view_invoice'){
+                $invoice = true;
+            }
+        } 
+    }  
+}
+
+$admincustomer = $this->getAdminCustomer();
+$baseurl = $block->getBaseUrl();
+$customerinvoices = $baseurl."customerinvoices/customer/index?order_stats=Open&order_by=DueDays&opt=ASC";
+$myaccoutnUrl = $baseurl."customer/account/index/";
+$customerorderUrl = $baseurl."customerorder/customer/index";
+$purchaseorderUrl = $baseurl."purchaseorder/customer/index";
+$downloadlibraryUrl = $baseurl."downloadlibrary/category/index";
+$policy_procedures = $baseurl."policy-procedures";
+$neworderUrl = $baseurl."customerorder/customer/neworder";
+$policies_procedures = $baseurl."policies-procedures";
+$redirect_category = $baseurl."downloadlibrary/category/index?catgoty=";
+$redirect_imagelibrary = $baseurl."downloadlibrary/category/imagelibrary?path=";
+$inventorydata = $baseurl."customerorder/customer/inventorydata";
+$comingsoonUrl = $baseurl."customerorder/customer/Comingsoon";
+$dashboardUrl = $baseurl."dashboard/index/index";
+$cur_action = $this->getFullActionName();
+$currentactivemenu = '';
+$dir_path = base64_decode($this->getRequest()->getParam('path'));
+$rootpath = $block->getDirectorypath();
+$dir_path_bred = str_replace($rootpath,'', $dir_path);
+$dir_path_explode = array_filter(explode("/", $dir_path_bred));
+$ariaexpanded = 'false';
+$show = '';
+if(!empty($dir_path_explode))
+{
+    $currentactivemenu = basename($dir_path);
+    $ariaexpanded = 'true';
+    $show = 'show';
+}
+$class= 'collapse';
+if($cur_action == "downloadlibrary_category_index")
+{
+    $currentactivemenu = basename($dir_path);
+    $ariaexpanded = 'true';
+    $class = '';
+    $show = 'show';
+}
+$image_library_directory_path = "$rootpath";
+$image_library_directory = $block->getImage_library_directory($image_library_directory_path);
+?>
+
+<div class="left-site-menu">
+<input type="hidden" name="header_init" id="header_init" value="0">
+<div class="left-menu">
+    <div id="main-blur" style="display: none;"></div>
+    <ul>
+        <li class="left-logo">
+            <a href="<?php echo $baseurl;?>">
+                <!-- <img src="<?php echo $block->getViewFileUrl('images/mobile-logo.png'); ?>" alt="Adar Logo" title="Adar Logo"> -->
+                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"viewBox="0 0 425.19 432.22" style="enable-background:new 0 0 425.19 432.22;" xml:space="preserve" width="37" height="37"> <style type="text/css"> .st0{fill:#00416B;} </style> <g> <path class="st0" d="M209.25,16.74C100.94,19.86,14.08,108.58,14.08,217.65c0,47.18,16.29,90.54,43.51,124.83L209.25,16.74z"/> <path class="st0" d="M370.22,345.63c28.72-34.76,45.99-79.36,45.99-127.98c0-108.57-86.07-196.99-193.68-200.88L370.22,345.63z"/> <path class="st0" d="M215.07,124.14l-116.91,257c32.97,23.62,73.34,37.58,116.99,37.58c41.83,0,80.66-12.78,112.82-34.63 L215.07,124.14z"/> </g> </svg> 
+            </a>
+        </li>
+        <li class="deshboard"> <a> <i class="fa fa-bars" aria-hidden="true"></i> </a> </li>
+      <!--   <li class="left-search">
+            <a> <i class="sidesearch fa fa-search" aria-hidden="true"></i> </a>
+            <div class="serach-conatiner">              -->
+                <?php 
+                    // echo $this->getLayout()->createBlock('Magento\Customer\Block\Account\Dashboard\Info')->setTemplate('Magento_Customer::account/orderserach.phtml')->toHtml()
+                ?>
+                <!-- <span class="popupclosebutton">Close</span> -->
+            <!-- </div> -->
+        <!-- </li> -->
+        <li class="left-envelope">
+            <a> <i class="envelopecontainer fa fa-envelope-o" aria-hidden="true"></i> </a>
+             <div class="envelope-conatiner" id="envelope-conatiner">             
+                <?php echo $this->getLayout()->createBlock('Sttl\Proupdated\Block\Read')->setTemplate('Sttl_Proupdated::menu/envelope.phtml')->toHtml()
+                ?>                
+            </div>
+            <div class="back-view"></div>
+        </li>
+        <li class="left-neworder">
+            <a href="<?php echo $baseurl;?>customerorder/customer/neworder">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+   
+</div>
+<div class="block left-side-navcontainer opened1">       
+
+     <div class="content <?= /* @escapeNotVerified */ $block->getBlockCss() ?>-content autoScrollMenu" id="<?= /* @escapeNotVerified */ $block->getBlockCss() ?>" is="leftNab-bar">
+
+        <li class="nav item  <?php if ($cur_action == "dashboard_index_index") {?>current<?php }?>"><a href="<?php echo $dashboardUrl;?>"> 
+        My Dashboard</a></li>
+     
+        <li class="nav item  <?php if ($cur_action == "customer_account_index") {?>current<?php }?>"><a href="<?php echo $myaccoutnUrl;?>"> 
+        My account</a></li>   
+
+        <?php if($order){?>
+            <li class="nav item  <?php if ($cur_action == "customerorder_customer_index" && $block->getRequest()->getParam('q') == '') {?>current<?php }?>"><a href="<?php echo $customerorderUrl ;?>">
+            Order Status</a></li>
+        <?php }?>
+        
+        <?php if($invoice){?>
+            <li class="nav item  <?php if ($cur_action == "customerinvoices_customer_index") {?>current<?php }?>"><a href="<?php echo $customerinvoices ;?>">
+            View & Pay Invoices</a></li> 
+        <?php }?>
+         
+         <?php if($order){?>
+            <li class="nav item  <?php if ($cur_action == "customerorder_customer_index" && $block->getRequest()->getParam('q') == 'd') {?>current<?php }?>"><a href="<?php echo $customerorderUrl ;?>?q=d">
+            Purchase order Drafts</a></li>
+        <?php }?>
+
+        <?php if($downlaod_library){?>
+            <li class="nav item downloadMenuLI  <?php if ($cur_action == "downloadlibrary_category_index") {?>current<?php }?>">
+               <a <?php if ($cur_action == "downloadlibrary_category_index") { echo 'data-toggle="collapse" href="#downloadSub"'; }else { echo 'href="'.$downloadlibraryUrl.'" class="downloadlibraryUrl"';} ?>  role="button" aria-expanded="<?php echo $ariaexpanded ;?>"  aria-controls="downloadSub" href="<?php echo $downloadlibraryUrl;?>">
+                Download Library 
+                <strong class="alignRight"><i class="dwnldMain fa fa-plus"></i></strong>
+               </a> 
+                <ul class="download-categotyMenu collapse" id="downloadSub">
+                    <li class="" > 
+                        <i class="fa fa-book"></i> 
+                        <a href="<?php echo $redirect_category.'1'; ?>" class="btnCustom">Catalogs <strong class="alignRight"><i class="fa fa-angle-right"></i></strong></a> 
+                    </li>
+                    <li class="imgaeslibrary"> 
+                        <i class="fa fa-camera"></i><a data-toggle="collapse" href="#imgLib" class="btnCustom collapsed" aria-expanded="false">Image Library <strong class="alignRight"><i class="fa fa-angle-right"></i></strong></a> 
+                        <?php if (!empty($image_library_directory)) : 
+                               echo $image_library_directory;        
+                         endif; ?>
+                    </li>                  
+                     <li class=""> 
+                        <i class="fa fa-tags"></i> <a href="<?php echo $redirect_category.'5'; ?>" class="btnCustom">
+                            <!-- List/map Pricing and Discount Files  -->
+                            Price Lists
+                            <strong class="alignRight"><i class="fa fa-angle-right"></i></strong></a> 
+                    </li>
+                    <li class=""> 
+                        <i class="fa fa-link"></i> <a href="<?php echo $redirect_category.'6'; ?>" class="btnCustom">
+                            <!-- AIO Items Data Files  -->
+                            Product Data Files (AIO)
+                            <strong class="alignRight"><i class="fa fa-angle-right"></i></strong></a> 
+                    </li>
+                    <li class=""> 
+                        <i class="fa fa-link"></i> <a href="<?php echo $redirect_category.'6'; ?>" class="btnCustom">AIO Items Data Files <strong class="alignRight"><i class="fa fa-angle-right"></i></strong></a> 
+                    </li>
+                    <li class=""> 
+                        <i class="fa fa-folder"></i> <a href="<?php echo $redirect_category.'7'; ?>" class="btnCustom">Documentation, Policies and more <strong class="alignRight"><i class="fa fa-angle-right"></i></strong></a> 
+                    </li>
+                    <input type="hidden" name="breadcampclick" id ="breadcampclick"value="0">
+                </ul>
+
+            </li>
+        <?php }?>
+
+        <?php if($admincustomer){ ?>
+             <li class="nav item  <?php if ($cur_action == "customerorder_customer_inventorydata") {?>current<?php }?>"><a href="<?php echo $inventorydata ;?>">
+             Inventory Status</a></li> 
+        <?php } ?>        
+      
+    </div>
+    <?php if($create_order){ ?>
+        <div class="loginSection">
+            <a href="<?php echo $neworderUrl; ?>">Place New order</a>
+        </div>
+    <?php } ?> 
+       <div class="left-menu-logo">
+            <a href="<?=$baseurl?>" title="">
+                <img src="<?=$baseurl?>/pub/static/version1605003255/frontend/sttl/adaruniforms_mobile/en_US/images/mobile-theme-logo.png" alt="" width="123" height="34">
+            </a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    require(['jquery', 'functions'], function($) {
+             $('.sidesearch').click(function(){
+                if($('.envelope-conatiner').css('display') == 'block')
+                {
+                    $('.envelopecontainer').trigger('click');
+                }
+                if($('li.left-envelope.hidehover').length > 0){
+                  $('.left-envelope a').trigger('click');     
+                }
+                $('.serach-conatiner').toggle(function(){});
+                $('#main-blur').toggleClass("blurcontainar");
+                $('.left-search').toggleClass("hidehover");  
+                $('.left-search').toggleClass("hidehover1");  
+                return false;
+
+             });
+
+             $('.popupclosebutton').click(function(){
+                $('.sidesearch').trigger('click');
+             });
+               
+             $('.envelopecontainer').click(function(e){
+
+                e.preventDefault();
+
+                var len = $('.feedback-area').val().length;
+                // console.log(len)
+                if(len <= 0)
+                {
+                    $('.envelope-action .envelope-send').css({'display':'none'});
+                }
+
+                if($('.serach-conatiner').css('display') == 'block')
+                {
+                    $('.sidesearch').trigger('click');
+                }
+                if($('.envelope-conatiner').css('display') == 'block')
+                {
+                    $('#feedbacksuccessdiv').css({'display':'none'});
+                    $('#fedbackformdeiv').css({'display':'block'});
+                    $('#feedbackformmyaccount').trigger("reset");
+                    $('.remove-list').trigger('click');
+                }
+                if($('li.left-envelope.hidehover').length > 0){
+                  $('.left-envelope a').trigger('click');  
+
+                }
+                $('.envelope-conatiner').toggle(function(){});
+                $('#main-blur').toggleClass("blurcontainar");
+                $('.left-envelope').toggleClass("hidehover");  
+                $('.left-envelope').toggleClass("hidehover1");  
+                return false;
+
+             });
+
+
+
+
+
+
+        $(document).ready(function() {
+            $('.download-categotyMenu li a').click(function(){
+                if($(this).parent('li').hasClass('active')){
+                    $(this).parent().removeClass("active");
+                }
+                else{
+                    $(this).parent().addClass("active");
+                }
+            });
+            
+        
+        setTimeout(function(){
+                $("#account-nav").mCustomScrollbar();
+                if(window.location.href.indexOf("downloadlibrary") > -1) 
+                {                   
+                    // $ (".downloadMenuLI ul.download-categotyMenu").collapse("show");
+                    //$('.downloadMenuLI ul').collapse('toggle');
+                    $(".dwnldMain").removeClass("fa-plus").addClass("fa-minus");
+                    
+                    var currentPage = $('.downloadMenuLI').position().top;
+                    setTimeout(function(){  
+                        $("#account-nav").mCustomScrollbar("scrollTo", currentPage);                            
+                    },1000);
+                }               
+            },300); 
+            
+            $("li.downloadMenuLI > a").click(function (){   
+
+                if($("ul.download-categotyMenu").is( ":visible" )){
+                    $(".dwnldMain").removeClass("fa-minus").addClass("fa-plus");
+                }
+                else{
+                    $(".dwnldMain").addClass("fa-minus").removeClass("fa-plus");
+                }
+                var dataTag = $(this).position().top;       
+                setTimeout(function(){      
+                    $("#account-nav").mCustomScrollbar("scrollTo", dataTag);                    
+                },1000);     
+            });
+        
+        
+          $('.download-categotyMenu ul').on('show.bs.collapse', function () {
+            $(this).parent('li').addClass('active');
+          });
+
+          $('.download-categotyMenu ul').on('hide.bs.collapse', function () {
+            $(this).parent('li').removeClass('active');
+          });
+
+          $( '#imgLib' ).on('click', 'LI A', function() {
+                $('#downloadSub li a').attr("data-list",'');                
+                 $(this).attr("data-list",'current');
+                    var entry = $(this).parent();
+                    if(entry.hasClass('folder')) 
+                    {
+                        var clickset = $('#breadcampclick').val();
+                        if( entry.hasClass('collapsed') || clickset == 1 ) {
+                            $('#breadcampclick').val(0)
+                            entry.find('UL').remove();
+                            getfilelist( entry, $(this).attr('rel'));
+                            entry.removeClass('collapsed').addClass('expanded');
+                            if(entry.find('a:first').hasClass('diropen'))
+                            {
+                                entry.find('a:first').removeClass('diropen');
+                                entry.find('a:first').addClass('diropenclose');    
+                            }
+                        }
+                        else {
+                            if(entry.find('a:first').hasClass('diropenclose'))
+                            {
+                                entry.find('a:first').removeClass('diropenclose');
+                                entry.find('a:first').addClass('diropen');
+                            }
+                            entry.find('UL').slideUp({ duration: 500, easing: null });
+                            entry.find('UL').html('');
+                            entry.removeClass('expanded').addClass('collapsed');
+                            //getfilelist( entry, $(this).attr('rel'));
+                        }
+                    } else {
+                        $( '#selected_file' ).text( "File:  " + $(this).attr( 'rel' ));
+                    }
+                    return false;
+            });
+        });
+        
+        function getfilelist(cont,root) {
+            $(cont).parent('ul').find('li').removeClass('active');
+            if($(cont).parent('ul').find('li').hasClass('expanded'))
+            {
+                var currentul = $(cont).parent('ul').find('li').find('a');
+                 $( currentul ).each(function() {
+                    if($(this).attr('class') == 'diropenclose')
+                    {
+                       $(this).removeClass('diropenclose');
+                       $(this).addClass('diropen');
+                    }
+                });   
+                $(cont).parent('ul').find('li').find('ul').slideUp({ duration: 500, easing: null });
+                $(cont).parent('ul').find('li').removeClass('expanded').addClass('collapsed');
+            }
+            $( cont ).addClass( 'active' );
+            getfilefolder(cont,root)
+        }
+       
+        $( document ).on( "click", ".getftpimges", function( event, ui ) {
+              $('#downloadSub li a').attr("data-list",'');
+          //   $(this).attr("data-list",'current');
+            getfilefolder('',$(this).attr('rel'));
+            var currentul = $('.firsttimeload').find('li');
+                 $( currentul ).each(function() {
+                    if($(this).hasClass('expanded'))
+                    {
+                       //if($(this).parent('li').hasClass('expanded'))
+                       //{
+                            $(this).removeClass('active');
+                            $(this).removeClass('expanded').addClass('collapsed');
+
+                       //}
+                       $(this).find('UL').remove();
+                       if($(this).find('a').hasClass('diropenclose'))
+                       {
+                            $(this).find('a').removeClass('diropenclose');
+                            $(this).find('a').addClass('diropen'); 
+                       }
+                    }
+                });   
+            $('.imgaeslibrary').collapse('show');
+            $('.firsttimeload').collapse('show');
+        });
+        $( document ).on( "click", ".getbredcamp", function( event, ui ) {
+            var getallhref = $( '.imgaeslibrary' ).find('li a');
+
+
+            var currenturl = $(this).attr('rel');
+            $( getallhref ).each(function() {
+
+                    if($(this).attr('rel') == currenturl)
+                    {
+                       $('#breadcampclick').val(1);
+                       // $('.downloadThumb img').not('.loading.lazy-loaded').attr('src','')
+                       $(this).trigger('click');
+                       
+                    }
+                }); 
+            //getfilefolder('',$(this).attr('rel'));
+        });
+
+        $(document).on('click', "#images_serach_click", function(e){   
+            var sreachVal = $('#serach_images').val();
+           $serach = $('#serach_images').val();
+                <?php $this->setsessionset();?>
+            var rel = $('a[data-list=current]').attr('rel');
+             console.log(rel);            
+            if(!rel){
+                rel = $('.getftpimges').attr('rel')
+            } 
+            if(sreachVal){
+                // debugger;
+                getfilefolder('',rel,$('#serach_images').val());
+            }
+            else{
+               $('#serach_images').css('border-color','red');
+               setTimeout(function(){ $('#serach_images').css('border-color','#949ea7'); },300)
+            }
+           
+        })
+        var setSearch = '';
+         $(document).on('input', "#serach_images", function(event){    
+                var val =setSearch = $(this).val();           
+                if(val == ''){
+                    $(".searchInput span").css("display","none");
+                }
+                else {
+                $(".searchInput span").css("display","block");
+            }
+         });
+
+        $(document).on('keypress', "#serach_images", function(event){             
+            var keycode = (event.keyCode ? event.keyCode : event.which);           
+                if(keycode == '13'){
+                   $('#images_serach_click').trigger('click');
+                }            
+                
+
+        });
+        $(document).on('click', ".searchInput span", function(event){             
+            $("#serach_images").attr("value","");
+            setSearch = '';
+            $(".searchInput span").css("display","none");           
+        });            
+        function getfilefolder(cont,root,serach = '')
+        {
+            var url = '<?php echo $baseurl."downloadlibrary/category/subdir";?>';
+            // debugger;
+                $.ajax({
+                url: url,
+                type: "POST",
+                data:{dir:root , serach:serach},
+                showLoader: true,
+                cache: false,
+                success: function(response){
+                    // console.log(response);
+                    if(response.errors) {
+                        $('.column.main').html( 'opps' );
+                    }else{
+                        if(response.html !='')
+                        {
+                            if(cont !='')
+                            {
+                                $( cont ).find( '.start' ).html( '' );
+                                $( cont ).append( response.html );
+                            }
+                            $('#ajaxresponce').html('');
+                            $('.accountPageContainer,.download-categoty,.container-fluid').html('')
+                            // $(".column.main").append(response.header_html);
+                            $('#ajaxresponce').append( response.filelist );
+                            if(setSearch){
+
+                            $("#serach_images").attr("value",setSearch);
+                            $(".searchInput span").css("display","block");   
+                            }                         
+                            
+                            if( 'Sample' == root ) 
+                                $( cont ).find('UL:hidden').show();
+                            else 
+                                $( cont ).find('UL:hidden').slideDown({ duration: 500, easing: null });
+                        }
+                    }
+                }
+            }); 
+        }
+    }); 
+</script>

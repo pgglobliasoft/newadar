@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="before.body.end">
+          	<container name="category.view.containers" htmlTag="div" htmlClass="category-views" >
+          	  	<!-- <block class="WeltPixel\Quickview\Block\Initialize" name="welpixels" template="WeltPixel_Quickview::quickview.phtml" />
+          	  	 -->
+          	  	<block class="Strategery\Infinitescroll\Block\Init" name="infinitescroll.init" template="Strategery_Infinitescroll::js.phtml"/>     
+          	</container>
+        </referenceContainer>
+    </body>
+</page>

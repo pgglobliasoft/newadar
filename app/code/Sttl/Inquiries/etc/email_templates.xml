@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+ -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="inquiry_email_email_template" label="Group Form" file="submitted_form.html" type="html" module="Sttl_Inquiries" area="frontend"/>
+    <template id="group_email_email_template" label="Group Form" file="group_form.html" type="html" module="Sttl_Inquiries" area="frontend"/>
+
+ 	<template id="email_section_sendmail_email_template" label="Custom Email Template 	Magento 2" file="email_file.html" type="html" module="Sttl_Inquiries" area="frontend"/>
+</config>
+

@@ -1,0 +1,279 @@
+
+<?php
+// @codingStandardsIgnoreFile
+
+/** @var $block \WeltPixel\Quickview\Block\Initialize */
+?>
+<?php     
+    $_linkUrl = $block->getStaticUrl();
+
+?>
+<style>
+    .quickViewCont.container: nth-of-type(3) {background: #fff; }
+    .mfp-content {max-width: 100%; /*opacity: 0;*/ overflow: visible !important; width: 800px !important; min-height: 600px !important;  max-height: 680px; }
+    .quickViewContent.column.main {width: 100% !important; }
+    .loaderZomm {width: 500px; height: 500px; }
+    #quickView-popup .page-title span{font-size: 18px; font-family: 'Futura PT Bold' !important; color: #000; }
+    #quickView-popup{/*opacity: 0;      */ max-width: 100%; }
+    #quickView-popupr .loading-mask , .quickViewbodyloader{display: none; }
+    .fotorama__wrap--css3 .fotorama__spinner{background-repeat: no-repeat; }
+    .loading-mask.lezzy-popup {position: absolute !important; }
+    #quickViewbody #importinverdata #popupModal{ position: absolute; padding-right: 0 !important; background-color: rgba(0,0,0,0.5); overflow: visible;}
+    /*.catalog-product-view #popupModal .modal-dialog #cart-form .modalContainer .product_options { max-height: 425px !important; }*/
+    .fotorama__stage__frame .fotorama__img{transform: translate3d(-50%, -50%, 0);}
+    .show_arr{ display: block !important; }    
+    .product-info-main.topStick.posbottomDiv , .product-info-main.topStick{position: absolute;top: 23px; right: 17px;}       
+    .autoHeight{height: auto !important; min-height: 600px;}
+    #importinverdata   #popupModal .modal-content{ position: absolute !important;top: 0; }
+    body.noscroll.modal-open {   overflow: unset !important; } 
+    .mfp-move-from-top .mfp-content {vertical-align: top; }    
+     .mfp-move-from-top.mfp-ready .mfp-content {opacity: 1; transform: translateY(40px); }
+    .mfp-move-from-top .mfp-content {opacity: 0; transition: all 1s; transform: translateY(-130px); }
+    .mfp-move-from-top .mfp-content + .mfp-preloader{ display: block; }
+    @media screen and (min-width: 751px) and (max-height: 900px) {.mfp-move-from-top.mfp-ready .mfp-content {opacity: 1; transform: translateY(30px) ; } }
+    @media screen and (max-height: 750px) {.mfp-move-from-top.mfp-ready .mfp-content {opacity: 1; transform: translateY(-30px) ; } }
+    
+</style>
+<div id="quickView-popup" class="catalog-product-view"></div>
+<div class="quickViewbodyloader">
+<div data-role="loader" class="loading-mask lezzy-popup" >
+        <div class="loader"> <img src="<?= $block->getStaticUrl() ?>/frontend/sttl/adaruniforms/en_US/images/loader-1.gif" alt="Loading..."> </div>
+    </div>
+</div>
+<script>
+    var styles = {};
+    requirejs(['jquery', 'magnificPopup' , 'mage/gallery/gallery'], function($, magnificPopup , gallery) {
+        var Js , prodURL; 
+        var tpl = $('.quickViewbodyloader').html();
+        $(document).on('click','#quickView-popup .show-size-chart',function(e) {            
+            $('body').addClass('product-quickview');
+            $('body').removeClass('modal-open');           
+        });
+        $(document).on('click','a.buyNowBtnMain',function(e) {
+            var container1 = $('.container.bg-primary.p-2').height();;
+            var container2 = $('.container.bg-light.p-2').height();
+            var bottom = $('.bottomBtn').height();
+            var content = $('.mfp-content').outerHeight();
+            console.log(content , $('div.ontainer.bg-primary.p-2').outerHeight(true) , container2 , bottom);
+            $('.modalContainer .product_options').height(content);
+        });
+
+        $(document).on('hover', 'div.fotorama__active', function(e){            
+            $('.fotorama__arr').addClass('show_arr');            
+        }); 
+        
+        $(document).on('click', '.close.mfp-close-inside', function(e){          
+             $('.mfp-move-from-top').remove();        
+             $('html').css('overflow', '');        
+        });
+           
+        // $(document).mouseup(function(e) 
+        // {
+        //     var container = $(".productQuickContent");            
+        //     if (!container.is(e.target) && container.has(e.target).length === 0) 
+        //     {
+        //         var magnificPopup = $.magnificPopup.instance;                 
+        //         magnificPopup.close(); 
+        //     }
+        // });
+
+        // $(document).ready(function() {
+            window.weltpixel_quickview.showMiniCartFlag = false;   
+            $('head').append('<link rel="stylesheet" href="<?php echo $_linkUrl.'frontend/sttl/adaruniforms/en_US/mage/gallery/gallery.css' ?>" >'); 
+            var flag = false;  
+            var login  = '<?= $block->getCustomerSession()->isLoggedIn() ?>';        
+            $("ol.products.list.items.product-items.test").magnificPopup  ({
+                type: "inline",
+                midClick: true,
+                delegate: 'a.weltpixel-quickview',
+                mainClass: "mfp-fade",                              
+                removalDelay: 500,
+                preloader: false,
+                closeOnBgClick: false,
+                fixedContentPos: false,
+                tLoading: '',
+                callbacks: {
+                    beforeOpen: function() {
+                        this.st.mainClass = 'mfp-move-from-top';                     
+                    },
+                    open: function() {  
+                      jQuery('body').addClass('noscroll');
+                      $('html').css('overflow','hidden');
+                      var mp = $.magnificPopup.instance,
+                      t = $(mp.currItem.el[0]);      
+                      var URL = t.data('quickviewUrl').replace('/view/', '/ProView/')                  
+                         $.ajax({
+                                url: t.data('quickviewUrl'),
+                                type: 'GET',
+                                async: true,
+                                dataType: 'html',
+                                cache: true,
+                                beforeSend: function(){
+                                    $('.mfp-content').html('').append(tpl);
+                                    $('.loading-mask.lezzy-popup').css('display' , 'block'); 
+                                },                              
+                                success: function(data) {
+                                    var data = data.replace('<body', '<body><div id="quickViewbody"').replace('</body>', '</div></body>');
+                                    var body = $(data).filter('#quickViewbody');                                           
+                                    $('.mfp-content').html(body).css('height','650px').trigger('contentUpdated');
+                                    $('.loading-mask.lezzy-popup').css('display' , 'none');  
+                                                                 
+                                    if(login){
+                                      $('.mfp-content').css('max-height','680px');
+                                      // setTimeout(function() {
+                                            $.ajax({
+                                                url: URL,
+                                                type: 'GET',     
+                                                cache: true,
+                                                contentType: "application/json",
+                                                dataType: 'json',  
+                                                success: function(data) { 
+                                                        $('.mfp-content #mana-please-wait').after('<div class="product-info-main-prd-opt"><div id="importinverdata"> <input type="hidden" name="productviewstyle" value="'+data.parent_style+'"></div></div>');
+                                                        var parent_color_data = data.parent_color_data;
+                                                        if (parent_color_data && parent_color_data instanceof Array && !parent_color_data.length) {
+                                                         var productview = '' 
+                                                        } else {
+                                                             var productview = 'productview' 
+                                                        }
+                                                        var parent_style = data.parent_style;                     
+                                                        if(productview !='')
+                                                        {
+
+
+                                                           $.ajax({
+                                                            url: window.weltpixel_quickview.baseUrl+'adaruniforms/index/productinv',
+                                                            enctype: 'multipart/form-data',
+                                                            type: "POST",
+                                                            data:{productview:productview,parent_style:parent_style},
+                                                            showLoader: false,
+                                                            cache: true,
+                                                            success: function(response){                              
+                                                                    if(response.html.length)
+                                                                    {
+                                                                        $(".buyNowBtnMain").css({"pointer-events": "all", "opacity": "1"});
+                                                                        $('.loadShipping').hide()
+                                                                        $('.productinebuynow').show();
+                                                                        $('#importinverdata').html(response.html);  
+                                                                        styles = {};                               
+                                                                        var mainselector = $("#color-data");
+                                                                        var images = "";
+                                                                        $.each(mainselector.children(), function(key, value){
+                                                                            if($(this).attr("id") != "myTask"){
+                                                                                var style = $(this).attr("id");
+                                                                                styles[style] = {
+                                                                                    html : value
+                                                                                }
+                                                                            }
+                                                                            if($(this).attr("id") != "myTask"){
+                                                                                if(!$(this).hasClass("active")){
+                                                                                    $(this).remove();
+                                                                                }
+                                                                            }
+                                                                        });
+
+                                                                       $("#color-data").find(".product_options").removeClass("active");
+                                                                           var needtosetstyle = styles[parent_style].html;
+                                                                           // console.log(needtosetstyle);
+                                                                           mainselector.append(needtosetstyle);
+                                                                           $("#importinverdata").find("#"+parent_style).addClass("active"); 
+                                                                       $.each(mainselector.children(), function(key, value){
+                                                                            if($(this).attr("id") != "myTask"){
+                                                                                if(!$(this).hasClass("active")){
+                                                                                    $(this).remove();
+                                                                                }
+                                                                            }
+                                                                        });
+
+                                                                        console.log("Current Style On Popup : "+parent_style);
+
+                                                                        console.log(styles);
+                                                                    }else{
+                                                                        $('.loadShipping').hide()
+                                                                        $('.buyNowBtnMain').text('Not Available');
+                                                                    }                                    
+                                                                }                                
+                                                            }); 
+                                                        }
+                                                } 
+                                            });
+                                                                               
+                                       
+                                    }else{                                        
+                                        $('.mfp-content').addClass('productQuickContent');
+                                    }       
+                                     $('.mfp-content').addClass('autoHeight');                            
+                                    $('.mfp-content .quickViewContent').addClass('contentload');  
+                                }
+                         });
+                
+                                                                   
+                    },
+                    close: function() {
+                        jQuery('body').removeClass('noscroll');
+                        $('html').css('overflow', '');                        
+                        $('mfp-content').html('');                                               
+                        
+                    },
+                    beforeClose: function() {
+                        var url = window.weltpixel_quickview.baseUrl + 'weltpixel_quickview/index/updatecart';                    
+                        if (window.weltpixel_quickview.showMiniCartFlag) {
+                            $('[data-block="minicart"]').trigger('contentLoading');
+                            $.ajax({
+                                url: url,
+                                method: "POST"
+                            });
+                        }
+                    },
+                    afterClose: function() {
+                        /* Show only if product was added to cart and enabled from admin */
+                        var showMiniCart = parseInt(window.weltpixel_quickview.showMiniCart);                 
+                        if (window.weltpixel_quickview.showMiniCartFlag && showMiniCart) {                           
+                            setTimeout(function() {
+                                if (!jQuery('.block-minicart').is(":visible")) {
+                                    $('.action.showcart').trigger('click');
+                                }
+                            }, 1000);
+                        }
+                     }
+                }                
+            });
+
+        function checkContainer(Urllnk) {
+            if ($('.swatch-option.image').is(':visible')) { //if the container is visible on the page
+                console.log('sdsdss',Urllnk);
+                changeOrder(Url); //Adds a grid to the html
+              
+            } else {
+                setTimeout(checkContainer, 50); //wait 50 ms, then try again
+            }
+        }
+
+        // function changeOrder(url) {
+        //     // setTimeout(function() {
+        //         console.log('checorderopopopo',url);
+        //         // debugger;
+        //         // $.ajax({
+        //         //     url: url,
+        //         //     type: 'GET', 
+        //         //     async: false,                       
+        //         //     cache: true,
+        //         //     contentType: "application/json",
+        //         //     dataType: 'json',  
+        //         //     success: function(data) {                                         
+        //         //         $('.mfp-content #mana-please-wait').after(data.output);                                                    
+        //         //     } 
+        //         // });
+        //     // },500);
+            
+        // }
+
+        });
+
+
+
+        
+    // });
+    window.weltpixel_quickview = <?php /* @escapeNotVerified */ echo \Zend_Json::encode($block->getConfig()); ?>;
+</script>
+
+

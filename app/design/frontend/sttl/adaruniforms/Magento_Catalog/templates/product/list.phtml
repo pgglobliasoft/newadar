@@ -1,0 +1,153 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+// @codingStandardsIgnoreFile
+
+?>
+<?php
+/**
+ * Product list template
+ *
+ * @var $block \Magento\Catalog\Block\Product\ListProduct
+ */
+?>
+<?php
+$_productCollection = $block->getLoadedProductCollection();
+?>
+
+<?php if (!$_productCollection->count()): ?>
+    <div class="message info empty"><div><?= /* @escapeNotVerified */ __('We can\'t find products matching the selection.') ?></div></div>
+<?php else: ?>
+    <?= $block->getToolbarHtml() ?>
+    <?= $block->getAdditionalHtml() ?>
+    <?php
+    if ($block->getMode() == 'grid') {
+        $viewMode = 'grid';
+        $image = 'category_page_grid';
+        $showDescription = false;
+        $templateType = \Magento\Catalog\Block\Product\ReviewRendererInterface::SHORT_VIEW;
+    } else {
+        $viewMode = 'list';
+        $image = 'category_page_list';
+        $showDescription = true;
+        $templateType = \Magento\Catalog\Block\Product\ReviewRendererInterface::FULL_VIEW;
+    }
+    /**
+     * Position for actions regarding image size changing in vde if needed
+     */
+    $pos = $block->getPositioned();
+    $skus = [];
+    ?>
+    <div class="products wrapper <?= /* @escapeNotVerified */ $viewMode ?> products-<?= /* @escapeNotVerified */ $viewMode ?>">
+        <?php $iterator = 1; ?>
+        <ol class="products list items product-items test">
+            <?php /** @var $_product \Magento\Catalog\Model\Product */ ?>
+            <?php foreach ($_productCollection as $_product):
+                    $skus[] = ["sku" => $_product->getSku(),];
+                ?>
+                <?= /* @escapeNotVerified */ ($iterator++ == 1) ? '<li class="item product product-item">' : '</li><li class="item product product-item">' ?>
+                <div class="product-item-info" data-container="product-grid" data-config-item="<?=$_product->getSku();?>">
+                    <?php $tag =  $_product->getResource()->getAttribute('is_new')->getFrontend()->getValue($_product);
+                            if($tag == 'Yes'){?>                            
+                            <div class="magento_tag new">
+                                  <span class="new-lable">
+                                        <?php echo __('New'); ?>           
+                                    </span>
+                            </div>
+                        <?php } ?>
+                  <?php
+                  $productImage = $block->getImage($_product, $image);?>
+                    <?= $productImage->toHtml() ?>
+                    <?php
+                       if($_product->getTypeId() == 'configurable'){
+                       $date_available = $_product->getResource()->getAttribute('overlay_text')->getFrontend()->getValue($_product);
+                           if($date_available){
+                               echo "<span class='color-date'>".$date_available."</span>";
+                           }
+                       }
+                    ?>
+                    <div class="product details product-item-details">
+                        <strong class="product name product-item-name">
+                            <a class="product-item-link"
+                               href="<?= /* @escapeNotVerified */ $_product->getProductUrl() ?>">
+                                <?= /* @escapeNotVerified */ $_product->getName() ?>
+                            </a>
+                        </strong>
+                    <?php $collcationValue =  $_product->getResource()->getAttribute('collecttion')->getFrontend()->getValue($_product); ?>
+                    <div class="show-product-dis-box">
+                        <div class="dis-set">
+                            <?php
+                                if($collcationValue){
+                                    $logoimage = $this->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId(strtolower(str_replace(' ', '_', $collcationValue)).'_product')->toHtml();
+                                    $d_flex = $logoimage != '' ? 'd-flex' :'';
+                                }
+                            ?>
+                            <div class="category-products-info <?= $d_flex ?>">
+                                <?php if($logoimage != '' ){ ?>
+                                    <div class="<?php echo strtolower(str_replace(' ', '_', $collcationValue)); ?> product-logo"><?= $logoimage?></div>
+                                <?php }else{ ?>
+                                      <span><?php echo $collcationValue; ?> collection </span>
+                                <?php } ?>
+                                    <div class="show-product-dis-box-more">
+                                        <span><lable>Style:</lable></span>
+                                        <span><?php echo $_product->getSku();?></span>
+                                    </div>
+                            </div>
+                        </div>
+                          <?php
+                            if($_product->getTypeId() !== 'simple'){
+                                $colorAttributeId = $_product->getResource()->getAttribute('color')->getId();
+                                $configurableAttrs = $_product->getTypeInstance()->getConfigurableAttributesAsArray($_product);
+
+                                $children_color_count = 0;
+                                if(isset($configurableAttrs[$colorAttributeId])){
+                                    $children_color_count = count($configurableAttrs[$colorAttributeId]['values']);
+                                }
+
+                                if($children_color_count > 0) {
+                                    if($children_color_count == 1){?>
+                                        <span class="color-total"><?php echo  '('.$children_color_count. ' color)'; ?></span>
+                                    <?php }else{ ?>
+                                        <span class="color-total"><?php echo  '('.$children_color_count. ' colors)'; ?></span>
+                                    <?php  }
+                                } 
+                            } ?>
+                    </div>
+                        <?= $block->getProductDetailsHtml($_product) ?>
+                        <div class="forcefullhide">
+                            <a class="customquickviewpopup quickviewpopup1"  id="<?=$_product->getSku()?>" data-toggle="modal" style="display: none;">
+                                <div class="orderDevelopquick catelogquick">Quick View</div>
+                                <div class="quickdots" id="<?=$_product->getSku()?>">
+                                    <span class="lodingquickdata">
+                                        <span class="loadDots123">
+                                            <span class="span123"></span>
+                                            <span class="span123"></span>
+                                            <span class="span123"></span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+
+                </div>
+                
+                <?= ($iterator == count($_productCollection)+1) ? '</li>' : '' ?>
+            <?php endforeach; ?>
+        </ol>
+    </div>
+    <?= $block->getToolbarHtml() ?>
+    <?php if (!$block->isRedirectToCartEnabled()) : ?>
+        <script type="text/x-magento-init">
+        {
+            "[data-role=tocart-form], .form.map.checkout": {
+                "catalogAddToCart": {
+                    "product_sku": "<?= /* @NoEscape */ $_product->getSku() ?>"
+                }
+            }
+        }
+        </script>
+    <?php endif; ?>
+<?php endif; ?>
+

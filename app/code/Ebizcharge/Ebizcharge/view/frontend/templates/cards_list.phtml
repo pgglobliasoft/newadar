@@ -1,0 +1,80 @@
+<?php
+/**
+* If there are saved payment methods, this will display a list of all of them.
+* If there are no saved payment methods, this will display a message with a 
+* button to add a new payment method.
+*
+* @author      Century Business Solutions <support@centurybizsolutions.com>
+* @copyright   Copyright (c) 2016 Century Business Solutions  (www.centurybizsolutions.com)
+*/
+$paymentCards = $block->getPaymentMethods();
+//echo "<pre>";
+//print_r($paymentCards);
+//echo "</pre>";
+//exit;
+?>
+<?php if ($paymentCards != NULL): ?>
+    <div class="table-wrapper my-credit-cards">
+        <table class="data table">
+            <caption class="table-caption"><?php /* @noEscape */ echo __('My Credit Cards'); ?></caption>
+            <thead>
+		        <tr>
+		            <th><?php /* @noEscape */ echo __('Payment Method'); ?></th>
+		            <th><?php /* @noEscape */ echo __('Card Number'); ?></th>
+		            <th><div align="center"><?php /* @noEscape */ echo __('Expiration Date'); ?></div></th>
+		            <th>&nbsp;</th>
+		        </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($paymentCards as $payment): ?>
+				<tr>
+					<td><?php echo $payment->MethodName; ?></td>
+					<td><?php echo $payment->CardNumber; ?></td>
+					<td><div align="center"><?php echo $payment->CardExpiration; ?></div></td>
+					<td class="col actions">
+						<a href="<?php echo $this->getUrl('ebizcharge/cards/editaction', ['_secure' => true, 'cid' => $this->getEbzcCustId(), 'mid' => $payment->MethodID, 'method' => urlencode($payment->MethodName)]); ?>"><?php echo __('Edit'); ?></a>
+						&nbsp;&nbsp;&nbsp;
+						<form class="form" action="<?php echo $block->escapeUrl($block->getUrl('ebizcharge/cards/deleteaction')); ?>" method="post">
+							<?php echo $block->getBlockHtml('formkey'); ?>
+							<input name="cid" value="<?php /* @noEscape */ echo $block->getEbzcCustId(); ?>" type="hidden" />
+							<input name="mid" value="<?php /* @noEscape */ echo $payment->MethodID; ?>" type="hidden" />
+							<input name="method" value="<?php /* @noEscape */ echo urlencode($payment->MethodName); ?>" type="hidden" />
+							<button type="submit" class="action delete" data-mage-init='{
+                                "Ebizcharge_Ebizcharge/js/deleteWidget":{
+									"type": "popup",
+									"modalClass": "my-credit-cards-popup",
+									"toggleEvent": "click",
+									"title": "<?php echo $block->escapeHtml(__('Delete')) ?>",
+                                    "content": "Are you sure you want to delete this card: <?php
+                                        /* @noEscape */ echo $payment->MethodName
+                                    ?>?"
+                                }
+                            }'>
+								<span><?php echo $block->escapeHtml(__('Delete')) ?></span>
+							</button>
+						</form>
+					</td>
+				</tr>
+			<?php endforeach; ?>
+			</tbody>
+        </table>
+    </div>
+
+<?php else: ?>
+    <div class="message info empty"><span><?php /* @noEscape */ echo __('You have no saved payment methods.'); ?></span></div>
+<?php endif ?>
+
+<div class="actions-toolbar">
+    <div class="primary">
+        <a href="<?php echo $block->escapeUrl($block->getBackUrl()); ?>">
+        	<button type="button" title="<?php /* @escapeNotVerified */ echo __('Back'); ?>">
+            	<span><?php /* @escapeNotVerified */ echo __('Back'); ?></span>
+        	</button>
+        </a>
+        <a href="<?php echo $this->getUrl('ebizcharge/cards/addaction', ['_secure' => true]); ?>">
+        	<button type="button" class="action primary" title="<?php /* @escapeNotVerified */ echo __('Add New Payment Method'); ?>">
+            	<span><?php /* @escapeNotVerified */ echo __('Add New Payment Method'); ?></span>
+        	</button>
+        </a>
+    </div>
+</div>

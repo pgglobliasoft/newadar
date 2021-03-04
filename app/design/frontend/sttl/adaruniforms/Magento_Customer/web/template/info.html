@@ -1,0 +1,49 @@
+<div class="block-title" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"><strong class="upperCaseText">Account Details</strong>
+</div>
+<div id="collapseOne" class="block-content accountDtlSection collapse show" aria-labelledby="headingOne">
+<div class="box box-information col-md-4">
+   <strong class="box-title"> <span>Full Name:</span> </strong>
+   <div class="box-content">
+      <p><%=customersession.firstname%> <%=customersession.lastname%></p>
+   </div>
+   <div class="box-actions">
+      <a class="action edit" data-toggle="modal" attr-type = "fullname" data-target="#customer-edit">
+      <span>   
+      Edit
+      </span>
+      </a>				
+   </div>
+</div>
+<div class="box box-information emailBox">
+   <strong class="box-title"> <span>Email/User ID:</span></strong>
+   <div class="box-content emailVal">
+      <p><%=customersession.email%>
+      </p>
+   </div>
+   <div class="box-actions">
+      <a class="action edit" data-toggle="modal"  attr-type = "email" data-target="#customer-edit">
+      <span>
+      Edit
+      </span>
+      </a>			
+   </div>
+</div>
+<div class="box box-information pswdBox">
+   <strong class="box-title"> <span>Password:</span> </strong>
+   <div class="box-content">
+      <p>*****</p>
+   </div>
+   <div class="box-actions">
+      <% if(cadmin != ''){%>
+      <a class="action edit" data-toggle="modal" attr-type = "password" data-target="#customer-edit"> <span> Edit </span> </a>
+      <%} else{%>
+         <a class="action edit adminloginpassword"> <span> Edit </span> </a>
+      <%}%>
+   </div>
+</div>
+<div class="box box-information col-md-4">
+   <strong class="box-title"> <span>Phone Number:</span> </strong>
+   <div class="box-content">
+      <p><%=phone%></p>
+   </div>
+</div>

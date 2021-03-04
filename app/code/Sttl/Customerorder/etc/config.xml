@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <customerorder>
+            <customerorder>
+                <enabled>1</enabled>
+            </customerorder>
+            <email>
+                <recipient_email>
+                    <![CDATA[aditya.pandya@silvertouch.com]]>
+                </recipient_email>
+                <sender_email_identity>customordersubmit</sender_email_identity>
+                <ordersubmit>submit_order_email_template</ordersubmit>
+            </email>
+        </customerorder>
+          <Adaruniforms>
+            <myaccountimage_configration>
+                <multiple_email></multiple_email>
+            </myaccountimage_configration>
+        </Adaruniforms>
+    </default>
+</config>

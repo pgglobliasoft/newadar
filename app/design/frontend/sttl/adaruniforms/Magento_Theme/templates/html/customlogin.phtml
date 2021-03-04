@@ -1,0 +1,720 @@
+<?php
+// echo "<pre>";
+$customerSession = $this->session;
+
+$customerEnroller = $customerSession->getCustomerEnroller(); 
+$customerCard = $customerSession->getCustomerCardNme(); 
+
+
+$data = $customerSession->getAdminCustomer();
+
+$admincustomer = @$data['firstname'];
+
+$customerInput  = $customerEnroller ? $customerSession->getCustomer()->getSapName() : $customerSession->getCustomer()->getName();
+
+
+$baseUrl =$block->getBaseUrl();
+$cur_action = $this->getFullActionName();
+
+
+
+// $urlInterface = \Magento\Framework\App\ObjectManager::getInstance()->get('Magento\Framework\UrlInterface');
+// $loginBaseUrl = $urlInterface->getBaseUrl();
+// if(!$block->customerLoggedIn()){$customerSession->setCustomRedirectUrl($urlInterface->getCurrentUrl());}
+$customerorderUrl = $baseUrl."customerorder/customer/index";
+$customerinvoices = $baseUrl."customerinvoices/customer/index?order_stats=Open&order_by=DueDays&opt=ASC";
+$downloadlibraryUrl = $baseUrl."downloadlibrary/category/index";
+$policies_procedures = $baseUrl."policies-procedures";
+$neworderUrl = $baseUrl."customerorder/customer/neworder";
+$inventorydata = $baseUrl."customerorder/customer/inventorydata";
+// $inventorydata = $baseUrl."undercustomer/index/index";
+$time =  $customerSession->getAdmincokkietime();
+$current = ($time+720*60) - time();
+$p=parse_url($block->getCurrentPageUrl());
+$helper = $this->helper('Sttl\Adaruniforms\Helper\Data');
+$values = $helper->getConfigData('Adaruniforms/logout_section/logout_message');	
+?>
+<?php if($block->customerLoggedIn()): ?>
+
+<?php 
+
+$permission =  $this->getPermissionJson();;
+$order = true;
+$invoice = true;
+$downlaod_library = true;
+$create_order = true;
+if($permission){
+$permissionarray = json_decode($permission, true);
+$order = false;
+$invoice = false;
+$create_order = false;
+ // echo "<pre>";
+ // print_r($permissionarray);die;
+	    foreach ($permissionarray as $value) { 
+	       	foreach ($value as $upermission) { 
+	       		// echo $upermission;	
+	       		// echo "<br>";
+		    	if($upermission === 'place_oder'){
+		 	   	 	$create_order = true;
+		 	   	 	// echo $create_order;
+		    	}
+		    	if($upermission === 'view_order'){
+		    	 	$order = true;
+		    	}
+		    	if($upermission === 'pay_invoice' || $upermission === 'view_invoice'){
+                    $invoice = true;
+                }
+		    	// if($upermission === 'view_catalog'){
+		    	//  	$downlaod_library = true;
+		    	// }
+		  	} 
+	    }  
+	}
+
+?>
+
+	<?php
+	$login_message_block = $this->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('login_message_once')->tohtml();
+	if($login_message_block != '')
+	{
+		$datamessage = "true";
+	}
+	else
+	{
+		$datamessage = "";	
+	}
+	$blockid='login_message_once';
+	$cmsBlocks = $block->getCmsBlock($blockid);
+	 foreach($cmsBlocks as $cmsBlock) {
+    	$blockcreatedat = $cmsBlock->getCreation_time();
+    	$blockupdatedat = $cmsBlock->getUpdate_time();
+	}
+	if($login_message_block != '')
+	{
+		// setcookie('blockupdatedat', $blockupdatedat);
+		?>
+			<div id="loginmessageonce-popup-modal" class="loginmessageonce" style="display: none;">     
+				<button class="action-close" data-role="closeBtn" type="button"><span>Close</span></button>
+				<div class='customepopupname'><?php echo $login_message_block;?></div>
+			</div>
+
+	<?php
+
+		}
+	?>
+	
+
+
+	<?php 
+		if($admincustomer){ ?>
+			<div class="serach-user">
+				<span class="admin-title">You are now viewing</span>
+				<input type="text" autocomplete="off" data-lpignore="true" class="first-user" value="<?=  $customerEnroller; ?>" id="firstUser">
+			</div>
+	<?php } ?>	
+	<div id="loginuser-popup-modal" class="loginusernamepopup" style="display: none;">     
+	<!-- <button class="action-close" data-role="closeBtn" type="button"><span>Close</span></button> -->
+	<p>You are now viewing
+	<h4 class='customepopupname'></h4></p>
+	</div>
+	<div class="loginMenu">		
+			<input type="hidden" id ="customerlogin" name="customerlogin" value="1">
+			<a id="hideshow" href="javascript:void(0)"><span class="headersearch"><i class="fa fa-search"></i>
+				<?php echo $block->getChildHtml('header.custom.search');?>
+			</span></a>
+			<span class="login-menu-items">	
+					<a href="<?php echo $baseUrl."dashboard/index/index";?>">welcome,</a> 
+					<span class="serach-input"><a href="<?php echo $baseUrl."dashboard/index/index";?>" readonly>
+						<?php echo  $admincustomer ? '" '. (strlen($customerInput) > 15) ? substr($admincustomer,0,15).'...' : substr($customerInput,0,15) .'" ' : $customerSession->getCustomer()->getName();?>									
+					</a></span>
+				<ul class="afterLoginMenu">
+					<li <?php if ($cur_action == "dashboard_index_index") {?>class="current"<?php }?>><a href="<?php echo $baseUrl."dashboard/index/index";?>">My Dashboard</a></li>
+
+
+					<li <?php if ($cur_action == "customer_account_index") {?>class="current"<?php }?>><a href="<?php echo $baseUrl."customer/account/index/";?>">My Account</a></li>
+				
+					<?php /*echo $baseUrl."sales/order/history/";*/ ?>
+					<?php if($create_order){?>
+					<li <?php if ($cur_action == "customerorder_customer_neworder") {?>class="current"<?php }?>><a href="<?php echo $neworderUrl;?>">Place New Order</a></li> <?php /*echo $baseUrl."/paypal/billing_agreement/";*/ ?>
+					<?php }?>
+					<?php if($order){?>
+					<li <?php if ($cur_action == "customerorder_customer_index" && $block->getRequest()->getParam('q') == '') {?>class="current"<?php }?>><a href="<?php echo $customerorderUrl; ?>">Order Status</a></li>
+					<?php }?>
+					<?php if($invoice){?>
+					<li <?php if ($cur_action == "customerinvoices_customer_index") {?>class="current"<?php }?>><a href="<?php echo $customerinvoices;?>">Invoices</a></li> <?php /*echo $baseUrl."/paypal/billing_agreement/";*/ ?>
+					<?php }?>
+					<?php if($order){?>
+					<li <?php if ($cur_action == "customerorder_customer_index" && $block->getRequest()->getParam('q') == 'd') {?>class="current"<?php }?>><a href="<?php echo $customerorderUrl; ?>?q=d">Purchase Order Drafts</a></li>
+					<?php }?>
+					<?php if($downlaod_library){?>
+					<li <?php if ($cur_action == "downloadlibrary_category_index") {?>class="current"<?php }?>><a href="<?php echo $downloadlibraryUrl; ?>">Download Library</a></li>
+					<!--<li><a href="<?php echo $policies_procedures; ?>">Policies & Procedures</a></li>-->
+					<?php }?>
+					<?php 
+					if($admincustomer){ ?>
+					<li <?php if ($cur_action == "customerorder_customer_inventorydata") {?>class="current"<?php }?>><a href="<?php echo $inventorydata; ?>">Inventory Status</a></li>
+					<?php } ?>	
+
+					<li><a href="<?php echo $baseUrl."customerlogin/account/logout/";?>">Sign out</a></li>
+				</ul>			
+			</span>
+	</div>
+	<div class="ajaxresponce" id="ajaxresponce">
+		
+	</div>
+	
+<?php else:?>
+<div class="loginSection">
+<input type="hidden" id ="customerlogin" name="customerlogin" value="0">
+<?php
+// $getCurrentUrl = $urlInterface->getCurrentUrl();
+/*if($_SERVER['SERVER_ADDR'] != '127.0.0.1'){
+	if($getCurrentUrl == $baseUrl.'custom-login'){
+	?>
+	<div class="authorization-link">
+		<a href="javascript:void(0);">CUSTOMER PORTAL</a> 
+	</div>
+	<?php }else{ ?>
+	<a data-toggle="modal" data-target="#loginModal">CUSTOMER PORTAL</a>
+	<?php } } else{ ?>
+<div class="authorization-link">
+	<a href="javascript:void(0);">CUSTOMER PORTAL</a> 
+</div>
+<?php }*/ ?>
+	<div class="authorization-link">
+			<a href="javascript:void(0);">CUSTOMER PORTAL</a> 
+	</div>
+</div>
+<?php endif; ?>
+<style type="text/css">
+	.demo{
+		display: block !important;
+	}
+	span.headersearch{
+		color: #2e415b;
+	}
+	.loginmessageonce-popup-modal .modal-inner-wrap {
+	    width: 50% !important;
+	    max-width: 925px !important;
+	    max-height: unset !important;
+	}
+	.loginmessageonce-popup-modal div#modal-content-0 {
+	    padding: 20px !important;
+	}
+	.loginmessageonce-popup-modal button.action-close {
+	    padding: 0px !important;
+	    margin: 5px;
+	}
+</style>
+
+<script type="text/javascript">
+	    require(['jquery','Magento_Ui/js/modal/modal',], function($, modal) {
+
+	    	 function Readmessagecookie()
+	            {
+	            	 var allcookies = document.cookie;
+	               cookiearray = allcookies.split(';');
+	               var changed_coolie = 'false';
+	               for(var i=0; i<cookiearray.length; i++) {
+	               		var cookie_key = cookiearray[i].split('=')[0];
+               		 	cookie_key = cookie_key.trim();
+	               		if(cookie_key == 'login_message_once'){
+		                  changed_coolie = cookiearray[i].split('=')[1];
+	               		}
+	               }
+	               changed_coolie = changed_coolie.toString();
+	               return changed_coolie;
+	            }
+	            function Readblockupdatedatcookie()
+	            {
+	            	 var allcookies = document.cookie;
+	               cookiearray = allcookies.split(';');
+	               var changed_coolie = 'false';
+	               for(var i=0; i<cookiearray.length; i++) {
+	               		var cookie_key = cookiearray[i].split('=')[0];
+               		 	cookie_key = cookie_key.trim();
+	               		if(cookie_key == 'blockupdatedat'){
+		                  changed_coolie = cookiearray[i].split('=')[1];
+	               		}
+	               }
+	               changed_coolie = changed_coolie.toString();
+	               return changed_coolie;
+	            }
+	           
+	            $(document).ready(function(){
+        			var updatedate = "<?php echo @$blockupdatedat; ?>";
+        			var data = '<?php echo @$datamessage; ?>';
+
+        			var pricealertCool = '',
+        				pricealertCool = '<?php echo @$blockupdatedat ?>';
+
+        			// setCookie("blockupdatedat1", '<?php echo @$blockupdatedat ?>');
+        			// console.log(Readblockupdatedatcookie1());
+        			// console.log(Readblockupdatedatcookie());
+        			if(Readblockupdatedatcookie() != updatedate)
+        			{
+        				if(pricealertCool != ''){
+        					eraseCookie('login_message_once');
+        				}
+        			}
+        		
+        			if(data != ''){
+
+	        			loginmessageonce();
+        			}
+        		})
+
+        	function loginmessageonce(){
+						$(document).ready(function(){
+						
+								// var customcode = '';
+								// $.each(data,function(index,value){
+								// 	if(value.CardName == Enroller)
+								// 	{
+								// 		customcode= value.CardCode;
+								// 	}
+								// });
+								// console.log(customcode);
+								var isChanged = (Readmessagecookie() == 'asdasd') ? 1 : 0;
+								if(!isChanged){
+
+									var options = {
+						                type: 'popup',
+						                responsive: true,
+						                innerScroll: true,
+						                autoOpen:false,
+						                clickableOverlay: true,
+						                modalClass: 'loginmessageonce-popup-modal',
+						                buttons: [{
+						                    text: $.mage.__('Close'),
+						                    class: '',
+						                    click: function () {
+						                        this.closeModal();
+
+						                    }
+						                }],
+						                opened: function($Event) {
+						                    // $('.modal-content-1').append($('.action-close').clone());                
+						                    $('.modal-header , .modal-footer').hide();                
+						                },
+						                closed:function($Event) {
+						                	$('.modal-header , .modal-footer').hide();        
+						                }
+						            };
+						            
+						            var popup = modal(options, $('#loginmessageonce-popup-modal'));
+			           				// var popup = $.cookie("close_popup");
+			           				// console.log('model open',popup);
+			           				$('#loginmessageonce-popup-modal').modal('openModal');
+
+
+			           				var dblockdata='<?php echo @$blockupdatedat ?>';
+			           				if(dblockdata != '')
+			           				{
+
+			           				 // setCookie("login_message_once", 'asdasd');
+			           				 // setCookie('blockupdatedat', '<?php echo @$blockupdatedat ?>');
+			           				}
+
+						        	
+						        	// setTimeout(function(){ 
+						        	// 	$('#loginmessageonce-popup-modal').modal("closeModal");
+					          //   		// eraseCookie('userDataChanged');
+						        	// }, 3000) ;
+								}
+					})
+        		}
+
+        		function setCookie(name, value, days){
+        			if (days) {
+				        var date = new Date();
+				        date.setTime(date.getTime() + (days * 24 * 60 * 60 *1000));
+				        var expires = "; expires=" + date.toGMTString();
+				    } else {
+				        var expires = "";
+				    }
+				    document.cookie = name + "=" + value + expires + "; path=/";
+        		}
+
+        		function eraseCookie(name) {
+				    setCookie(name,"",0);
+				}
+
+	    	
+	    })
+</script>
+
+<?php 
+if($admincustomer){ ?>
+	<script type="text/javascript">
+	    require(['jquery','Magento_Ui/js/modal/modal'], function($,modal) {
+		        // $(document).ready(function() {
+
+		       
+		        	var url = '<?php echo $block->getBaseUrl().'login/ajax/getcustomer'; ?>';
+		        	var change_url = '<?php echo $block->getBaseUrl().'login/ajax/setcustomer'; ?>';
+		        	var response = [];
+		        	var customerSession = '';
+			       	$.ajax({
+						type: "GET",
+						url: url,
+						showLoader: true,								 
+	                    cache: true,			
+						success: function(data) 
+						{	
+							// debugger
+							if(data.customer_list){
+								var firstUser = data.customer_list[0].CardName;	
+								var list = $('.customer-list');
+								autoUsercomplete($('#firstUser'),data.customer_list);
+								response = data.customer_list;
+								userloginnamepopup(data.customer_list);
+							}
+								
+						}
+					});
+
+			       	// var cookieUrl = '<?php echo $block->getBaseUrl().'adaruniforms/index/removecookie'; ?>'
+
+					// setInterval(function(){
+					// 	var check = 'cookie';
+					// 	$.ajax({
+					// 		type: "POST",
+					// 		url: cookieUrl,
+					// 		showLoader: false,								 
+		   //                  cache: true,			
+					// 		success: function(data) 
+					// 		{	
+					// 			console.log(data)	
+					// 		}
+					// 	});
+					// },5000)
+
+
+					// setInterval(function(){
+					// 	var check = 'cookie';
+					// 	$.ajax({
+					// 		type: "POST",
+					// 		url: cookieUrl,
+					// 		data:{check:check},
+					// 		showLoader: false,								 
+		   //                  cache: true,			
+					// 		success: function(data) 
+					// 		{	
+					// 			console.log(data)	
+					// 		}
+					// 	});
+					// },5000)
+
+			    $('#firstUser').on('click',function(e){
+			    	customerSession = $(this).val();
+					// $(this).val(' ');
+			    });	
+
+
+
+			    $('#firstUser').focusout(function(){
+				 	$(this).val(customerSession);
+				});
+
+			   
+					
+				$(document).on("click","#firstUserautocomplete-list li",function(e){
+					var CardCode = $(this).find('input').val();
+					var CardName = $(this).attr('data-id');
+					var NewCustomerId = '<?=$time;?>';
+					$('#firstUser').val($(this).attr('data-id'));				
+					var CardEmail = response.find(function(element) { 							
+						if(element.CardCode == CardCode){												
+					 		return element ; 
+					 	}
+					});
+					console.log(CardEmail);
+					var res = userDataChange(CardName,CardCode, NewCustomerId);				
+					
+				});
+
+				function userDataChange(CardName, CardCode, NewCustomerId = '') {
+					$.ajax({
+						type: "POST",
+						url: change_url,
+						showLoader: true,	
+						data: { CardName: CardName, CardCode: CardCode, NewCustomerId : NewCustomerId},
+	                    cache: true,			
+						success: function(data) 
+						{	
+							
+							if(!data.errors){
+								$('.loading-mask').show();								
+								 location.reload(true);
+								 setCookie("userDataChanged", 'true', 1);
+							}else{
+								location.reload(true);
+								// console.log(data);
+								eraseCookie("userDataChanged")
+							}
+						}
+					});
+				}
+
+				function setCookie(name, value, days){
+        			if (days) {
+				        var date = new Date();
+				        date.setTime(date.getTime() + (days * 24 * 60 * 60 *1000));
+				        var expires = "; expires=" + date.toGMTString();
+				    } else {
+				        var expires = "";
+				    }
+				    document.cookie = name + "=" + value + expires + "; path=/";
+        		}
+
+        		function eraseCookie(name) {
+				    setCookie(name,"",0);
+				}
+
+				function ReadCookie()
+	            {
+	               var allcookies = document.cookie;
+	               cookiearray = allcookies.split(';');
+	               var changed_coolie = 'false';
+	               for(var i=0; i<cookiearray.length; i++) {
+	               		var cookie_key = cookiearray[i].split('=')[0];
+               		 	cookie_key = cookie_key.trim();
+	               		if(cookie_key == 'userDataChanged'){
+		                  changed_coolie = cookiearray[i].split('=')[1];
+	               		}
+	               }
+	               changed_coolie = changed_coolie.toString();
+	               return changed_coolie;
+	            }
+
+
+	            function userloginnamepopup(data){
+					$(document).ready(function(){
+						var Enroller= "<?=  $customerEnroller; ?>";
+						var customcode = '';
+						$.each(data,function(index,value){
+							if(value.CardName == Enroller)
+							{
+								customcode= value.CardCode;
+							}
+						});
+						// console.log(customcode);
+						var isChanged = (ReadCookie() == 'true') ? 1 : 0;
+						if(isChanged){
+							var options = {
+				                type: 'popup',
+				                responsive: true,
+				                innerScroll: true,
+				                autoOpen:false,
+				                clickableOverlay: true,
+				                modalClass: 'loginuser-popup-modal',
+				                buttons: [{
+				                    text: $.mage.__('Close'),
+				                    class: '',
+				                    click: function () {
+				                        this.closeModal();
+				                    }
+				                }],
+				                opened: function($Event) {
+				                    // $('.modal-content-1').append($('.action-close').clone());                
+				                    $('.modal-header , .modal-footer').hide();                
+				                },
+				                closed:function($Event) {
+				                	$('.modal-header , .modal-footer').hide();        
+				                }
+				            };
+				            $('.customepopupname').html(customcode+" - "+"<?=  $customerEnroller; ?>");
+				            var popup = modal(options, $('#loginuser-popup-modal'));
+	           				var popup = $.cookie("close_popup");
+	           				console.log('model open',popup);
+	           				$('#loginuser-popup-modal').modal('openModal');
+				        	
+				        	setTimeout(function(){ 
+				        		$('#loginuser-popup-modal').modal("closeModal");
+			            		eraseCookie('userDataChanged');
+				        	}, 3000) ;
+
+				        	$(document).on('click', 'aside.modal-popup.loginuser-popup-modal.modal-slide._inner-scroll', function(event) {
+								$('#loginuser-popup-modal').modal("closeModal");
+								eraseCookie('userDataChanged');
+							});
+						}
+					})
+        		}
+
+
+
+				function autoUsercomplete(inp, arr) {					
+					var currentFocus;					 		  
+				  	inp.on('input',function(e){
+				  		 var a, b, i, val = this.value;
+	      					close_AllLists();			  			
+				  			currentFocus = -1;	
+					      	a = document.createElement("UL");
+					      	a.setAttribute("id", this.id + "autocomplete-list");
+					      	a.setAttribute("class", "autocustomer-items customer-list");				     
+					      	this.parentNode.appendChild(a);				      	
+				  			$.each(arr, function( i, value ) {	
+				  				var item = arr[i].CardCode+' - '+arr[i].CardName;			 
+	         					if(item.toUpperCase().match(val.toUpperCase()))
+	         					{
+	         						  var searchregexp = new RegExp(val.replace(/[°"§%()\[\]{}=\\?´`'#<>|,;.:+_-]/g, '\\$&'), "gi");
+	         						  b = document.createElement("LI");
+	         						  b.setAttribute("data-id",arr[i].CardName);
+							          b.innerHTML = item.replace(searchregexp, "<span class = 'highlight'>$&</span>");						          
+							          b.innerHTML += "<input type='hidden' value='" + arr[i].CardCode + "'>";
+							          b.addEventListener("click", function(e) {
+							              inp.value = this.getElementsByTagName("input")[0].value;						              
+							              close_AllLists();
+							          });
+							          a.appendChild(b);	
+	         					}
+							});
+
+				  	});
+				  	inp.on('click',function(e){	
+				  		$(this).val('');
+				  		 	var a, b, i, val = this.value;
+	      					close_AllLists();			  			
+				  			currentFocus = -1;	
+					      	a = document.createElement("UL");
+					      	a.setAttribute("id", this.id + "autocomplete-list");
+					      	a.setAttribute("class", "autocustomer-items customer-list");				     
+					      	this.parentNode.appendChild(a);	
+				  			$.each(arr, function( i, value ) {				  			
+				  				var item = arr[i].CardCode+' - '+arr[i].CardName;
+	         						  var searchregexp = new RegExp(val.replace(/[°"§%()\[\]{}=\\?´`'#<>|,;.:+_-]/g, '\\$&'), "gi");
+	         						  b = document.createElement("LI");
+	         						  b.setAttribute("data-id",arr[i].CardName);
+							          b.innerHTML = item ;						          
+							          b.innerHTML += "<input type='hidden' value='" + arr[i].CardCode + "'>";							          
+							          a.appendChild(b);	
+	         					
+							});		
+
+				  	});
+
+
+				  	function close_AllLists(elmnt) {
+				         var x = document.getElementsByClassName("autocustomer-items");
+				         for (var i = 0; i < x.length; i++) {
+				             if (elmnt != x[i] && elmnt != inp) {
+				                 x[i].parentNode.removeChild(x[i]);
+				             }
+				         }
+				    }
+
+				    document.addEventListener("click", function(e) {
+				         // close_AllLists(e.target);
+				        var $target = $(event.target); // click target
+					    if(!$target.is('#firstUser')) { // click target is div or input
+					        close_AllLists(e.target);
+					    }
+				    });
+
+				    inp.on("keydown", function(e) {			     	 
+				     	 var x1 = $('#'+this.id+'autocomplete-list');		     	 
+					      if (x1) x = $('#'+this.id+'autocomplete-list li');				   
+					      if (e.keyCode == 40) {
+					        currentFocus++;
+					        addActive(x);
+					      } else if (e.keyCode == 38) { //up
+					        currentFocus--;
+					        addActive(x);
+					      } else if (e.keyCode == 13) {
+					        e.preventDefault();
+					        if (currentFocus > -1) {
+					          if (x) x[currentFocus].click();
+					        }
+					     }
+					    if (e.keyCode == 40 || e.keyCode == 38) {
+						    var ul = $('#'+this.id+'autocomplete-list'); 
+						    var li = $('.autocomplete-active:first');
+						    if(li.offset().top > (ul.offset().top + ul.height()) || li.offset().top < ul.offset().top)
+						    {					     		
+						     	x1.scrollTop(top);
+					     		x1.scrollTop($('.autocomplete-active:first').offset().top-$('#'+this.id+'autocomplete-list').height());	
+						     
+						    }					    
+						 }
+
+					});
+				    function addActive(x) {
+					    if (!x) return false;
+					    removeActive(x);				    
+					    if (currentFocus >= x.length) currentFocus = 0;
+					    if (currentFocus < 0) currentFocus = (x.length - 1);
+						    x[currentFocus].classList.add("autocomplete-active");
+					}
+
+					function removeActive(x) {				  	
+					    for (var i = 0; i < x.length; i++) {				    	
+					      	x[i].classList.remove("autocomplete-active");
+					    }
+					}
+					
+					
+
+				}		
+		      
+	        }); 
+	</script>
+<?php } ?>
+
+     <div id="logout-popup-modal" class="logout popup-login-form" style="display: none;">     
+        <!-- <button class="action-close" data-role="closeBtn" type="button"><span>Close</span></button> -->
+        <h4><?= $values ?></h4>
+        <div class="redirect-link"> 
+        		<a href="<?= $this->getBaseUrl()?>login?redirect=<?= substr($p['path'], 1) ?>"> Log Back In </a>
+        </div>
+    </div>
+
+
+<?php  if($block->customerLoggedIn()){ ?>
+<script type="text/javascript">
+	    require(["jquery",'Magento_Ui/js/modal/modal',], function($, modal) {
+
+
+	    	var activityTimeout = setTimeout(inActive, 180*60*1000);	    	
+			function resetActive(){				
+			    $(document.body).addClass('class', 'active').removeClass('inactive');
+			    clearTimeout(activityTimeout);
+			    activityTimeout = setTimeout(inActive, 180*60*1000);
+			}
+
+			// No activity do something.
+			function inActive(){
+				
+				var options = {
+	                type: 'popup',
+	                responsive: true,
+	                innerScroll: true,
+	                autoOpen:false,
+	                clickableOverlay: true,
+	                modalClass: 'logout-popup-modal',
+	                opened: function($Event) {
+	                    // $('.modal-content-1').append($('.action-close').clone());                
+	                    $('.modal-header , .modal-footer').hide();                
+	                }
+	            };
+
+   				var popup = modal(options, $('#logout-popup-modal'));
+   				$('#logout-popup-modal').modal('openModal');
+   				$.ajax({
+						type: "GET",
+						url: '<?= $this->getBaseUrl()?>customerlogin/account/logout/',								
+	                    cache: true,			
+						success: function(data) 
+						{	
+							console.log('done');
+						}
+				});
+			    $(document.body).addClass('class', 'inactive').removeClass('active');
+			}
+
+			// Check for mousemove, could add other events here such as checking for key presses ect.
+			$(document).bind('mousemove', function(){resetActive()});
+
+	        	
+		 });</script>		<?php } ?>

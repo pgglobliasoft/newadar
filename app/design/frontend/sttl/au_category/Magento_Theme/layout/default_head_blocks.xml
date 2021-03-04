@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0" />
+        <css src="mage/calendar.css"/>
+		<script src="requirejs/require.js"/>
+		<css src="css/bootstrap.min.css"/>
+        <css src="css/styles-l.css"/>
+        <css src="css/style.css"/>
+        <css src="css/responsive.css"/>
+		<script src="Magento_Theme/js/general.js"/>
+        <script src="Magento_Theme/js/auto-suggest-search.js"/>
+        <!--<script src="js/jquery-min.js"/>
+		<script src="js/functions.js"/>
+        <script src="js/bootstrap.min.js"/>
+
+        -->
+      <title>Adar Uniforms - All Collections</title>
+    </head>
+    <body>
+        <referenceContainer name="after.body.start">
+            <block class="Magento\Framework\View\Element\Template" name="head.polyfill" as="polyfill" template="Magento_Theme::js/polyfill.phtml" before="-"/>
+            <block class="Magento\Framework\View\Element\Js\Components" name="head.components" as="components" template="Magento_Theme::js/components.phtml" before="-"/>
+        </referenceContainer>
+    </body>
+</page>

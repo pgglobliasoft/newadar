@@ -1,0 +1,92 @@
+<?php
+$helper = $this->helper('Sttl\Feature\Helper\Data');
+$collection = $block->getFeatureCollection();
+?>
+<?php if (count($collection)): ?>
+    <?php
+    $title = $this->getConfig('title');
+    $blockId = rand() . time();
+    $viewAs = $this->getConfig('view_as');
+    $customClass = $this->getConfig('custom_class');
+    $showFeatureName = $this->getConfig('show_feature_name');
+    $width = $this->getConfig('image_width', 240);
+    $height = $this->getConfig('image_height', 180);
+    ?>
+    <?php if ($viewAs == 'default'): ?>
+        <div class="block widget sttl-feature-widget <?php if ($customClass) {
+            echo $customClass;
+        } ?>">
+            <?php if ($title) { ?>
+                <div class="block-title">
+                    <strong><?php echo $title ?></strong>
+                </div>
+            <?php } ?>
+            <div class="block-content">
+                <ul class="default sttl-feature-widget-list-<?php echo $blockId; ?>">
+                    <?php foreach ($collection as $feature) { ?>
+                        <li class="item">
+                            <div class="image"><a href="<?php echo $feature->getUrl(); ?>" title="<?php echo $feature->getName(); ?>"><img style="height: <?php echo $height; ?>px;" src="<?php echo $feature->getSmallImageUrl(); ?>" alt="<?php echo $feature->getName(); ?>"/></a></div>
+                            <?php if ($showFeatureName) { ?>
+                                <div class="name"><a href="<?php echo $feature->getUrl(); ?>" title="<?php echo $feature->getName(); ?>"><?php echo $feature->getName() ?></a></div>
+                            <?php } ?>
+                        </li>
+                    <?php } ?>
+                </ul>
+            </div>
+        </div>
+    <?php endif; ?>
+    <?php if ($viewAs == 'owl_carousel'): ?>
+        <div class="block widget sttl-feature-widget <?php if ($customClass) {
+            echo $customClass;
+        } ?>">
+            <?php if ($title) { ?>
+                <div class="block-title">
+                    <strong><?php echo $title ?></strong>
+                </div>
+            <?php } ?>
+            <div class="block-content">
+                <div class="owl-carousel sttl-carousel-<?php echo $blockId; ?>">
+                    <?php foreach ($collection as $feature) { ?>
+                        <div class="item">
+                            <div class="image"><a href="<?php echo $feature->getUrl(); ?>" title="<?php echo $feature->getName(); ?>"><img style="height: <?php echo $height; ?>px;" src="<?php echo $feature->getSmallImageUrl(); ?>" alt="<?php echo $feature->getName(); ?>"/></a></div>
+                            <?php if ($showFeatureName) { ?>
+                                <div class="name"><a href="<?php echo $feature->getUrl(); ?>" title="<?php echo $feature->getName(); ?>"><?php echo $feature->getName() ?></a></div>
+                            <?php } ?>
+                        </div>
+                    <?php } ?>
+                </div>
+            </div>
+        </div>
+        <?php
+        if ($this->getConfig('autoplay')) {
+            $autoplay = 'true';
+        } else {
+            $autoplay = 'false';
+        }
+        if ($this->getConfig('stop_on_hover')) {
+            $stopOnHover = 'true';
+        } else {
+            $stopOnHover = 'false';
+        }
+        if ($this->getConfig('navigation')) {
+            $navigation = 'true';
+        } else {
+            $navigation = 'false';
+        }
+        ?>
+        <script type="text/javascript">
+            require([
+				'jquery',
+				'sttl/owlcarousel'
+			], function ($) {
+                var owl = $('.sttl-carousel-<?php echo $blockId ?>');
+                owl.owlCarousel({
+                    items: <?php echo $this->getConfig('items', 5); ?>,
+                    autoPlay: <?php echo $autoplay; ?>,
+                    stopOnHover: <?php echo $stopOnHover; ?>,
+                    navigation: <?php echo $navigation; ?>
+                });
+            });
+        </script>
+    <?php endif; ?>
+<?php endif; ?>

@@ -1,0 +1,130 @@
+<?php
+$regorderdata = $block->getRegisterData();
+$helper = $this->helper('Sttl\Adaruniforms\Helper\Sap');
+$CountryList =  $helper->getCountryList();
+$StateListarray =  $helper->getStateList();
+$StateList = json_encode($StateListarray);
+if(isset($ragisterdata['shiipintgData']))
+{
+	$data = $ragisterdata['shiipintgData']; 	
+}
+?>
+<div class="modal fade block block-customer-edit-address comingSoon commonPopup1" id="customer-edit-address" tabindex="-1" role="dialog" aria-labelledby="addressModal" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="modalContainer block-content" aria-labelledby="block-customer-login-heading">
+					<div class="messages">
+						<div class="message message-error error">
+							<div></div>
+						</div>
+					</div>
+					<div class="quickViewCont">        
+						<div class="container bg-primary p-2">
+							
+							<div class="row">
+								<div class="col-md-12 text-center customer-edit-title">
+									<span class="popUpTitle"><?= $block->escapeHtml(__("Add Shipping Method"));?></span>
+									<button type="button" data-dismiss="modal" class="close mfp-close-inside"><i class="fa fa-times"></i></button>
+								</div>          
+							</div>
+						</div>
+						<div class="registrationPage comingSoonTxt" id="comingSoonForm">
+							<form tabindex="-1" class="form custom-customer-edit-address" action="<?= $block->escapeUrl($block->getUrl('customerlogin/ajax/editAddress')) ?>" method="post" id="customer-edit-address-validate" enctype="multipart/form-data" data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>" autocomplete="off" data-mage-init='{"validation": {"errorClass": "mage-error"}}'>
+								
+								<div class="response-msg"></div>
+								<?= $block->getBlockHtml('formkey') ?>
+								<div class="field field-name-fullname required">
+									<label class="label" for="fullname"><span><?= $block->escapeHtml(__('Full Name')) ?></span><span class="reqField">*</span></label>
+									<div class="control">
+										<input type="text" autocomplete="off" id="fullname_shiiping" name="fullname_shiiping" value="" title="Full Name" class="input-text required-entry validate-no-html-tags valid" data-validate="{required:true}" aria-required="true" placeholder="Full Name">
+										<input type="hidden" name="hidden_fullname_shiiping" id="hidden_fullname_shiiping">
+									</div>
+								</div>
+								<div class="field field-name-address1">
+									<label class="label " for="AddStreetNo"><span><?= $block->escapeHtml(__('Address Line 1')) ?></span></label>
+									<div class="control">
+										<input type="text" autocomplete="off" id="AddStreetNo" name="AddStreetNo" value="" title="Address Line 1" class="input-text" placeholder="Address Line 1">
+										<input type="hidden" name="hidden_AddStreetNo" id="hidden_AddStreetNo">
+									</div>
+								</div>
+								<div class="field field-name-address2">
+									<label class="label " for="address2"><span><?= $block->escapeHtml(__('Address Line 2')) ?></span></label>
+									<div class="control">
+										<input type="text" autocomplete="off" id="address2" name="address2" value="" title="Address Line 2" class="input-text" placeholder="Address Line 2">
+										<input type="hidden" name="hidden_address2" id="hidden_address2">
+									</div>
+								</div>
+								<div class="row">
+									<div class="field field-name-state required col-md-6">
+										<label class="label " for="Country"><span><?= $block->escapeHtml(__('Country')) ?><span class="reqField">*</span></span></label>
+										<div class="control">
+										<select class="validate-select" name="Country" id="Country" >
+											<option value="">Select</option>
+											<?php foreach($CountryList as $Country):?>
+												<option  value="<?php echo $Country['CountryCode']?>"><?php echo $Country['CountryName']?></option>
+											<?php endforeach;?>
+										</select>
+										<input type="hidden" name="ContryLable" id="ContryLable" value="">
+										<input type="hidden" name="hidden_country" id="hidden_country">
+										</div>
+									</div>
+									<div class="field field-name-state required col-md-6">
+										<label class="label " for="state"><span><?= $block->escapeHtml(__('State')) ?><span class="reqField">*</span></span></label>
+										<div class="control">
+										<select class="validate-select" name="state" id="state" >
+										<option contry-code="selected" value="">Select</option>
+											<?php foreach($StateListarray as $State):?>
+												<option contry-code="<?php echo $State['CountryCode']?>" value="<?php echo $State['StateCode']?>"><?php echo $State['StateName']?></option>
+											<?php endforeach;?>
+										</select>
+										<input type="hidden" name="StateLable" id="StateLable" value="">
+										<input type="hidden" name="hidden_state" id="hidden_state">
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="field field-name-city required col-md-6">
+										<label class="label " for="city"><span><?= $block->escapeHtml(__('City')) ?></span><span class="reqField">*</span></label>
+										<div class="control">
+											<input type="text" autocomplete="off" id="city" name="city" value="" title="City" class="input-text required-entry validate-no-html-tags  valid" data-validate="{required:true}" aria-required="true" placeholder="City">
+											<input type="hidden" name="hidden_city" id="hidden_city">
+										</div>
+									</div>
+									<div class="field field-name-zipcode required col-md-6">
+										<label class="label " for="zipcode"><span><?= $block->escapeHtml(__('Zip Code')) ?></span><span class="reqField">*</span></label>
+										<div class="control">
+											<input type="text" autocomplete="off" id="zipcode" name="zipcode" value="" title="Zip Code" class="input-text required-entry validate-no-html-tags validate-zip valid validate-alphanum-with-spaces" data-validate="{required:true}" aria-required="true" placeholder="Zip Code">
+											<input type="hidden" name="hidden_zipcode" id="hidden_zipcode">
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="field field-name-security-code required col-md-6">
+										<div class="control">
+											<input type="checkbox" id="save_future" name="save_future" value="" class="input-text">&nbsp;<label class="label"><span><?= $block->escapeHtml(__('Save for Future ')) ?></span></label>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="field field-name-security-code required col-md-6">
+										<div class="control">
+											<input type="hidden" name="hidden_blindDropship" id="hidden_blindDropship">
+											<input type="checkbox" id="blindDropship" name="blindDropship" value="1" class="input-text">&nbsp;<label class="label"><span><?= $block->escapeHtml(__('Blind Dropship ')) ?></span></label>
+										</div>
+									</div>
+								</div>
+								<?= $block->getChildHtml('form_additional_info') ?>
+								<div class="actions-toolbar mt-2">
+									<div class="text-center">
+										<button type="submit" class="themeBtn action save" title="<?= $block->escapeHtmlAttr(__('Submit')) ?>"><span><?= $block->escapeHtml(__('Submit')) ?></span></button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>   
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

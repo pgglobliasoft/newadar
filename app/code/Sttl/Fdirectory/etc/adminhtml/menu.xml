@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Backend/etc/menu.xsd">
+	
+	<menu>
+		<add id="Sttl_Fdirectory::fdirectory" title="Download Library Permissions" module="Sttl_Fdirectory" sortOrder="3" resource="Sttl_Fdirectory::fdirectory" parent="Sttl_Inquiries::main"/>
+
+		<add id="Sttl_Fdirectory::fdirectorytital" title="Download Library Permissions" module="Sttl_Fdirectory" sortOrder="10" action="fdirectory/index/" resource="Sttl_Fdirectory::fdirectory" parent="Sttl_Fdirectory::fdirectory"/>	
+    </menu>
+</config>

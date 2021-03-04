@@ -1,0 +1,197 @@
+<?php
+$regorderdata = $block->getRegisterData(); 
+$customerdata = @$regorderdata['customerdata'];
+if(isset($customerdata) && isset($customerdata['errors'])) 
+{
+    ?>
+    <div class="page-title-wrapper">
+        <h1 class="page-title">
+            <span class="base" data-ui-id="page-title-wrapper">NEW ORDER</span>
+        </h1>
+    </div>
+    <?php
+    echo $customerdata['message'];
+}
+else
+{
+$customerdata = $customerdata[0];
+$orderdata = $regorderdata['orderdata'];
+$currentorderdata = $orderdata[0];
+if(strtolower($currentorderdata['DocStatus']) == strtolower('Submitted'))
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $redirect = $objectManager->get('\Magento\Framework\App\Response\Http');
+        $baseurl =  $block->getBaseUrl().'customerorder/customer/index';
+        $redirect->setRedirect($baseurl);
+    } 
+//echo "<prE>";print_R($currentorderdata);exit;
+?>
+    <div class="accountPageContainer payemtnactionPage">
+        <form name="payemtnaction" id="payemtnaction" method="POST" enctype="multipart/form-data" data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>" autocomplete="off" data-mage-init='{"validation": {"errorClass": "mage-error"}, "theAdarValidationMethod":{}}'>
+            <div class="block block-dashboard-info cf newOrderStep3 paymentseaction">
+                <h1 class="page-title">Enter your Payment Details.</h1>    
+                <div class="action-container">
+                    <div class="box box-information po-details"><strong>P.O. Number:</strong> <span id="poNumber"><?php echo $currentorderdata['NumatCardPo']?></span></div>
+                    <div class="">
+                        <div class="block-title"><strong class="upperCaseText"> Payment Details.</strong>        
+                        </div>
+                        <div  class="block-content orderhistorySection" aria-labelledby="headingOne" style="">
+                            <?php echo $this->getLayout()->createBlock("Sttl\Customerorder\Block\Payment")->setCustomerData($customerdata)->setTemplate("Sttl_Customerorder::createorder/savepament.phtml")->toHtml();?>
+                            <div class="bdrLine pma"></div>
+                        </div>
+
+                    </div>  
+
+                    <!--- shipping method -->
+                    <div class="">
+                        <div class="block-title" >
+                            <strong class="upperCaseText">Shipping Details</strong>        
+                        </div>
+                        <div class="block-content shippingMthods" style="">
+                            <div class="shipping-method">
+                                <strong class="box-title"> Select Shipping Method: </strong>
+                                <div class="box box-information"> 
+                                    <div class="box-content" >
+                                        <select class="col-md-12" name="shiiping_method" id="shiiping_method">
+                                            <?php if($customerdata['ShipCode'] != '128' && $customerdata['ShipType'] != 'All' && $customerdata['ShipCode'] != '' && $customerdata['ShipType'] != '') { ?>
+                                                 <option value="<?php echo $customerdata['ShipCode'];?>" <?php if($currentorderdata['ShippingType'] ==  $customerdata['ShipCode']) { echo 'selected="selected"'; } ?> ><?php echo $customerdata['ShipType'].'(Default Shipping Method)'; ?></option>
+                                            <?php }else{?>
+                                                <option>Select</option>
+                                           <?php } ?>
+                                           <option value="STD" <?php if($currentorderdata['ShippingType'] == "STD") { echo 'selected="selected"'; } ?> >Ground (3 - 5 business)</option>
+                                            <option value="NXD" <?php if($currentorderdata['ShippingType'] == "NXD") { echo 'selected="selected"'; } ?>>Next Day </option>
+                                            <option value="SCD" <?php if($currentorderdata['ShippingType'] == "SCD") { echo 'selected="selected"'; } ?>>2nd Day </option>
+                                            <option value="THD" <?php if($currentorderdata['ShippingType'] == "THD") { echo 'selected="selected"'; } ?>>3 Day Select</option>
+                                             <?php if(trim(strtolower($customerdata['ShipType'])) != strtolower("Pick Up")) {?>
+                                            <option value="4" <?php if($currentorderdata['ShippingType'] == "4") { echo 'selected="selected"'; } ?>>Pick Up</option>
+                                        <?php } ?>
+                                        </select>
+                                    </div>
+                                     <p class="shiiping_method_error maxqtyvaldi"></p>
+                                </div> 
+                            </div>
+                                <?php echo $this->getLayout()->createBlock("Sttl\Customerorder\Block\Payment")->setCustomerData($customerdata)->setTemplate("Sttl_Customerorder::createorder/shippinginformation.phtml")->toHtml();?>
+                                 <div class="bdrLine mbre">
+                                    <input type="hidden" name="order_id" id="order_id" value="<?php echo $currentorderdata['Id']?>">
+                                    <input type="hidden" name="po_number" id="po_number" value="<?php echo $currentorderdata['NumatCardPo']?>">
+                                 </div>
+                        </div>
+                    </div> 
+
+                    <!-- Devlivery notes -->
+
+                    <div class=" delivery-section" tab-info="Devlivery notes">
+                        <div class="block-title" ><strong class="upperCaseText">Delivery Notes (Optional):</strong>        
+                        </div>
+                        <div class="block-content orderhistorySection" aria-labelledby="headingOne" style="">
+                            <div class="box box-information dlvrNote">
+                                <div class="box-content">
+                                    <textarea rows="3" cols="5" name="delivery_note" maxlength="255"><?php echo $currentorderdata['DeliveryNotes'] ?></textarea>
+                                </div>
+                               
+                            </div>
+                        </div>
+                    </div>  
+                </div> 
+
+                 <div class="actions-container alignRight d-flex">
+                <a class="newLinkText mobile-button" href="<?php echo $block->getBaseUrl();?>customerorder/customer/neworder/id/<?php echo base64_encode($currentorderdata['Id']);?>/ncp/<?php echo base64_encode($currentorderdata['NumatCardPo']);?>" class="delUrl">Back</a>
+                    <button type="submit" class="themeBtn alignRight mobile-button submitorder paymentsubmit" title="<?= $block->escapeHtmlAttr(__('Review Order')) ?>"><span><?= $block->escapeHtml(__('Review Order')) ?></span></button>
+                </div>      
+       
+             </div>
+         </form>
+         <?php echo $this->getLayout()->createBlock("Sttl\Customerorder\Block\Payment")->setCustomerData($customerdata)->setTemplate("Sttl_Customerorder::createorder/billingform.phtml")->toHtml();?>
+         <?php echo $this->getLayout()->createBlock("Sttl\Customerorder\Block\Payment")->setCustomerData($customerdata)->setTemplate("Sttl_Customerorder::createorder/paymentcardform.phtml")->toHtml();?>
+          <?php echo $this->getLayout()->createBlock("Sttl\Customerorder\Block\Payment")->setCustomerData($customerdata)->setTemplate("Sttl_Customerorder::createorder/Shipppingform.phtml")->toHtml();?>
+    </div>
+    <script type="text/javascript">
+        require(['jquery'], function($) {
+            $(document).ready(function() {
+
+                $(".submitorder").click(function(e){
+                form = $('#payemtnaction');
+                if (form.validation('isValid')) {
+                    e.preventDefault();
+                    var url = "<?php echo $block->getBaseUrl().'customerorder/customer/submitorder' ?>";
+                    var payment = getFormData($("#payemtnaction"));
+                    var cardform = getFormData($('.custom-customer-add-payment'));
+                    var billingform = getFormData($("#customer-edit-billaddress-validate"));
+                    var shiipingform = getFormData($("#customer-edit-address-validate"));
+                    var selectcard_id = $("#selectcard_id :selected").val();
+                    console.log("aaaaa");
+                    console.log(selectcard_id);
+                        if(selectcard_id == '')
+                        {
+                            $('.selectcard_id_error').html("Please Select.");
+                            $('#selectcard_id').focus();
+                            return false;
+                        }
+                        var shiiping_method = $("#shiiping_method :selected").val();
+                        var shippingaddress = $("#shippingaddress :selected").val();
+                        if(shippingaddress == '' && (shiiping_method != '4'))
+                        {
+                            $('.shiiping_method_shipAddress').html("Please Select.");
+                            $('#shippingaddress').focus();
+                            return false;
+                        }
+                        
+                        if(shiiping_method == 'Select')
+                        {
+                            $('.shiiping_method_error').html("Please Select.");
+                            $('#shiiping_method').focus();
+                            return false;
+                        }
+                    $('body').trigger('processStart');
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        /* showLoader: true, */
+                        data: {selectcard_id:selectcard_id,payment:payment,cardform:cardform,billingform:billingform,shiipingform:shiipingform},
+                        success: function(data) {
+                        if(data.errors == 'false') {
+                              var nexturl = "<?php echo $block->getBaseUrl().'customerorder/customer/viewordersummary' ?>";
+                                  $("#payemtnaction").attr('action', nexturl);
+                                 $('#payemtnaction').submit()
+                            }
+                            else 
+                            {
+                                $('body').trigger('processStop');
+                                return false;
+                            } 
+                        }
+                    });
+                }else{
+                    
+                }
+                });
+        });
+            $("#shiiping_method").change(function() {
+                var selectedVal = this.value;
+                var selectedText = this.options[this.selectedIndex].text;
+                if(selectedVal == '4')
+                {
+                    $('.shippingAdds').hide();
+                    $('.removeeditshipurl').hide();
+                }else{
+                    $('.shippingAdds').show();
+                    $('.removeeditshipurl').show();
+                }
+                //var selectedVal = $(this).find(':selected').val();
+                //var selectedText = $(this).find(':selected').text();
+            });
+                function getFormData(formElem){
+                    var unindexed_array = formElem.serializeArray();
+                    var indexed_array = {};
+                    jQuery.map(unindexed_array, function(n, i){
+                     indexed_array[n['name']] = n['value'];
+                    });
+                return indexed_array;
+                }
+
+        });
+
+    </script>
+<?php
+}
+?>

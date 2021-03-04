@@ -1,0 +1,24 @@
+<?php
+$itemsJsonData = $block->getDataOneColumnJson();
+?>
+
+<div class="offset-md-3 col-md-6">
+	<div class="faqContainer">
+		<h3 class="center">FAQ</h3>
+		<h1 style="text-align: center;">FAQ's Coming Soon...</h1>
+		<p style="text-align: center;">For questions and inquires please reach out to our customer service team.</p>
+		<?php /* foreach($itemsJsonData as $itemData) {?>
+		<div class="collapseContainer">                    
+			<a href="#<?php echo $itemData['category_id']; ?>" data-toggle="collapse" class="collapsed"><?php echo $itemData['name']; ?></a>
+			<div id="<?php echo $itemData['category_id']; ?>" class="collapse">
+				<?php if($itemData['faq_items'] > 0){ ?>
+				<?php foreach($itemData['faq_items'] as $faq_items){ ?>
+					<h4><?php echo $faq_items['question']; ?></h4>
+					<p><?php echo $faq_items['answer']; ?></p>
+				<?php } 
+				} ?>
+			</div>
+		</div>
+		<?php } */ ?>
+	</div>
+</div>

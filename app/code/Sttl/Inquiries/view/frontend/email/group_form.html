@@ -1,0 +1,36 @@
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+
+<!--@vars {
+"var data.comment":"Comment",
+"var data.email":"Sender Email",
+"var data.name":"Sender Name",
+"var data.telephone":"Sender Telephone"
+} @-->
+<!--@subject {{var mail_subject}}  @-->
+
+{{template config_path="design/email/header_template"}}
+Hello Admin.
+<p>
+    {{trans Below are details of new Group inquiry:}}
+</p>
+
+
+<table class="message-details">
+    <tr>
+        <td><b>{{trans "Name :"}}</b></td>
+        <td>{{var name}}</td>
+    </tr>
+    <tr>
+        <td><b>{{trans "Email :"}}</b></td>
+        <td>{{var email}}</td>
+    </tr>
+</table>
+<p><b>{{trans "Message :"}}</b></p>
+<p>{{var comment}}</p>
+
+{{template config_path="design/email/footer_template"}}

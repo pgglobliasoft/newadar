@@ -1,0 +1,9 @@
+<?php if ($block->getConfig('general_settings/enabled')): ?>
+    <?php if ($block->getConfig('product_page_settings/show_feature')): ?>
+        <?php if ($feature = $block->getFeature()): ?>
+            <div class="product-feature">
+                <div class="feature-name"><a title="<?php echo $feature->getName(); ?>" href="<?php echo $feature->getUrl(); ?>"><?php echo $block->getFeature()->getName(); ?></a></div>
+            </div>
+        <?php endif; ?>
+    <?php endif; ?>
+<?php endif; ?>

@@ -1,0 +1,142 @@
+@supports (-webkit-touch-callout: none) {
+	.account_menu_nav.block-content.collapse + .block{ margin-bottom: 10px;  transition: margin 0.6s ease-in;}
+  /* CSS specific to iOS devices */
+	.account_menu_nav.block-content.collapse.show + .block{ margin-bottom: 80px; }
+
+}
+
+	.account_menu{
+	display: none;
+	top: 62px;
+	background: #f6f6f6;
+	position: absolute;
+	/*padding-top: 20px;*/
+	width: calc(100% - 0px);
+	left: 0;
+	z-index: 99;
+	/*border:1px solid gray;*/
+	box-shadow:0 0 4px rgba(0,0,0,0.3);
+	border-radius: 24px;
+    overflow: hidden;
+    padding: 10px 10px 25px;
+
+}
+    .customer-account-index .block-dashboard-info .block-title{margin: 0px; }
+    .customer-account-index .myAccountCustomBanner{ margin-bottom: 0px; }
+    .block.block-dashboard-info.shippingBlock {
+    margin-bottom: 0px;
+     padding-block-end: 0px;
+}
+.account_menu .mobile-button{
+	text-align: center;
+    padding: 10px 0px;
+    margin: 15px;
+    width: 20%;
+    float: right;
+}
+
+  .account_menu .mobile-button a{
+    text-decoration: none;
+    text-align: center;
+    margin: auto;}
+    .account_menu .box-content .box-title1{ padding: 0px 15px 0px; }
+    .account_menu div#collapseOne {padding: 0px 15px 10px; }
+    .account_menu #collapseOne .box-information {
+    justify-content: space-between;
+    display: flex;
+}
+
+.block-dashboard-info > .block-title{cursor:pointer;/* position:relative; */margin-bottom:0 !important;}
+.account_menu #collapseOne:before,.account_menu #collapseTwo:before,.account_menu #collapseThree:before,.account_menu #collapseFour:before {
+    content: "";
+    height: 20px;
+    width: 100%;
+    margin-bottom: 0px;
+    display: table;
+    clear: both;}
+.account_menu .block.block-dashboard-info.paymentBlock{ 	background: unset;
+    margin-top: -1px: ;
+    padding: unset; }
+	.account_menu .block-title {
+	    margin: 0px 0px;}
+	    div#customer-edit{ z-index: 9999; }
+
+.account_menu .block{margin-top: -1px; margin-bottom: 0px; }
+.account_menu .block-title{ margin-bottom: 0px !important; }
+/*.account_menu #collapseThree{     margin-bottom: -10px; }*/
+.commonPopup1 .comingSoonTxt,.block-customer-edit .comingSoonTxt {
+    padding: 0 24px 15px;
+}
+
+.back-menu {
+	display: none ;
+    cursor: pointer;
+    left: 0;
+    height: 90vh;
+    border-radius: 0;
+    /*background-color: rgba(0,0,0,0.7);*/
+    width: 100%;
+    position: absolute;
+    top: 0;
+    margin: 0px;
+    overflow: auto;
+        padding-block-end: 70px;
+}
+
+.account_menu .paymentAddress {
+    max-height: 203px;
+    overflow: auto;
+    margin: 15px 13px;
+}
+.account_menu div#customer-edit,.account_menu div#customer-add-payment,.account_menu div#customer-edit-address {
+    cursor: pointer;
+    left: 0;
+    height: 100vh;
+    border-radius: 0;
+    background-color: rgba(0,0,0,0.7);
+    width: 100%;
+    top: 0;
+    margin: 0px;
+    overflow: auto;
+}
+@supports (-webkit-touch-callout: none) {
+  /* CSS specific to iOS devices */
+  main#maincontent{
+    padding-bottom:50px;
+    margin-bottom:100px;
+  }
+}
+
+	.magestore-bannerslider-title{
+		display: none;
+	}
+	.page-title-wrapper{
+		display: none;
+	}
+
+.circle {
+  height: 25px;
+  width: 25px;
+  background-color: rgba(255, 255, 255, .3);
+  border-radius: 50%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  pointer-events: none;
+  transform: scale(0);
+/*   animation: grow 1s forwards;          */
+}
+
+@keyframes grow {
+  0% {
+    background-color: rgba(50, 50, 50, .5);
+    transform: scale(1); z-index: 2; }
+  100% {
+    background-color: rgba(50, 50, 50, .3);
+    transform: scale(30); opacity: 0; z-index: -1; }
+}
+
+.grow {
+  animation: grow 2s ease-out forwards;
+}
+

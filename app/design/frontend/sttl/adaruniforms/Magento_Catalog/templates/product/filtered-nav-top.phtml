@@ -1,0 +1,13 @@
+<div id="current-filter-result-copy" class="filter-content">
+</div>
+<script>
+require(['functions','jquery.bootstrap'], function ($,jquery)
+{
+		'use strict';
+		jQuery.noConflict();
+		jQuery(document).ready( function(){
+			jQuery('#current-filter-result-copy').html(jQuery('#current-filter-result').html());
+		});
+			
+});
+</script>

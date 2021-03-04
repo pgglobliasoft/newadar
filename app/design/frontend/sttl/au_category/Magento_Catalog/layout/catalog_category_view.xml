@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="page.wrapper">
+            <container name="page.wrapper.innerPageContent" htmlTag="div" htmlClass="innerPageContent">
+				          <container name="page.wrapper.innerPageContent.container" htmlTag="div" htmlClass="container" after="-">
+  			               <block class="SR\CategoryImage\Block\Image" name="sr.category.image" template="SR_CategoryImage::image.phtml">
+                         <arguments>
+                           <argument name="image_code" xsi:type="string">thumbnail</argument>
+                           <argument name="css_class" xsi:type="string">thumbnail</argument>
+                         </arguments>
+                       </block>
+				          </container>
+            </container>
+            <block class="Magento\Framework\View\Element\FormKey" name="formkey"/>
+            <container name="account-page-menu-back" htmlTag="div" htmlClass="back-menu">
+                <container name="account-page-menu" htmlTag="div" htmlClass="account_menu">
+                    <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_myaccount" template="Magento_Customer::account/dashboard/myaccount.phtml" cacheable="false"/>
+                         <container name="account-page-menu_nav" htmlTag="div" htmlClass="account_menu_nav block-content collapse show">
+                             <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_info" as="info" template="Magento_Customer::account/dashboard/info.phtml" cacheable="false" after='mobile_slider' />
+                             <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_statement"  template="Magento_Customer::account/dashboard/statement.phtml" cacheable="false"/>
+                             <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_savepayment"  template="Magento_Customer::account/dashboard/savepament.phtml" cacheable="false"/>
+                             <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_shippinginformation"  template="Magento_Customer::account/dashboard/shippinginformation.phtml" cacheable="false"/>
+                             <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_edit_popup" template="Magento_Customer::account/dashboard/edit_customer.phtml" after="-" />
+                         </container>
+                    <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_logout" template="Magento_Customer::account/dashboard/logout.phtml" cacheable="false"/>
+                </container>
+                <block name="customer.section.config" class="Magento\Customer\Block\SectionConfig" template="Magento_Customer::js/section-config.phtml"/>
+                <block name="customer.customer.data" class="Magento\Customer\Block\CustomerData" template="Magento_Customer::js/customer-data.phtml"/>
+            </container>
+            <!-- <container name="account-page-menu_nav_extra" htmlTag="div" htmlClass="custome_class">
+              <arguments>
+                <argument name="image_code" xsi:type="string">thumbnail</argument>
+                <argument name="css_class" xsi:type="string">thumbnail</argument>
+              </arguments>
+            </container> -->
+        </referenceContainer>
+	      <referenceContainer name="content"></referenceContainer>
+		    <move element="main" destination="page.wrapper.row.md" before="-"/>
+    		<referenceBlock name="catalog.leftnav" remove="true"/>
+    		<referenceContainer name="breadcrumbs" remove="true"/>
+    		<referenceContainer name="main" remove="true"/>
+    		<referenceBlock name="page.main.title" remove="true" />
+    		<referenceContainer name="category.view.container" htmlTag="div" htmlClass="category-view" remove="true"/>
+    </body>
+</page>

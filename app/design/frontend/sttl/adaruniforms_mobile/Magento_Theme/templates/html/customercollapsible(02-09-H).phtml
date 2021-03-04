@@ -1,0 +1,303 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+//echo "<prE>";print_R($customerdata );exit;
+$baseurl = $storeManager->getStore()->getBaseUrl();
+$customerinvoices = $baseurl."customerinvoices/customer/index?order_stats=Open&order_by=DueDays&opt=ASC";
+$myaccoutnUrl = $baseurl."customer/account/index/";
+$customerorderUrl = $baseurl."customerorder/customer/index";
+$purchaseorderUrl = $baseurl."purchaseorder/customer/index";
+$downloadlibraryUrl = $baseurl."downloadlibrary/category/index";
+$policy_procedures = $baseurl."policy-procedures";
+$neworderUrl = $baseurl."customerorder/customer/neworder";
+$policies_procedures = $baseurl."policies-procedures";
+
+$request = $objectManager->get('\Magento\Framework\App\Request\Http');
+$cur_action = $request->getFullActionName();
+
+$helper = $this->helper('Sttl\Adaruniforms\Helper\DownloadLibrary');
+$currentactivemenu = '';
+$dir_path = base64_decode($this->getRequest()->getParam('path'));
+
+$fileSystem = $objectManager->create('\Magento\Framework\Filesystem');
+$rootpath = $fileSystem->getDirectoryRead(\Magento\Framework\App\Filesystem\DirectoryList::ROOT)->getAbsolutePath('ftp_images'.DIRECTORY_SEPARATOR);
+$dir_path_bred = str_replace($rootpath,'', $dir_path);
+$dir_path_explode = array_filter(explode("/", $dir_path_bred));
+$ariaexpanded = 'false';
+$show = '';
+if(!empty($dir_path_explode))
+{
+    $currentactivemenu = basename($dir_path);
+    $ariaexpanded = 'true';
+    $show = 'show';
+}
+$class= 'collapse';
+if($cur_action == "downloadlibrary_category_index")
+{
+    $currentactivemenu = basename($dir_path);
+    $ariaexpanded = 'true';
+    $class = '';
+    $show = 'show';
+}
+$image_library_directory_path = "$rootpath";
+$image_library_directory = $helper->listFolderFiles($image_library_directory_path);
+//$image_library_directory = $helper->getDirectorylist($image_library_directory_path);
+$redirect_category = $baseurl."downloadlibrary/category/index?catgoty=";
+$redirect_imagelibrary = $baseurl."downloadlibrary/category/imagelibrary?path=";
+//echo $cur_action;exit;
+?>
+<style type="text/css">
+    .block-collapsible-nav .item .download-categotyMenu a.active {color: #0e4169 !important;font-weight: bold;}
+</style>
+<div class="block block-collapsible-nav">
+    <div class="title <?= /* @escapeNotVerified */ $block->getBlockCss() ?>-title" data-mage-init='{"toggleAdvanced": {"toggleContainers": "#<?= /* @escapeNotVerified */ $block->getBlockCss() ?>", "selectorsToggleClass": "active"}}'>
+        <strong><?= /* @escapeNotVerified */ $block->getBlockTitle() ?></strong>
+    </div>
+     <div class="content <?= /* @escapeNotVerified */ $block->getBlockCss() ?>-content autoScrollMenu" id="<?= /* @escapeNotVerified */ $block->getBlockCss() ?>">
+        <li class="nav item showloder <?php if ($cur_action == "customer_account_index") {?>current<?php }?>"><a href="<?php echo $myaccoutnUrl;?>">My account</a></li>
+        <?php /* ?>
+        <li class="nav item"><a href="<?php echo $customerorderUrl ;?>">Order Status</a></li>
+        <li class="nav item"><a href="<?php echo $url ;?>">Invoces</a></li> 
+        <li class="nav item"><a href="<?php echo $purchaseorderUrl;?>">Purchase order Drafts</a></li>
+        <li class="nav item"><a href="<?php echo $downloadlibraryUrl;?>">Dowloand Libary</a></li>
+        <li class="nav item"><a href="<?php echo $policy_procedures;?>">Policies & Procedures</a></li>
+        <?php*/ ?>
+         
+        <li class="nav item showloder <?php if ($cur_action == "customerorder_customer_index" && $block->getRequest()->getParam('q') == '') {?>current<?php }?>"><a href="<?php echo $customerorderUrl ;?>">Order Status</a></li>
+        <li class="nav item showloder <?php if ($cur_action == "customerinvoices_customer_index") {?>current<?php }?>"><a href="<?php echo $customerinvoices ;?>">View & Pay Invoices</a></li> 
+        <li class="nav item showloder <?php if ($cur_action == "customerorder_customer_index" && $block->getRequest()->getParam('q') == 'd') {?>current<?php }?>"><a href="<?php echo $customerorderUrl ;?>?q=d">Purchase order Drafts</a></li>
+        <li class="nav item downloadMenuLI  <?php if ($cur_action == "downloadlibrary_category_index") {?>current<?php }?>">
+           <a <?php if ($cur_action == "downloadlibrary_category_index") { echo 'data-toggle="collapse" href="#downloadSub"'; }else { echo 'href="'.$downloadlibraryUrl.'" class="downloadlibraryUrl"';} ?>  role="button" aria-expanded="<?php echo $ariaexpanded ;?>"  aria-controls="downloadSub" href="<?php echo $downloadlibraryUrl;?>">Download Library 
+			<strong class="alignRight"><i class="dwnldMain fa fa-plus"></i></strong>
+		   </a> 
+            <ul class="download-categotyMenu collapse" id="downloadSub">
+                <li class="showloder" > 
+                    <i class="fa fa-book"></i> 
+                    <a href="<?php echo $redirect_category.'1'; ?>" class="btnCustom">Catalogs <strong class="alignRight"><i class="fa fa-angle-right"></i></strong></a> 
+                </li>
+                <li class="imgaeslibrary"> 
+                    <i class="fa fa-camera"></i><a data-toggle="collapse" href="#imgLib" class="btnCustom collapsed" aria-expanded="false">Image Library <strong class="alignRight"><i class="fa fa-angle-right"></i></strong></a> 
+                    <?php if (!empty($image_library_directory)) : 
+                           echo $image_library_directory;        
+                     endif; ?>
+                </li>
+                <li class="showloder"> 
+                    <i class="fa fa-file-text"></i> <a href="<?php echo $redirect_category.'4'; ?>" class="btnCustom">Inventory and UPC Files <strong class="alignRight"><i class="fa fa-angle-right"></i></strong></a> 
+                </li>
+                <li class="showloder"> 
+                    <i class="fa fa-tags"></i> <a href="<?php echo $redirect_category.'5'; ?>" class="btnCustom">List/map Pricing and Discount Files <strong class="alignRight"><i class="fa fa-angle-right"></i></strong></a> 
+                </li>
+                <li class="showloder"> 
+                    <i class="fa fa-link"></i> <a href="<?php echo $redirect_category.'6'; ?>" class="btnCustom">AIO Items Data Files <strong class="alignRight"><i class="fa fa-angle-right"></i></strong></a> 
+                </li>
+                <li class="showloder"> 
+                    <i class="fa fa-folder"></i> <a href="<?php echo $redirect_category.'7'; ?>" class="btnCustom">Documentation, Policies and more <strong class="alignRight"><i class="fa fa-angle-right"></i></strong></a> 
+                </li>
+                <input type="hidden" name="breadcampclick" id ="breadcampclick"value="0">
+            </ul>
+
+        </li>
+        <!--<li class="nav item"><a href="<?php echo $policies_procedures; ?>">Policies & Procedures</a></li>-->
+    </div>
+    <div class="loginSection">
+            <a href="<?php echo $neworderUrl; ?>">Place a New order</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+    require(['jquery','fancyboxjs','mousewheelScroll'], function($) {
+        $(document).ready(function() {
+            $('.download-categotyMenu li a').click(function(){
+                if($(this).parent('li').hasClass('active')){
+                    $(this).parent().removeClass("active");
+                }
+                else{
+                    $(this).parent().addClass("active");
+                }
+            });
+            
+        $(".loginSection").click(function(e){
+            $('body').trigger('processStart');
+        });
+        $(".afterLoginMenu").click(function(e){
+            $('body').trigger('processStart');
+        });
+         $(".accountPageContainer .page-title .themeBtn.alignRight").click(function(e){
+            $('body').trigger('processStart');
+        });
+        $(".showloder").click(function(e){
+            $('body').trigger('processStart');
+        });
+		$(".downloadlibraryUrl").click(function(e){
+            $('body').trigger('processStart');
+        });
+         $(".customerorder-customer-orderview .EditBack").click(function(e){
+            $('body').trigger('processStart');
+        });
+         $(".customerorder-customer-index .newLinkText").click(function(e){
+            $('body').trigger('processStart');
+        });
+		setTimeout(function(){
+				$("#account-nav").mCustomScrollbar();
+                if(window.location.href.indexOf("downloadlibrary") > -1) 
+                {                   
+                    $(".downloadMenuLI ul.download-categotyMenu").collapse("show");
+					//$('.downloadMenuLI ul').collapse('toggle');
+					$(".dwnldMain").removeClass("fa-plus").addClass("fa-minus");
+					
+					var currentPage = $('.downloadMenuLI').position().top;
+                    setTimeout(function(){  
+                        $("#account-nav").mCustomScrollbar("scrollTo", currentPage);                            
+                    },1000);
+                }				
+			},300); 
+			
+			$("li.downloadMenuLI > a").click(function (){       
+                if($("ul.download-categotyMenu").is( ":visible" )){
+					$(".dwnldMain").removeClass("fa-minus").addClass("fa-plus");
+				}
+				else{
+					$(".dwnldMain").addClass("fa-minus").removeClass("fa-plus");
+				}
+				var dataTag = $(this).position().top;       
+                setTimeout(function(){      
+                    $("#account-nav").mCustomScrollbar("scrollTo", dataTag);					
+                },1000);     
+            });
+		
+        
+          $('.download-categotyMenu ul').on('show.bs.collapse', function () {
+            $(this).parent('li').addClass('active');
+          });
+
+          $('.download-categotyMenu ul').on('hide.bs.collapse', function () {
+            $(this).parent('li').removeClass('active');
+          });
+
+          $( '#imgLib' ).on('click', 'LI A', function() {
+                    var entry = $(this).parent();
+                    if(entry.hasClass('folder')) 
+                    {
+                        var clickset = $('#breadcampclick').val();
+                        if( entry.hasClass('collapsed') || clickset == 1 ) {
+                            $('#breadcampclick').val(0)
+                            entry.find('UL').remove();
+                            getfilelist( entry, $(this).attr('rel'));
+                            entry.removeClass('collapsed').addClass('expanded');
+                            if(entry.find('a:first').hasClass('diropen'))
+                            {
+                                entry.find('a:first').removeClass('diropen');
+                                entry.find('a:first').addClass('diropenclose');    
+                            }
+                        }
+                        else {
+                            if(entry.find('a:first').hasClass('diropenclose'))
+                            {
+                                entry.find('a:first').removeClass('diropenclose');
+                                entry.find('a:first').addClass('diropen');
+                            }
+                            entry.find('UL').slideUp({ duration: 500, easing: null });
+                            entry.find('UL').html('');
+                            entry.removeClass('expanded').addClass('collapsed');
+                            //getfilelist( entry, $(this).attr('rel'));
+                        }
+                    } else {
+                        $( '#selected_file' ).text( "File:  " + $(this).attr( 'rel' ));
+                    }
+                    return false;
+            });
+        });
+        
+        function getfilelist(cont,root) {
+            $(cont).parent('ul').find('li').removeClass('active');
+            if($(cont).parent('ul').find('li').hasClass('expanded'))
+            {
+                var currentul = $(cont).parent('ul').find('li').find('a');
+                 $( currentul ).each(function() {
+                    if($(this).attr('class') == 'diropenclose')
+                    {
+                       $(this).removeClass('diropenclose');
+                       $(this).addClass('diropen');
+                    }
+                });   
+                $(cont).parent('ul').find('li').find('ul').slideUp({ duration: 500, easing: null });
+                $(cont).parent('ul').find('li').removeClass('expanded').addClass('collapsed');
+            }
+            $( cont ).addClass( 'active' );
+            getfilefolder(cont,root)
+        }
+        $( document ).on( "click", ".getftpimges", function( event, ui ) {
+            getfilefolder('',$(this).attr('rel'));
+            var currentul = $('.firsttimeload').find('li');
+                 $( currentul ).each(function() {
+                    if($(this).hasClass('expanded'))
+                    {
+                       //if($(this).parent('li').hasClass('expanded'))
+                       //{
+                            $(this).removeClass('active');
+                            $(this).removeClass('expanded').addClass('collapsed');
+
+                       //}
+                       $(this).find('UL').remove();
+                       if($(this).find('a').hasClass('diropenclose'))
+                       {
+                            $(this).find('a').removeClass('diropenclose');
+                            $(this).find('a').addClass('diropen'); 
+                       }
+                    }
+                });   
+            $('.imgaeslibrary').collapse('show');
+            $('.firsttimeload').collapse('show');
+        });
+        $( document ).on( "click", ".getbredcamp", function( event, ui ) {
+            var getallhref = $( '.imgaeslibrary' ).find('li a');
+
+
+            var currenturl = $(this).attr('rel');
+            $( getallhref ).each(function() {
+                    if($(this).attr('rel') == currenturl)
+                    {
+                        $('#breadcampclick').val(1);
+                       $(this).trigger('click');
+                    }
+                }); 
+            //getfilefolder('',$(this).attr('rel'));
+        });
+        function getfilefolder(cont,root)
+        {
+             var url = '<?php echo $baseurl."downloadlibrary/category/subdir";?>';
+                $.ajax({
+                url: url,
+                type: "POST",
+                data:{dir:root},
+                showLoader: true,
+                cache: false,
+                success: function(response){
+                    if(response.errors) {
+                        $('.column.main').html( 'opps' );
+                    }else{
+                        if(response.html !='')
+                        {
+                            if(cont !='')
+                            {
+                                $( cont ).find( '.start' ).html( '' );
+                                $( cont ).append( response.html );
+                            }
+                            $('.column.main').html( response.filelist );
+                            if( 'Sample' == root ) 
+                                $( cont ).find('UL:hidden').show();
+                            else 
+                                $( cont ).find('UL:hidden').slideDown({ duration: 500, easing: null });
+                                }
+                    }
+                }
+            }); 
+        }
+    }); 
+</script>

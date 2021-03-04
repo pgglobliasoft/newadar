@@ -1,0 +1,80 @@
+<?php 
+  $getJsonSwatchConfig = json_decode($block->getJsonSwatchConfig(),true);
+
+  function get_type($elem)
+  {
+      return $elem['Gender'];
+  }
+  $unique_types = array_unique(array_map("get_type", $getJsonSwatchConfig));
+  $result = array_filter($unique_types);
+?>
+<!-- option 1collection slider -->
+<div id="user-gird-conatiner" style="display: block;">
+   <div class="collection-owlslider">
+      <ul class="Collections">
+      </ul>
+   </div>
+   <div class="product-group">
+      <div class="product-group-slider">    
+      </div>
+      <div class="filter-popup" style="display: none">
+          <div class="more-filter" style="cursor:pointer">
+            <span>More Filters</span>
+          </div>    
+      </div>
+      <div class="popup" style="display: none;">
+            <div class="row">
+                <div class="col-4">  
+                  <label class="gender">Gender</label>
+                  <ul class="gender-filter">
+                    <li><input type="checkbox" class="checkbox selectAll" value="All" name="All">All</li>
+                    <?php foreach ($result as $k => $v) { ?>
+                    <li class="customLable">
+                      <label>
+                        <input type="checkbox" value="<?php echo $v; ?>"/>
+                        <span class="lbl padding-8"><?php echo $v;?></span>
+                    </label>
+                    </li>
+                      <?php } ?>
+                  </ul>
+                </div>
+                <div class="col-8">
+                  <label>Price</label>
+                <div class="range-slider">
+                   <input type="text" class="js-range-slider" name="my_range" value="" />
+                </div>
+                <p class="pricefilter" style="color: #afaeae;"><span>Min.Price</span><span>Max.Price</span></p>
+                </div>
+            </div>
+            <div class="row filter btn">
+                <div class="col1"> 
+                  <input id="reset-filter" type="button"value="Reset All">
+                  <input id="more-filter" type="button"value="APPLY">
+                </div>
+            </div>
+        </div>
+   </div>
+   <div class = "pro-slider">
+      <div class="product-slider">  
+      </div>
+   </div>
+</div>
+  <!-- done -->
+<script type="text/x-magento-init">
+{
+    "#user-gird-conatiner": {
+        "Sttl_Collectionsilder/js/Collectionslider": {
+            "baseurl" : "<?= $block->getBaseUrl(); ?>",
+            "logos" : <?= $block->getCollectionslider(); ?>,
+            "customersFlatDiscount" : <?= $block->getCustomersFlatDiscount(); ?>,
+            "customersBulcDiscount" : <?= $block->getCustomersBulkDiscount(); ?>,
+            "poConfig" : <?= /* @noEscape */ $block->getPoSwatchConfig(); ?>         
+        }
+    }
+}
+</script>
+
+<style>
+  /*#user-gird-conatiner { width: 70% !important; }*/
+  .pro-slider .owl-stage.stop{  transition: unset !important; transform: unset !important; }
+</style>

@@ -1,0 +1,479 @@
+ 
+<style type="text/css">
+.orderTable .orderList a{text-decoration: none; color: #000;  } .orderTable .orderList a:hover{color: #0e4169; } </style>
+<?php
+//$time_start = microtime(true); 
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+$baseurl = $storeManager->getStore()->getBaseUrl();
+$q = $block->getRequest()->getParam('q');
+$order_by = $block->getRequest()->getParam('order_by', 'CreateDate');
+$opt = $block->getRequest()->getParam('opt', 'DESC');
+$date_from = $block->getRequest()->getParam('date-from');
+$date_to = $block->getRequest()->getParam('date-to');
+$po_number = $block->getRequest()->getParam('po_number');
+$status = ($q == 'd') ? 'Draft' : $block->getRequest()->getParam('order_stats');
+$limit = 30;  
+	if (isset($_GET["page"]) && $_GET["page"] > 0) { 
+	  $pn  = $_GET["page"]; 
+	} 
+	else { 
+	  $pn = 1; 
+	};  
+$start_from = ($pn-1) * $limit;  
+$endform = $start_from +$limit;
+
+/*Part Start*/
+/* $time_end = microtime(true);
+$execution_time = ($time_end - $time_start);
+$time_start = microtime(true); 
+echo '<b>Time till here:</b> '.$execution_time;
+echo '<br/>'; */
+/*Part Ends*/
+
+$ordr_records = $block->totalrecords($status, $po_number,$pn,$limit);
+if(isset($ordr_records) && isset($ordr_records['errors'])) 
+{
+	?>
+	<div class="page-title-wrapper">
+		<h1 class="page-title">
+			<span class="base" data-ui-id="page-title-wrapper">ORDER STATUS</span>
+		</h1>
+    </div>
+	<?php
+	echo $ordr_records['message'];
+}
+else
+{
+
+$totalrecords = $ordr_records["html"];
+
+if ($pn > $ordr_records["total_pages"]) { 
+  $pn  = $ordr_records["total_pages"]; 
+}
+$orders = $block->getOrdersList($status, $po_number, $pn, $limit);
+$page_title = ($q == 'd') ? 'Purchase Order Drafts' : 'Order Status';
+$back_redirect = "0";
+if($q == 'd'){
+	$back_redirect = "1";
+}
+$currency_format = $this->helper('Magento\Framework\Pricing\Helper\Data');
+$neworderUrl = $baseurl."customerorder/customer/neworder";
+$order_stats = $block->getRequest()->getParam('order_stats');
+
+?>
+<div class="loading-mask" id="ajax-loading-mask" data-role="loader" style="display: block; position: absolute;">
+	<div class="loader">
+		<img alt="Loading..." src="<?= $block->getViewFileUrl('Sttl_Customerorder::images/loader-3.gif'); ?>"  style="position: absolute;">
+		<p>Please wait...</p>
+	</div>
+</div>
+<div class="accountPageContainer">
+<h1 class="page-title"><?php echo $page_title;?> <a href="<?php echo $neworderUrl; ?>" class="themeBtn alignRight">Place a New Order</a></h1>
+
+<div class="orderSearch orderSearchForm">
+	<form class="form order_search col-lg-12"
+				  action=""
+				  id="order_search"
+				  method="get"
+				  data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"
+				  data-mage-init='{"validation":{}}'>
+		<input name="page" id="frm_page" type="hidden" /> 		  
+		<input name="order_by" id="order_by" value="<?php echo $order_by;?>" type="hidden" /> 		  
+		<input name="opt" id="opt" value="<?php echo $opt;?>" type="hidden" /> 		  
+		<input name="po_number" id="po_number_hidden" value="<?php echo $po_number;?>" type="hidden" /> 		  
+		<span id="date-range">	  
+			<span>Search by date range:<span class="reqField">*</span></span>
+			<input name="date-from" id="date-from" readonly="true" type="input" class="datepicker" value="<?php echo $date_from;?>" data-validate="{required:true}" placeholder="From Date"  /> 
+			<strong>to</strong> 
+			<input name="date-to" id="date-to" readonly="true" type="input" class="datepicker" value="<?php echo $date_to;?>" data-validate="{required:true}" placeholder="To Date" /> 
+		</span>
+		<button type="submit" class="themeBtn action save" onclick="if (document.getElementById('page')) { document.getElementById('page').value = 1; }"  title="Search"><span>Search</span></button>
+		<button type="button" class="themeBtn btnreset action  ml-2" title="Reset"><span>Reset</span></button>
+		<?php 
+		if($q == '')
+		{
+			?>
+			<div class="clearfix pt-3"></div>
+			<div class="statusDropdown">
+				<span>Status:</span>
+				<select name="order_stats" id="order_stats">
+					<option value="">View All</option>
+					<option <?php echo ($status == 'Draft') ? 'selected="selected"' : '';?> value="Draft">Draft</option>
+					<option <?php echo ($status == 'Submitted') ? 'selected="selected"' : '';?> value="Submitted">Submitted</option>
+					<option <?php echo ($status == 'Processing') ? 'selected="selected"' : '';?> value="Processing">Processing</option>
+					<option <?php echo ($status == 'Shipped') ? 'selected="selected"' : '';?> value="Shipped">Shipped</option>
+					<option <?php echo ($status == 'PartiallyShipped') ? 'selected="selected"' : '';?> value="PartiallyShipped">Partially Shipped</option>
+				</select>
+			</div>
+		<?php
+		}
+		?>
+		
+	</form>
+</div>
+<style>
+	.orderTable .orderList th .b2b-grid-sort-icon
+	{
+		padding-left: 2px;
+		font-size: 10px;
+	}
+</style>
+<div class="orderTable">
+	<table id="example" class="display orderList">
+	    <thead>
+	        <tr>
+	            <th></th>
+	            <th>
+	                <a href="javascript:void(0);" class="grid-shorting"> Status</a>
+	            </th>
+	            <th>
+	                <a href="javascript:void(0);" class="grid-shorting">
+	                    SO Number	                    
+	                </a>
+	            </th>
+	            <th>
+	                <a href="javascript:void(0);" class="grid-shorting" >
+	                    PO Number</a>
+	            </th>
+	            <th>
+	                <a href="javascript:void(0);" class="grid-shorting" >
+	                    Order Date
+	                </a>
+	            </th>
+	            <th>
+	                <a href="javascript:void(0);" class="grid-shorting" >
+	                    Ordered
+	                </a>
+	            </th>
+	            <th>
+	                <a href="javascript:void(0);" class="grid-shorting" >
+	                    Open
+	                </a>
+	            </th>
+	            <th>
+	                <a href="javascript:void(0);" class="grid-shorting" >
+	                    Shipped
+	                </a>
+	            </th>
+	            <th>
+	                <a href="javascript:void(0);" class="grid-shorting" >
+	                    Total Order
+	                </a>
+	            </th>
+	            <th>Action</th>
+	        </tr>
+	    </thead>
+	    <tbody>
+	    	<?php
+				$ordered = 0;
+				$open = 0;
+				$shipped = 0;
+				$total_order = 0;
+				if(count($orders) > 0)
+				{ 
+	    			$count = 1;
+					foreach($orders as $order)
+					{
+						$ordered += ($order['TotalQTYUnits'] > 0) ? $order['TotalQTYUnits'] : 0;
+						$open += ($order['TotalOpen'] > 0) ? $order['TotalOpen'] : 0;
+						$shipped += ($order['TotalShipped'] > 0) ? $order['TotalShipped'] : 0;
+						$total_order += ($order['DocTotal'] > 0) ? $order['DocTotal'] : 0;
+						
+						$id_b_e = base64_encode($order['Id']);
+						if($order['dataFrom'] == 'V')
+						{
+							$id_b_e = base64_encode($order['DocNum']);
+						}
+						
+						$order_view_url = $block->getBaseUrl().'customerorder/customer/orderview/id/'.$id_b_e.'/back/'.base64_encode($back_redirect).'/df/'.base64_encode($order['dataFrom']);
+			?>		
+				<tr option-redirect = "<?php echo $order_view_url;?>" style="cursor: pointer;">
+						<td class="option-redirect">
+						<?php echo $count; ?></td>
+						<td class="option-redirect">
+							<?php echo ($order['DocStatus'] == 'PartiallyShipped') ? 'Partially Shipped' : $order['DocStatus'];?>
+						</td>
+						<td class="option-redirect"><?php echo ($order['DocNum'] != '') ? $order['DocNum'] : "";?></td>
+						<td class="option-redirect">
+							<?php //if($order_stats == "Draft" || $order['DocStatus'] == "Draft" || $order_stats == "Submitted" || $order['DocStatus'] == "Submitted"){ ?>
+						<?php echo ($order['NumatCardPo'] != '') ? $order['NumatCardPo'] : "-";?><?php /* }else{ ?>
+							<?php echo ($order['NumatCardPo'] != '') ? $order['NumatCardPo'] : "-";?>
+							<?php }*/ ?>
+						</td>
+						<td class="option-redirect" data-sort='<?= date("Y/m/d", strtotime(strtr($order["CreateDate"], '-', '/')))?>	'><?php echo ($order['CreateDate'] != '') ?  $order['CreateDate'] : "";?></td>
+						<td class="option-redirect"><?php echo ($order['TotalQTYUnits'] > 0) ? number_format((int)$order['TotalQTYUnits']) : 0.00;?></td>
+						<td class="option-redirect"><?php echo ($order['TotalOpen'] > 0) ? number_format((int)$order['TotalOpen']) : 0.00;?></td>
+						<td class="option-redirect"><?php echo ($order['TotalShipped'] > 0) ? number_format((int)$order['TotalShipped']) : 0.00;?></td>
+						<td class="option-redirect">$<?php echo number_format((float)$order['DocTotal'],2);?></td>
+						<td class="order-action">
+							<span><?php if($order_stats == "Draft" || $order['DocStatus'] == "Draft"){ ?>
+							<a class="newLinkText" href="<?php echo $storeManager->getStore()->getBaseUrl();?>customerorder/customer/neworder/id/<?php echo base64_encode($order['Id']);?>/ncp/<?php echo base64_encode($order['NumatCardPo']);?>"><span class="fa fa-pencil"></span></a>
+								<a class="newLinkTextRemove"  href="<?php echo $storeManager->getStore()->getBaseUrl();?>customerorder/customer/delete/id/<?php echo base64_encode($order['Id']).'/back/'.base64_encode($back_redirect);?>/"><span class="fa fa-close"></span></a>
+							<?php } ?></span>
+						</td>
+					</tr>
+			<?php $count++;
+				}
+			}?>		
+					
+	    </tbody>
+	    <tfoot>
+	    <?php if(count($orders) > 0){ ?>
+			<?php if(!empty($totalrecords)) : ?>
+				<tr class="paginationRow">
+					<td colspan="10">
+						<div class="fa-pull-right d-flex"><?php echo $totalrecords;?></div>
+					</td>
+				</tr>
+			<?php endif;?>
+	        
+			<tr>
+	            <td colspan="5" align="right"> Total Quantity:</td>
+	            <td id="total_Ordered"><?php echo number_format((int)$ordered);?></td>
+	            <td id="total_Open"><?php echo number_format((int)$open);?></td>
+	            <td id="total_Shipped"><?php echo number_format((int)$shipped);?></td>
+	            <td id="total_TotalOrder">$<?php echo number_format($total_order,2);?></td>
+	            <td></td>
+	        </tr>
+	      
+		<?php } ?>
+		</tfoot>
+	</table>
+</div>
+<script>
+	require([
+	    'jquery',	 
+	    'mage/calendar',
+	    'Sttl_Customerorder/js/jquery.dataTables.min'
+	], function($) {
+  		$('.loading-mask').css({'display' : 'block','position' : 'absolute'});
+		$(document).on("click", ".newLinkTextRemove",function(e){			
+			if (confirm('Are you sure you want to delete?')) {
+				$('body').trigger('processStart');
+			}else{
+				 e.preventDefault();
+			}
+		});
+	    // var filterByDate = function(column, startDate, endDate) {	
+	    // alert(startDate)     ;
+	        $.fn.dataTableExt.afnFiltering.push(
+	            function(oSettings, aData, iDataIndex) {	            	
+	            	var min = parseInt(normalizeDate($('#date-from').val()));
+			        var max = parseInt(normalizeDate($('#date-to').val()));
+			        var date = parseInt( normalizeDate(aData[4]) ) || 0; // use data for the date column
+			 
+			        if($('#date-from').val() !== ''){
+				        if ( ( isNaN( min ) && isNaN( max ) ) ||
+				             ( isNaN( min ) && date <= max ) ||
+				             ( min <= date   && isNaN( max ) ) ||
+				             ( min <= date   && date <= max ) )
+				        {
+				            return true;
+				        }
+				        return false;	  
+				    }else{
+				    	return true;
+				    }  
+
+		        }
+	        );
+	    // };
+
+	    var normalizeDate = function(dateString) {
+	            var date = new Date(dateString.replace(/-/g,'/'));
+	            var newDate = date.toString('dd-MM-yy');	          
+	            var normalized = date.getFullYear() + '' + (("0" + (date.getMonth() + 1)).slice(-2)) + '' + ("0" + date.getDate()).slice(-2);
+	            return normalized;
+	    }
+
+	    $(document).ready(function() {
+	        // var table = $('#example').DataTable();	      
+	        var table = $('#example').DataTable({
+	            select: false,
+	            "pageLength": 30,
+	            // "searching": false,
+	            "info": false,
+	            columnDefs: [{ orderable: false, targets: 0 }],
+	            "order": [
+	                [0, "asc"]
+	            ],
+	            "oLanguage": {
+			      "oPaginate": {
+			        "sFirst": "<span class='pageIcon first'></span>",
+			        "sLast":"<span class='pageIcon last'></span>",
+			        "sNext":"<span class='pageIcon next'></span>",
+			        "sPrevious":"<span class='pageIcon previous'></span>"
+			      }
+			    },
+			    "pagingType":"full_numbers",
+	            "bLengthChange": false,
+	            select: 'single',
+	            "initComplete": function( settings, json ) {
+				    // $('div.loading').remove();
+				     $('.loading-mask').css({'display' : 'none'});
+				},
+	            drawCallback: function() {
+	            	// console.log(this);
+	            	console.log(this.api().page.info());
+	            	var info = this.api().page.info();
+	            	$('.cdatatableDetails').remove();
+                    $('.paginationRow .recordTotal').text(' Displaying '+info.start+' to '+info.end+' of '+ info.recordsTotal);
+                    $('.paginate_button.next').before($('<span>',{
+		                'html':'<input type="text" value='+ (info.page+1) +' class="direct-serach"/> / '+info.pages,
+		                class:'cdatatableDetails'
+		              }));
+	            	$('#example_paginate').detach().appendTo('tfoot tr.paginationRow td .pagination');		                        
+		        },
+		        "footerCallback": function ( row, data, start, end, display ) {
+            			var api = this.api(), data;	
+            			var intVal = function ( i ) {
+				                return typeof i === 'string' ?
+				                    i.replace(/[\$,]/g, '')*1 :
+				                    typeof i === 'number' ?
+				                        i : 0;
+				            };
+				        
+			            var total_Ordered = api
+			                .column(5, {page: 'current'})
+			                .data()
+			                .reduce( function (a, b) {
+			                    return intVal(a) + intVal(b);
+			                }, 0 );
+
+			            var total_Open = api
+			                .column(6, {page: 'current'})
+			                .data()
+			                .reduce( function (a, b) {
+			                    return intVal(a) + intVal(b);
+			                }, 0 );
+
+			            var total_Shipped = api
+			                .column(7, {page: 'current'})
+			                .data()
+			                .reduce( function (a, b) {
+			                    return intVal(a) + intVal(b);
+			                }, 0 );
+
+			            var total_TotalOrder = api
+			                .column(8, {page: 'current'})
+			                .data()
+			                .reduce( function (a, b) {
+			                    return intVal(a) + intVal(b);
+			                }, 0 );
+			           
+			           $('#total_Ordered').html(total_Ordered.toFixed(0));
+			           $('#total_Open').html(total_Open.toFixed(0));
+			           $('#total_Shipped').html(total_Shipped.toFixed(0));
+			           $('#total_TotalOrder').html('$'+total_TotalOrder.toFixed(2));
+			           console.log(total_TotalOrder)
+
+            	},
+        		responsive: true,
+        		stateSave : true,
+	            "columnDefs": [{
+	                    className: "testTable",
+	                    "targets": [0],
+	                    "searchable": false,
+	                    order: "asc"
+	                },
+	                {
+	                    "targets": [4],
+	                    sType: 'date-uk'
+	                },
+	            ]	           
+	        });
+ 			table.search('').draw();
+ 			var info = table.page.info();
+ 			console.log(info);
+            $(document).on('keypress','.direct-serach',function(e){
+            	var keycode = (event.keyCode ? event.keyCode : event.which);
+            	console.log(keycode);
+            	if(keycode == '13' && $(this).val()){
+            		table.page(parseInt($(this).val() - 1)).draw(false);	
+            	}
+            })
+
+            $(document).on('click','.orderTable tbody tr td.option-redirect',function(e){    
+            // console.log($(this).closest('tr').attr('option-redirect'));        	
+            	if($(this).closest('tr').attr('option-redirect'))
+            	{
+            		window.location.href = $(this).closest('tr').attr('option-redirect')
+            	}            
+            });
+
+	        // Event listener to the two range filtering inputs to redraw on input
+	        $('#order_stats').change(function() {	        
+	        	if($(this).find('option:selected').val() != ''){
+	            	table.search($(this).find('option:selected').text()).draw();	        	
+	           	}else{
+	           		var info = table.page.info();
+	           		$('.paginate_button.next').before($('<span>',{
+		                'html':'<input type="text" value='+ (info.page) +' class="direct-serach"/> / '+info.pages,
+		                class:'cdatatableDetails'
+		              }));
+	           		table.search('').draw();
+	           	}
+	        });
+
+	        $('.btnreset').on('click', function(e) {
+	            e.preventDefault();	        
+	            $('#date-from').val('');
+	            $('#date-to').val('');
+	            table.draw();	            
+	        });
+
+	        $('#order_search .themeBtn.save').on('click', function(e) {
+	            e.preventDefault();
+	            var startDate = $('#date-from').val(),
+	                endDate = $('#date-to').val();
+				// filterByDate(4, startDate, endDate); 
+	            table.draw(); 	           
+	        });	       
+
+	    });
+
+	    $("body").delegate(".txtboxToNumeric", "keydown", function(e) {
+	        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 ||
+	            // Allow: Ctrl+A, Command+A
+	            (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+	            // Allow: home, end, left, right, down, up
+	            (e.keyCode >= 35 && e.keyCode <= 40)) {
+	            // let it happen, don't do anything
+	            return;
+	        }
+	        // Ensure that it is a number and stop the keypress
+	        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+	            e.preventDefault();
+	        }
+	    });
+
+	    ;
+
+
+
+	    $('#date-range').dateRange({
+	        buttonText: 'Select Date',
+	        dateFormat: 'MM-dd-yyyy',
+	        changeMonth: true,
+	        changeYear: true,
+	        maxDate: new Date($.now()),
+	        from: {
+	            id: 'date-from'
+	        },
+	        to: {
+	            id: 'date-to'
+	        }
+	    });
+	});
+</script>
+<?php 
+/*Part Start*/
+/* $time_end = microtime(true);
+$execution_time = ($time_end - $time_start);
+$time_start = microtime(true); 
+echo '<b>Time till here:</b> '.$execution_time;
+echo '<br/>'; */
+/*Part Ends*/
+}
+?>

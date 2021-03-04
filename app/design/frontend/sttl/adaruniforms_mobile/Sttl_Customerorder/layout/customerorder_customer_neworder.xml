@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">    
+    <head>
+        <remove src="mage/calendar.css"/>
+        <remove src="mage/gallery/gallery.css"/>
+        <remove src="Magestorm_ReCaptcha::css/default.css"/>
+        <remove src="css/print.css"/>
+        <remove src="Sttl_Customerorder::css/neworder.css"/>
+        <css src="Sttl_Customerorder::css/neworder_mobile.css"/>
+        <css src="Sttl_Collectionsilder::css/collections.css"/>
+        <css src="WeltPixel_Quickview::css/magnific-popup.css"/>
+        <remove src="mage/dataPost.js"/>
+         <script src="Sttl_Customerorder::js/tooltip.js"/>
+    </head>
+    <body>        
+          <attribute name="class" value="account"/>
+        <referenceContainer name="content">
+            <block class="Sttl\Customerorder\Block\Neworder" name="neworder" template="Sttl_Customerorder::neworder.phtml" >
+                <block class="Sttl\Collectionsilder\Block\View" name="collection_slider" template="Sttl_Collectionsilder::Collectionsilder.phtml">
+                </block>
+            </block>            
+        </referenceContainer>
+    </body>
+</page>

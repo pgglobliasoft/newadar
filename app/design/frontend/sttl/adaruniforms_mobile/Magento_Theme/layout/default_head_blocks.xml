@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <css src="mage/calendar.css"/>
+		<script src="requirejs/require.js"/>
+		<css src="css/bootstrap.min.css"/>
+        <css src="css/styles-l.css"/>
+        <css src="css/style.css"/>
+        <css src="css/responsive.css"/>
+		<script src="Magento_Theme/js/general.js"/>
+        <script src="Magento_Theme/js/auto-suggest-search.js"/>
+        <css src="css/responsive.css"/>
+        <!--<script src="js/jquery-min.js"/>
+		<script src="js/functions.js"/>
+        <script src="js/bootstrap.min.js"/>
+
+        -->
+        <title>Adar Medical Uniforms</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=0"/>
+    </head>
+    <body>
+        <referenceContainer name="after.body.start">
+			<container name="website.global.message" htmlClass="container" htmlTag="div" before="-">
+				<container name="website.global.message.row" htmlClass="row website-message" htmlTag="div">
+					<block class="Magento\Cms\Block\Block" name="website-message">
+						<arguments>
+							<argument name="block_id" xsi:type="string">website-message</argument>
+						</arguments>
+					</block>
+				</container>
+			</container>
+            <block class="Magento\Framework\View\Element\Template" name="head.polyfill" as="polyfill" template="Magento_Theme::js/polyfill.phtml" before="-"/>
+            <block class="Magento\Framework\View\Element\Js\Components" name="head.components" as="components" template="Magento_Theme::js/components.phtml" before="-"/>
+        </referenceContainer>
+    </body>
+</page>

@@ -1,0 +1,1376 @@
+<?php
+    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+    $customerSession = $objectManager->get('Magento\Customer\Model\Session');
+  	$parent_style = $block->getParentStyle();
+  	$this->product = $objectManager->get('\Magento\Catalog\Model\Product');
+  	$getProductId = $this->product->getIdBySku($parent_style);
+	$product = $this->product->load($getProductId);
+
+if ($customerSession->isLoggedIn()) : ?>
+<?php $priceHelper = $objectManager->create('Magento\Framework\Pricing\Helper\Data');
+	$parent_style = $product->getSku();
+	$collcationValue =  $product->getResource()->getAttribute('collecttion')->getFrontend()->getValue($product);
+	$style_status = "";
+	//$parent_color_data = $block->getColorData($parent_style);
+	$parent_color_data = $block->getParentColorData();
+
+if(isset($parent_color_data) && isset($parent_color_data['errors']))
+{
+
+?>
+<div class="modal fade" id="popupModal" tabindex="-1" data-keyboard="false" data-backdrop="static" role="dialog" aria-labelledby="loginModal" aria-hidden="true" style="z-index: 1400;">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+			<div class="modal-body">
+			<form class="form cart col-lg-12" action="<?php echo $this->getUrl().'adaruniforms/cart/add'?>" id="cart-form" method="post" data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"data-mage-init='{"validation":{}}'>
+				<div class="modalContainer">
+					<div class="container bg-primary p-2">
+						<div class="row">
+							<div class="col-md-4 place-an-order-back-button">
+								<span  data-dismiss="modal" aria-label="Close">
+							</div>
+							<div class="col-md-4 text-center place-an-order-text">
+								<?php echo __("Place an Order");?>
+							</div>
+							<div class="col-md-4" data-dismiss="modal">
+								<button type="button" class="productview-modal-close-inside"><i class="fa fa-times"></i></button>
+							</div>
+						</div>
+					</div>
+					<div class="container bg-light p-2">
+						<h4 class="col-md-12"><?php echo $parent_color_data['message'];?></h4>
+					</div>
+				</div>
+			</form>
+			</div>
+		</div>
+	</div>
+</div>
+<?php
+}
+else
+{
+	if(count($parent_color_data > 0)){
+		$style_status = $parent_color_data[0]['StyleStatus'];
+	}
+	//echo "<pre>";print_R($parent_color_data);exit;
+?>
+<?php
+
+$petiteSku = '';
+$tailSku = '';
+$regularSku = '';
+$currentsku = $parent_style;
+$check = substr($currentsku, -1);
+if(strtoupper($check) == strtoupper(trim('P')) || strtoupper($check) == strtoupper(trim('T')))
+{
+    $regularSku = substr($currentsku, 0,-1);
+}else{
+    $regularSku = $parent_style;
+}
+if($tailSku == '' && $petiteSku == '')
+{
+    $tailSku = $regularSku.'T';
+    $petiteSku = $regularSku.'P';
+}
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$petiteUrl = '';
+if($petiteSku != '')
+{
+
+    $productRepository = $objectManager->get('\Magento\Catalog\Model\ProductRepository');
+    try {
+        $petiteproductdata = $productRepository->get($petiteSku);
+        $petiteId = $petiteproductdata->getId();
+        $petiteSku = $petiteproductdata->getSku();
+        // $petiteUrl = $petiteproductdata->getProductUrl();
+    } catch (\Magento\Framework\Exception\NoSuchEntityException $e){
+        $petiteSku = '';
+    }
+
+}
+$tailUrl = '';
+if($tailSku != '')
+{
+
+
+    $productRepository = $objectManager->get('\Magento\Catalog\Model\ProductRepository');
+
+    try {
+        $tailproductdata = $productRepository->get($tailSku);
+        $tailId = $tailproductdata->getId();
+        $tailSku = $tailproductdata->getSku();
+        // $tailUrl = $tailproductdata->getProductUrl();
+    } catch (\Magento\Framework\Exception\NoSuchEntityException $e){
+        $tailSku = '';
+    }
+}
+$regularUrl = '';
+if($regularSku != '')
+{
+   $productRepository = $objectManager->get('\Magento\Catalog\Model\ProductRepository');
+    $regularproductdata = $productRepository->get($regularSku);
+    $regularId = $regularproductdata->getId();
+    $regularSku = $regularproductdata->getSku();
+    // $regularUrl = $regularproductdata->getProductUrl();
+}
+
+?>
+<div id="posuccess-message" style="display: none;" >
+  <p>Opertaion Successfully complated..</p>
+</div>
+<div class="modal fade" id="popupModal" tabindex="-1" data-keyboard="false" data-backdrop="static" role="dialog" aria-labelledby="loginModal" aria-hidden="true" style="z-index: 1400;">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form class="form cart col-lg-12" action="<?php echo $this->getUrl().'adaruniforms/cart/add'?>" id="cart-form" method="post" data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"data-mage-init='{"validation":{}}'>
+                    <div class="modalContainer">
+                        <div class="container bg-primary p-2">
+                            <div class="row">
+                                <div class="col-md-4 place-an-order-back-button">
+                                    <span  data-dismiss="modal" aria-label="Close">
+                                        <?php if (!$customerSession->isLoggedIn()) : ?>
+									<?php echo __("Back"); //class="backtoproduct"?></span>
+                                    <?php endif;?>
+								</div>
+                                <div class="col-md-4 text-center place-an-order-text">
+                                    <?php echo __("Place an Order");?>
+								</div>
+                                <div class="col-md-4" data-dismiss="modal">
+                                    <button type="button" class="productview-modal-close-inside"><i class="fa fa-times"></i></button>
+								</div>
+							</div>
+						</div>
+                        <?php
+							$getponumber = $block->getcustomponumber($customerSession->getCustomerId());
+						?>
+                        <div class="container bg-light p-2">
+                            <h4 class="col-md-12">Create a new purchase order, or add it to an existing one.</h4>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <input class="tabactive" name="po_number" type="text" placeholder="P.O NUMBER" value="">
+                                    <span ></span>
+								</div>
+                                <span>or</span>
+                                <div class="col-md-4 text-center">
+                                    <!--<input name="select_existing p.o." type="text" >-->
+                                    <select  id="select_existing" name="select_existing_p_o">
+									</select>
+                                    <input type="hidden" name="sap_ponumber_id" value="" id="sap_ponumber_id">
+								</div>
+								<div class="col-md-3">
+
+									<div class="show-product-dis-box">
+										 <span><?php echo $collcationValue;?> </span><br/>
+										 <span>Style: <span><?php echo $parent_style;?></span></span></br>
+										 <span>Status: <span><?php echo $style_status;?></span></span>
+									</div>
+								</div>
+                                <!--<div class="col-md-3">
+                                    <input type="submit" class="btn-primary float-right" value="<?= $block->escapeHtml(__('Add To P.O.')) ?>" />
+								</div>-->
+							</div>
+						</div>
+                <div id="message" class="messages">
+                <div id="msg_text"></div>
+						</div>
+          <?php if(isset($petiteSku) && $petiteSku!= '' ||  isset($tailSku) && $tailSku !='') { ?>
+            <div class="catBtns">
+              <?php if(isset($regularSku) && $regularSku != ''){ ?>
+              <a href="javascript:void(0)" id="Regular" product-sku="<?php echo $regularSku;?>" class="customBtns <?php if($parent_style == $regularSku){ echo 'activeCat' ;}?>">Regular</a>
+              <?php } ?>
+              <?php if(isset($petiteSku) && $petiteSku !=''){?>
+              <a href="javascript:void(0)" id="Petite" product-sku="<?php echo $petiteSku;?>" class="customBtns <?php if($parent_style == $petiteSku){ echo 'activeCat' ;}?>">Petite</a>
+              <?php } ?>
+              <?php if(isset($tailSku) && $tailSku !=''){?>
+              <a href="javascript:void(0)" id="Tall" product-sku="<?php echo $tailSku;?>" class="customBtns <?php if($parent_style == $tailSku){ echo 'activeCat' ;}?>">Tall</a> <!--activeCat-->
+              <?php } ?>
+          </div>
+          <?php } ?>
+                        <?php
+                        $main_color_array = array();
+			            $main_color_html = '<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">';
+			            $main_color_i = $fashionColor_i = 0;
+			            $main_color_class = '';
+			            $main_size_char_html = '<div class="tab-content order-table" id="nav-tabContent"> ';
+			            $colorChange = '';
+			            $size_char_i = 0;
+			            $coreColor = '';
+                  $fashionColor = '';
+			            $fashionColorName = '';
+			            $first_option_color = '';
+                  $defaultcoreselectedcolor = "";
+                  $defaultfashionselectedcolor = '';
+                        $main_color_array = array();
+                        $eta_date = array();
+                         echo "<div  id='color-data'><div id='".$parent_style."' class='product_options'><div id='overlay' style='display:none'></div>";
+
+
+            foreach ($parent_color_data as $key => $color_data) {
+                if ($color_data['Color'] != '' && $color_data['ColorSwatch'] != '') {
+                  $eta_row_avail_to_show = false;
+                    if (!in_array($color_data['ColorCode'], $main_color_array)) {
+                        if ($main_color_i != 0) {
+                            $main_color_class = '';
+                            //$main_color_aria = '';
+                            $main_color_aria = 'aria-selected="true"';
+                        }
+                        if ($main_color_i == 0) {
+                            $main_color_class = 'active';
+                            $main_color_aria = 'aria-selected="false"';
+                        }
+                        if($color_data['ColorStatus'] === 'Core')
+                        {
+                            if($main_color_i == 0){
+                              $defaultcoreselectedcolor = $color_data['Color'];
+                            }
+                            $coreColor .= '<div id="core" class="' . $main_color_class . ' swatch-option image "  data-toggle="tab" href="#' . $color_data['ColorCode'] . '" option-color-code ="' . preg_replace('/[^a-zA-Z0-9_ %\[\]\.\(\)%&-]/s', '', $color_data['ColorCode']) . '" option-color-status = "' . $color_data['ColorStatus'] . '" option-style-status = "' . $color_data['StyleStatus'] . '" tabindex="' . $key . '" option-id="' . $color_data['Style'] . '" option-core-color-name = "' . $color_data['Color'] . '" option-tooltip-thumb="' . strtolower($color_data['ColorSwatch']) . '" option-tooltip-value="' . strtolower($color_data['ColorSwatch']) . '" role="tab" aria-controls="' . $color_data['ColorCode'] . '" ' . $main_color_aria . ' style="background: url(' . strtolower($color_data['ColorSwatch']) . ') no-repeat center; background-size: 650%;"><span class="swatch_img"><input name="style" type="hidden" value ="' . $parent_style . '"><input name="qty_change_' . $color_data['ColorCode'] . '"class="qty_change" id="qty_change_' . $color_data['ColorCode'] . '" type="hidden" value ="0"> </span><div class="bottom-tooltip-active"><p class="color-active">'.$color_data['Color'].'</p></div></div>';
+                        }else if($color_data['ColorStatus'] !== '' ){
+
+                            if($main_color_i == 0){
+                              $defaultfashionselectedcolor = $color_data['Color'];
+                            }
+                            if ($fashionColor_i == 0) {
+                                $fashionColorName = $color_data['Color'];
+                                $first_option_color = $color_data['ColorStatus'];
+                            }
+                            $fashionColor .= '<div id="fashion" class="' . $main_color_class . ' swatch-option image "  data-toggle="tab" href="#' . $color_data['ColorCode'] . '" option-color-code ="' . preg_replace('/[^a-zA-Z0-9_ %\[\]\.\(\)%&-]/s', '', $color_data['ColorCode']) . '" option-color-status = "' . $color_data['ColorStatus'] . '" option-style-status = "' . $color_data['StyleStatus'] . '" tabindex="' . $key . '" option-id="' . $color_data['Style'] . '" option-fashion-color-name = "' . $color_data['Color'] . '" option-tooltip-thumb="' . strtolower($color_data['ColorSwatch']) . '" option-tooltip-value="' . strtolower($color_data['ColorSwatch']) . '" role="tab" aria-controls="' . $color_data['ColorCode'] . '" ' . $main_color_aria . ' style="background: url(' . strtolower($color_data['ColorSwatch']) . ') no-repeat center; background-size: 650%;"><span class="swatch_img"><input name="style" type="hidden" value ="' . $parent_style . '"><input name="qty_change_' . $color_data['ColorCode'] . '"class="qty_change" id="qty_change_' . $color_data['ColorCode'] . '" type="hidden" value ="0"> </span><div class="bottom-tooltip-active"><p class="color-active">'.$color_data['Color'].'</p></div></div>';
+                            $fashionColor_i++;
+                        }
+                        $main_color_i++;
+                        $main_color_array[] = $color_data['ColorCode'];
+                        $activeclass = '';
+                        $filterBy = $color_data['ColorCode'];
+                        $colorcode_array = array_filter($parent_color_data, function ($var) use ($filterBy) {
+                            return ($var['ColorCode'] == $filterBy);
+                        });
+                        $filterByEta = '';
+                        $eta_array = array_filter($colorcode_array, function ($var) use ($filterByEta) {
+                            return (!empty((int)$var["ETA"]));
+
+                        });
+                        if ($size_char_i == 0) {
+                            $activeclass = 'active';
+                        }
+                         $main_size_char_html .= '<div class="tab-pane fade show ' . $activeclass . '" id="' . $color_data['ColorCode'] . '" role="tabpanel">';
+                        $tr_one = '<tr><td align="right">Size</td>';
+                        $tr_two = '<tr><td align="right">Price</td>';
+                        $tr_three = '<tr><td align="right">In Stock</td>';
+                        // if (!empty($eta_array)) {
+
+                            // $tr_three1 = '<tr><td align="right" width="75">Restock Date</td>';
+                            $tr_three1 = '<tr><td align="right" class="order_head_eta_title" width="75"><p class="head_restockdate_lable_p">Restock Date</p><p class="head_restockqty_lable_p">Restock QTY.</p></td>';
+                        // }
+                        $tr_four = '<tr><td align="right">Quantity</td>';
+                        $tr_five = '<tr><td align="right">Total</td>';
+                        foreach ($colorcode_array as $key => $value) {
+                              $qty = (isset($value["ActualQty"]) && $value["ActualQty"] != '') ? $value["ActualQty"] : 0.00;
+                              $show_qty = (isset($value["QtyAvailable"]) && $value["QtyAvailable"] != '') ? $value["QtyAvailable"] : 0.00;
+                              $tr_one .= '<td align="center">' . $value['Size'] . '</td>';
+                              if ($value["DisPrice"] < $value["UnitPrice"]) {
+                                  $tr_two .= '<td align="center" class="disprice"><span>' . $priceHelper->currency($value["DisPrice"], true, false) . '</span><span class="mainprice">'.$priceHelper->currency($value["UnitPrice"], true, false) . '</span> </td>';
+                              } else {
+                                  $tr_two .= '<td align="center">' . $priceHelper->currency($value["UnitPrice"], true, false) . '</td>';
+                              }
+                              $tr_three .= '<td align="center">' . floatval($show_qty) . ((floatval($show_qty) >= 100) ? '+' : '') . '</td>';
+
+                              $eta_date = array(
+                                "ETA1" => array(
+                                      "Date" => date("m-d-y", strtotime($value["ETA1"])),
+                                      "Qty" => $value["EtaQty1"],
+                                  ),
+                                "ETA2" => array(
+                                      "Date" => date("m-d-y", strtotime($value["ETA2"])),
+                                      "Qty" => $value["EtaQty2"],
+                                  ),
+                                "ETA3" => array(
+                                      "Date" => date("m-d-y", strtotime($value["ETA3"])),
+                                      "Qty" => $value["EtaQty3"],
+                                  )
+                              );
+
+                              $currentdate = date("m-d-y");
+
+                              if (!empty($eta_date)) {
+                                $count = 1;
+                                $tag_count = 0;
+                                $eta_count_top = 0;
+                                $eta_class = "eta-tooltip";
+                                $eta_avail_to_show = false;
+                                  foreach ($eta_date as $keys => $datas) {
+                                    if($eta_date[$keys]["Date"] > $currentdate && !empty((int)$datas["Date"]) && $eta_date[$keys]["Qty"] > 0 && $eta_avail_to_show == false){
+                                      $eta_avail_to_show = true;
+                                      $eta_row_avail_to_show = true;
+                                      // echo $eta_avail_to_show;
+                                    }
+                                  }
+                                  if($eta_avail_to_show){
+                                       $tr_three1 .= '<td class="order_head_eta_data" align="center">';
+                                    foreach ($eta_date as $key => $date_eta) {
+                                        if($eta_date[$key]["Date"] > $currentdate && !empty((int)$date_eta["Date"]) && $eta_date[$key]["Qty"] > 0){
+                                            // $tr_one .= '<p class="eta-date-list">'.$count.'. '.$eta_date[$key]["Date"].' - '.$eta_date[$key]["Qty"] .'</p>';
+                                            // $tr_three1 .= '<div><span class="eta_date_product_option_span">'.$eta_date[$key]["Date"].'</span></div>';
+                                            // $count++;
+                                           $eta_qty_show = $eta_date[$key]["Qty"];
+                                            if($eta_qty_show > 500){
+                                                $eta_qty_show = "500+";
+                                            }
+
+                                            $tr_three1 .= '<div class="eta_date_qty_cont">';
+                                            $tr_three1 .= '<p class="eta_date_product_option_span">'.$eta_date[$key]["Date"].'</p>';
+                                            $tr_three1 .= '<p class="eta_qty_product_option_span">'.$eta_qty_show.'</p></div>';
+                                            $count++;
+                                        }
+                                    }
+                                    $tr_three1 .= '</td>';
+                                  }else{
+                                    $tr_three1 .= '<td align="center"></td>';
+                                  }
+
+                                  // if (empty((int)$value["ETA"])) {
+                                  //     $tr_three1 .= '<td align="center"></td>';
+                                  // } else {
+                                  //     $tr_three1 .= '<td align="center">' . date("m-d-y", strtotime($value["ETA"])) . '</td>';
+                                  // }
+                              }
+                              $tr_four .= '<td align="center" class="qtyTd">
+                          <input name="qty[' . $value['Color'] . '][' . $value['Size'] . ']" type="text" pattern="[0-9]" min="1" class="checkvalue" autocomplete="off" max="' . floatval($qty) . '" ' . (($qty <= 0) ? '"' : "") . ' >
+                          <span class="maxqtyvaldi"></span>
+                          <input name="showprice[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . floatval($value["DisPrice"]) . '">
+                          <input name="selectcolor" type="hidden" value ="' . $value['Color'] . '">
+                          <input name="selectsize" type="hidden" value ="' . $value['Size'] . '">
+                          <input name="itemscode[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . $value['ItemCode'] . '">
+                          <input name="colorcode[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . $value['ColorCode'] . '">
+                          <input name="mainprice[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . floatval($value["UnitPrice"]) . '">
+                          <input name="DiscountPer[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . floatval($value["DisPercent"]) . '">
+                          <input name="DiscountPrice[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . floatval($value["DisPrice"]) . '">
+                          </td>';
+                              $tr_five .= '<td align="center" class="total"><input class="unittotal" name="inpprice[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value =""><span class="showprice"></span></td>';
+                          }
+                        $tr_one .= '</tr>';
+                        $tr_two .= '</tr>';
+                        $tr_three .= '</tr>';
+                        if (!empty($eta_array) && $eta_row_avail_to_show) {
+
+                            $tr_three1 .= '</tr>';
+                        }
+                        $tr_four .= '</tr>';
+                        $tr_five .= '</tr>';
+                        $main_size_char_html .= "<div class='colorContainer'><table class='table table-bordered table-responsive'>";
+                        $main_size_char_html .= $tr_one;
+                        $main_size_char_html .= $tr_two;
+                        $main_size_char_html .= $tr_three;
+                        if (!empty($eta_array) && $eta_row_avail_to_show) {
+                            $main_size_char_html .= $tr_three1;
+                        }
+                        $main_size_char_html .= $tr_four;
+                        $main_size_char_html .= $tr_five;
+
+                        $main_size_char_html .= '</table><div  class="cf viewpouplink"><a href="javascript:void(0)" class="saveChng">Add/Update P.O.</a><a href="javascript:void(0)" class="discardChng" >Discard Changes</a><input name="submitcolor" type="hidden" value ="'.$value['Color'].'"><input id="closepopup" name="closepopup" type="hidden" value =""></div></div></div>';
+
+
+
+                        $size_char_i++;
+                    } else { }
+                }
+            }
+
+
+            if($coreColor != '' || $fashionColor != ''){
+              $main_color_html .= '<div class="swtach">';
+            }
+            if($coreColor != '') {$main_color_html .='
+              <div class="customorder-color core-color-section">
+                  <div id="coreClass" class="colorImage active">
+                      <span>Core Colors: </span>
+
+                  </div>
+                  <div class="swatch-color-container">'.$coreColor.'</div>
+              </div>';}
+            if($fashionColor != '') {$main_color_html .= '
+              <div class="customorder-color fashion-color-section">
+                  <div id="fashionClass" class="colorImage">
+                      <span>Fashion Colors:</span>
+
+                  </div>
+                  <div class="swatch-color-container">'.$fashionColor.'</div>
+              </div>';}
+            $main_color_html .= '<div class="colorstatus"><span id="colorstatus">Selected Color Status : </span><span id="Status">'.$color_data['ColorStatus'].'</span></div></div>';
+            if($coreColor === '' && $fashionColor === '' )
+            {
+                $main_color_html .= '<span class="style-notfound custom-error message-error error">Item not found.</span>';
+            }
+            echo $main_color_html;
+            echo "</div>";
+            echo $main_size_char_html;
+
+
+
+                            foreach($parent_color_data as $key => $values)
+                            {
+                                if($values['Color'] != '' && $values['ColorSwatch'] != '')
+                                {
+                                	if(!in_array($values['ColorCode'], $main_color_array))
+								{
+
+									echo "<div id='".$values['Style']."_".str_replace("/", "", $values['ColorCode'])."' class='collapseContainer cart-popup'>";
+
+									echo '<a href="#'.str_replace("/", "", $values['ColorCode']).'" data-toggle="collapse" class="collapsed"><span class="swatch_img"><input name="style" type="hidden" value ="'.$parent_style.'"><input name="qty_change_'.str_replace("/", "", $values['ColorCode']).'"  class="qty_change" id="qty_change_'.str_replace("/", "", $values['ColorCode']).'" type="hidden" value ="0">';
+									if (!empty($values['ColorSwatch']))
+
+									echo '<img src="'.strtolower($values['ColorSwatch']).'" ></span>&nbsp;&nbsp;';
+
+									echo $values['Color'].' / '.$values['ColorStatus'].'</a>';
+									$main_color_array[] = $values['ColorCode'];
+									$filterBy = $values['ColorCode'];
+									$colorcode_array = array_filter($parent_color_data, function ($var) use ($filterBy) {
+			    						return ($var['ColorCode'] == $filterBy);
+									});
+
+									echo "<div id='".str_replace("/", "", $values['ColorCode'])."' class='collapse'>";
+									$tr_one = '<tr><td align="right">Size</td>';
+									$tr_two = '<tr><td align="right">Price</td>';
+									$tr_three = '<tr><td align="right">In Stock</td>';
+									//$etacheck = $block->getchecketa($values['Style'],$values['ColorCode']);
+									$filterByEta = '';
+									// $eta_array = array_filter($colorcode_array, function ($var) use ($filterByEta) {
+									// 		return ($var['ETA'] != '');
+									// 	});
+									$eta_array = array_filter($colorcode_array, function ($var) use ($filterByEta) {
+			                            return (!empty((int)$var["ETA"]));
+
+			                        });
+									// if(!empty($eta_array))
+									// {
+
+										$tr_three1 = '<tr class=""><td align="right" width="75">Restock Date</td>';
+									// }
+
+									$tr_four = '<tr><td align="right">Quantity</td>';
+									$tr_five = '<tr><td align="right">Total</td>';
+
+									//$parent_color_data = $block->DatabyColor($values['Style'],$values['ColorCode']);
+
+									$qty = 0.00;
+									foreach ($colorcode_array as $key => $value)
+									{
+										$qty = (isset($value["ActualQty"]) && $value["ActualQty"] != '') ? $value["ActualQty"] : 0.00;
+										$show_qty = (isset($value["QtyAvailable"]) && $value["QtyAvailable"] != '') ? $value["QtyAvailable"] : 0.00;
+
+										//echo "<pre>";print_R($value);
+										// if(floatval($value["QtyAvailable"]) > 0)
+										// {
+										$tr_one .= '<td align="center">'.$value['Size'].'</td>';
+										if($value["UnitPrice"] > $value["DisPrice"])
+										{
+											$tr_two .= '<td align="center" class="disprice aaa"><span>'.$priceHelper->currency($value["DisPrice"], true, false).'</span> <span class="mainprice">'.$priceHelper->currency($value["UnitPrice"], true, false).'</span></td>';
+
+										}else{
+											$tr_two .= '<td align="center">'.$priceHelper->currency($value["UnitPrice"], true, false).'</td>';
+
+										}
+										$tr_three .= '<td align="center">'.floatval($show_qty).((floatval($show_qty) >= 100) ? '+' : '').'</td>';
+										 if (!empty($eta_array)) {
+			                                if (empty((int)$value["ETA"])) {
+			                                    $tr_three1 .= '<td align="center"></td>';
+			                                } else {
+			                                    $tr_three1 .= '<td align="center">' . date("m-d-y", strtotime($value["ETA"])) . '</td>';
+			                                }
+			                            }
+										$tr_four .= '<td align="center" class="qtyTd">
+										<input name="qty['.$value['Color'].']['.$value['Size'].']" type="text" pattern="[0-9]" min="1" class="checkvalue" autocomplete="off" max="'.floatval($qty).'" '.(($qty <= 0) ? '"' : "" ).' >
+										<span class="maxqtyvaldi"></span>
+										<input name="showprice['.$value['Color'].']['.$value['Size'].']" type="hidden" value ="'.floatval($value["DisPrice"]).'">
+										<input name="selectcolor" type="hidden" value ="'.$value['Color'].'">
+										<input name="selectsize" type="hidden" value ="'.$value['Size'].'">
+										<input name="itemscode['.$value['Color'].']['.$value['Size'].']" type="hidden" value ="'.$value['ItemCode'].'">
+										<input name="colorcode['.$value['Color'].']['.$value['Size'].']" type="hidden" value ="'.$value['ColorCode'].'">
+										<input name="mainprice['.$value['Color'].']['.$value['Size'].']" type="hidden" value ="'.floatval($value["UnitPrice"]).'">
+										<input name="DiscountPer['.$value['Color'].']['.$value['Size'].']" type="hidden" value ="'.floatval($value["DisPercent"]).'">
+										<input name="DiscountPrice['.$value['Color'].']['.$value['Size'].']" type="hidden" value ="'.floatval($value["DisPrice"]).'">
+										</td>';
+										$tr_five .= '<td align="center" class="total"><input class="unittotal" name="inpprice['.$value['Color'].']['.$value['Size'].']" type="hidden" value =""><span class="showprice"></span></td>';
+										//  }
+									}
+									$tr_one .= '</tr>';
+									$tr_two .= '</tr>';
+									$tr_three .= '</tr>';
+									if(!empty($eta_array))
+									{
+										$tr_three1.= '</tr>';
+									}
+
+									$tr_four .= '</tr>';
+									$tr_five .= '</tr>';
+									echo "<div class='colorContainer'><table class='table table-bordered table-responsive'>";
+									echo $tr_one;
+									echo $tr_two;
+									echo $tr_three;
+									if(!empty($eta_array))
+									{
+										echo $tr_three1;
+									}
+
+									echo $tr_four;
+									echo $tr_five;
+									echo '</table><div  class="cf viewpouplink"><a href="#" class="saveChng">Add/Update P.O.</a><a href="#" class="discardChng" >Discard Changes</a><input name="submitcolor" type="hidden" value ="'.$value['Color'].'"><input id="closepopup" name="closepopup" type="hidden" value =""></div></div>';
+									echo "</div>";
+									echo "</div>";
+								}
+								}
+							}
+                            echo "</div>";
+                            echo "<div class='container bg-light p-2  bottomBtn'><a class='btn-primary float-right' id='chekout'><strong>CHECKOUT</strong> : <span class='grandtotal'>$0.00</span><input type='hidden' id='hi_grandtotal' name='hi_grandtotal' value=''><input type='hidden' id='activetab_id' name='activetab_id' value=''><input type='hidden' id='chekouthidden' name='chekouthidden' value=''></a></div></div>"
+
+						?>
+
+<script>
+	require(['jquery'],function($){
+			$(document).on("click", ".swatch-option.image",function()	{
+   		// setTimeout(function() { var x = window.scrollX, y = window.scrollY; jQuery('#nav-tabContent div.show.active .qtyTd').first().find('input.checkvalue').focus();  window.scrollTo(x, y);}, 200);
+	   		$('.swtach div , .swatch-option.image').removeClass("active");
+	   		$(this).addClass("active");
+	   		const id = $(this).attr('option-color-code');
+	   	  	$(".option-thumbnail div , .colorImage").removeClass("active");
+	   	  	$('#DR'+id).addClass("active");
+	   	  	$("#"+$(this).attr('id')+'Class').addClass('active');
+	   	  	var newSta = $(this).attr('option-color-status');
+	   		$(".colorstatus #Status").text(newSta);
+	   		var newcolor = $(this).attr('option-core-color-name');
+        console.log(newcolor);
+	   		$(".core-color-name").text(newcolor);
+	   		if(newcolor){
+	   		$(".fashion-color-name").text("");
+	   			$(".core-color-name").text(newcolor);
+	   		}
+	   		var facolor = $(this).attr('option-fashion-color-name');
+	   		if(facolor){
+	   		$(".core-color-name").text("");
+	   		$(".fashion-color-name").text(facolor);
+
+	   		}
+	   	})
+	 });
+require(['jquery','Magento_Ui/js/modal/modal','mousewheelScroll'],function(jQuery,modal){
+
+                 /* 
+                 *popup dragable event
+                 */
+                jQuery("#popupModal .modal-content").draggable({handle: ".container.bg-primary.p-2"});
+
+
+ posuccesspopup();
+
+                function posuccesspopup(){
+                  var options = {
+                    type: 'popup',
+                    responsive: true,
+                    innerScroll: true,
+                    modalClass: "po-success-popup",
+                    modalCloseBtn: true,
+                  };
+
+                  var popup = modal(options, jQuery('#posuccess-message'));
+                }
+
+
+
+
+              function adderror(message)
+              {
+                // jQuery("#msg_text").removeClass("success");
+                // jQuery("#msg_text").addClass("error");
+                // jQuery("#msg_text").html(message);
+                // jQuery("#message").show();
+                // jQuery("#message").focus();
+                jQuery("#posuccess-message p").html(message);
+                jQuery("#posuccess-message").modal("openModal");
+                jQuery(".modalContainer").css("pointer-events","none");
+              setTimeout(function(){
+                // console.log("Aaa");
+                jQuery("#posuccess-message").modal("closeModal");
+                jQuery(".modalContainer").css("pointer-events","");
+              }, 3000);
+                return true;
+              }
+              function addsuccess(message)
+              {
+                // jQuery("#msg_text").removeClass("error");
+                // jQuery("#msg_text").addClass("success");
+                // jQuery("#msg_text").html(message);
+                // jQuery("#message").show()
+                // jQuery("#message").focus();
+                jQuery("#posuccess-message p").html(message);
+                jQuery("#posuccess-message").modal("openModal");
+                jQuery(".modalContainer").css("pointer-events","none");
+                setTimeout(function(){
+                  // console.log("Aaa");
+                jQuery(".modalContainer").css("pointer-events","");
+                jQuery("#posuccess-message").modal("closeModal");
+              }, 3000);
+                return true;
+              }
+var htmldata = jQuery("#color-data").html();
+var pstyleid = jQuery(".customBtns.activeCat").attr('id');
+
+
+
+
+
+  jQuery(document).on('hide.bs.collapse', ".collapse", function(e){
+    if(jQuery("#"+this.id).parent().find(".qty_change").val() > 0)
+    {
+      return false;
+    }
+  });
+
+    jQuery( document ).on( "click", "#removeUser .mfp-close-inside", function( event, ui ) {
+      jQuery('#goback').click();
+
+    });
+
+
+    jQuery(document).on('show.bs.collapse', ".collapse", function(e){
+        if(jQuery('.collapse.show').length > 0)
+        {
+          var nextopenid = this.id;
+          jQuery('#activetab_id').val(nextopenid);
+          var activetavinputs = jQuery(".collapseContainer a[aria-expanded=true]").next('div.show').find('.checkvalue');
+          var valIsExists = false;
+          var is_qty_change = jQuery(".collapseContainer a[aria-expanded=true]").find(".qty_change").val();
+          var prev_obj_id = jQuery(".collapseContainer a[aria-expanded=true]").next('div.show').attr("id");
+          var is_qty_change = 0;
+          if (typeof prev_obj_id !== "undefined") {
+
+            is_qty_change = jQuery("#qty_change_"+prev_obj_id.replace("/", "")).val();
+        }
+
+        jQuery(activetavinputs).each(function() {
+          if (jQuery(this).val() != '')
+          {
+            valIsExists = true;
+
+          }
+        });
+
+        if(valIsExists && is_qty_change == 1)
+        {
+          var delid = '';
+          var opt = {autoOpen: false};
+            var theDialog = jQuery("#removeUser").dialog(opt);
+            theDialog.dialog("open");
+            return false;
+
+        } else {
+          showtotal();
+        }
+
+        jQuery("#cart-form a[data-toggle='collapse']").removeClass("collapse").addClass("collapsed").attr("aria-expanded", false);
+        var getactivetab_id = jQuery('#activetab_id').val();
+        jQuery('#'+getactivetab_id).siblings('a').attr("aria-expanded", true).removeClass("collapsed").addClass("collapse");
+        jQuery('.collapse').removeClass("show");
+        jQuery('.collapse').addClass("hide");
+        jQuery(this).focus();
+      }
+      else{
+
+      }
+      showtotal();
+    });
+
+
+  jQuery(document).ready(function() {
+    if(jQuery(".product_options").length){
+      jQuery(".product_options").mCustomScrollbar();
+    }
+
+     // jQuery(document).on("focusout","[name='po_number']", function(event){
+     //    closepopupouter();
+     //  });
+     //
+     //  function closepopupouter(){
+     //  }
+      // jQuery(document).on("click", function(event){
+      //   event.preventDefault();
+      //   if(!jQuery(event.target).closest("#importinverdata .modal-content, .loading-mask,.loader").length){
+      //     if(!jQuery("[name='po_number']").is(":focus")){
+      //       jQuery(".productview-modal-close-inside").trigger("click");
+      //     }
+      //   }
+      // });
+
+      jQuery(document).keyup(function(e) {
+        if (e.which === 27) {
+          jQuery(".productview-modal-close-inside").trigger("click");
+        }
+    });
+
+  jQuery('#popupModal').on('hidden.bs.modal', function () {
+    jQuery("#cart-form #sap_ponumber_id, #cart-form .tabactive").val('');
+    //jQuery('.discardChng').hide();
+    jQuery("#cart-form .qty_change").val(0);
+    jQuery("#cart-form #select_existing option:selected").prop("selected", false);
+    jQuery("#cart-form #select_existing, #cart-form .tabactive").prop("disabled", false);
+    jQuery('.collapse').removeClass("show");
+    jQuery("#msg_text").html('');
+
+      jQuery("#cart-form .checkvalue").each(function() {
+        jQuery(this).val('')
+        jQuery(this).next("span").html('');
+        var selectprice = jQuery(this).closest('td').find('input[type=hidden]').val();
+        var selectcolor = jQuery(this).closest('td').find('input[name=selectcolor]').val();
+        var selectsize = jQuery(this).closest('td').find('input[name=selectsize]').val();
+        jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').val('');
+        jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').closest('td').find('span').html('');
+      });
+    });
+
+    jQuery('#popupModal').on('shown.bs.modal', function () {
+      jQuery('#closepopup').val('');
+      if(jQuery(".core-color-section").is(":visible")){
+        jQuery(".core-color-section").find(".swatch-option.image").first().trigger("click");
+      }
+      setTimeout(function(){
+        // var popHeight = jQuery(window).height();
+        getExstingPONumber("<?php echo $customerSession->getCustomerId();?>")
+        // var popup_ccontent_height = popHeight - 275;
+        // jQuery('.product_options').attr('style', 'height:'+popup_ccontent_height+'px;');
+      }, 50);
+  });
+
+    // jQuery('#goback').click(function() {
+    jQuery(document).on('click','#goback', function(e) {
+      jQuery('#removeUser').dialog('close');
+      jQuery("#closepopup").val(0);
+      var closepopup = jQuery('#closepopup').val();
+      showtotal();
+
+    });
+
+    // jQuery('#savecontinue').click(function() {
+    jQuery(document).on('click','#savecontinue', function(e) {
+      jQuery('#removeUser').dialog('close');
+      jQuery('.collapse').removeClass("show");
+      jQuery('.collapse').addClass("hide");
+      var getactivetab_id = jQuery('#activetab_id').val();
+      jQuery("#cart-form a[data-toggle='collapse']").removeClass("collapse").addClass("collapsed").attr("aria-expanded", false);
+      jQuery('#'+getactivetab_id).siblings('a').attr("aria-expanded", true).removeClass("collapsed").addClass("collapse");
+      submitform();
+      jQuery('#'+getactivetab_id).addClass("show");
+      jQuery('#'+getactivetab_id).focus();
+      jQuery("#cart-form .qty_change").val(0);
+
+    });
+
+    // jQuery(".tabactive").focusout(function() {
+    jQuery(document).on('focusout','.tabactive', function(e) {
+      var ponumberText = jQuery(this).val();
+      if(jQuery(this).attr('readonly'))
+      {
+        return false;
+      }
+      if(jQuery.trim(ponumberText).length > 0)
+      {
+        var IsExists = false;
+        jQuery('#select_existing option').each(function(){
+          if (this.text == ponumberText)
+          IsExists = true;
+        });
+        if(IsExists)
+        {
+
+          adderror('PO number already exist.')
+          jQuery('#overlay').show()
+          jQuery('[data-toggle="collapse"]').prop('disabled',true);
+          jQuery("#select_existing").prop("disabled", true);
+          return false;
+        }
+        jQuery('.loading-mask').css("display","")
+        var result = checkEnterPONumber("<?php echo $customerSession->getCustomerId();?>",ponumberText);
+        if(result == 'true')
+        {
+          jQuery('[data-toggle="collapse"]').prop('disabled',false);
+          jQuery('#overlay').hide()
+          jQuery("#select_existing").prop("disabled", true);
+          jQuery("#select_existing option:selected").prop("selected", false)
+          jQuery('#sap_ponumber_id').val('')
+          //jQuery('.discardChng').hide();
+
+          }else{
+          jQuery('#overlay').show()
+          jQuery('[data-toggle="collapse"]').prop('disabled',true);
+          jQuery("#select_existing").prop("disabled", true);
+          return false;
+        }
+        jQuery('.loading-mask').css("display","none")
+      }
+      else
+      {
+        jQuery("#select_existing").prop("disabled", false);
+      }
+    });
+    // jQuery(".checkvalue").focusout(function(e){
+    jQuery(document).on('focusout','.checkvalue', function(e) {
+      jQuery('.discardChng').show();
+      checkvalueUpdate(jQuery(this), false);
+    });
+    // jQuery(".checkvalue").keypress(function (e) {
+      jQuery(document).on('keypress','.checkvalue', function(e) {
+      var existponumberText = jQuery('#select_existing :selected').val()
+      var ponumberText = jQuery(".tabactive").val();
+      if(existponumberText != '' || jQuery.trim(ponumberText).length > 0)
+        {
+          if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+            return false;
+          }
+        }
+        else
+        {
+          adderror("Please enter a P.O. number or Select an Existing P.O. before entering Qty’s");
+          return false;
+
+        }
+    });
+    // jQuery(".tabactive").keypress(function (e) {
+    jQuery(document).on('keypress',".tabactive", function(e) {
+      var inputVal = this.value + String.fromCharCode(e.keyCode);
+      var regexAlphanumeric = /^([a-zA-Z0-9\!\@\#\&\*\(\)\-\_\+\/\\\:\;\.\,\>\<\=\|\}\{\]\[]+)$/;
+      var keycode = (e.keyCode ? e.keyCode : e.which);
+      if (regexAlphanumeric.test(inputVal) == false && keycode != '13') {
+        jQuery(this).next("span").html("Please provide valid PO Number.").show().fadeOut(2500);
+        return false;
+        }
+
+      if(keycode == '13'){
+        e.preventDefault();
+        console.log("Enter Triggred..")
+        jQuery(".tab-pane.show.active").find(".checkvalue").first().focus();
+      }
+    });
+    // jQuery(".discardChng").click(function() {
+    jQuery(document).on('click',".discardChng", function() {
+      var sap_ponumner = jQuery('#sap_ponumber_id').val();
+      if(sap_ponumner !='')
+      {
+        updatepopupdata(sap_ponumner)
+        jQuery('#closepopup').val('');
+        jQuery("#cart-form .qty_change").val(0);
+      }else{
+        jQuery("#cart-form .qty_change").val(0);
+        jQuery('#closepopup').val('');
+        jQuery(".checkvalue").each(function() {
+            jQuery(this).val('')
+            jQuery(this).next("span").html('');
+            var selectprice = jQuery(this).closest('td').find('input[type=hidden]').val();
+            var selectcolor = jQuery(this).closest('td').find('input[name=selectcolor]').val();
+            var selectsize = jQuery(this).closest('td').find('input[name=selectsize]').val();
+            jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').val('');
+            jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').closest('td').find('span').html('');
+          });
+      }
+    });
+    // jQuery("#chekout").click(function() {
+    jQuery(document).on('click',"#chekout", function() {
+      jQuery('#closepopup').val(0);
+      var existponumberText = jQuery('#select_existing :selected').val()
+      var ponumberText = jQuery(".tabactive").val();
+      if(existponumberText != '' || jQuery.trim(ponumberText).length > 0)
+      {
+        var checkinputval = jQuery(".product_options").find('.checkvalue');
+        var valIsExists = false;
+        jQuery(checkinputval).each(function() {
+          if (jQuery(this).val() != '')
+          {
+            valIsExists = true;
+          }
+        });
+          if(!valIsExists)
+          {
+            adderror('Please provide at least one item quantity to proceed.')
+          }
+          if(valIsExists)
+          {
+            jQuery("#chekouthidden").val(1);
+            submitform();
+          }
+      }
+      else
+      {
+        adderror("Please enter a P.O. number or Select an Existing P.O. before entering Qty’s");
+      }
+
+    });
+    // jQuery(".saveChng").click(function() {
+    jQuery(document).on('click',".saveChng", function() {
+
+      var existponumberText = jQuery('#select_existing :selected').val()
+      var ponumberText = jQuery(".tabactive").val();
+      if(existponumberText != '' || jQuery.trim(ponumberText).length > 0)
+      {
+          var checkinputval = jQuery(this).closest('.show').find('.checkvalue');
+          var valIsExists = false;
+          jQuery( checkinputval ).each(function() {
+            if (jQuery(this).val() != '')
+            {
+              valIsExists = true;
+            }
+          });
+          if(!valIsExists)
+          {
+            adderror('Please provide at least one item quantity to proceed.');
+            return false;
+          }
+          var checklink =  jQuery(this).attr("disabled");
+          if(valIsExists)
+          {
+            submitform();
+            }else{
+            adderror('Please provide valid data to proceed.');
+            return false;
+          }
+          jQuery("#cart-form .qty_change").val(0);
+          }
+      else
+      {
+        adderror("Please select a PO or Create a New PO before entering Qty's");
+      }
+
+    });
+      // jQuery("#select_existing").change(function(){
+    jQuery(document).on('change',"#select_existing", function() {
+
+        var existponumberText = jQuery('#select_existing :selected').val();
+        if(existponumberText !='')
+        {
+          jQuery(".tabactive").val(jQuery('#select_existing :selected').text());
+          jQuery(".tabactive").prop("readonly", true);
+        }
+        updatepopupdata(existponumberText)
+
+      });
+    // jQuery(".product_options").click(function(){
+    jQuery(document).on('click',".product_options", function() {
+
+      var existponumberText = jQuery('#select_existing :selected').val()
+      var ponumberText = jQuery(".tabactive").val();
+        if(existponumberText != '' || jQuery.trim(ponumberText).length > 0)
+        {
+          return true;
+        }else
+        {
+
+        }
+    });
+
+    var stickclassavil = false;
+
+    jQuery(".product-info-main #buyBtns .buyNowBtnMain").bind("click",function(){
+      // console.log("POPUP Opned...");
+      if(jQuery(".product-info-main").hasClass("stick")){
+        stickclassavil = true;
+        jQuery(".product-info-main").removeClass("stick");
+      }
+      // console.log(stickclassavil);
+
+    });
+
+    jQuery('.productview-modal-close-inside').bind('click', function()
+    {
+      // console.log(stickclassavil);
+      if(stickclassavil){
+        jQuery(".product-info-main").addClass("stick");
+      }
+      setTimeout(function(){
+                        jQuery("#popupModal .modal-content").css("left",'');
+                        jQuery("#popupModal .modal-content").css("top",'');
+                    },1000)
+      jQuery('#closepopup').val(1)
+      var activetavinputs = jQuery(".collapseContainer a[aria-expanded=true]").next('div.show').find('.checkvalue');
+      var valIsExists = false;
+      var is_qty_change = jQuery(".collapseContainer a[aria-expanded=true]").find(".qty_change").val();
+      var prev_obj_id = jQuery(".collapseContainer a[aria-expanded=true]").next('div.show').attr("id");
+      var is_qty_change = 0;
+      if (typeof prev_obj_id !== "undefined") {
+        is_qty_change = jQuery("#qty_change_"+prev_obj_id.replace("/", "")).val();
+      }
+
+      jQuery("#cart-form a[data-toggle='collapse']").removeClass("collapse").addClass("collapsed").attr("aria-expanded", false);
+
+      jQuery(activetavinputs).each(function() {
+        if (jQuery(this).val() != '')
+        {
+          valIsExists = true;
+
+        }
+      });
+      if(valIsExists && is_qty_change == 1)
+      {
+        var delid = '';
+        var opt = {autoOpen: false};
+          var theDialog = jQuery("#removeUser").dialog(opt);
+          theDialog.dialog("open");
+          return false;
+      } else {
+        showtotal();
+      }
+    });
+  });
+
+  function updatepopupdata(existponumberText)
+  {
+      if(existponumberText != '')
+        {
+          jQuery('[data-toggle="collapse"]').prop('disabled',false);
+          jQuery('#overlay').hide()
+          jQuery("#msg_text").html("");
+          jQuery('.discardChng').show();
+          jQuery('#sap_ponumber_id').val(existponumberText);
+          var url = "<?php echo $block->getBaseUrl().'adaruniforms/cart/update' ?>";
+          var style_id = jQuery(".product_options").attr("id");
+          jQuery(".checkvalue").each(function() {
+            jQuery(this).val('')
+            jQuery(this).next("span").html('');
+            var selectprice = jQuery(this).closest('td').find('input[type=hidden]').val();
+            var selectcolor = jQuery(this).closest('td').find('input[name=selectcolor]').val();
+            var selectsize = jQuery(this).closest('td').find('input[name=selectsize]').val();
+            jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').val('');
+            jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').closest('td').find('span').html('');
+          });
+          showtotal();
+          jQuery.ajax({
+            url: url,
+            type: "POST",
+            data: {'po_number' : existponumberText, 'style_id' : style_id},
+            showLoader: true,
+            cache: false,
+            success: function(response){
+              if(response.success) {
+                var data = response.data;
+                if (data != null) {
+                  jQuery.each( data, function( key, value ) {
+                    var colorname = value.ColorName,
+                    size = value.Size,
+                    qty = value.QTYOrdered;
+
+                    var inputQty = 'qty['+colorname+']['+size+']';
+                    if (jQuery("[name='"+inputQty+"']")) {
+                      var value = jQuery("[name='"+inputQty+"']").val(qty);
+                      checkvalueUpdate(jQuery("[name='"+inputQty+"']"), true);
+                    }
+                  });
+
+                }
+              }
+            }
+          });
+        }else{
+          jQuery(".tabactive").prop("readonly", false);
+          jQuery(".tabactive").val('');
+          jQuery('#sap_ponumber_id').val('');
+          //jQuery('.discardChng').hide();
+          jQuery('.collapse').removeClass("show");
+          jQuery("#cart-form a[data-toggle='collapse']").addClass("collapsed").attr("aria-expanded", false);
+          jQuery(".checkvalue").each(function() {
+            jQuery(this).val('')
+            jQuery(this).next("span").html('');
+            var selectprice = jQuery(this).closest('td').find('input[type=hidden]').val();
+            var selectcolor = jQuery(this).closest('td').find('input[name=selectcolor]').val();
+            var selectsize = jQuery(this).closest('td').find('input[name=selectsize]').val();
+            jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').val('');
+            jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').closest('td').find('span').html('');
+          });
+            showtotal();
+        }
+  }
+  function checkvalueUpdate(obj, update)
+  {
+
+  var qty = jQuery(obj).val();
+  var maxQty = jQuery(obj).attr("max");
+  var selectprice = jQuery(obj).closest('td').find('input[type=hidden]').val();
+  var selectcolor = jQuery(obj).closest('td').find('input[name=selectcolor]').val();
+  var selectsize = jQuery(obj).closest('td').find('input[name=selectsize]').val();
+
+  if(qty != '')
+  {
+
+    var price = qty * selectprice;
+    if(parseInt(qty) > parseInt(maxQty))
+    {
+      //jQuery(this).after('<span class="maxqtyvaldi">pzl enter '+maxQty+' value </span>');
+      var backqty = parseInt(qty) - parseInt(maxQty);
+      jQuery(obj).next("span").html('Backorder '+ backqty);
+
+      /**jQuery('.saveChng').attr('disabled', true);
+        jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').closest('td').find('span').html('');**/
+      }
+      else
+      {
+        //jQuery(this).after().remove('.maxqtyvaldi');
+        jQuery(obj).next("span").html('');
+      }
+      if(update == false)
+      {
+        var colorcode = jQuery('input[name="colorcode['+selectcolor+']['+selectsize+']"').val();
+        jQuery("#qty_change_"+colorcode.replace("/", "")).val(1);
+      }
+
+      jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').val(price.toFixed(2));
+      jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').closest('td').find('span').html('$'+convertcurrency(price.toFixed(2)));
+      var savechnagestatus = jQuery(obj).closest('table').find('.maxqtyvaldi').text().length;
+      if(savechnagestatus <= 0)
+      {
+        jQuery('.saveChng').attr('disabled', false);
+      }
+    }
+    else
+    {
+      jQuery(obj).val('')
+      jQuery(obj).next("span").html('');
+      var selectprice = jQuery(obj).closest('td').find('input[type=hidden]').val();
+      var selectcolor = jQuery(obj).closest('td').find('input[name=selectcolor]').val();
+      var selectsize = jQuery(obj).closest('td').find('input[name=selectsize]').val();
+      jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').val('');
+      jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').closest('td').find('span').html('');
+      jQuery(obj).next("span").html('');
+    }
+    showtotal();
+
+  }
+    function submitform()
+    {
+      jQuery("#msg_text").html("");
+      var url = "<?php echo $block->getBaseUrl().'adaruniforms/cart/add' ?>";
+      jQuery.ajax({
+        url: url,
+        type: "POST",
+        data: jQuery("#cart-form").serialize(),
+        showLoader: true,
+        cache: false,
+        success: function(response){
+          if(response.enty_id)
+          {
+            jQuery('#sap_ponumber_id').val(response.enty_id);
+            jQuery('.discardChng').show();
+          }
+          if(response.success)
+          {
+            addsuccess(response.messages);
+          }
+          else
+          {
+            adderror(response.messages);
+          }
+          if(response.messages) {
+            jQuery("#message").show();
+          }
+          var closepopup = jQuery("#closepopup").val();
+          if(closepopup == 1)
+          {
+            jQuery('.productview-modal-close-inside').trigger( "click" );
+
+          }
+          var valuescheckout = jQuery("#chekouthidden").val();
+          if(valuescheckout == 1 && response.base64_enty_id && response.base64_po_number)
+          {
+            var nexturl = "<?php echo $block->getBaseUrl().'customerorder/customer/neworder/id/'?>"+response.base64_enty_id+"/ncp/"+response.base64_po_number;
+            top.location = nexturl;
+          }
+        }
+      });
+    }
+  function getExstingPONumber(customid)
+  {
+    var ponumber = '';
+    jQuery('.tabactive').val();
+    jQuery(".tabactive").prop("readonly", false);
+    jQuery('#closepopup').val();
+    var url = "<?php echo $block->getBaseUrl().'adaruniforms/index/ponumber' ?>";
+    jQuery.ajax({
+      url: url,
+      type: "POST",
+      data: {custom_id: customid,ponumber:ponumber},
+      showLoader: false,
+      cache: false,
+      success: function(response){
+        if(response.success)
+        {
+          jQuery('#select_existing').html(response.success);
+          }else{
+          adderror('Session timed out, please refresh the page.');
+        }
+      }
+    });
+  }
+  function checkEnterPONumber(customid,ponumber)
+    {
+        var url = "<?php echo $block->getBaseUrl().'adaruniforms/index/ponumber' ?>";
+        var result = ''
+        jQuery.ajax({
+          url: url,
+          dataType: 'json',
+          type: "POST",
+          data: {custom_id: customid,ponumber:ponumber},
+          showLoader: true,
+          cache: false,
+          success: function(response){
+            if(response.success)
+            {
+              //addsuccess(response.success);
+              jQuery("#msg_text").removeClass("error");
+              jQuery("#msg_text").html('');
+              jQuery('[data-toggle="collapse"]').prop('disabled',false);
+              jQuery('#overlay').hide()
+              jQuery("#select_existing").prop("disabled", true);
+              jQuery("#select_existing option:selected").prop("selected", false)
+              jQuery('#sap_ponumber_id').val('')
+              //jQuery('.discardChng').hide();
+              result = 'true';
+              }else{
+              adderror(response.error);
+              //jQuery('#overlay').show()
+              jQuery('[data-toggle="collapse"]').prop('disabled',true);
+              jQuery("#select_existing").prop("disabled", true);
+              result = 'false';
+            }
+          }
+        });
+
+      return result;
+    }
+
+
+
+  function showtotal()
+  {
+    var unittotals = jQuery('.product_options').find('.unittotal');
+    var gd_total = 0;
+    jQuery(unittotals).each(function() {
+      if(jQuery(this).val() != '')
+      {
+        var total = parseFloat(jQuery(this).val());
+        gd_total = gd_total + total;
+      }
+
+    });
+    var totalprice = convertcurrency(parseFloat(gd_total).toFixed(2));
+    jQuery('#hi_grandtotal').val(parseFloat(gd_total).toFixed(2));
+    jQuery('.grandtotal').html('');
+    jQuery('.grandtotal').html('$'+ totalprice);
+  }
+  function convertcurrency(price)
+  {
+    var x=price;
+
+    x=x.toString();
+    var afterPoint = '';
+    if(x.indexOf('.') > 0)
+    afterPoint = x.substring(x.indexOf('.'),x.length);
+    x = Math.floor(x);
+    x=x.toString();
+    var lastThree = x.substring(x.length-3);
+    var otherNumbers = x.substring(0,x.length-3);
+    if(otherNumbers != '')
+    lastThree = ',' + lastThree;
+    return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree + afterPoint;
+
+  }
+});
+
+</script>
+							</div>
+						</form>
+						<div class="modal fade" id="removeUser" role="dialog" style="z-index: 1600;">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="quickViewCont">
+										<div class="container bg-primary p-2">
+											<div class="row">
+												<div class="col-md-4 offset-md-4 text-center">
+													<a href="#" title="" class="mobileLogo" style="display:inline;" height="37" width="37"><img height="37" width="37" src="https://www.adaruniforms.com/pub/static/frontend/sttl/adaruniforms/en_US/images/mobile-logo-white.png"></a>
+												</div>
+												<div class="col-md-4">
+													<!--<button type="button" data-dismiss="modal" class="close mfp-close-inside"><i class="fa fa-times"></i></button>-->
+												</div>
+											</div>
+										</div>
+										<div class="comingSoonTxt center">
+											<div class="comingSoonTxt center">
+												<p  class="mrgT20 padB20">Do you want to save and continue?</p>
+											</div>
+											<div class="center mrgB20">
+												<button class="themeBtn" id="goback" data-dismiss="modal" type="button">Go Back</button>
+												<button class="themeBtn mrgL20" id="savecontinue" type="submit">Save & Continue</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	<?php
+		}
+		endif;
+	?>
+<style>
+.nav.nav-tabs.nav-fill { border-bottom: 0 !important;}
+.colorstatus {padding-left: 10px; margin: 10px 0 0 -10px !important; }
+.catalog-product-view .product-info-main-prd-opt .swtach {width: 100%; }
+.catalog-product-view .product-info-main-prd-opt .swtach .customorder-color.core-color-section, .catalog-product-view .product-info-main-prd-opt .swtach .customorder-color.fashion-color-section {display: inline-block; width: 100%; margin-bottom: 0 !important; }
+.catalog-product-view .product-info-main-prd-opt .swtach .customorder-color.core-color-section .core-color-name {
+  float: right; }
+  .catalog-product-view #popupModal .modal-dialog #cart-form .modalContainer .swatch-option.image {margin-right: 14px; margin-top: 6px; }
+  .catalog-product-view #popupModal .modal-dialog #cart-form .modalContainer .swatch-option.image {width: 32px !important; min-width: 32px !important; height: 32px !important; }
+.catalog-product-view #popupModal .modal-dialog #cart-form .modalContainer .swatch-option.image.active:before {content: ""; position: absolute; bottom: -30%; right: -30%; font: normal normal normal 14px/1 FontAwesome; z-index: 1; background: #fff; color: #0c4269; border-radius: 50px; padding-left: 1.1px; height: 14px; background: url(/pub/media/check.svg); width: 14px; background-position: center; border: 1px solid #fff; }
+.catalog-product-view #popupModal .modal-dialog #cart-form .modalContainer .swatch-option.image:hover:after {content: ""; border-radius: 3px; border: 2px #0c4269 solid; display: block; position: absolute; bottom: -6px !important; height: 42px; width: 42px !important; color: #0c4269; left: -6px; }
+.catalog-product-view #popupModal .modal-dialog #cart-form .modalContainer .swatch-option.image {margin-right: 14px; margin-top: 6px; }
+.catalog-product-view #popupModal .modal-dialog #cart-form .modalContainer .swatch-option.image {margin-right: 15px; width: 32px !important; min-width: 32px !important; height: 32px !important; border: 1px solid rgba(0,0,0,0.2); position: relative; cursor: pointer; display: inline-block; margin-bottom: 12px; overflow: visible; }
+.catalog-product-view #popupModal .modal-dialog #cart-form .modalContainer .swatch-option.image.active:after {content: ""; border-radius: 3px; border: 2px #0c4269 solid; display: block; position: absolute; bottom: -6px !important; height: 42px; width: 42px !important; color: #0c4269; left: -6px; }
+.catalog-product-view #popupModal .modal-dialog #cart-form .modalContainer .swatch-color-container{ padding:10px; }
+.catalog-product-view #popupModal .modal-dialog #cart-form .modalContainer .product_options .colorContainer {padding: 0px; }
+.catalog-product-view #popupModal .modal-dialog #cart-form .modalContainer .product_options{ height: auto !important; }
+.catalog-product-view #popupModal .modal-dialog #cart-form .modalContainer div#fashionClass{     padding: 10px 0px 0px 0; }
+.catalog-product-view #popupModal .modal-dialog #cart-form .modalContainer span.fashion-color-name{float: right; right: 0; position: absolute; }
+.loading-mask{ pointer-events: none; }
+.catalog-product-view #popupModal .modal-dialog #cart-form .modalContainer .bg-light.bottomBtn {padding: 30px 60px 30px 80px !important; }
+.modalContainer div#nav-tab {padding: padding: 5px 30px 15px 30px; padding: 15px 30px 0px 30px; }
+.modalContainer div#nav-tabContent {padding: 5px 30px 15px 30px; }
+.catalog-product-view #popupModal .modal-dialog #cart-form .modalContainer span.fashion-color-name {float: right; right: unset; position: unset; }
+.catalog-product-view #popupModal .modal-dialog #cart-form .modalContainer .product_options{ padding: 0px !important;  }
+.catalog-product-view #popupModal .swatch-option  .bottom-tooltip-active{display: none;position: absolute;text-align: center;top: 38px;width: 74px;left: -21.5px;}
+.catalog-product-view #popupModal .swatch-option .bottom-tooltip-active p{margin: 0;line-height: 14px; margin-bottom: 0px;}
+.catalog-product-view #popupModal .active.swatch-option  .bottom-tooltip-active{display: block;/* z-index: 99; */background: #fff;}
+.catalog-product-view #popupModal .swatch-option .bottom-tooltip-active p {margin: 0; line-height: 14px; margin-bottom: 0px; }
+.catalog-product-view #popupModal .swatch-option:hover .bottom-tooltip-active{display: block; background: #fff; z-index:999; }
+aside.modal-popup.po-success-popup.modal-slide._inner-scroll._show {z-index: 99999 !important; background: #00000069; }
+aside.po-success-popup { display: flex;align-items: center;justify-content: center;left: 0 !important;}
+aside.po-success-popup .modal-inner-wrap { min-height: unset !important; min-width: fit-content; text-align: center; width: 100px !important; max-width: 100px; border-radius: 5px;}
+@-moz-document url-prefix() {
+ aside.po-success-popup .modal-inner-wrap{ min-width: 27% !important; }
+}
+aside.po-success-popup .modal-inner-wrap .modal-content {padding: 15px 40px;background: #f1f1f1;}
+aside.po-success-popup .modal-inner-wrap .modal-content #posuccess-message p { margin: 0;}
+#cart-form .catBtns{ border-top: unset; padding: 0px 10px 0px 0px; text-align: end;}
+.colorstatus{ padding-top: 15px; }
+    #cart-form  a.saveChng,#cart-form  a.discardChng{padding: 10px 18px;
+    cursor: pointer;
+    text-align: center;
+    color: #1a3d5b;
+    min-width: auto;
+    border: 1px solid #1a3d5b;
+        font-weight: 600;
+    text-transform: uppercase;
+    text-decoration: none;}
+    a.saveChng:hover,a.discardChng:hover {
+    background: #0e4169 !important;
+    color: #fff !important;
+}
+#cart-form .customBtns:hover{ background: #0e4169 !important;
+    color: #fff !important; }
+    .catalog-product-view #popupModal .modal-dialog #cart-form .modalContainer .swatch-option.image{
+      background-size:100% !important; }
+</style>

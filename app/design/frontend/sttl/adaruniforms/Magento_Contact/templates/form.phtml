@@ -1,0 +1,135 @@
+<?php
+	/**
+		* Copyright © Magento, Inc. All rights reserved.
+		* See COPYING.txt for license details.
+	*/
+	// @codingStandardsIgnoreFile
+	/** @var \Magento\Contact\Block\ContactForm $block */
+	
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$states = $objectManager->create('Magento\Directory\Model\RegionFactory')->create()->getCollection()->addFieldToFilter('country_id','US')->toOptionArray(false);
+?>
+<div class="offset-md-2 col-md-8 groupBusiness contactTitle mb-5">	
+	<h2><?= $block->escapeHtml(__('Contact Us')) ?></h2>
+	<h3><?= $block->escapeHtml(__('Got a question? We\'d love to hear from you. Send us a message and we\'ll respond as soon as possible.')) ?></h3>
+</div>
+<div class="offset-md-2 col-md-8 mb-5">
+	<form class="form contact"
+	action="<?php echo $this->getUrl().'inquiries/inquiries/index';?>"
+	id="contact-form"
+	method="post"
+	data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"
+	data-mage-init='{"validation":{}}'>
+		<div class="row">
+		<div class="field subject col-md-12">
+			<label class="label" for="subject"><span><?= $block->escapeHtml(__('Subject')) ?></span></label>
+			<div class="control">
+				<select name="subject" id="subject">
+					<option value="General Inquiry"><?= $block->escapeHtml(__('General Inquiry')) ?></option>
+					<option value="I am retailer that currently carries Adar"><?= $block->escapeHtml(__('I am retailer that currently carries Adar')) ?></option>
+					<option value="I am retailer that currently doesn't carry Adar"><?= $block->escapeHtml(__('I am retailer that currently doesn\'t carry Adar')) ?></option>
+				</select>
+			</div>
+		</div>
+		</div>
+		<div class="row">
+		<div class="field subject col-md-12">
+			<label class="label" for="hear_from"><span><?= $block->escapeHtml(__('How did you hear about us?')) ?></span></label>
+			<div class="control">
+				<select name="hear_from" id="hear_from">
+					<option value=""><?= $block->escapeHtml(__('Select One')) ?></option>
+					<option value="Online Ad"><?= $block->escapeHtml(__('Online Ad')) ?></option>
+					<option value="Email/Newsletter"><?= $block->escapeHtml(__('Email/Newsletter')) ?></option>
+					<option value="Website/Search Engine"><?= $block->escapeHtml(__('Website/Search Engine')) ?></option>
+					<option value="Family/Friend/Colleague"><?= $block->escapeHtml(__('Family/Friend/Colleague')) ?></option>
+					<option value="Direct Mail"><?= $block->escapeHtml(__('Direct Mail')) ?></option>
+					<option value="Social Media"><?= $block->escapeHtml(__('Social Media')) ?></option>
+					<option value="Other"><?= $block->escapeHtml(__('Other')) ?></option>
+				</select>
+			</div>
+		</div>
+		</div>
+		<div class="row">
+		<div class="field name required col-md-6">
+			<label class="label" for="name"><span><?= $block->escapeHtml(__('Name')) ?></span><span class="reqField">*</span></label>
+			<div class="control">
+				<input name="name" id="name" title="<?= $block->escapeHtmlAttr(__('Name')) ?>" value="<?= $block->escapeHtmlAttr($this->helper('Magento\Contact\Helper\Data')->getPostValue('name') ?: $this->helper('Magento\Contact\Helper\Data')->getUserName()) ?>" class="input-text required-entry validate-alphanum-with-spaces validate-no-html-tags valid" type="text" data-validate="{required:true}"/>
+			</div>
+		</div>
+		<div class="field email required col-md-6">
+			<label class="label" for="email"><span><?= $block->escapeHtml(__('Email')) ?></span><span class="reqField">*</span></label>
+			<div class="control">
+				<input name="email" id="email" title="<?= $block->escapeHtmlAttr(__('Email')) ?>" value="<?= $block->escapeHtmlAttr($this->helper('Magento\Contact\Helper\Data')->getPostValue('email') ?: $this->helper('Magento\Contact\Helper\Data')->getUserEmail()) ?>" class="input-text" type="email" data-validate="{required:true, 'validate-email':true}"/>
+			</div>
+		</div>
+		</div>
+		<div class="row">
+		<div class="field phone_no  col-md-3">
+			<label class="label" for="phone_no"><span><?= $block->escapeHtml(__('Phone Number')) ?></span></label>
+			<div class="control">
+				<input name="phone_no" id="phone_no" title="<?= $block->escapeHtmlAttr(__('Phone Number')) ?>" value="<?= $block->escapeHtmlAttr($this->helper('Magento\Contact\Helper\Data')->getPostValue('phone_no')) ?>" class="input-text" data-validate="{'validate-number':true}" type="text" />
+			</div>
+		</div>
+		<div class="field company  col-md-3">
+			<label class="label" for="company"><span><?= $block->escapeHtml(__('Company')) ?></span></label>
+			<div class="control">
+				<input name="company" id="company" title="<?= $block->escapeHtmlAttr(__('Company')) ?>" value="<?= $block->escapeHtmlAttr($this->helper('Magento\Contact\Helper\Data')->getPostValue('company')) ?>" class="input-text validate-alphanum-with-spaces validate-no-html-tags valid" type="text" type="text" />
+			</div>
+		</div>
+		<div class="field address col-md-6">
+			<label class="label" for="address"><span><?= $block->escapeHtml(__('Address 1')) ?></span></label>
+			<div class="control">
+				<input name="address" id="address" title="<?= $block->escapeHtmlAttr(__('Address 1')) ?>" value="<?= $block->escapeHtmlAttr($this->helper('Magento\Contact\Helper\Data')->getPostValue('address')) ?>" class="input-text" type="text" />
+			</div>
+		</div>
+		</div>
+		<div class="row">
+		<div class="field sub_address col-md-6">
+			<label class="label" for="sub_address"><span><?= $block->escapeHtml(__('Address 2')) ?></span></label>
+			<div class="control">
+				<input name="sub_address" id="sub_address" title="<?= $block->escapeHtmlAttr(__('Address 2')) ?>" value="<?= $block->escapeHtmlAttr($this->helper('Magento\Contact\Helper\Data')->getPostValue('sub_address')) ?>" class="input-text" type="text" />
+			</div>
+		</div>
+		<div class="field city col-md-2">
+			<label class="label" for="city"><span><?= $block->escapeHtml(__('City')) ?></span></label>
+			<div class="control">
+				<input name="city" id="city" title="<?= $block->escapeHtmlAttr(__('City')) ?>" value="<?= $block->escapeHtmlAttr($this->helper('Magento\Contact\Helper\Data')->getPostValue('city')) ?>" class="input-text validate-alphanum-with-spaces validate-no-html-tags valid" type="text" />
+			</div>
+		</div>
+		<div class="field state col-md-2">
+			<label class="label" for="state"><span><?= $block->escapeHtml(__('State')) ?></span></label>
+			<div class="control">
+				<select name="state" id="state">
+					<?php if (!empty($states)) : 
+						foreach($states as $stateKey => $stateVal) : ?>
+						<option value="<?php echo (!empty($stateVal["title"])) ? $stateVal["title"] : "";?>"><?php echo (!empty($stateVal["title"])) ? $stateVal["title"] : "";?></option>
+					<?php  endforeach; endif;?>
+				</select>
+			</div>
+		</div>
+		<div class="field zipcode col-md-2">
+			<label class="label" for="zipcode"><span><?= $block->escapeHtml(__('Zip code')) ?></span></label>
+			<div class="control">
+				<input name="zipcode" id="zipcode" title="<?= $block->escapeHtmlAttr(__('Zip code')) ?>" value="<?= $block->escapeHtmlAttr($this->helper('Magento\Contact\Helper\Data')->getPostValue('zipcode')) ?>" class="input-text validate-no-html-tags validate-zip valid validate-alphanum-with-spaces" type="text" />
+			</div>
+		</div>
+		</div>
+		<div class="row">
+		<div class="field col-md-12">
+			<label class="label" for="comment"><span><?= $block->escapeHtml(__('Message')) ?></span></label>
+			<div class="control">
+				<textarea name="comment" id="comment" title="<?= $block->escapeHtmlAttr(__('Message')) ?>" class="input-text" cols="5" rows="3"><?= $block->escapeHtml($this->helper('Magento\Contact\Helper\Data')->getPostValue('comment')) ?></textarea>
+			</div>
+		</div>
+		<?= $block->getChildHtml('form.additional.info') ?>
+		</div>
+		<div class="row">
+		<div class="actions-toolbar float-right col-md-12">
+			<input type="hidden" name="hideit" id="hideit" value="" />
+			<button type="submit" title="<?= $block->escapeHtmlAttr(__('Send')) ?>" class="action submit btn-primary alignRight">
+				<span><?= $block->escapeHtml(__('Send')) ?></span>
+			</button>
+		</div>
+		</div>
+	</form>
+</div>

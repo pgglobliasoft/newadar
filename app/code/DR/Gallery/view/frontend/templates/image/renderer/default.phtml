@@ -1,0 +1,105 @@
+<?PHP
+header('Access-Control-Allow-Origin: *');
+?>
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
+$connection = $resource->getConnection();
+$tableName = $resource->getTableName('dr_gallery_image'); //gives table name
+$search_by_filter = $this->getRequest()->getParam('search_by');
+if(empty($search_by_filter)){
+	$search_by_filter = '1';
+}
+$sql = $connection->select()->from(["tn" => $tableName])->where('category_id=?', $search_by_filter)->where('status=?',1);
+$result = $connection->fetchAll($sql);
+
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+$basemedia_URL = $storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+$baseUrl = $this->getBaseUrl() ;
+?>
+
+  <div class="container">
+      <div class="row">
+		<div class="col-lg-12">
+            <div class="pageTitle">
+              <h2>catalogs</h2>
+              <div class="sorting">
+                <div class="customeSelectOuter">
+                  <select name="search_by" id="search_by">
+                    <option selected="selected" value="1">Catalogs</option>
+                    <option value="2">Swatch Cards</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+		</div>
+      </div>
+      	<div class="row downloadContainer">
+		<?php foreach($result as $value){ 
+			// print_r($value);
+		$data = explode(',',$value['publish']);
+		if ($value['publish'] != 1 || (in_array('1', $data)) && (in_array('0', $data)))
+		  {
+			$cat_name = $image = "";
+			switch ($value['category_id']) {
+				case "1":
+					 $cat_name = "Catalog";
+					break;
+				case "2":
+					$cat_name = "Swatch Card";
+					break;
+				default:
+					$cat_name =  "Catalog";
+			}
+			if(!empty($value['small_image'])){
+				$image = $basemedia_URL.$value['small_image'];
+			}else{
+				$image = $block->getViewFileUrl('images/download-thumb.jpg');
+			}
+
+			$downloadurl = $value['download_url'];
+
+
+			if(!empty($value['custom_url'])){
+				$url = $value['custom_url'];
+			}
+			elseif(!empty($value['path'])){
+				$url = $basemedia_URL.$value['path'];
+			}
+			else{
+				$url = "";
+			}
+			
+		?>
+      		<div class="col-md-3 col-sm-6">
+            	<div class="<?= $url ? 'downloadThumb1': '' ?>">
+                	<img src="<?php echo $image; ?>" alt="<?php echo $value['name']; ?>" />
+                	<?php if($url !=""){ ?><a href="<?php echo $url; ?>" target="_blank" class="openPdf-link"><span>View</span></a><?php } ?>
+                   
+                </div>
+                <div class="downProTitle">
+
+                	<h4><?php echo $value['name']; ?></h4>
+                	<?php if($value['download'] > 0 && $downloadurl !=""){?> <a href="<?php echo $baseUrl ?>downloadlibrary/category/download?fileName=<?php echo $downloadurl; ?>" class="downloadBtn" download>Download PDF</a> <?php } ?>
+                   <!--  <h5><?php echo $value['name']; ?></h5> -->
+                </div>
+				<?php if($value['download'] > 0 && $downloadurl !=""){?> <a class="mobile_view_dowloand" href="<?php echo $downloadurl; ?>" target="_blank" class="downloadBtn" >Download</a><?php } ?>
+            </div>
+		  <?php } } ?>	
+		</div>
+    </div>
+<script type="text/javascript">
+    require([
+        'jquery'
+    ], function ($) {
+		var baseUrl = "<?php echo $baseUrl ; ?>";
+		var search_by = 'search_by'; 
+		var results = new RegExp('[\?&]' + search_by + '=([^&#]*)').exec(window.location.href);
+		if(results != null){
+			$("#search_by").val(results[1]);
+		}
+        $('#search_by').change(function() {
+			window.location = baseUrl + "catalogs?search_by=" + $(this).val();
+		});  
+    });
+</script>

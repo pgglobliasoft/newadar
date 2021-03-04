@@ -1,0 +1,36 @@
+<!-- option 1collection slider -->
+<div id="user-gird-conatiner">
+  <!-- <div class="filter">
+    <ul class="filter-val">
+      </ul>
+  </div> -->
+   <div class="collection-owlslider">
+      <ul class="Collections">
+      </ul>
+   </div>
+   <div class="product-group">
+      <div class="product-group-slider">		
+      </div>
+   </div>
+   <div class = "pro-slider">
+      <div class="product-slider">	
+      </div>
+   </div>
+</div>
+
+	<!-- done -->
+<script type="text/x-magento-init">
+{
+    "#user-gird-conatiner": {
+        "Sttl_Collectionsilder/js/Collectionslider": {
+            "baseurl" : "<?= $this->getBaseUrl(); ?>",
+            "logos" : <?= $block->getCollectionslider(); ?>    
+        }
+    }
+}
+</script>
+
+<style>
+  /*#user-gird-conatiner { width: 70% !important; }*/
+  .pro-slider .owl-stage.stop{  transition: unset !important; transform: unset !important; }
+</style>

@@ -1,0 +1,51 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * See LICENSE.txt for license details (http://opensource.org/licenses/osl-3.0.php).
+ *
+ * Glory to Ukraine! Glory to the heroes!
+ */
+?>
+<?php
+/**
+ * Blog recent posts widget
+ *
+ * @var $block \Magefan\Blog\Block\Widget\Recent
+ */
+?>
+
+<?php
+    $_postCollection = $block->getPostCollection();
+?>
+<?php if ($_postCollection->count()) { ?>
+<div class="row">
+        <?php foreach ($_postCollection as $_post) { ?>
+            <?php
+                $_postUrl = $_post->getPostUrl();
+                $_postName = $block->escapeHtml($_post->getTitle(), null, true);
+				if($_post->getFeaturedVideo()){
+            ?>
+				<div class="col-md-6">
+					<div class="row thumbCont bgBackground">
+					 <?php echo $_post->getFeaturedVideo(); ?>
+					</div>
+				</div>
+					<?php } else { ?>
+                <div class="col-md-6">
+                    <div class="row thumbCont bgBackground">
+                        <?php if ($featuredImage = $_post->getFeaturedImage()) { ?>
+                                <img src="<?php echo $featuredImage ?>" alt="<?php echo $_postName ?>" />
+                        <?php } ?>
+						<div class="thumbDesc">
+							<h3><?php echo $_postName; ?></h3>
+							<?php echo $block->getShorContent($_post) ?>
+							<?php /* ?>
+							<a class="learnMore" href="<?php echo $_postUrl ?>" title="<?php echo $_postName ?>">Learn More</a>
+							<?php */ ?>
+						</div>
+					</div>
+                </div>
+
+        <?php } } ?>
+</div>
+<?php } ?>

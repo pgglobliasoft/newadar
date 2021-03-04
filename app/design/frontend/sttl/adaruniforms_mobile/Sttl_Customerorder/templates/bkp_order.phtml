@@ -1,0 +1,301 @@
+
+<?php 
+	$q = @$block->getRequest()->getParam('q');
+	$po_number = @$block->getRequest()->getParam('po_number');
+	$order_stats = @$block->getRequest()->getParam('order_stats');
+	$status = ($q == 'd') ? 'Draft' : $order_stats;
+	$orders = $block->getALLOrdersList($status, $po_number,$q);
+	// usort($orders, 'compareByTimeStamp'); 
+	// echo '<pre>'; print_r($orders); die;
+	$page_title = ($q == 'd') ? 'Purchase Order Drafts' : 'Order Status';
+	$back_redirect = $this->getBaseUrl()."customerorder/customer/index";
+	$neworder = $this->getBaseUrl()."customerorder/customer/neworder";
+
+	?>
+
+	<div class="accountPageContainer">
+		<div class="page-title">			
+			<div class="icon_div">
+				<h6><?php echo $page_title;?></h6>		
+				<a href="#" class="filter"><img src="https://dev.adaruniforms.com/pub/media/Sttl_Customerorder/filter.png"></a>
+				<a href="<?php echo $neworder?>" class="place-order"><svg id="Layer_1" style="enable-background:new 0 0 512 512;" version="1.1" viewBox="0 0 512 512" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path class="st0" d="M381,236H276V131c0-11-9-20-20-20s-20,9-20,20v105H131c-11,0-20,9-20,20s9,20,20,20h105v105c0,11,9,20,20,20  s20-9,20-20V276h105c11,0,20-9,20-20S392,236,381,236z"/></svg></a>
+			</div>
+		</div>
+		<div class="orderSearch orderSearchForm">
+			<span class="close-filter"><i class="fa fa-times" aria-hidden="true"></i></span>
+			<div class="order-wapper">
+				<form class="form order_search col-lg-12"
+				action=""
+				id="order_search"
+				method="get"
+				data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"
+				data-mage-init='{"validation":{}}'>			 		  
+					<div id="date-range" >	  
+						<!-- <span>Search by date range:<span class="reqField">*</span></span> -->
+						<input name="date-from" id="date-from" readonly="true" type="input" class="datepicker"  data-validate="{required:true}" placeholder="From Date"  /> 
+						<strong>to</strong> 
+						<input name="date-to" id="date-to" readonly="true" type="input" class="datepicker" data-validate="{required:true}" placeholder="To Date" /> 
+					</div>			
+					<?php 
+					if($q == '')
+					{
+						?>						
+						<div class="statusDropdown" >
+							<span></span>
+							<select name="order_stats" id="order_stats" >
+								<option>Status:</option>
+								<option value="">View All</option>
+								<option <?php echo ($status == 'Draft') ? 'selected="selected"' : '';?> value="Draft">Draft</option>
+								<option <?php echo ($status == 'Submitted') ? 'selected="selected"' : '';?> value="Submitted">Submitted</option>
+								<option <?php echo ($status == 'Processing') ? 'selected="selected"' : '';?> value="Processing">Processing</option>
+								<option <?php echo ($status == 'Shipped') ? 'selected="selected"' : '';?> value="Shipped">Shipped</option>
+								<option <?php echo ($status == 'PartiallyShipped') ? 'selected="selected"' : '';?> value="PartiallyShipped">Partially Shipped</option>
+							</select>
+							<button type="submit" class="themeBtn action dateRangeFilter"  title="Search"><i class="fa fa-search"></i></button>
+							<button type="button" class="themeBtn btnreset action save ml-2" title="Reset"><i class="fa fa-repeat" aria-hidden="true"></i></button>
+						</div>
+						<?php
+					}
+					?>			
+				</form> 
+			</div>
+		</div>
+
+	<!--- tables div -->
+	<div class="orderpage-container">
+		<div class="orderItem-loader" style="display: none;">
+            <div class="loader">
+                <img src="<?= /* @escapeNotVerified */ $block->getViewFileUrl('images/loader-1.gif') ?>"
+                     alt="<?= /* @escapeNotVerified */ __('Loading...') ?>">
+            </div>
+        </div>
+		<div class="orderTable">
+			
+			<table class="orderList">
+				<thead>
+				<tr class="table-header">
+					<th>Status</th>
+					<th>SO Number</th>
+					<th>PO Number</th>					
+				</tr>  
+				</thead>
+				<tbody>    
+				<?php
+				$ordered = 0;
+				$open = 0;
+				$shipped = 0;
+				$total_order = 0;
+				$total = count($orders);			
+				$totalPage = ceil($total/30);	
+				if($total > 0)
+				{
+					$count = 1;
+					foreach(array_slice($orders, 0,30) as $order)
+					{
+						$ordered += ($order['TotalQTYUnits'] > 0) ? $order['TotalQTYUnits'] : 0;
+						$open += ($order['TotalOpen'] > 0) ? $order['TotalOpen'] : 0;
+						$shipped += ($order['TotalShipped'] > 0) ? $order['TotalShipped'] : 0;
+						$total_order += ($order['DocTotal'] > 0) ? $order['DocTotal'] : 0;
+						
+						$id_b_e = base64_encode($order['Id']);
+						if($order['dataFrom'] == 'V')
+						{
+							$id_b_e = base64_encode($order['DocNum']);
+						}
+						
+						$order_view_url = $block->getBaseUrl().'customerorder/customer/orderview/id/'.$id_b_e.'/back/'.base64_encode($back_redirect).'/df/'.base64_encode($order['dataFrom']);	
+						if($order['DocStatus'] == "Draft")	{
+							$order_view_url = $block->getBaseUrl().'customerorder/customer/payment?back_order_id='.$id_b_e.'&back_po_number='.base64_encode($order['NumatCardPo']);
+						}
+						
+						?>
+
+						<tr option-redirect = "" style="cursor: pointer;">
+							<td class="option-redirect">
+									<?php  
+										if($order['DocStatus'] == 'PartiallyShipped') {
+											echo 'Partially Shipped';
+										}elseif ($order['DocStatus'] == 'Shipped') {
+											echo '<i class="fa fa-check">Shipped</i>';
+										} elseif ($order['DocStatus'] == 'Draft') { ?>
+											<div class="d-flex draft-section">
+												Draft 
+												<div class="action-conatiner">
+													<img id="draftAction" src="https://img.pngio.com/action-icon-png-153835-free-icons-library-action-icon-png-696_738.jpg" alt="action" />
+													<div class="draft-action">
+														<a class="newLinkText" href="<?php echo $this->getBaseUrl();?>customerorder/customer/neworder/id/<?php echo base64_encode($order['Id']);?>/ncp/<?php echo base64_encode($order['NumatCardPo']);?>#block-title"><span class="fa fa-pencil"></span></a>
+														<a class="newLinkTextRemove" href="<?php echo $this->getBaseUrl();?>customerorder/customer/delete/id/<?php echo base64_encode($order['Id']).'/back/'.base64_encode($back_redirect);?>/"><span class="fa fa-close"></span></a>
+														<a class="newLinkTextView" href="<?php echo $order_view_url;?>"><span class="fa fa-eye" aria-hidden="true" ></span></a>
+													</div>
+												</div>
+												
+											</div>
+										<?php }
+										else{
+											echo $order['DocStatus'];	
+										 
+										} 
+								?>
+							</td>
+							<td class="option-redirect"><?php echo ($order['DocNum'] != '') ? $order['DocNum'] : "";?></td>
+							<td class="option-redirect">
+								<?php //if($order_stats == "Draft" || $order['DocStatus'] == "Draft" || $order_stats == "Submitted" || $order['DocStatus'] == "Submitted"){ ?>
+								<?php echo ($order['NumatCardPo'] != '') ? $order['NumatCardPo'] : "-";?><?php /* }else{ ?>
+									<?php echo ($order['NumatCardPo'] != '') ? $order['NumatCardPo'] : "-";?>
+								<?php }*/ ?>
+							</td>
+
+						</tr>
+
+						<?php
+						$count++;
+					}?>
+				</tbody>
+				<tfoot>
+					<tr class="paginationRow" id="paginationId" data-id=1>
+						<td colspan="9" class="testTable" rowspan="1">
+							<div class="fa-pull-right d-flex">
+								<div class="fa-pull-left recordTotal"> Displaying 1 to <?= $count-1 ?> of <?= $total+1 ?></div>
+								<?php if($total > 30){?>
+									<div class="pagination">
+										<div class="dataTables_paginate paging_full_numbers" id="example_paginate">
+											<a class="paginate_button first disabled" aria-controls="example" data-dt-idx="0" tabindex="0" id="example_first"><span class="pageIcon first"></span></a>
+											<a class="paginate_button previous disabled" aria-controls="example" data-dt-idx="1" tabindex="0" id="example_previous"><span class="pageIcon previous"></span></a>
+																					<span class="cdatatableDetails">
+												<input type="text" value="1" class="direct-serach" data-dt-idx="1"> / <?php echo $totalPage; ?>
+											</span>
+											<a class="paginate_button next" aria-controls="example" data-dt-idx="2" tabindex="0" id="example_next"><span class="pageIcon next"></span></a>
+											<a class="paginate_button last" aria-controls="example" data-dt-idx="<?php echo $totalPage; ?>" abindex="0" id="example_last"><span class="pageIcon last"></span></a>
+										</div>
+									</div>
+								<?php } ?>
+							</div>
+						</td>
+					</tr>
+						<!-- <tr>
+							<td colspan="5" align="right"> Total Quantity:</td>
+							<td><?php echo number_format((int)$ordered);?></td>
+							<td><?php echo number_format((int)$open);?></td>
+							<td><?php echo number_format((int)$shipped);?></td>
+							<td>$<?php echo number_format($total_order,2);?></td>
+							<td></td>
+						</tr> -->
+				</tfoot>
+				<?php
+				}
+				else
+				{?>
+					<tr>
+						<td class="no-records" colspan="9" >No Orders Found!</td>            
+					</tr>
+				<?php } ?>
+			</table>
+		</div>
+	</div>
+<script>
+	require([
+		'jquery',
+		'customer',				
+        'Magento_Ui/js/modal/modal',
+		'mage/calendar'		        
+		], function($, script, modal){
+			var url = "<?php echo $this->getBaseUrl().'customerorder/getcustomer/index' ?>";
+			var data = '<?= json_encode($orders); ?>';	
+			var menu = "close";								
+			data =  JSON.parse(data); 
+
+			$(".filter , .close-filter").click(function() {
+				$(".orderSearch.orderSearchForm").slideToggle("slow")
+			});
+
+			$(document).on('click','.paginate_button',function(e){				
+				event.preventDefault();			
+				// console.log(data);
+				script.filterOrder(url,data, $(this));	
+			});			
+
+			$(document).on('change', '#order_stats', function(e) {		
+			  	var ser = this.value;				
+				var filteredOrder = script.DateRangeFiltering(data)	
+				$('input.direct-serach').attr('data-dt-idx',1);
+				script.filterOrder(url,filteredOrder, $('.direct-serach'));	
+				$(".orderSearch.orderSearchForm").css("display","none");
+			});
+
+			$(document).on('click','.action-conatiner img',function(e){	
+				$('.draft-action').removeClass('active');
+				$(this).next('.draft-action').addClass('active')
+				// $(this).next('.draft-action').animate({"width" : "150px" , "opacity" : "1"}, 1500);
+			});
+		
+			$(document).on('click','.dateRangeFilter',function(e){
+				  e.preventDefault();
+				  $('input.direct-serach').attr('data-dt-idx',1);				 
+				  var filteredOrder = script.DateRangeFiltering(data)
+				  script.filterOrder(url,filteredOrder, $('.direct-serach'));	
+			});
+
+			$(document).on('click','.btnreset',function(e){
+				  e.preventDefault();
+				  var filteredOrder = data;
+				  $('#date-from , #date-to').val('');
+				  script.filterOrder(url,filteredOrder, $('.direct-serach'));	
+			});
+
+			$(document).on('keypress','input.direct-serach',function(e){
+				var key = e.which;
+				var currentPage = $(this).attr('data-dt-idx');
+				var val = parseInt($(this).val());
+				var total = $('.paginate_button.last').attr('data-dt-idx');
+				if(key == 13){					
+					if(val != currentPage && val != ''  && val > 0 &&  val < parseInt(total))
+						$(this).attr('data-dt-idx',val)
+						script.filterOrder(url,data, $(this));
+				}
+			});
+
+			// var sortORder = data;
+			// $(document).on('click','th.item-sort',function(e){
+			// 	var sortColumn = $(this).attr('data-sort-by');
+			// 	var type = $(this).attr('sort-type');				
+			// 	if(sortColumn !== 'CreateDate'){
+			// 		var filteredOrder = script.SortArray(sortORder,sortColumn,type)									
+			// 	}else{
+			// 		var filteredOrder = script.SortDateArray(sortORder,type)				
+			// 		// console.log(filteredOrder);
+			// 	}
+			// 	var res = script.filterOrder(url,filteredOrder, $('.direct-serach'),$(this));		
+			// });
+
+
+			$( "body" ).delegate( ".txtboxToNumeric", "keydown", function(e) {
+				if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 ||(e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||(e.keyCode >= 35 && e.keyCode <= 40)) {
+					return;
+				}			
+				if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+					e.preventDefault();
+				}
+			});			
+			// $(".filter").click(function(){
+					
+			// 	$(".orderSearch.orderSearchForm").css("display","block");
+			// });
+			$('#date-range').dateRange({
+				buttonText: 'Select Date',
+				dateFormat: 'MM-dd-yyyy',
+				changeMonth: true,
+				changeYear: true,
+				maxDate:  new Date($.now()),
+				from: {
+					id: 'date-from'
+				},
+				to: {
+					id: 'date-to'
+				}
+			});
+		});
+
+		
+
+
+</script>

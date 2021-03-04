@@ -1,0 +1,193 @@
+<?php if($block->customerLoggedIn()){ ?>
+	<div class="avatar__thumbnail customerLoggedIn" data-name="IS">
+		<a>
+			<img src="<?= $this->getBaseUrl().'pub/media/muser.png';?>" alt="user" />
+		</a>
+
+	</div>
+	<nav class="user-logout" style="display: none;">
+			<ul>
+				<li>
+					<a href="<?=  $this->getBaseUrl(); ?>customerlogin/account/logout/" >
+					logout
+					</a>
+				</li>
+			</ul>
+		</nav>
+		<style type="text/css">
+			main#maincontent {margin-block-end : 60px; }
+			#homeProductSlider{ margin-bottom: 80px; }
+	</style>
+<?php }else{ ?>
+	<div class="avatar__thumbnail login" data-name="IS">
+		<a href="<?=  $this->getBaseUrl(); ?>login" >B2B Login</a>
+
+	</div>
+	
+<?php } ?>
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$request = $objectManager->get('\Magento\Framework\App\Request\Http');
+$cur_action = $request->getFullActionName();
+$params = $this->getRequest()->getParam('q');
+?>
+<script>
+	require([
+		'jquery'
+		], function($){
+
+			$(document).on('click','#search_product_button',function(e){
+
+				// var x = document.getElementById(".search-product");
+				  if ($(".search-product").css("display") === "none") {
+						if($(window).scrollTop() != 0){
+							if(!$("#header").is(":visible")){
+								$("#header").fadeIn(800);
+							}
+						}
+				  	$(".footer-menu-bottom .nav.item").removeClass("current");
+				  	$("#search_product_button").addClass("current");
+				    $('div.search-product').slideDown(200).fadeIn(800);
+				    $('div.search-product form#search_mini_form').addClass('show')
+				     $('div.search-product form#search_mini_form input');
+						$('body').addClass("overflown");
+				    $('div.search-product .cf.sidebarSearch').css('max-height', $(window).height()+40);
+				  //      $(function(){
+				  	$.browser.safari = ($.browser.webkit && !(/chrome/.test(navigator.userAgent.toLowerCase())));
+					if ($.browser.safari) {
+					    $('div.search-product form#search_mini_form input').focus().click();
+					}else{
+						 $('div.search-product form#search_mini_form input').focus();
+					}
+						   
+						// })
+				  } else {
+				  	currentclass();
+				  	$('div.search-product').slideUp(800).fadeOut(800);
+				    $('div.search-product form#search_mini_form').removeClass('show');
+				  	$("body").removeClass('overflown');
+						if($(window).scrollTop() != 0){
+							$("#header").fadeOut(800);
+						}
+
+
+				  }
+
+			});
+			// document.ontouchmove = function(e) {e.preventDefault()};
+
+			function currentclass(){
+				$(".footer-menu-bottom .nav.item").removeClass("current");
+					var currentclass = "<?php echo $cur_action;?>";
+					var p = "<?php echo $params;?>";
+					if(currentclass === "dashboard_index_index"){
+						$('.footer #dashboard-page').addClass('current');
+					}
+					else if(currentclass === "customer_account_index"){
+						$("#account-page").addClass("current");
+					}else if(currentclass === "customerorder_customer_index" && p === ''){
+						$("#order-page").addClass("current");
+					}else if(currentclass === "customerorder_customer_inventorydata"){
+						$("#inventory-page").addClass("current");
+					}else if(currentclass === "customerorder_customer_neworder"){
+						$("li.nav.item.new-order").addClass("current");
+					}else if(currentclass === "customerorder_customer_index" && p === 'd'){
+						$("#draft-page").addClass("current");
+					}
+			}
+
+			$(document).on("click", 'div.search-product', function (e) {
+		    	var container = $("div.search-product form#search_mini_form");
+
+			    if(!container.is(e.target) && container.has(e.target).length === 0){
+			        $('div.search-product').slideUp(800).fadeOut(800);
+							if($(window).scrollTop() != 0){
+								$('#header').fadeOut(800);
+							}
+				    $('div.search-product form#search_mini_form').removeClass('show');
+				  	$("body").removeClass('overflown');
+				  	$('#autosearch').attr('readonly', 'readonly');
+				  	 $('#autosearch').blur(); 
+					setTimeout(function() {   	$('#autosearch').attr('readonly', false); }, 300);
+				  	currentclass();
+
+			    }
+
+		  	});
+
+			$(".nav-toggle.action").click(function() {
+				if(!$(this).hasClass("closeToggle")){
+					if($(".user-logout").css("display") === "block"){
+						$(".user-logout").hide(300);
+					}
+				}
+			});
+			 $(document).on("click", function(event){
+               if(!jQuery(event.target).closest(".account_menu,.avatar__thumbnail.customerLoggedIn").length){
+                    $(".account_menu").slideUp(800);
+                        setTimeout(function(){
+                            $(".back-menu").hide();
+                            $("body").css("overflow","unset")
+                            $(".accountPageContainer").css("z-index",0)
+                            $("body").css("position","");
+                            $("body").css("width","");
+                            console.log($('.back-menu .modal').is(':visible'))
+                            if($('.back-menu .modal').is(':visible'))
+                            {   
+                                console.log("aaa");
+                            $(".account_menu_nav .mfp-close-inside").trigger("click");
+                            }   
+                            // $(".account_menu_nav").removeClass("show");
+                            $(".account_menu_nav .collapse").removeClass("show");
+                            $(".account_menu_nav .block-title,.myaccount_nav .block-title").addClass("collapsed");
+                            $(".account_menu_nav .block-title,.myaccount_nav .block-title").attr("aria-expanded","false");
+                            // $(".flexslider").css("z-index",0)
+                        },800)
+               }
+           });
+			 $(document).on("click",".customerLoggedIn",function(e) {
+
+                if($(".action.nav-toggle").hasClass("closeToggle")){
+                    if($("nav.navigation").is(":visible")){
+                            $("nav.navigation").fadeOut("slow");
+                            $(".action.nav-toggle").removeClass("closeToggle");
+                        }
+                    }
+                    $(".myaccount_nav .block-title").removeClass("collapsed");
+                    setTimeout(function(){
+                        $(".account_menu_nav").addClass("show");
+                        },800)
+                    if(!$(this).hasClass("menu_collapsed")){
+                        $(this).addClass("menu_collapsed");
+                    }else{
+                        $(this).removeClass("menu_collapsed")
+                    }
+                    if($(this).hasClass("menu_collapsed")){
+                        $(".back-menu").show();
+                        $(".account_menu").slideDown(800);
+                        $("body").css("overflow","hidden");
+                        $("body").css("position","fixed");
+                        $("body").css("width","100%");
+
+                        $(".accountPageContainer").css("z-index",-1)
+                        // $(".flexslider").css("z-index",-1)
+                    }else{
+                        $(".account_menu").slideUp(800);
+                        setTimeout(function(){
+                            $("body").css("overflow","unset")
+                            $(".accountPageContainer").css("z-index",0)
+                            $("body").css("position","");
+                            $("body").css("width","");
+                            $(".account_menu_nav .mfp-close-inside").trigger("click");
+                            // $(".flexslider").css("z-index",0)
+                            // $(".account_menu_nav").removeClass("show");
+                            $(".account_menu_nav .collapse").removeClass("show");
+                            $(".account_menu_nav .block-title,.myaccount_nav .block-title").addClass("collapsed");
+                            $(".account_menu_nav .block-title,.myaccount_nav .block-title").attr("aria-expanded","false");
+                            $(".back-menu").hide();
+                        },800)
+                    }
+            });
+		});
+</script>
+

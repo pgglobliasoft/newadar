@@ -1,0 +1,38 @@
+<div class="block-title collapsed" data-toggle="collapse" data-target="#collapseFive" aria-expanded="true" aria-controls="collapseFive">
+	<strong class="upperCaseText">User Management</strong>		
+</div>
+<div id="collapseFive" class="block-content management-section collapse" aria-labelledby="headingOne">
+	<div class="management-conatiner">
+		<div class="add-user">
+			<a class="action added userbtn"  attr-type = "user-management"  data-toggle="modal" data-target="#user-Modal"><span><i class="fa fa-plus" aria-hidden="true"></i>Add a new User</span></a>				
+		</div>
+<% if(result.length > 0){%>
+  <div class="table-conatiner">
+   
+			<div class="user-gird-conatiner">
+				<div class="#user-gird-conatiner">
+				<table class='child-user' id="editcustomer">
+			  <head>   
+			    <th>User Name</th>
+			    <th>Name</th>
+			    <th>Login status</th>    
+			    <th>Action <span class="action reloadbtn"> <i class="fa fa-refresh" aria-hidden="true"></i> </span></th>
+			  </head>
+			  <body>
+			  	<% _.each(result, function(item, key) {%>
+		            <tr data-id="<%= item.entity_id %>">             
+		              <td class="fullname"><%= item.fullname %></td>
+		              <td class="email"><%= item.email %></td>           
+		              <td>  <% if(item.active > 0){%><span class='active'> Online </span><%}else{%><span class='inactive'> Not-Online </span><%}%></td>                   
+		              <td class="action"><a class="action edit userbtn" id="<%= item.entity_id %>" attr-type="user-management" data-toggle="modal" data-target="#user-Modal"><span><i class="fa fa-pencil" aria-hidden="true"></i> edit </span></a></td>                   
+		            </tr>   
+		            <%})%>
+			  </body>
+			</table>
+			</div>
+			</div>
+  </div>
+<%}%>
+	</div>		
+</div>
+

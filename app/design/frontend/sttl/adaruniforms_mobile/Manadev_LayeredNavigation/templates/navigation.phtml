@@ -1,0 +1,252 @@
+<?php
+/**
+ * @copyright   Copyright (c) http://www.manadev.com
+ * @license     http://www.manadev.com/license  Proprietary License
+ */
+/**
+ * @var $block \Manadev\LayeredNavigation\Blocks\Navigation
+ *
+ * Based on app/code/Magento/LayeredNavigation/view/frontend/templates/layer/view.phtml (diff to check
+ * what has changed).
+ */
+
+
+
+$objectManager =  \Magento\Framework\App\ObjectManager::getInstance();
+
+$categoryFactory = $objectManager->get('\Magento\Catalog\Model\CategoryFactory');
+$categoryHelper = $objectManager->get('\Magento\Catalog\Helper\Category');
+$categoryRepository = $objectManager->get('\Magento\Catalog\Model\CategoryRepository');
+$get_category = $objectManager->get('Magento\Framework\Registry')->registry('current_category');//get current category
+//$categoryId = 11;
+$parentCategories = array();
+$params = $this->getRequest()->getParam('q');
+$url_query = http_build_query($this->getRequest()->getParams());
+$cat = $this->getRequest()->getParam('category');
+$selected_fil = '';
+$selected_filter = $this->getRequest()->getParam('selected_title');
+if(isset($selected_filter) && !empty($selected_filter)){
+	$selected_fil = $selected_filter;
+}else{
+	$selected_fil = "Sort By";
+}
+// echo $selected_filter;
+// die;
+/* if(!isset($params) && empty($params))
+{ */
+if(isset($get_category) && !empty($get_category)){
+	if(in_array($get_category->getId(), array(8,5,4,7,6)))
+	{
+		$categoryId = $get_category->getId();
+	}
+    else if($get_category->getData('level') == 3 || $get_category->getData('level') == 4)
+    {
+	   $categoryId = $get_category->getParentCategory()->getId();
+    }
+    else
+    {
+        $categoryId = $get_category->getId();
+    }
+	$category = $categoryFactory->create()->load($categoryId);
+	$parentCategories = $category->getChildrenCategories();
+	//print_r($parentCategories->getData());
+}
+elseif(isset($cat) && !empty($cat))
+{
+	$collectionSubCatArray = array('Addition'=>8,'Responsive'=>5,'Pro'=>4,'Lab'=>7,'Universal by adar'=>6);
+	if(isset($collectionSubCatArray[$cat]) && !empty($collectionSubCatArray[$cat]))
+	{
+		$category = $categoryFactory->create()->load($collectionSubCatArray[$cat]);
+		$parentCategories = $category->getChildrenCategories();
+
+	}
+}
+/* } */
+?>
+
+<?php if ($block->isVisible()): ?>
+    <div class="block filter mana-filter-block" id="layered-filter-block" data-mage-init='{ "Manadev_LayeredNavigation/js/NavigationView": {}}'>
+        <?php $filtered = count(iterator_to_array($block->getAppliedFilters())) ?>
+        <div class="block-title filter-title shop-by main" data-count="<?php echo $filtered; ?>">
+            <strong data-role="title"><?php echo __('Shop By') ?> <span class="filterArrow"></span></strong>
+        </div>
+		<div class="block-title mobile_sortby">
+            <strong data-role="title"><span class="sortby_text"> <?php echo $selected_fil; ?> </span><span class="filterArrow"></span></strong>
+        </div>
+        <div class="filter-section">
+        <div class="block-content filter-content">
+            <?php if ($block->hasState() && $block->isAppliedFilterVisible()) : ?>
+				<div id="current-filter-result" style="display:none;">
+					<div class="filter-current" data-mage-init='{"collapsible":{"openedState": "active", "collapsible": false, "active": false }}'>
+						<strong class="block-subtitle filter-current-subtitle" role="heading" aria-level="2" data-role="title" data-count="<?php echo $filtered; ?>"><?php echo __('Now Shopping by') ?></strong>
+						<ol class="items">
+							<?php foreach ($block->getAppliedFilters() as $engineFilter): ?>
+								<?php foreach ($engineFilter->getAppliedItems() as $item) : ?>
+									<li class="item"><?php echo $block->renderAppliedItem($engineFilter, $item) ?></li>
+								<?php endforeach; ?>
+							<?php endforeach; ?>
+						</ol>
+					</div>
+
+					<div class="block-actions filter-actions">
+						<a href="<?php echo $block->getClearUrl() ?>"<?php echo $block->getClearLinkAttributes() ?> class="action clear filter-clear"><span><?php echo __('(Clear All)') ?></span></a>
+					</div>
+                </div>
+            <?php endif; ?>
+			<div class="block-title filter-title shop-by" data-count="<?php echo $filtered; ?>">
+				<strong data-role="title"><?php echo __('Shop By') ?><span id="shopByClose" class="shopByClose"></span></strong>
+			</div>
+            <!-- <strong role="heading" aria-level="2" class="block-subtitle filter-subtitle"><?php echo __('Shopping Options') ?>
+                <?php
+								// echo $block->getApplyHtml();
+								?>
+            </strong> -->
+            <?php $noFilters = true; ?>
+
+            <div class="filter-options" id="narrow-by-list" data-role="content" data-mage-init='{"Manadev_Core/js/StatefulAccordionWidget":{"id": "<?php echo $this->getNameInLayout() ?>.filters", "openedState": "active", "collapsible": true, "active": false, "multipleCollapsible": true}}'>
+                <?php
+				foreach ($block->getFilters() as $filter): ?>
+                    <?php $noFilters = false;
+
+					$textColor = trim(str_replace("</span>","",str_replace("<span>","",$filter->getName())));
+					if($filter->getName() != "Price" && $filter->getName() != "Brand" && $filter->getName() != "Category" && $textColor != "Core Colors :"):
+
+					$filterName = $filter->getName();
+					if($filter->getName() == 'Category Filter')
+					{
+						$filterName = "Category";
+					}
+					?>
+                    <div data-role="collapsible" class="filter-options-item" data-bind="mageInit: {'collapsible':{'openedState': 'active', 'active': 'true'}}">
+
+                        <div data-role="title" class="filter-options-title" ><?php echo __(str_replace(':','',$filterName)) ?></div>
+
+                        <div data-role="content" class="filter-options-content"><?php echo $block->renderFilter($filter); ?></div>
+
+                    </div>
+				<?php
+					if($filter->getName() == "Gender"):
+
+						/* $_count = is_array($parentCategories) ? count($parentCategories) : $parentCategories->count();
+						if ($_count):
+						?>
+						<div data-role="collapsible" class="filter-options-item" data-bind="mageInit: {'collapsible':{'openedState': 'active', 'active': 'true'}}">
+							<div data-role="title" class="filter-options-title" ><?php echo __('Category'); ?></div>
+							<div data-role="content" class="filter-options-content">
+								<ol id="show_in_main_sidebar-category" class="items cat-filter-ol">
+								<?php foreach ($parentCategories as $_category):?>
+									<li class="item cat-filter-li">
+										<a class="cat-filter-anchore" href="<?php echo $_category->getUrl() . ((isset($url_query) && $url_query != '') ? '?'.$url_query : ''); ?>" data-action="cat=<?php echo $_category->getId(); ?>">
+											<?php echo $_category->getName() ?>
+										</a>
+									</li>
+								<?php endforeach; ?>
+								</ol>
+							</div>
+						</div>
+						<?php
+						endif; */
+
+					endif;
+				?>
+                <?php endif;
+				endforeach; ?>
+				<?php if ($block->hasState() && $block->isAppliedFilterVisible()) : ?>
+				<div class="block-actions filter-actions mobile-clearall">
+					<a href="<?php echo $block->getClearUrl() ?>"<?php echo $block->getClearLinkAttributes() ?> class="mobile-button action clear filter-clear"><span><?php echo __('Clear All') ?></span></a>
+				</div>
+			<?php endif; ?>
+            </div>
+            <?php if ($noFilters) : ?>
+                <script>
+                    require([
+                        'jquery'
+                    ], function ($) {
+                        $('#layered-filter-block').addClass('filter-no-options');
+                    });
+                </script>
+            <?php endif; ?>
+
+            <?php if($block->getScripts()) : ?>
+                <script type="text/x-magento-init">
+                    <?php echo $block->renderScripts() ?>
+                </script>
+            <?php endif; ?>
+        </div>
+    </div>
+ </div>
+<?php endif; ?>
+<style type="text/css">
+	div#layered-filter-block{ margin-bottom: 10px; }
+	.filter-section .block-title.filter-title.shop-by {
+	    display: none;
+	}
+
+/*	div#layered-filter-block.active .block-content.filter-content {
+	    opacity: 1;
+	}
+*/
+	div#layered-filter-block .filter-section {padding-left: 0px; transition: opacity 1s ease-in; opacity: 0; }
+	div#layered-filter-block {transition: background 1s ease-in; }
+	div#layered-filter-block.block.filter.mana-filter-block.active .filter-section{ margin-top: 70px;  opacity: 1 !important;}
+	.block.filter.mana-filter-block.active{
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		min-height: calc(100vh - 30px);
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		background: rgba(0,0,0,0.6);
+		overflow: hidden;
+		}
+	.block.filter.mana-filter-block.active .block-title.mobile_sortby{ display: none; }
+	.catalog-category-view .block.filter.mana-filter-block.active .filter-section{ margin-top: 75px; }
+	.block.filter.mana-filter-block.active .filter-section .block-title.filter-title.shop-by{ display: block; }
+	.block.filter.mana-filter-block.active .filter-section .block-title.filter-title.shop-by strong
+	{width: 100%;background-color: #0c4269;border-top-left-radius: 15px;border-top-right-radius: 15px;color: #fff !important;}
+</style>
+<script>
+/* 	require(['jquery.bootstrap','Manadev_Core/js/StatefulAccordionWidget'], function ($,jquery)
+{
+
+	jQuery("#narrow-by-list").accordion({
+		header : "#title-1",
+		content : "#content-1",
+		trigger : "#trigger-1",
+		multipleCollapsible: true
+	});
+	//jQuery( "#narrow-by-list" ).accordion( "activate" );
+	//jQuery( "#narrow-by-list" ).accordion( "deactivate" );
+}); */
+require(['functions','jquery.bootstrap'], function ($,jquery)
+{
+		'use strict';
+		jQuery.noConflict();
+		jQuery(document).ready( function(){
+			if(jQuery(window).width() <= 1366){
+				jQuery('.filter-options-item').removeAttr('data-bind');
+			}else{
+				jQuery('.filter-options').show();
+			}
+			jQuery("#shopByClose").click(function () {
+				jQuery('#layered-filter-block').removeClass('active');
+				jQuery('#layered-filter-block').removeClass('filter');
+				jQuery('body').removeClass('filter-active');
+			});
+			jQuery(".block-title.filter-title.shop-by.main").click(function () {
+				// jQuery(this).trigger('click');
+				jQuery(this).parent().addClass('filter active');
+			});
+		});
+		jQuery(window).resize( function(){
+			if(jQuery(window).width() <= 1366){
+				jQuery('.filter-options-item').removeAttr('data-bind');
+			}else{
+				jQuery('.filter-options').show();
+			}
+		});
+
+});
+</script>

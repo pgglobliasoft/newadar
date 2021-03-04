@@ -1,0 +1,23 @@
+<?php if ($block->getConfig('general_settings/enabled')): ?>
+    <?php if ($block->getConfig('product_page_settings/show_feature')): ?>
+		<?php if ($block->getConfig('product_page_settings/show_feature_img') && $block->getConfig('product_page_settings/show_feature_img_sidebar')): ?>
+			<?php if ($feature = $block->getFeature()): ?>
+				<?php
+				if ($block->getConfig('product_page_settings/small_image_width') != '') {
+					$width = $block->getConfig('product_page_settings/small_image_width');
+				} else {
+					$width = 240;
+				}
+				?>
+				<div class="block product-feature">
+					<?php $img = $feature->getSmallImageUrl(); ?>
+					<?php if ($img) { ?>
+						<div class="feature-image">
+							<a title="<?php echo $feature->getName(); ?>" href="<?php echo $feature->getUrl(); ?>"><img class="img-responsive" style="max-width: <?php echo $width ?>px;" src="<?php echo $img; ?>" alt="<?php echo $feature->getName(); ?>" class="image"/></a>
+						</div>
+					<?php } ?>
+				</div>
+			<?php endif; ?>
+        <?php endif; ?>
+    <?php endif; ?>
+<?php endif; ?>

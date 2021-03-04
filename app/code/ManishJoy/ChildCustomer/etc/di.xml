@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">  
+    <type name="ManishJoy\ChildCustomer\Model\ResourceModel\Grid\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">customer_entity</argument>
+            <argument name="eventPrefix" xsi:type="string">wk_records_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">wk_grid_records_collection</argument>
+            <argument name="resourceModel" xsi:type="string">ManishJoy\ChildCustomer\Model\ResourceModel\User</argument>
+
+        </arguments>
+    </type>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+      <arguments>
+          <argument name="collections" xsi:type="array">
+              <item name="customertab_customer_listing_data_source" xsi:type="string">ManishJoy\ChildCustomer\Model\ResourceModel\User\User\Collection</item>
+          </argument>
+      </arguments>
+  </type>
+    <type name="ManishJoy\ChildCustomer\Model\ResourceModel\Grid\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">under_child_customer</argument>
+            <argument name="eventPrefix" xsi:type="string">wk_records_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">wk_grid_records_collection</argument>
+            <argument name="resourceModel" xsi:type="string">ManishJoy\ChildCustomer\Model\ResourceModel\Grid</argument>
+
+        </arguments>
+    </type>  
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="manishjoy_childcustomer_childcustomer_listing_data_source" xsi:type="string">ManishJoy\ChildCustomer\Model\ResourceModel\Grid\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

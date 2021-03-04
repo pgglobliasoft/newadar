@@ -1,0 +1,224 @@
+<?php
+$regorderdata = $block->getRegisterData(); 
+$customerdata = $regorderdata['customerdata'];
+if(isset($customerdata) && isset($customerdata['errors'])) 
+{
+    ?>
+    <div class="page-title-wrapper">
+        <h1 class="page-title">
+            <span class="base" data-ui-id="page-title-wrapper">NEW ORDER</span>
+        </h1>
+    </div>
+    <?php
+    echo $customerdata['message'];
+}
+else
+{
+$customerdata = $customerdata[0];
+$orderdata = $regorderdata['orderdata'];
+$currentorderdata = $orderdata[0];
+if(strtolower($currentorderdata['DocStatus']) == strtolower('Submitted'))
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $redirect = $objectManager->get('\Magento\Framework\App\Response\Http');
+        $baseurl =  $block->getBaseUrl().'customerorder/customer/index';
+        $redirect->setRedirect($baseurl);
+    } 
+//echo "<prE>";print_R($currentorderdata);exit;
+?>
+<div class="accountPageContainer payemtnactionPage">
+<form name="payemtnaction" id="payemtnaction" method="POST" enctype="multipart/form-data" data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>" autocomplete="off" data-mage-init='{"validation": {"errorClass": "mage-error"}, "theAdarValidationMethod":{}}'>
+<div class="block block-dashboard-info cf newOrderStep3 paymentseaction">
+            <h1 class="page-title">New Order</h1>       
+        <div class="block-title">
+        <strong>STEP 3: Enter your payment and shipping details</strong>
+        </div>
+        <?php echo $this->getLayout()->createBlock("Sttl\Customerorder\Block\Payment")->setCustomerData($customerdata)->setTemplate("Sttl_Customerorder::createorder/savepament.phtml")->toHtml();?>
+        <div class="bdrLine pma"></div>
+        <div class="shippingmethodblockpatment row">
+           <div class="box box-information col-md-4 shippingmethodblock">
+               
+                <strong class="box-title">
+                    <span>Choose Shipping Method</span>
+                </strong>
+                <div class="box-content" >
+                   <span class="couponTxt">Note: Freight charges will be calculated while processing your order.</span>
+
+                   <?php if($customerdata['ShipCode'] != '128' && $customerdata['ShipType'] != 'All' && $customerdata['ShipCode'] != '' && $customerdata['ShipType'] != '') { ?>
+                    <span class="v-center"><input type="radio" checked name="shiiping_method" id="shiiping_method1" value="<?php echo $customerdata['ShipCode'];?>" <?php if($currentorderdata['ShippingType'] ==  $customerdata['ShipCode']) { echo 'selected="selected"'; } ?> ></span>
+                        <label for="shiiping_method1">
+                            <?php echo $customerdata['ShipType'].'<span class="default_tag">(Default Shipping Method)</span>'; ?>
+                        </label>
+                        </br>
+                        <?php } ?>
+
+                    <span class="v-center"><input type="radio" name="shiiping_method" id="shiiping_method2" value="STD" <?php if($currentorderdata['ShippingType'] == "STD") { echo 'checked="checked"'; } ?>></span>
+                          <label for="shiiping_method2">Ground (3 - 5 business)</label>
+                    </br><span class="v-center"><input type="radio" name="shiiping_method" id="shiiping_method3" value="NXD" <?php if($currentorderdata['ShippingType'] == "NXD") { echo 'checked="checked"'; } ?>></span>
+                         <label for="shiiping_method3">Next Day</label>
+                    </br><span class="v-center"><input type="radio" name="shiiping_method" id="shiiping_method4" value="SCD" <?php if($currentorderdata['ShippingType'] == "SCD") { echo 'checked="checked"'; } ?>></span>
+                    <label  for="shiiping_method4">2nd Day </label>
+                    </br><span class="v-center"><input type="radio" name="shiiping_method" id="shiiping_method5" value="THD" <?php if($currentorderdata['ShippingType'] == "THD") { echo 'checked="checked"'; } ?>></span>
+                     <label for="shiiping_method5">3 Day Select</label>
+                     <?php if(trim(strtolower($customerdata['ShipType'])) != strtolower("Pick Up")) {?>
+                     </br><span class="v-center"><input type="radio" name="shiiping_method" id="shiiping_method6" value="4" <?php if($currentorderdata['ShippingType'] == "4") { echo 'checked="checked"'; } ?>></span>
+                        <label for="shiiping_method6">Pick Up</label>                 
+                     <?php } ?>
+
+
+
+
+
+
+
+
+
+                    
+                </div>
+                 <p class="shiiping_method_error maxqtyvaldi"></p>
+            </div>        
+             <?php echo $this->getLayout()->createBlock("Sttl\Customerorder\Block\Payment")->setCustomerData($customerdata)->setTemplate("Sttl_Customerorder::createorder/shippinginformation.phtml")->toHtml();?>
+            <div class="box box-information dlvrNote col-md-4">
+                <span class="box-title">
+                    <strong>Delivery Notes (Optional)</strong>
+                </span>
+                <div class="box-content">
+                    <textarea rows="3" cols="5" name="delivery_note" maxlength="255"><?php echo $currentorderdata['DeliveryNotes'] ?></textarea>
+                </div>
+            </div>
+        </div>
+   
+            <div class="bdrLine mbre">
+                
+                <input type="hidden" name="order_id" id="order_id" value="<?php echo $currentorderdata['Id']?>">
+                <input type="hidden" name="po_number" id="po_number" value="<?php echo $currentorderdata['NumatCardPo']?>">
+            </div>
+                <div class="box-actions alignRight neworderbuttondiv">
+                <a class="newLinkText neworderbuttonback" href="<?php echo $block->getBaseUrl();?>customerorder/customer/neworder/id/<?php echo base64_encode($currentorderdata['Id']);?>/ncp/<?php echo base64_encode($currentorderdata['NumatCardPo']);?>" class="delUrl">Back</a>
+                    <button type="button" class="themeBtn neworderbuttonsubmit alignRight submitorder paymentsubmit" title="<?= $block->escapeHtmlAttr(__('Review Order')) ?>"><span><?= $block->escapeHtml(__('Review Order')) ?></span></button>
+                </div>
+    </div>
+     </form>
+     <?php echo $this->getLayout()->createBlock("Sttl\Customerorder\Block\Payment")->setCustomerData($customerdata)->setTemplate("Sttl_Customerorder::createorder/billingform.phtml")->toHtml();?>
+     <?php echo $this->getLayout()->createBlock("Sttl\Customerorder\Block\Payment")->setCustomerData($customerdata)->setTemplate("Sttl_Customerorder::createorder/paymentcardform.phtml")->toHtml();?>
+      <?php echo $this->getLayout()->createBlock("Sttl\Customerorder\Block\Payment")->setCustomerData($customerdata)->setTemplate("Sttl_Customerorder::createorder/Shipppingform.phtml")->toHtml();?>
+      </div>
+<script type="text/javascript">
+    require(['jquery'], function($) {
+        $(document).ready(function() {
+
+            // debugger;
+
+            // $(".submitorder").click(function(e){
+            $(document).on("click",".submitorder",function(e){
+            form = $('#payemtnaction');
+            if (form.validation('isValid')) {
+                // console.log("test");
+                e.preventDefault();
+                var url = "<?php echo $block->getBaseUrl().'customerorder/customer/submitorder' ?>";
+                var payment = getFormData($("#payemtnaction"));
+                var cardform = getFormData($('.custom-customer-add-payment'));
+                var billingform = getFormData($("#customer-edit-billaddress-validate"));
+                var shiipingform = getFormData($("#customer-edit-address-validate"));
+                var selectcard_id = $("#selectcard_id :selected").val();
+                    if(selectcard_id == '')
+                    {
+                        $('.selectcard_id_error').html("Please Select Payment Method.").fadeIn();
+                        setTimeout(function(){   $('.selectcard_id_error').fadeOut(1000); }, 3000);
+                        $('#selectcard_id').focus();
+                        return false;
+                    }
+                    var shiiping_method = $("#shiiping_method :checked").val();
+                    var shippingaddress = $("#shippingaddress :checked").val();
+                    if(shippingaddress == '' && (shiiping_method != '4'))
+                    {
+                        $('.shiiping_method_shipAddress').html("Please Select Shipping Address.").fadeIn();
+                        setTimeout(function(){   $('.shiiping_method_shipAddress').fadeOut(1000);  }, 3000);
+                        $('#shippingaddress').focus();
+                        return false;
+                    }
+                    
+                    if(shiiping_method  == 'checked')
+                    {
+                        $('.shiiping_method_error').html("Please Select.").fadeIn();
+                        setTimeout(function(){   $('.shiiping_method_error').fadeOut();}, 3000);
+                        $('#shiiping_method').focus();
+                        return false;
+                    }
+                      if ($('input[name="shiiping_method"]:checked').length == 0) {
+                          $('.shiiping_method_error').html("Please Choose Shipping Method.").fadeIn();
+                            setTimeout(function(){   $('.shiiping_method_error').fadeOut();}, 3000);
+                            $('#shiiping_method').focus();
+                         return false; 
+                        } 
+
+                $('body').trigger('processStart');
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    /* showLoader: true, */
+                    data: {selectcard_id:selectcard_id,payment:payment,cardform:cardform,billingform:billingform,shiipingform:shiipingform},
+                    success: function(data) {
+                    if(data.errors == 'false') {
+                          var nexturl = "<?php echo $block->getBaseUrl().'customerorder/customer/viewordersummary' ?>";
+                              $("#payemtnaction").attr('action', nexturl);
+                             $('#payemtnaction').submit()
+                        }
+                        else 
+                        {
+                            $('body').trigger('processStop');
+                            return false;
+                        } 
+                    }
+                });
+            }else{
+                
+            }
+            });
+    });
+               
+        $(document).ready(function(){
+            $("input:radio[name=shiiping_method]:selected").find("lable").css({'color':'#0e4169'});
+        })
+        
+        $("input:radio[name=shiiping_method]").click(function() {
+
+            var selectedVal = $(this).val();
+
+            // $(".shippingmethodblock .box-content").find("label").css({'color':'grey'});
+
+            // $(this).next('label').css({'color':'#0e4169'})
+
+            // var selectedText = $(this).attr('').html();
+                
+            if(selectedVal == '4')
+            {
+                $('.shippingAdds').hide();
+                $('.removeeditshipurl').hide();
+            }else{
+                $('.shippingAdds').show();
+                $('.removeeditshipurl').show();
+            }
+            //var selectedVal = $(this).find(':selected').val();
+            //var selectedText = $(this).find(':selected').text();
+        });
+            function getFormData(formElem){
+                var unindexed_array = formElem.serializeArray();
+                var indexed_array = {};
+                jQuery.map(unindexed_array, function(n, i){
+                 indexed_array[n['name']] = n['value'];
+                });
+            return indexed_array;
+            }
+
+             $(window).load(function(){
+                    $('.neworderbuttonsubmit').removeClass('buttondesabled');
+
+            })
+
+    });
+
+</script>
+<?php
+}
+?>

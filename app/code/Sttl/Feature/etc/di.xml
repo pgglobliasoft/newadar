@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Magento\Catalog\Model\Layer" type="Sttl\Feature\Model\Layer"/>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="feature_listing_data_source" xsi:type="string">Sttl\Feature\Model\Resource\Feature\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Sttl\Feature\Model\Resource\Feature\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">sttl_feature</argument>
+            <argument name="eventPrefix" xsi:type="string">sttl_feature_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">feature_grid_collection</argument>
+            <argument name="resourceModel" xsi:type="string">Sttl\Feature\Model\Resource\Feature</argument>
+        </arguments>
+    </type>
+    <type name="Sttl\Feature\Model\Layer\Resolver">
+        <arguments>
+            <argument name="layersPool" xsi:type="array">
+                <item name="feature" xsi:type="string">Sttl\Feature\Model\Layer\Feature</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Sttl\Feature\Model\Layer\Feature">
+        <arguments>
+            <argument name="context" xsi:type="object">Magento\Catalog\Model\Layer\Category\Context</argument>
+        </arguments>
+    </type>
+    <type name="Sttl\Feature\Block\Feature\Product\ListProduct">
+        <arguments>
+            <argument name="layerResolver" xsi:type="object">Sttl\Feature\Model\Layer\Resolver</argument>
+        </arguments>
+    </type>
+    <virtualType name="FeatureGirdFilterPool" type="Magento\Framework\View\Element\UiComponent\DataProvider\FilterPool">
+        <arguments>
+            <argument name="appliers" xsi:type="array">
+                <item name="regular" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\RegularFilter</item>
+                <item name="fulltext" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\FulltextFilter</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="FeatureGridDataProvider" type="Sttl\Feature\Ui\DataProvider\Feature\FeatureDataProvider">
+        <arguments>
+            <argument name="filterPool" xsi:type="object" shared="false">FeatureGirdFilterPool</argument>
+        </arguments>
+    </virtualType>
+    <preference for="Magento\Store\Model\ResourceModel\Store" type="Sttl\Feature\Model\Rewrite\ResourceModel\Store" />
+</config>

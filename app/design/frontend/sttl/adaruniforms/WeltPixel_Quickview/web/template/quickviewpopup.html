@@ -1,0 +1,155 @@
+<div class="quickViewContent contentload">
+	<div class="product media">
+        <div id="big" class="owl-carousel owl-theme" style="width: 304px;  height: 420px">
+            <% for (var i = 0; i <  productimage.length; i++) {
+            if(productimage[i]){    
+            %>
+                <div class="item" itemno="<%=i%>">
+                    <img src="<%=productimage[i]%>">
+                </div>
+            <% } }%>
+        </div>
+
+        <div id="thumbs" class="owl-carousel owl-theme" style="width: 304px; height: 105px">
+            <% for (var i = 0; i < productimage.length; i++) {%>
+                <div class="item" itemno="<%=i%>">
+                     <img src="<%=productimage[i]%>">
+                </div>
+            <% } %> 
+        </div>
+</div>
+	<div class="product-info-main">
+		<div class="page-title-wrapper product">
+		    <h1 class="page-title">
+		        <span class="base" data-ui-id="page-title-wrapper"><%=name%></span>
+		    </h1>
+		</div>
+		<div class="show-product-dis-box">
+	         <span><%=collection%> Collection</span>
+	    </div>
+	    <div class="show-product-dis-box-more">
+            <span><lable>Style:</lable></span>
+            <span><%=sku%></span>
+        </div>
+
+        <div class="product-options-bottom">
+            <div class="box-gotoproduct">
+                <a target="_parent" href="<%=producturl%>" title="Full Product Details" class="action primary" id="product-gotoproduct-button">
+                    <span>Full Product Details</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="swatch-opt" data-role="swatch-options">
+            <%if(color.length > 0){%>
+                <div class="swatch-attribute color" attribute-code="color" attribute-id="93" option-selected="26256">
+                	<span id="option-label-color-93" class="swatch-attribute-label">
+                          Colors : 
+                    </span>
+                	<span class="swatch-attribute-selected-option color"></span>
+                	<div aria-activedescendant="option-label-color-93-item-26254" tabindex="0" aria-invalid="false" aria-required="true" role="listbox" aria-labelledby="option-label-color-93" class="swatch-attribute-options clearfix">
+                    	<%
+                    		_.each(color,function(index,value){
+                         	             %> 
+                                         <div class="swatch-option image swatch-option-color" id="option-label-color-93" product-id='<%=index.id%>' parent-id='<%=index.parent_sku%>' color-type='color' aria-label="<%=index.color%>" role="option" style="background: url(<%=baseurl+'pub/media/attribute/swatch/swatch_thumb/110x90'+index.colorurl%>) no-repeat center; background-size: 105%;"></div>
+                                         <%    					
+                    		});
+
+                    	%>
+                    </div>
+                </div>
+            <%}%>
+            <%if(seasonalcolor.length > 0){%>
+
+
+                <div class="swatch-attribute seasonalcolors" attribute-code="seasonalcolors" attribute-id="152">
+                    <span id="option-label-seasonalcolors-152" class="swatch-attribute-label">
+                        <span>Seasonal </span>Colors :</span>
+                    <span class="swatch-attribute-selected-option seasonal"></span>
+                    <div aria-activedescendant="" tabindex="0" aria-invalid="false" aria-required="true" role="listbox" aria-labelledby="option-label-seasonalcolors-152" class="swatch-attribute-options clearfix">
+                        <%
+                            _.each(seasonalcolor,function(index,value){
+                                         %> 
+                                         <div class="swatch-option image" id="option-label-color-152" option-label="" product-id='<%=index.id%>' parent-id='<%=index.parent_sku%>' color-type='seasonal' aria-label="<%=index.seasonalcolor%>" role="option" style="background: url(<%=baseurl+'pub/media/attribute/swatch/swatch_thumb/110x90'+index.seasonalcolorurl%>) no-repeat center; background-size: 105%;"></div>
+                                         <%                     
+                            });
+
+                        %>
+                    </div>
+                </div>
+            <%}%>
+            <%if(heathercolor.length > 0){%>
+                <div class="swatch-attribute heather_colors" attribute-code="heather_colors" attribute-id="171">
+                    <span id="option-label-heather_colors-171" class="swatch-attribute-label">
+                        <span>Heather </span>Colors :</span>
+                    <span class="swatch-attribute-selected-option heather"></span>
+                    <div aria-activedescendant="" tabindex="0" aria-invalid="false" aria-required="true" role="listbox" aria-labelledby="option-label-heather_colors-171" class="swatch-attribute-options clearfix">
+                        <%
+                            _.each(heathercolor,function(index,value){
+                                         %> 
+                                        <div class="swatch-option image" id="option-label-heather_colors-171" product-id='<%=index.id%>' parent-id='<%=index.parent_sku%>' color-type='heather' aria-label="<%=index.heathercolor%>" role="option" style="background: url(<%=baseurl+'pub/media/attribute/swatch/swatch_thumb/110x90'+index.heathercolorurl%>) no-repeat center; background-size: 105%;"></div>
+                                         <%                     
+                            });
+                        %>
+                    </div>
+                </div>
+            <%}%>
+                <div class="swatch-attribute size" attribute-code="size" attribute-id="145">
+                    <span id="option-label-size-145" class="swatch-attribute-label">Available Sizes : </span>
+                    <span class="swatch-attribute-selected-option size"></span>
+                    <div class="box">
+                        <a class="show-size-chart" data-toggle="modal" data-target="#sizechartPopupModal">(View Size Chart)</a>
+                    </div>
+                    <div aria-activedescendant="" tabindex="0" aria-invalid="false" aria-required="true" role="listbox" aria-labelledby="option-label-size-145" class="swatch-attribute-options clearfix" id="size-attr">
+                        <% _.each(size,function(index,value){ 
+                        
+                            if(index.size){
+
+                            var sizevalue =sizevaluee(index.size)
+                        %>
+                            <div class="swatch-option text swatch-option-size image" sort="<%=sizevalue.index%>" color-type='size' aria-label="<%=sizevalue.label%>" role="option"><%=sizevalue.label%></div>
+                        <%}})%>
+                    </div>
+        	</div>
+        </div>       
+        <div class="u-fabric-care">
+                <div class="box"><a class="fabric-care-chart" data-toggle="modal" data-target="#fabriccarePopupModal">(Fabric features &amp; care)</a></div>
+        </div>
+        <ul class="productQuality product attribute feature">
+            <% _.each(featureddata,function(index,value){ 
+            %>
+                <li class="value"><img src="<%=baseurl+'pub/media/'+index.small_image%>"><%=index.name%></li>
+            <%})%>
+            
+        </ul>
+        <% if(logindata == 1 ){ 
+            if(viewstockvisi == 1){
+             if (falg.length == 0){ %>
+                <div class="viewstockbutton">
+                    <span class="notavailable-product">
+                        NOT AVAILABLE
+                    </span>
+                </div>
+            <%}else{ %>
+                <div class="viewstockbutton">
+                    <a href="javascript:'" class="buyNowBtnMain themeBtn product-item-link" data-toggle="modal" data-target="#popupModal" id="<%=sku%>">
+                        VIEW STOCK & PRICING
+                    </a>
+                </div>
+            <% } 
+            }
+        }else{%>
+        <div class="container p-2 buyBtns buytBtnLogin">
+                <div class="buyBtnContainer">
+            <div class="loginSection"><a target="_blank" href="<%=baseurl+'storelocator'%>">BUY IN STORE</a></div>
+        </div>
+        <div class="buyBtnContainer">
+            <div class="loginSection">
+                <a class="buyNow <%if(productbaseurl=='#') {%>disable <%}%>" href="<%=productbaseurl%>" id="disable" target="_blank">BUY NOW</a>
+            </div>          
+        </div>
+        </div>
+        <%}%>
+
+</div>
+</div>

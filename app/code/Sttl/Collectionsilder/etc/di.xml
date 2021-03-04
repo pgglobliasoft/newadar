@@ -1,0 +1,50 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
+	<type name="Magento\Framework\Console\CommandList">
+       <arguments>
+           <argument name="commands" xsi:type="array">
+               <item name="exampleSayHello" xsi:type="object">Sttl\Collectionsilder\Console\Sayhello</item>
+           </argument>
+       </arguments>
+   </type>
+   <type name="Magento\Framework\Console\CommandList">
+       <arguments>
+           <argument name="commands" xsi:type="array">
+               <item name="ProductProductimg" xsi:type="object">Sttl\Collectionsilder\Console\Productimg</item>
+           </argument>
+       </arguments>
+   </type>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="collections_silder_listing_data_source" xsi:type="string">Sttl\Collectionsilder\Model\ResourceModel\Post\Post\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Sttl\Collectionsilder\Model\ResourceModel\Post\Post\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">collection_silder</argument>
+            <argument name="eventPrefix" xsi:type="string">wk_records_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">wk_grid_records_collection</argument>
+            <argument name="resourceModel" xsi:type="string">Sttl\Collectionsilder\Model\ResourceModel\Post</argument>
+        </arguments>
+    </type>
+
+    <virtualType name="VirtualTypeName" type="Magento\Catalog\Model\ImageUploader">
+       <arguments>
+          <argument name="baseTmpPath" xsi:type="string">collection/image</argument>
+          <argument name="basePath" xsi:type="string">collection/image</argument>
+          <argument name="allowedExtensions" xsi:type="array">
+             <item name="jpg" xsi:type="string">jpg</item>
+             <item name="jpeg" xsi:type="string">jpeg</item>
+             <item name="svg" xsi:type="string">svg</item>
+             <item name="png" xsi:type="string">png</item>
+          </argument>
+       </arguments>
+    </virtualType>
+    <type name="Sttl\Collectionsilder\Controller\Adminhtml\Grid\Upload">
+       <arguments>
+          <argument name="imageUploader" xsi:type="object">VirtualTypeName</argument>
+       </arguments>
+    </type>
+</config>

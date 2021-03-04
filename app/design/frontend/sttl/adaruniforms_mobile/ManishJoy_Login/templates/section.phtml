@@ -1,0 +1,119 @@
+<?php 
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance(); 
+$FormKey = $objectManager->get('Magento\Framework\Data\Form\FormKey');
+   	$past = time()-(24*60*60);
+   	setcookie("PHPSESSID", "", $past, '/', ".adaruniforms.com");
+?>
+<div class="login-container-form login-overlay">
+	<div class="login-form">
+		<form class="form-login popup-login-form" method="POST" id="custom-form" action="" data-hasrequired="* Required Fields" novalidate="novalidate" style="display: block;">
+			 <input name="form_key" type="hidden" value="<?php echo $FormKey->getFormKey();?>">
+			<div class="response-msg"></div>
+				<div class="container">
+					<div class="form-logo">
+						<a href="<?php echo $block->getUrl('') ?>">
+	                   <img src="<?php echo $block->getViewFileUrl('images/mobile-logo.png'); ?>"  class="form-logo-img"/>
+						</a>
+	                </div>
+					<span><h1> ADAR <h2>Customer Login</h2> </h1> 	</span>
+	                <div class="inputArea field required">
+					<!-- 	<label class="label" for="username">Login Email</label> -->
+						<input class=" required-entry textInput input-text" type="email" placeholder="Enter Email" name="username" id="username" data-validate="{required:true, 'validate-email':true}">
+					</div>
+					<div class="inputArea field password required">
+						<!-- <label class="label" for="password">Password</label> -->
+						<input class=" required-entry textInput input-text" type="password" placeholder="Enter Password" name="password" id="password" data-validate="{required:true}">
+					</div>
+					<div class="btnRow actions-toolbar full-btn">
+						<button class="signupBtn action login primary mobile-button" type="submit">Log In</button>				
+					</div>
+					<div class="alignc forgot-link">
+						 <a class="action remind" href="javascript:void(0);">Forgot password?</a>
+					</div>
+				</div>
+		</form>
+		<p class="action remind account-link">Don't have an account? <a class="action remind" href="<?= $this->getUrl(''); ?>customer/account/create">Click Here</a> to register</p>
+
+	</div>
+	<div class="sliderBanner-images">
+		<div id="right-section">
+			<!-- <img src="<?php echo $block->getViewFileUrl('ManishJoy_Login::images/left-section.jpg'); ?>" class="adar-image" /> -->
+		</div>
+	</div>
+</div>
+<div class="Forgot"><?php
+echo $this->getLayout()
+          ->createBlock('ManishJoy\CustomerLogin\Block\Forgot')
+          ->setTemplate('ManishJoy_CustomerLogin::form/forgot.phtml')
+          ->toHtml();
+ ?></div>
+<script type="text/javascript">
+	require(['jquery', 'mage/mage'], function($) {
+
+			var loginText = "<?php echo __('Login') ?>";
+			var loggingText = "<?php echo __('Please Wait...') ?>";
+			var loginButton = $('.popup-login-form').find('button[type=submit]');
+			var baseUrl = "<?php echo $block->getUrl('') ?>";
+			var loginUrl = "<?php echo $block->getUrl('customerlogin/ajax/login') ?>";
+			var redirectUrl = "<?php echo $block->getUrl('dashboard/index/index') ?>";
+			var dataForm = $('#custom-form');
+		    var ignore = null;
+		    dataForm.mage('validation', {
+		        ignore: ignore ? ':hidden:not(' + ignore + ')' : ':hidden'
+		    }).find('input:text').attr('autocomplete', 'off');
+			$('.popup-login-form').submit(function(e){
+				e.preventDefault(e);
+				var data = dataForm.validation('isValid');
+				if(data){
+	   		 		dataForm.mage('validation', {});
+					loginButton.attr("disabled", "disabled");
+					loginButton.text(loggingText);
+					var formData = getFormData($(this));
+					$.ajax({
+			            type: "POST",
+			            url: loginUrl,
+			            data: formData,
+			            dataType: "json",
+						showLoader: true,
+			            success: function(data) {
+			                showResponse(data);
+			                if(data.errors) {
+			                	loginButton.text(loginText);
+			                	loginButton.removeAttr('disabled');
+			                } else {
+			                	console.log(data);
+			                	console.log(data.redirect ? data.redirect : redirectUrl);
+			                	$('.loading-mask').show();
+								setTimeout(function(){
+				                	if(data.redirect == baseUrl)
+				                		window.location.href =  redirectUrl;
+				                	else
+				                		window.location.href = data.redirect ? data.redirect : redirectUrl;
+				                },2000);
+			                }
+			            }
+			        });
+					return false;
+				}
+			});
+
+
+			function getFormData(formElem){
+			    var unindexed_array = formElem.serializeArray();
+			    var indexed_array = {};
+			    jQuery.map(unindexed_array, function(n, i){
+			        indexed_array[n['name']] = n['value'];
+			    });
+			    return indexed_array;
+			}
+
+			function showResponse(data) {
+				if(data.errors) {
+					console.log(data);
+					$('.response-msg').addClass('fail').html(data.message);
+					$('.inputArea input[type="password"]').val();
+				}
+				setTimeout(function(){ $('.response-msg').html(null).removeClass('fail'); }, 4000);
+			}
+	});
+</script>

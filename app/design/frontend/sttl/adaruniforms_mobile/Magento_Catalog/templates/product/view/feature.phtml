@@ -1,0 +1,51 @@
+<?php
+$_helper = $this->helper('Magento\Catalog\Helper\Output');
+$_product = $block->getProduct();
+$_call = $block->getAtCall();
+$_code = $block->getAtCode();
+$_className = $block->getCssClass();
+$_attributeLabel = $block->getAtLabel();
+$_attributeType = $block->getAtType();
+$_attributeAddAttribute = $block->getAddAttribute();
+
+if ($_attributeLabel && $_attributeLabel == 'default') {
+    $_attributeLabel = $_product->getResource()->getAttribute($_code)->getFrontendLabel();
+}
+if ($_attributeType && $_attributeType == 'text') {
+    $_attributeValue = ($_helper->productAttribute($_product, $_product->$_call(), $_code)) ? $_product->getAttributeText($_code) : '';
+} else {
+    $_attributeValue = $_helper->productAttribute($_product, $_product->$_call(), $_code);
+}
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$featuredata = $objectManager->get('Sttl\Feature\Model\Feature')->getCollection()->addFieldToFilter('option_id', ['in' => $_attributeValue])->setOrder('sort_order','ASC')->load();
+$featurearray = $featuredata->getData();
+$storeManager = $objectManager->get('Magento\Store\Model\StoreManagerInterface');
+$currentStore = $storeManager->getStore();
+$path =  $currentStore->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+$collcationValue =  $_product->getResource()->getAttribute('collecttion')->getFrontend()->getValue($_product);
+$sizeurl = $_product->getUfabriccareurl();
+?>
+
+<?php if ($_attributeValue): ?>
+  <div class="product attribute features">
+    <?php $_attributeLabel = str_replace(':', '', $_attributeLabel); ?>
+<strong class="type"><?php /* @escapeNotVerified */ echo $_attributeLabel?></strong>
+    <ul class="productQuality product attribute <?php /* @escapeNotVerified */ echo $_className?>">
+        <?php if ($_attributeLabel != 'none'): ?><?php endif; ?>
+          <?php $i = 1;?>
+            <?php if ($_className == 'feature'){ ?>
+              <div class="fabric-care-button"><a class="fabric-care-chart" data-toggle="modal" data-target="#fabriccarePopupModal">(Fabric features & care)</a></div>
+              <?php } ?>
+            <?php foreach ($featurearray as $value): ?>
+
+        	     <li class="value" <?php /* @escapeNotVerified */ echo $_attributeAddAttribute;?>>
+                 <?php if ($value['small_image'] != ''): ?>
+                   <?php $fullimg = '';$fullimg = $path.$value['small_image'];?>
+                 <img src="<?php echo $fullimg?>" />
+                 <?php endif; ?>
+                 <?php /* @escapeNotVerified */ echo $value['name']; ?>
+               </li>
+            <?php $i++; endforeach; ?>
+    </ul>
+  </div>
+<?php endif; ?>

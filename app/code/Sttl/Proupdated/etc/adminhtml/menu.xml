@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+<!--         <add id="Sttl_Proupdated::core" title="Announcement B2B" module="Sttl_Proupdated" sortOrder="10" resource="Sttl_Proupdated::core"/>
+        <add id="Sttl_Proupdated::instagramtitle" title="Announcement B2B" module="Sttl_Proupdated" sortOrder="56" resource="Sttl_Proupdated::instagramtitle" parent="Sttl_Proupdated::core"/> -->
+      	 <!--  <add id="Sttl_Proupdated::instagram_config" title="Configuration" module="Sttl_Proupdated" sortOrder="20" parent="Sttl_Proupdated::instagramtitle" action="adminhtml/system_config/edit/section/instagramsection" resource="Sttl_Proupdated::instagram_config"/>  
+ -->
+ 		  <add id="Sttl_Proupdated::heading" title="Announcement B2B" module="Sttl_Proupdated" sortOrder="60" resource="Sttl_Proupdated::instagramtitle" parent="Sttl_Inquiries::main"/>
+
+      	  <add id="Sttl_Proupdated::updated" title="Add Announcement B2B" module="Sttl_Proupdated" sortOrder="10" parent="Sttl_Proupdated::heading" action="sttl_proupdated/announcement/index" resource="Sttl_Proupdated::updated"/> 
+
+      	  <add id="Sttl_Proupdated::customer_list" title="Customer Viewed Announcment" module="Sttl_Proupdated" sortOrder="20" parent="Sttl_Proupdated::heading" action="sttl_proupdated/customer/index" resource="Sttl_Proupdated::customer"/> 
+
+    </menu>
+</config>

@@ -1,0 +1,66 @@
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$currentProduct = $objectManager->get('Magento\Framework\Registry')->registry('current_product');
+$_product = $currentProduct;
+$_imagehelper = $this->helper('Magento\Catalog\Helper\Image');
+$images = $_product->getMediaGalleryImages();
+//echo $_product->getId();
+
+    if($images->count()>0){
+        ?>
+            <div class="product-view-custom-media-<?php $_product->getId()?>">
+            <?php
+                $i = 0;
+                    foreach($images as $child){
+                    $i++;
+              $productImage = $_imagehelper->init($_product, 'product_page_image_large')->setImageFile($child->getFile())->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(TRUE)->getUrl();
+              $productImagedata = $_imagehelper->init($_product, 'product_page_image_large')
+                    ->setImageFile($child->getFile())->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(TRUE) ->getUrl();
+                //    if($i==1) continue;
+                    ?>
+                        <div class="image-<?php echo $i;?>">
+                             <img data-id="smallthumbs-<?php echo $_product->getId();?>" data-img="<?php echo $productImagedata; ?>" src="<?php echo $productImage; ?>"/>
+                        </div>
+                        <?php if($i == 4)
+                        {?>
+                             <div class="videos-<?php echo $i;?> custom-videos">
+                <iframe src="https://www.youtube.com/embed/nGvwvmMCCFs" width="100%" height="250" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen=""></iframe>
+              </div>
+                 <?php       }
+
+                    }
+                    ?>
+            </div>
+           <?php
+          }
+        /**  if($_product->getMainproductimage())
+          {
+            $imagesArray = explode(",",$_product->getMainproductimage());
+            $i = 1;
+            $productImagedata = $_imagehelper->init($_product, 'product_page_image_large')
+            ?>
+             <div class="product-view-custom-media-<?php $_product->getId()?>">
+           <?php
+            foreach($imagesArray as $key => $imgPath)
+            {?>
+                <div class="image-<?php echo $i;?>">
+                             <img data-id="smallthumbs-<?php echo $_product->getId();?>"  src="<?php echo $imgPath; ?>"/>
+                </div>
+                <?php if($i == 3):?>
+                    <div class="product-view videos">
+                    </div>
+            <?php endif;?>
+            <?php
+            $i++;
+            }
+           ?>
+           </div>
+            <?php
+          }**/
+
+    ?>
+<style type="text/css">
+    .gallery-placeholder{
+        display: none;
+    }
+</style>

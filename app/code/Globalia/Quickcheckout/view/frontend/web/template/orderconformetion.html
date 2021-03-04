@@ -1,0 +1,51 @@
+<%
+var back_redirect = 0;
+%>
+
+
+<div class="accountPageContainer OrderConfirmation">
+	<h1 class="page-title">Order Confirmation</h1>
+	<p class="thnku">Thank You For Your Order</p>
+	<p class="orderDtail">Order number : <span id="orderNumber"><%=WebOrderId%></span></p>
+	<p>You will receive an email confirmation shortly. To check the status of your order please 
+		<a href="<%=baseurl%>customerorder/customer/orderview/id/<%= order_id %>/status/<%=submitted%>/back/<%= back_redirect %>/df/<%=dataform%>" class="newLinkText">click here</a>. 
+	</p>
+
+	<%=blockhtml%>
+
+</div>
+
+
+<%
+	
+var pastdue = customerdata.PastDueAmount;
+var availablecredit = parseFloat(customerdata.AvailCredit);
+console.log(doctotal);
+console.log(availablecredit);
+	if(pastdue > 0)
+	{
+
+%>
+		<div class="pastduebox tabledesign">
+				<p class="warning">Your account is $<%=convertcurrency(pastdue)%> past due.</p>
+				<p>Please make payment as soon as possible to get your order approved by clicking the below button or contact our finance team.</p>
+				<a href="<%=baseurl%>customerinvoices/customer/index?order_stats=pastdue&order_by=DueDays&opt=DESC&dash=pay_due" class="mackpayment">MAKE PAYMENT</a>	
+		</div>	
+	<%
+	}
+
+	if(doctotal > availablecredit)
+	{
+	%>
+
+		<div class="availablecredit tabledesign">
+				<p class="warning">This order exceeds your available credit!</p>
+				<p class="availablecreditmessage">You have $<%=convertcurrency(availablecredit)%> available credit.</p>
+				<p class="textmessage">Please make a payment as soon as possible to increase your available credit or contact out finance team.</p>
+				<a href="<%=baseurl%>customerinvoices/customer/index?order_stats=Open&order_by=DueDays&opt=DESC" class="mackpayment">MAKE PAYMENT</a>
+				<p class="myaccountpage">You can see your approved Credit Limit in the Payment Info section in the <a class="myaccountlink" href="<%baseurl%>customer/account/index/">My Account Page</a>.</p>
+			</div>
+
+	<%
+	}
+	%>

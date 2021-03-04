@@ -1,0 +1,8 @@
+<?php
+	$collcationValue = '';
+	$_product = $block->getProduct();
+	$collcationValue =  $_product->getResource()->getAttribute('collecttion')->getFrontend()->getValue($_product); 
+?>
+<?php if (isset($collcationValue) && !empty($collcationValue)) : ?>
+	<div class="attribute_collection"><?php echo $collcationValue;?>&nbsp;<?php echo __("collection");?></div>
+<?php endif;?>

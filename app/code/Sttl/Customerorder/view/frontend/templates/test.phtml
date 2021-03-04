@@ -1,0 +1,30 @@
+<div data-bind="scope: 'koexample'">
+<!-- ko template: getTemplate() --><!-- /ko -->
+
+</div>
+
+<div afterRender="function (target, viewModel) {
+    console.log('Rendered element:', target);
+    console.log('Associated view model:', viewModel);
+    console.log(this === viewModel);
+}"></div>
+
+
+
+
+
+ 
+<script type="text/x-magento-init">
+        {
+            "*": {
+                "Magento_Ui/js/core/app": {
+                    "components": {
+                        "koexample": {
+                            "component": "Sttl_Customerorder/js/koexample",
+                            "template" : "Sttl_Customerorder/example"
+                        }
+                    }
+                }
+            }
+        }
+</script>

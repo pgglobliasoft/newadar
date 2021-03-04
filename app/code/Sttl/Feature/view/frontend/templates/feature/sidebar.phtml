@@ -1,0 +1,42 @@
+<?php $helper = $this->helper('Sttl\Feature\Helper\Data'); ?>
+<?php if ($block->getConfig('general_settings/enabled')): ?>
+    <?php if ($block->getConfig('sidebar_settings/enabled')): ?>
+        <?php $collection = $block->getCollection(); ?>
+        <?php if ($collection->count()): ?>
+            <div class="block block-feature">
+                <div class="block-title">
+                    <strong class="title"><?php echo __('Features') ?></strong>
+                </div>
+				<?php $_cUrl = $this->getUrl('*/*/*', ['_current' => true, '_use_rewrite' => true]); ?>
+                <div class="block-content">
+                    <ul class="feature-list list-group">
+                        <?php foreach ($collection as $feature): ?>
+							<?php if($_cUrl == $feature->getUrl()): ?>
+								<li class="list-group-item active">
+									<span><?php echo $feature->getName(); ?></span>
+									<?php if ($this->getConfig('sidebar_settings/show_product_count')): ?>
+										<span class="badge"><?php echo $block->getProductCount($feature); ?></span>
+									<?php endif; ?>
+								</li>
+							<?php else: ?>
+								<li class="list-group-item">
+									<a title="<?php echo $feature->getName(); ?>" href="<?php echo $feature->getUrl(); ?>">
+										<?php echo $feature->getName(); ?>
+									</a>
+									<?php if ($this->getConfig('sidebar_settings/show_product_count')): ?>
+										<span class="badge"><?php echo $block->getProductCount($feature); ?></span>
+									<?php endif; ?>
+								</li>
+							<?php endif ?>
+                        <?php endforeach; ?>
+						<?php if($helper->getFeatureUrl() != $_cUrl): ?>
+							<li class="list-group-item last all">
+								<a title="<?php echo __('View All'); ?>" href="<?php echo $helper->getFeatureUrl(); ?>"><?php echo __('View All'); ?></a>
+							</li>
+						<?php endif ?>
+                    </ul>
+                </div>
+            </div>
+        <?php endif; ?>
+    <?php endif; ?>
+<?php endif; ?>

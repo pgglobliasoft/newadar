@@ -1,0 +1,85 @@
+<?php
+$order_id = $block->getOrderId();
+$style = $block->getStyle();
+$submitcolor = $block->getSubmitcolor();
+$viewmode = '';
+
+if($block->getViewmode() != '')
+{
+	$viewmode = $block->getViewmode();
+}
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();   
+$this->saphelper = $objectManager->create('Sttl\Adaruniforms\Helper\Sap'); 
+$invsession = $objectManager->create('Magento\Customer\Model\Session'); 
+$styleInventory = $invsession->getStyleInventory();
+$DatabyStyle = $invsession->getDatabyStyle();	
+// echo '<pre>'; print_r($styleInventory); print_r($DatabyStyle); 
+// if(!empty($styleInventory) && !empty($DatabyStyle))
+// {
+
+// 	$allorderdata = $this->saphelper->getOrderAllItems($order_id,'T');
+	
+//   	$distinstyle = array_values(array_unique(array_map(function ($i) { return $i['Style']; }, $allorderdata)));
+//   $implodedStyle = implode("','", $distinstyle);
+  
+  
+//   if(!empty($distinstyle))
+//   {
+
+//   	foreach ($distinstyle as $key => $value) {
+//     	if(array_key_exists($value, $styleInventory))
+//     	{
+//     		$sizegrouparray[$styleInventory[$value]['SizeGroup']][] = $styleInventory[$value]['Style'];
+//     	}
+//     }
+//     $filnalHtml ='';
+//     $sizearraydata = array();
+    
+    
+//     foreach($sizegrouparray as $key => $tempstyle)
+//     {
+//     	$renderDataByColor = '';
+//     	$groupstyle =implode("','", $tempstyle);
+//     	$renderDataByColor = $this->saphelper->newrenderOrderItemHtml($order_id,$style,$submitcolor,$viewmode,$groupstyle,$DatabyStyle[$key]); 
+//      	$filnalHtml .= $renderDataByColor;
+//     } 
+//     $filnalHtml .= $this->saphelper->renderOrderItemHtmltotal($order_id,$viewmode);
+//   	echo $filnalHtml;
+//   }
+
+// }else{
+
+	$distinstyle = $this->saphelper->gettempOrdrstyle($order_id); 
+    $values = array_map('array_pop', $distinstyle);
+    $implodedStyle = implode("','", $values);
+    $distinstyle = $this->saphelper->getsizegroup($implodedStyle); 
+    $sizegrouparray = array();
+    foreach($distinstyle as $key => $data)
+    {
+    	if($data['SizeGroup'] != ''){		
+        $sizegrouparray[$data['SizeGroup']][] = $data['Style'];
+    	}
+    }
+    foreach($distinstyle as $key => $data)
+    {
+    	if($data['SizeGroup'] == ''){		
+        $sizegrouparray[$data['SizeGroup']][] = $data['Style'];
+    	}
+    }
+    $filnalHtml ='';
+    // echo "<pre>";
+    // print_r($sizegrouparray);die;
+    
+    // $reversedaray = array_reverse($sizegrouparray);
+    foreach($sizegrouparray  as $key => $value)
+    {
+      $renderDataByColor = '';   
+      $groupstyle =implode("','", $value);
+
+      $renderDataByColor = $this->saphelper->newrenderOrderItemHtml($order_id,$style,$submitcolor,$viewmode,$groupstyle);  
+      $filnalHtml .= $renderDataByColor;
+    }
+    echo $filnalHtml .= $this->saphelper->renderOrderItemHtmltotal($order_id,$viewmode);	
+// }
+
+?>

@@ -1,0 +1,231 @@
+<style type="text/css">
+	.magestore-bannerslider-title{
+		display: none;
+	}
+	.page-title-wrapper{
+		display: none;
+	}
+</style>
+<?php
+	/**
+		* Copyright © Magento, Inc. All rights reserved.
+		* See COPYING.txt for license details.
+	*/
+	
+	// @codingStandardsIgnoreFile
+	
+	/** @var \Magento\Customer\Block\Account\Dashboard\Info $block */
+	//echo "<pre>";print_r($block->getCustomerData());
+	//$helper = $this->helper('Sttl\Adaruniforms\Helper\Sap');
+	$om = \Magento\Framework\App\ObjectManager::getInstance();
+	$customerSession = $om->create('Magento\Customer\Model\Session');
+	$customerName = $customerEmail = "";
+	$customer_phone = 'N/A';
+	$adminCutom = $customerSession->getCustomerAsadmin();
+	$adminEmail = $customerSession->getCustomerEnroller();
+	//$data = $helper->getCustomerDetails(["Active", "Phone1"]);
+	$data = $block->getCustomerData();
+	if(isset($data[0]) && !empty($data[0]))
+	{
+		$data = $data[0];
+	}
+	if($customerSession->isLoggedIn() && isset($data) && !isset($data['errors'])) {
+
+		$customerName = $customerSession->getCustomer()->getName(); 
+		$customerEmail = $customerSession->getCustomer()->getEmail();
+		$customerPassword = $customerSession->getCustomer()->getPasswords();
+		
+		if (isset($data["Phone1"]) && !empty($data["Phone1"])) {
+			$tmpPhone = preg_replace("/[^0-9]/", "", $data["Phone1"]);
+			$lenPhone = strlen($tmpPhone);
+			if ($lenPhone == 10) {
+				$customer_phone = substr($tmpPhone,0,3).'-'.substr($tmpPhone,3,3).'-'.substr($tmpPhone,6);
+			} else {
+				$customer_phone = str_replace([" ", "."],"-",$data["Phone1"]);
+			}
+		}
+?>
+<div class="myAccountCustomBanner">
+<!-- <div class="my_account_banner">
+		<?php echo $this->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId('myaccoutbanner')->toHtml();?></div> -->
+<?php /* ?>
+<div class="magestore-bannerslider-standard">
+            <div class="customer-account--title magestore-bannerslider-title" style="font: bold 12px/16px Arial, Helvetica, sans-serif;text-transform: uppercase;color: #e26703;">
+        <strong><span>Customer Account </span></strong>
+        </div>
+        <div class="customer-account- magestore-bannerslide-flex-slider" style="margin: auto; margin-bottom: 20px;">
+        <div id="magestore-bannerslider-flex-slider-61562750502" class="flexslider mainslider flexslider-content-image magestore-bannerslider-flex-slider-61562750502" style="margin:auto">
+            
+        <div class="flex-viewport" style="overflow: hidden; position: relative;"><ul class="slides" style="width: 600%; margin-left: -705px;"><li style="width: 705px; float: left; display: block;" class="clone" aria-hidden="true">
+                                            <a href="" target="_self" style="display:block;">
+                        
+                            <img id="6_clone" class="customer-account--img" alt="" src="https://www.adaruniforms.com/pub/media/magestore/bannerslider/images/b/a/banner3.jpg" draggable="false">
+							</a></li>  
+                                                <li style="width: 705px; float: left; display: block;" class="clone" aria-hidden="true">
+                                            <a href="" target="_self" style="display:block;">
+                        
+                            <img id="6_clone" class="customer-account--img" alt="" src="https://www.adaruniforms.com/pub/media/magestore/bannerslider/images/b/a/banner3.jpg" draggable="false">
+							</a>
+                            </li></ul></div></div>
+
+            </div>
+</div>
+<?php */ ?>
+<?php 
+echo $this->getLayout()->createBlock("Magestore\Bannerslider\Block\SliderItem")->setSliderId(6)->toHtml();
+$status = '';
+
+if(trim(strtolower(isset($data['Active']))) == 'y' || trim(strtolower(isset($data['Active']))) == 1)
+{
+	$status = 'Active';
+}else{
+	$status = 'Inactive';
+} 
+?>
+</div>
+<div class="page-title-wrapper-myaccout">
+    <h1 class="page-title">
+        <span class="base" data-ui-id="page-title-wrapper">My Account</span></h1>
+    </div>
+<div class="accountStatus">Account Status: <span><?php echo $status;?></span></div>
+<div class="cf"></div>
+<div class="block block-dashboard-info" id="accordionExample">
+    <div class="block-title" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"><strong class="upperCaseText"><?= $block->escapeHtml(__('Account Details')) ?></strong>
+		
+	</div>
+    
+	
+	<div id="collapseOne" class="block-content accountDtlSection collapse show" aria-labelledby="headingOne">
+		
+		<div class="box box-information col-md-4"> 
+			<strong class="box-title"> <span>Full Name:</span> </strong>
+			<div class="box-content">
+				<p><!-- <?php echo $adminEmail ? 'Not Enrolled' : $customerName; ?><br> -->
+					<?php echo $customerName; ?><br>
+				</p>
+			</div>
+			<div class="box-actions">
+				<a class="action edit" data-toggle="modal" attr-type = "fullname" data-target="#customer-edit"><span><?= $block->escapeHtml(__('Edit')) ?></span></a>
+				<!-- <a class="action edit" href="<?= $block->escapeUrl($block->getUrl('customer/account/edit')) ?>">
+					<span><?= $block->escapeHtml(__('Edit')) ?></span> 
+				</a>-->
+			</div>
+		</div>
+		
+		
+		<div class="box box-information emailBox"> <strong class="box-title"> <span>Email/User ID:</span></strong>
+			<div class="box-content emailVal">
+				<p>
+					<!-- <?php echo $adminEmail ? 'Not Enrolled' : $customerEmail; ?><br> -->
+					<?php echo $customerEmail; ?><br>
+				</p>
+			</div>
+			<div class="box-actions">
+				<a class="action edit" data-toggle="modal"  attr-type = "email" data-target="#customer-edit"><span><?= $block->escapeHtml(__('Edit')) ?></span></a>
+				<!-- <a class="action edit" href="<?= $block->escapeUrl($block->getUrl('customer/account/edit')) ?>">
+					<span><?= $block->escapeHtml(__('Edit')) ?></span> 
+				</a>-->
+			</div>
+		</div>
+		
+		
+		<div class="box box-information pswdBox"> <strong class="box-title"> <span>Password:</span> </strong>
+			<div class="box-content">
+				<p>*****</p>
+			</div>
+			<div class="box-actions">
+				<?php if(!$adminCutom ){ ?>
+				<a class="action edit" data-toggle="modal" attr-type = "password" data-target="#customer-edit"><span><?= $block->escapeHtml(__('Edit')) ?></span></a>
+				<?php }else{ ?>
+					<a class="action edit adminloginpassword"><span><?=  $block->escapeHtml(__('Edit')) ?></span></a>
+				<?php } ?>
+				<!-- <a class="action edit" href="<?= $block->escapeUrl($block->getUrl('customer/account/edit')) ?>">
+					<span><?= $block->escapeHtml(__('Edit')) ?></span> 
+				</a>-->
+			</div>
+		</div>
+		
+		<div class="box box-information col-md-4"> 
+			<strong class="box-title"> <span>Phone Number:</span> </strong>
+			<div class="box-content">
+				<!-- <p><?php echo $adminEmail ? 'Not Enrolled' : $customer_phone;?></p> -->
+				<p><?php echo $customer_phone;?></p>
+			</div>
+		</div>
+		
+	</div>
+	<script type="text/javascript">
+		require(['jquery'], function($) {
+			$('#customer-edit').on('show.bs.modal', function(e){
+				var type = $(e.relatedTarget);
+				var recipient = type.attr('attr-type');
+				
+				if (recipient == "email") {
+					$("#change-email").attr("checked", true).change();
+					$(".field-name-lastname, .field-name-firstname").hide();
+				}
+				if (recipient == "password") {
+					$("#change-password").attr("checked", true).change();
+					$(".field-name-lastname, .field-name-firstname").hide();
+				}
+			});
+			
+			$('#customer-edit').on('hide.bs.modal', function(e){
+				var type = $(e.relatedTarget);
+				var recipient = type.attr('attr-type');
+				
+				$("#change-email").attr("checked", false).change();
+				$("#change-password").attr("checked", false).change();
+				$(".field-name-lastname, .field-name-firstname").show();
+			});
+		});
+	</script>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<?php /*  ?>
+		<div class="block-content">
+        <div class="box box-information">
+		<strong class="box-title">
+		<span><?= $block->escapeHtml(__('Full Name')) ?></span>
+		</strong>
+		<div class="box-content">
+		<p>
+		<?= $block->escapeHtml($block->getName()) ?><br>
+		</p>
+		</div>
+        </div>
+        
+        <div class="box box-information">
+		<strong class="box-title">
+		<span><?= $block->escapeHtml(__('Phone Number')) ?></span>
+		</strong>
+		<div class="box-content">
+		<p>
+		<?= $block->escapeHtml($block->getTelephone()) ?><br>
+		</p>
+		</div>
+        </div>
+		</div>
+		
+	<?php */ ?>
+	
+</div>
+
+<?php
+
+}
+else
+{
+	echo $data['message'];
+}
+?>

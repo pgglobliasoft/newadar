@@ -1,0 +1,17 @@
+<!--@subject {{trans "Custom Email template from %store_name" store_name=$store.getFrontendName()}} @-->
+<!--@vars {
+"var message_1":"Custom Message 1",
+"var message_2":"Custom Message 2"
+} @-->
+
+{{template config_path="design/email/header_template"}}
+
+<table>
+    <tr class="email-info">
+         <td>
+            <h1>{{trans "Your Custom Message for email goes here"}}</h1>
+        </td>
+    </tr>
+</table>
+
+{{template config_path="design/email/footer_template"}}

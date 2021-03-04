@@ -1,0 +1,18 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="materialpro_rules_listing_data_source" xsi:type="string">Sttl\Materialpro\Model\ResourceModel\Post\Post\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Sttl\Materialpro\Model\ResourceModel\Post\Post\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">Materialpro_rules</argument>
+            <argument name="eventPrefix" xsi:type="string">wk_records_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">wk_grid_records_collection</argument>
+            <argument name="resourceModel" xsi:type="string">Sttl\Materialpro\Model\ResourceModel\Post</argument>
+        </arguments>
+    </type>
+</config>

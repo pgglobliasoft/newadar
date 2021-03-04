@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+    	<add id="Sttl_Collectionsilder::collectionsilder" title="Collection Slider" module="Sttl_Collectionsilder" sortOrder="60" resource="Sttl_Collectionsilder::collectionsilder" parent="Sttl_Inquiries::main"/>
+
+		<add id="Sttl_Collectionsilder::collectionsilder_silder" title="Manage Collections B2B (Option 1)" module="Sttl_Collectionsilder" sortOrder="10" parent="Sttl_Collectionsilder::collectionsilder" action="collectionsilder/grid/index" resource="Sttl_Collectionsilder::collectionsilder_silder"/>
+
+    </menu>
+</config>

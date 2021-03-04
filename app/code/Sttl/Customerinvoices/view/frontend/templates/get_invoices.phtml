@@ -1,0 +1,267 @@
+<?php
+$date_from = $block->getRequest()->getParam('date-from');
+$date_to = $block->getRequest()->getParam('date-to');
+$status = $block->getRequest()->getParam('order_stats');
+$order_by = $block->getRequest()->getParam('order_by', 'CreateDate');
+$opt = $block->getRequest()->getParam('opt', 'DESC');
+$serachinvoice = $block->getRequest()->getParam('serachinvoice');
+
+$limit = 30;  
+    if (isset($_GET["page"]) && $_GET["page"] > 0) { 
+      $pn  = $_GET["page"]; 
+    } 
+    else { 
+      $pn = 1;  
+    };  
+$start_from = ($pn-1) * $limit;  
+$endform = $start_from +$limit; 
+$getInvoicestotalHTml = $block->totalrecords($pn,$limit); 
+if(isset($getInvoicestotalHTml) && isset($getInvoicestotalHTml['errors'])) 
+{
+    ?>
+    <div class="page-title-wrapper">
+        <h1 class="page-title">
+            <span class="base" data-ui-id="page-title-wrapper">Invoices</span>
+        </h1>
+    </div>
+    <?php
+    echo $getInvoicestotalHTml['message'];
+}
+else
+{
+    $getInvoicesData = $block->getInvoicesData();
+    // if($order_by != 'DocTotal'){
+    //     $getInvoicesData = $block->getInvoicesData();
+    // }else{
+    //     $getInvoicesData = $block->getInvoicesData();
+    //     $page = $getInvoicesData['sid'];
+    //     $getInvoicesData = $getInvoicesData['uid'];    
+    //     // echo "string";
+    //     // print_r($getInvoicesData);
+    //     if(count($getInvoicesData) > 30){
+    //         $pieces = array_chunk($getInvoicesData, 30);
+    //         $getInvoicesData = $pieces[$page-1];
+    //     }else{
+    //         $getInvoicesData = $getInvoicesData['uid'];
+    //     }
+    // }
+
+    
+?>
+<div class="accountPageContainer">
+
+
+<div class="orderTable">
+    <table class="orderList invoiceList">
+        <tr>
+            <th><input type="checkbox" name="selectall" class="selectall" value=""></th>
+            <th>
+                <a href="javascript:void(0);" class="grid-shorting" onclick="sorting('DocNum','<?php echo ($order_by == 'DocNum') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+                    Number
+                    <i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'DocNum') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+                </a>
+            </th>
+            <th>
+                <a href="javascript:void(0);" class="grid-shorting" onclick="sorting('NumatCardPo','<?php echo ($order_by == 'NumatCardPo') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+                    PO#
+                    <i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'NumatCardPo') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+                </a>
+            </th>
+            <th>
+                <a href="javascript:void(0);" class="grid-shorting" onclick="sorting('CreateDate','<?php echo ($order_by == 'CreateDate') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+                    Date
+                    <i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'CreateDate') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+                </a>
+            </th>
+            <th>
+                <a href="javascript:void(0);" class="grid-shorting" onclick="sorting('DueDate','<?php echo ($order_by == 'DueDate') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+                    Due Date
+                    <i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'DueDate') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+                </a>
+            </th>
+            <th width="60px">
+                <a href="javascript:void(0);" class="grid-shorting" onclick="sorting('DueDays','<?php echo ($order_by == 'DueDays') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+                    Due In
+                    <i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'DueDays') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+                </a>
+            </th>
+            <th>
+                <a href="javascript:void(0);" class="grid-shorting" onclick="sorting('DocStatus','<?php echo ($order_by == 'DocStatus') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+                    Status
+                    <i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'DocStatus') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+                </a>
+            </th>
+            <th>
+                <a href="javascript:void(0);" class="grid-shorting" onclick="sorting('DocTotal','<?php echo ($order_by == 'DocTotal') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+                    Total
+                    <i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'DocTotal') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+                </a>
+            </th>
+            <th>
+                <a href="javascript:void(0);" class="grid-shorting" onclick="sorting('PaidAmount','<?php echo ($order_by == 'PaidAmount') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+                    Paid
+                    <i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'PaidAmount') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+                </a>
+            </th>
+            <th>
+                <a href="javascript:void(0);" class="grid-shorting" onclick="sorting('OpenBalance','<?php echo ($order_by == 'OpenBalance') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+                    Balance
+                    <i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'OpenBalance') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+                </a>
+            </th>
+            <th width="60px">Pay</th>
+        </tr>
+    <?php
+    $open_balance = 0;
+    $doc_total = 0;
+    $total_paid = 0;
+    $count = 0;
+    $countTotal = 0;
+    $invoicepay = 0;
+    $currentinvoicepay = array();
+    if(count($getInvoicesData) > 0)
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $customerSession = $objectManager->create('Magento\Customer\Model\Session');
+        $customer_number = $customerSession->getCustomer()->getData('customer_number');
+        $currentinvoicepay = $customerSession->getInvoicepayment();
+        foreach($getInvoicesData as $data) {
+            $doc_total += ($data['DocTotal'] > 0) ? $data['DocTotal'] : 0;
+            $total_paid += ($data['PaidAmount'] > 0) ? $data['PaidAmount'] : 0;
+            $open_balance += ($data['OpenBalance'] > 0) ? $data['OpenBalance'] : 0;
+            $addClass = '';
+            if($data['DocStatus'] == 'Open' && (int)$data['OpenBalance'] > 0 && strtotime($data['DueDate']) < strtotime(date("Y-m-d H:i:s")))
+            {
+                 $addClass = 'redText';
+            }
+            else
+            {
+                $addClass = 'greenText';
+            }
+            
+            /*if($data['DocStatus'] == 'Open' && $data['DueDays'] != '' && (int)$data['DueDays'] >= 0)
+            {
+                if((int)$data['DueDays'] == 0)
+                {
+                    $DueDays = 'Today';
+                    $addClass = 'greenText';
+                }
+                if((int)$data['DueDays'] == 1)
+                {
+                    $DueDays = $data['DueDays'].' Day Due';
+                }
+                if((int)$data['DueDays'] > 1)
+                {
+                    $DueDays = $data['DueDays'].' Days Due';
+                }
+
+            }else{
+                $DueDays = $data['DueDays'];
+            }*/
+
+            $invoice_view_url = $block->getBaseUrl().'customerinvoices/customer/view/docnum/'.base64_encode($data['DocNum']);
+            $numatCardPoShort = "";
+            if($data['NumatCardPo'] != "" || isset($data['NumatCardPo'])){
+                $numatCardPoShort =  $data['NumatCardPo'];
+                // if(strlen($data['NumatCardPo']) > 6)
+                // {
+                //    $numatCardPoShort = substr($data['NumatCardPo'],0,6).'...'; 
+                // }else
+                // { 
+                //    $numatCardPoShort =  $data['NumatCardPo'];
+                // }
+            }
+    ?>
+        <tr option-redirect = "<?php echo $invoice_view_url;?>" style="cursor: pointer;">
+            <td>
+                <?php if($data['DocStatus'] == "Open")
+                {
+                    //echo "<pre>";print_R($currentinvoicepay);echo "</pre>";exit;
+                    $show = true;
+                    if(!empty($currentinvoicepay))
+                    {
+                        if (array_key_exists($data['DocNum'],$currentinvoicepay))
+                        {
+                            $show = false;
+                        }    
+                    }
+                    
+                   if($show){
+                ?>
+                    <input id="checkedAndPay" wid="calculateInput_<?php echo $countTotal; ?>" class="invoicecheckbox " payInput="payInput_<?php echo $countTotal; ?>" open-balance="<?php echo ($data['OpenBalance'] != '') ? number_format(floatval($data['OpenBalance']),2) : "0";?>" type="checkbox" />
+                <?php } 
+            }?>
+            </td>
+            <td class="option-redirect material-tooltip-main" data-toggle="tooltip" title ="<?php echo ($data['DocNum'] != '') ? $data['DocNum'] : "";?>"><?php echo ($data['DocNum'] != '') ? $data['DocNum'] : "";?></td>
+            <td class="option-redirect material-tooltip-main" data-toggle="tooltip" title="<?php echo ($data['NumatCardPo'] != '') ? $data['NumatCardPo'] : "";?>"><?php echo $numatCardPoShort;?></td>
+            <td class="option-redirect"><?php echo ($data['CreateDate'] != '') ? str_replace('-', '/', $data['CreateDate']) : "";?></td>
+            <td class="option-redirect"><?php echo ($data['DueDate'] != '') ? date("m/d/Y", strtotime($data['DueDate'])) : "";?></td>
+            <td class="<?php echo ($data['DocStatus'] == 'Open') ? $addClass : ''; ?> option-redirect"><?php echo $data['DueDays'];?></td>
+            <td class="option-redirect"><?php echo ($data['DocStatus'] != '') ? $data['DocStatus'] : "";?></td>
+            <td class="option-redirect">$<?php echo ($data['DocTotal'] != '') ? number_format(floatval($data['DocTotal']),2) : "0.00";?></td>
+            <td class="option-redirect">$<?php echo ($data['PaidAmount'] != '') ? number_format(floatval($data['PaidAmount']),2) : "0.00";?></td>
+            <td class="redText option-redirect" >$<?php echo ($data['OpenBalance'] != '') ? number_format(floatval($data['OpenBalance']),2) : "0.00";?></td>
+            <td>
+
+            <?php 
+            if($data['DocStatus'] == "Open")
+            {
+                $placeholder ='';
+                if(!empty($currentinvoicepay))
+                    {
+                    if (array_key_exists($data['DocNum'],$currentinvoicepay))
+                        {
+                            $placeholder ='placeholder="Payment Pending"';
+                        }
+                    }
+             ?>
+            <input tabindex="<?php echo $count + 1;?>" idVal= "<?php echo $countTotal; ?>" max="<?php echo number_format(floatval($data['OpenBalance']),2)?>" type="input" id="payInput_<?php echo $countTotal; ?>" class="payInput checkValue" value="" <?php echo $placeholder;?>/>
+            <input tabindex="<?php echo $count + 1;?>"  idVal= "<?php echo $countTotal; ?>" max="<?php echo number_format(floatval($data['OpenBalance']),2)?>" type="hidden" id="calculateInput_<?php echo $countTotal; ?>" option-docNum = "<?php echo ($data['DocNum'] != '') ? $data['DocNum'] : "";?>" class="withoutDoller" option-poNumber = "<?php echo ($data['NumatCardPo'] != '') ? $data['NumatCardPo'] : "";?>" value="" />
+            <?php }else{?>
+                <input  tabindex="<?php echo $count + 1;?>" type="text" id="payInput_<?php echo $countTotal; ?>" class="payInput" disabled="disabled" option-docNum = "<?php echo ($data['DocNum'] != '') ? $data['DocNum'] : "";?>" option-poNumber = "<?php echo ($data['NumatCardPo'] != '') ? $data['NumatCardPo'] : "";?>"/>
+            <?php   
+            } ?>
+            </td>
+        </tr>
+    <?php $count++; $countTotal++; } 
+        }
+        else
+        {
+        ?>
+            <tr>
+                <td class="no-records " colspan="11" >No Invoice Found!</td>            
+            </tr>
+        <?php 
+        }
+        if(count($getInvoicesData) > 0)
+        {
+        ?>
+        
+            <?php if (!empty($getInvoicestotalHTml)) : ?>
+                <tr class="paginationRow">
+                    <td colspan="11">
+                        <div class="fa-pull-right"><?php echo $getInvoicestotalHTml;?></div>
+                    </td>
+                </tr>
+            <?php endif; ?>
+            <tfoot>
+            <tr>
+                <td colspan="7"></td>
+                <td align="right" class="totalamt">$<?php echo number_format($doc_total,2);?></td>
+                <td>$<?php echo number_format($total_paid,2);?></td>
+                <td class="redText" style="color: #a8324a;">$<?php echo number_format($open_balance,2);?></td>
+                <td width="70px"><input tabindex="<?php echo $count + 1;?>" type="text" class="totalpayInput"   readonly="readonly" value="$<?php echo $invoicepay; ?>" style="opacity:0.5;padding: 5px 5px;" /></td>
+            </tr>
+            </tfoot>
+        <?php } ?>
+    </table>
+</div>
+
+
+
+</div>
+</div>
+    
+<?php
+}
+?>

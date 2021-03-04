@@ -1,0 +1,270 @@
+<?php 
+    if(!$block->customerLoggedIn()){
+     	$past = time()-(24*60*60);
+    	setcookie("PHPSESSID", "", $past, '/', ".adaruniforms.com");
+    }
+?>
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$customerSession = $objectManager->create('Magento\Customer\Model\Session');
+$admincustomer = $customerSession->getCustomerAsadmin();
+$customerEnroller = $customerSession->getCustomerEnroller(); 
+$customerCard = $customerSession->getCustomerCardNme(); 
+$data = $customerSession->getAdminCustomer();
+$customerInput  = $customerEnroller ? $customerSession->getCustomer()->getSapName() : $customerSession->getCustomer()->getName();
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+$baseUrl = $storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+$request = $objectManager->get('\Magento\Framework\App\Request\Http');
+$cur_action = $request->getFullActionName();
+$urlInterface = \Magento\Framework\App\ObjectManager::getInstance()->get('Magento\Framework\UrlInterface');
+$loginBaseUrl = $urlInterface->getBaseUrl();
+if(!$block->customerLoggedIn()){$customerSession->setCustomRedirectUrl($urlInterface->getCurrentUrl());}
+$customerorderUrl = $baseUrl."customerorder/customer/index";
+$customerinvoices = $baseUrl."customerinvoices/customer/index?order_stats=Open&order_by=DueDays&opt=ASC";
+$downloadlibraryUrl = $baseUrl."downloadlibrary/category/index";
+$policies_procedures = $baseUrl."policies-procedures";
+$neworderUrl = $baseUrl."customerorder/customer/neworder";
+$inventorydata = $baseUrl."customerorder/customer/inventorydata";
+?>
+<?php if($block->customerLoggedIn()): ?>
+	<?php 
+		if($admincustomer){ ?>
+			<div class="serach-user">
+				<span class="admin-title">You are now viewing</span>
+				<input type="text" autocomplete="off" data-lpignore="true" class="first-user" value="<?=  $customerEnroller; ?>" id="firstUser">
+			</div>
+	<?php } ?>	
+	<div class="loginMenu">		
+			<input type="hidden" id ="customerlogin" name="customerlogin" value="1"> 
+			<span>	
+					<a href="<?php echo $baseUrl."customer/account/index/";?>">welcome,</a> 
+					<span class="serach-input"><a href="<?php echo $baseUrl."customer/account/index/";?>" readonly>
+						<?php echo  $admincustomer ? '" '. (strlen($customerInput) > 15) ? substr($admincustomer,0,15).'...' : substr($customerInput,0,15) .'" ' : $customerSession->getCustomer()->getName();?>									
+					</a></span>
+			</span>
+			<ul class="afterLoginMenu">
+				<li <?php if ($cur_action == "customer_account_index") {?>class="current"<?php }?>><a href="<?php echo $baseUrl."customer/account/index/";?>">My Account</a></li> <?php /*echo $baseUrl."sales/order/history/";*/ ?>
+				<li <?php if ($cur_action == "customerorder_customer_neworder") {?>class="current"<?php }?>><a href="<?php echo $neworderUrl;?>">Create Order</a></li> <?php /*echo $baseUrl."/paypal/billing_agreement/";*/ ?>
+				<li <?php if ($cur_action == "customerorder_customer_index" && $block->getRequest()->getParam('q') == '') {?>class="current"<?php }?>><a href="<?php echo $customerorderUrl; ?>">Order Status</a></li>
+				<li <?php if ($cur_action == "customerinvoices_customer_index") {?>class="current"<?php }?>><a href="<?php echo $customerinvoices;?>">Invoices</a></li> <?php /*echo $baseUrl."/paypal/billing_agreement/";*/ ?>
+				<li <?php if ($cur_action == "customerorder_customer_index" && $block->getRequest()->getParam('q') == 'd') {?>class="current"<?php }?>><a href="<?php echo $customerorderUrl; ?>?q=d">Purchase Order Drafts</a></li>
+				<li <?php if ($cur_action == "downloadlibrary_category_index") {?>class="current"<?php }?>><a href="<?php echo $downloadlibraryUrl; ?>">Download Library</a></li>
+				<!--<li><a href="<?php echo $policies_procedures; ?>">Policies & Procedures</a></li>-->
+				<?php 
+				if($admincustomer){ ?>
+				<li <?php if ($cur_action == "customerorder-customer-inventorydata") {?>class="current"<?php }?>><a href="<?php echo $inventorydata; ?>">Inventory Status</a></li>
+				<?php } ?>	
+				<li><a href="<?php echo $baseUrl."customerlogin/account/logout/";?>">Sign out</a></li>
+				
+			</ul>			
+	</div>
+	
+<?php else:?>
+<div class="loginSection">
+<input type="hidden" id ="customerlogin" name="customerlogin" value="0">
+<?php
+$getCurrentUrl = $urlInterface->getCurrentUrl();
+/*if($_SERVER['SERVER_ADDR'] != '127.0.0.1'){
+	if($getCurrentUrl == $baseUrl.'custom-login'){
+	?>
+	<div class="authorization-link">
+		<a href="javascript:void(0);">CUSTOMER PORTAL</a> 
+	</div>
+	<?php }else{ ?>
+	<a data-toggle="modal" data-target="#loginModal">CUSTOMER PORTAL</a>
+	<?php } } else{ ?>
+<div class="authorization-link">
+	<a href="javascript:void(0);">CUSTOMER PORTAL</a> 
+</div>
+<?php }*/ ?>
+	<div class="authorization-link">
+			<a href="javascript:void(0);">CUSTOMER PORTAL</a> 
+	</div>
+</div>
+<?php endif; ?>
+
+<?php 
+if($admincustomer){ ?>
+	<script type="text/javascript">
+	    require(['jquery'], function($) {
+		        // $(document).ready(function() {
+		        	var url = '<?php echo $loginBaseUrl.'login/ajax/getcustomer'; ?>';
+		        	var change_url = '<?php echo $loginBaseUrl.'login/ajax/setcustomer'; ?>';
+		        	var response = [];
+		        	var customerSession = '';
+			       	$.ajax({
+						type: "GET",
+						url: url,
+						showLoader: true,								 
+	                    cache: true,			
+						success: function(data) 
+						{
+							if(data.customer_list){
+								var firstUser = data.customer_list[0].CardName;	
+								var list = $('.customer-list');
+								autoUsercomplete($('#firstUser'),data.customer_list);
+								response = data.customer_list;										
+							}
+								
+						}
+					});
+
+			    $('#firstUser').on('click',function(e){
+			    	customerSession = $(this).val();
+					// $(this).val(' ');
+			    });	
+
+			    $('#firstUser').focusout(function(){
+				 	$(this).val(customerSession);
+				});
+
+				$(document).on("click","#firstUserautocomplete-list li",function(e){
+					var CardCode = $(this).find('input').val();
+					var CardName = $(this).attr('data-id');				
+					$('#firstUser').val($(this).attr('data-id'));				
+					var CardEmail = response.find(function(element) { 							
+						if(element.CardCode == CardCode){												
+					 		return element ; 
+					 	}
+					});
+					console.log(CardEmail);
+					var res = userDataChange(CardName,CardCode);				
+					
+				});
+
+				function userDataChange(CardName, CardCode) {			
+					$.ajax({
+						type: "POST",
+						url: change_url,
+						showLoader: true,	
+						data: { CardName: CardName, CardCode: CardCode},
+	                    cache: true,			
+						success: function(data) 
+						{	
+							if(!data.errors){
+								$('.loading-mask').show();
+								// setTimeout(function(){ window.location.href = "<?php echo $urlInterface->getBaseUrl().'customer/account/index/' ?>"; }, 10);
+								 location.reload(true);
+							}else{
+								console.log(data);
+							}
+						}
+					});
+				}			
+
+				function autoUsercomplete(inp, arr) {					
+					var currentFocus;					 		  
+				  	inp.on('input',function(e){
+				  		 var a, b, i, val = this.value;
+	      					close_AllLists();			  			
+				  			currentFocus = -1;	
+					      	a = document.createElement("UL");
+					      	a.setAttribute("id", this.id + "autocomplete-list");
+					      	a.setAttribute("class", "autocustomer-items customer-list");				     
+					      	this.parentNode.appendChild(a);				      	
+				  			$.each(arr, function( i, value ) {	
+				  				var item = arr[i].CardCode+' - '+arr[i].CardName;			 
+	         					if(item.toUpperCase().match(val.toUpperCase()))
+	         					{
+	         						  var searchregexp = new RegExp(val.replace(/[°"§%()\[\]{}=\\?´`'#<>|,;.:+_-]/g, '\\$&'), "gi");
+	         						  b = document.createElement("LI");
+	         						  b.setAttribute("data-id",arr[i].CardName);
+							          b.innerHTML = item.replace(searchregexp, "<span class = 'highlight'>$&</span>");						          
+							          b.innerHTML += "<input type='hidden' value='" + arr[i].CardCode + "'>";
+							          b.addEventListener("click", function(e) {
+							              inp.value = this.getElementsByTagName("input")[0].value;						              
+							              close_AllLists();
+							          });
+							          a.appendChild(b);	
+	         					}
+							});
+
+				  	});
+				  	inp.on('click',function(e){	
+				  		$(this).val('');
+				  		 	var a, b, i, val = this.value;
+	      					close_AllLists();			  			
+				  			currentFocus = -1;	
+					      	a = document.createElement("UL");
+					      	a.setAttribute("id", this.id + "autocomplete-list");
+					      	a.setAttribute("class", "autocustomer-items customer-list");				     
+					      	this.parentNode.appendChild(a);	
+				  			$.each(arr, function( i, value ) {				  			
+				  				var item = arr[i].CardCode+' - '+arr[i].CardName;
+	         						  var searchregexp = new RegExp(val.replace(/[°"§%()\[\]{}=\\?´`'#<>|,;.:+_-]/g, '\\$&'), "gi");
+	         						  b = document.createElement("LI");
+	         						  b.setAttribute("data-id",arr[i].CardName);
+							          b.innerHTML = item ;						          
+							          b.innerHTML += "<input type='hidden' value='" + arr[i].CardCode + "'>";							          
+							          a.appendChild(b);	
+	         					
+							});		
+
+				  	});
+
+
+				  	function close_AllLists(elmnt) {
+				         var x = document.getElementsByClassName("autocustomer-items");
+				         for (var i = 0; i < x.length; i++) {
+				             if (elmnt != x[i] && elmnt != inp) {
+				                 x[i].parentNode.removeChild(x[i]);
+				             }
+				         }
+				    }
+
+				    document.addEventListener("click", function(e) {
+				         // close_AllLists(e.target);
+				        var $target = $(event.target); // click target
+					    if(!$target.is('#firstUser')) { // click target is div or input
+					        close_AllLists(e.target);
+					    }
+				    });
+
+				    inp.on("keydown", function(e) {			     	 
+				     	 var x1 = $('#'+this.id+'autocomplete-list');		     	 
+					      if (x1) x = $('#'+this.id+'autocomplete-list li');				   
+					      if (e.keyCode == 40) {
+					        currentFocus++;
+					        addActive(x);
+					      } else if (e.keyCode == 38) { //up
+					        currentFocus--;
+					        addActive(x);
+					      } else if (e.keyCode == 13) {
+					        e.preventDefault();
+					        if (currentFocus > -1) {
+					          if (x) x[currentFocus].click();
+					        }
+					     }
+					    if (e.keyCode == 40 || e.keyCode == 38) {
+						    var ul = $('#'+this.id+'autocomplete-list'); 
+						    var li = $('.autocomplete-active:first');
+						    if(li.offset().top > (ul.offset().top + ul.height()) || li.offset().top < ul.offset().top)
+						    {					     		
+						     	x1.scrollTop(top);
+					     		x1.scrollTop($('.autocomplete-active:first').offset().top-$('#'+this.id+'autocomplete-list').height());	
+						     
+						    }					    
+						 }
+
+					});
+				    function addActive(x) {
+					    if (!x) return false;
+					    removeActive(x);				    
+					    if (currentFocus >= x.length) currentFocus = 0;
+					    if (currentFocus < 0) currentFocus = (x.length - 1);
+						    x[currentFocus].classList.add("autocomplete-active");
+					}
+
+					function removeActive(x) {				  	
+					    for (var i = 0; i < x.length; i++) {				    	
+					      	x[i].classList.remove("autocomplete-active");
+					    }
+					}
+					
+					
+
+				}		
+		      
+	        }); 
+	</script>
+<?php } ?>

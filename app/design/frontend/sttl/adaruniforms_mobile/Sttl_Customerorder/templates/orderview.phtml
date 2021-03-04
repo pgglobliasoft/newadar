@@ -1,0 +1,656 @@
+<style type="text/css">
+
+	tr.toggleTable .overflow{    height: 0px;
+    overflow: hidden !important;     transition: all 1s ease;}
+    tr.toggleTable.active .overflow {
+	    	width: 100%;
+   			overflow-x: scroll !important;
+		    height: 320px;
+		}
+.activehide{ display: none; }
+.customerorder-customer-orderview .toggleTable table.lineItemsList.lineItemsList1 tr td{ min-width: 50px !important }
+</style>
+<?php
+function cmp($a, $b)
+{
+
+	$sizes = array(
+		"XXS" => 0,
+		"XS" => 1,
+		"S" => 2,
+		"M" => 3,
+		"L" => 4,
+		"XL" => 5,
+		"2X" => 6,
+		"3X" => 7,
+		"4X" => 8,
+		"5X" => 9
+	);
+
+	$asize = @$sizes[$a['Size']];
+	$bsize = @$sizes[$b['Size']];
+
+	if ($asize == $bsize) {
+	    return 0;
+	}
+
+	return ($asize > $bsize) ? 1 : -1;
+}
+
+
+$fields = array('ShipCode', 'ShipType');
+$customerdata = $this->getCustomerDetails($fields);
+if (isset($customerdata) && isset($customerdata['errors'])) {
+	?>
+		<div class="page-title-wrapper">
+			<h1 class="page-title">
+				<span class="base" data-ui-id="page-title-wrapper">Order Details</span>
+			</h1>
+		</div>
+		<?php
+	echo $customerdata['message'];
+} else {
+
+	$order_id = $block->getRegisterData();
+	$back_parms = base64_decode($this->getRequest()->getParam('back'));
+	$data_from = base64_decode($this->getRequest()->getParam('df'));
+
+	$getorderdata = $block->getOrderDataDetails($order_id, $data_from);
+	// echo '<pre>'; print($getorderdata);
+		$customer_accout = $block->getBaseUrl() . 'customer/account/index/';
+	if (empty($getorderdata)) {
+		header("Location: $customer_accout");exit;
+	}
+
+	$getGroupbyColor = $block->getOrderItems($order_id, $data_from);
+
+	$back_redirect = $block->getBaseUrl() . 'customerorder/customer/index';
+	if ($back_parms == 1) {
+		$back_redirect = $block->getBaseUrl() . 'customerorder/customer/index?q=d';
+	}
+
+	$shippingType = isset($getorderdata['ShippingType']) ? $getorderdata['ShippingType'] : '';
+	if ($shippingType != '') {
+		if (isset($customerdata[0]['ShipCode']) && $customerdata[0]['ShipCode'] != '' && $customerdata[0]['ShipCode'] == $shippingType) {
+			$shippingType = $customerdata[0]['ShipType'];
+		}
+	}
+	if ($shippingType == 4) {
+		$shippingType = 'Pick Up';
+	}
+	$lineitemsarrray = array();
+	$checkinarray = array();
+	$total = 0;
+	$QTYOrdered = 0;
+	$QTYShipped = 0;
+	$OpenQTY = 0;
+	$PriceAfterDiscount = 0;
+	$i = 0;
+	$rowStatusArray = array();
+	if (!empty($getGroupbyColor)) {
+		foreach ($getGroupbyColor as $key => $Colordata) {
+			$data[$Colordata['Style']][$Colordata['ColorCode']]['RowStatus'] = $Colordata['RowStatus'];
+			$data[$Colordata['Style']][$Colordata['ColorCode']]['StyleStatus'] = $Colordata['StyleStatus'];
+			$data[$Colordata['Style']][$Colordata['ColorCode']]['ColorStatus'] = $Colordata['ColorStatus'];
+			$data[$Colordata['Style']][$Colordata['ColorCode']]['DiscountPer'] = $Colordata['DiscountPer'];
+			$data[$Colordata['Style']][$Colordata['ColorCode']]['Style'] = $Colordata['Style'];
+			$data[$Colordata['Style']][$Colordata['ColorCode']]['ColorCode'] = $Colordata['ColorCode'];
+			$data[$Colordata['Style']][$Colordata['ColorCode']]['ETA'] = $Colordata['ETA'];
+			$data[$Colordata['Style']][$Colordata['ColorCode']]['ColorName'] = $Colordata['ColorName'];
+			if (!in_array($Colordata['Style'] . '_' . $Colordata['ColorCode'], $checkinarray)) {
+				$total = $Colordata['TotalPrice'];
+				$QTYOrdered = $Colordata['QTYOrdered'];
+				$QTYShipped = $Colordata['DeliveredQTY'];
+				$OpenQTY = $Colordata['OpenQTY'];
+				$data[$Colordata['Style']][$Colordata['ColorCode']]['Frist_UnitPrice'] = $Colordata['UnitPrice'];
+				$data[$Colordata['Style']][$Colordata['ColorCode']]['PriceAfterDiscount'] = $Colordata['PriceAfterDiscount'];
+				$checkinarray[] = $Colordata['Style'] . '_' . $Colordata['ColorCode'];
+			} else {
+				$total = $total + $Colordata['TotalPrice'];
+				$QTYOrdered = $QTYOrdered + $Colordata['QTYOrdered'];
+				$QTYShipped = $QTYShipped + $Colordata['DeliveredQTY'];
+				$OpenQTY = $OpenQTY + $Colordata['OpenQTY'];
+			}
+			$data[$Colordata['Style']][$Colordata['ColorCode']]['total'] = $total;
+			$data[$Colordata['Style']][$Colordata['ColorCode']]['QTYOrdered'] = $QTYOrdered;
+			$data[$Colordata['Style']][$Colordata['ColorCode']]['DeliveredQTY'] = $QTYShipped;
+			$data[$Colordata['Style']][$Colordata['ColorCode']]['OpenQTY'] = $OpenQTY;
+			$data[$Colordata['Style']][$Colordata['ColorCode']]['items'][] = $Colordata;
+			if ($Colordata['RowStatus'] != '') {
+				$rowStatusArray[$Colordata['Style'] . '_' . $Colordata['ColorCode']][] = $Colordata['RowStatus'];
+			}
+
+		}
+	}
+	$FlatDiscount = number_format((float) $getorderdata['DiscountPer'] + $getorderdata['TotalDiscountPer'], 2);
+	$FlatDic = explode('.', number_format($FlatDiscount, 2));
+	if (isset($FlatDic[1]) && $FlatDic[1] == 00) {
+		$FlatDiscount = $FlatDic[0];
+	}
+	$DiscountAmount = number_format((float) $getorderdata['DiscountAmount'] + $getorderdata['TotalDiscountAmount'], 2);
+	$sub_row_html = '';
+
+	?>
+<div class="accountPageContainer orderShippingStatus">
+	<div class="title-wrapper d-flex">
+		<h1 class="oder-page-title"> <?php echo isset($getorderdata['DocNum']) ? 'Order '.$getorderdata['DocNum'] : 'P.O. '.$getorderdata['NumatCardPo']; ?></h1>
+		<div class="EditBack">
+			<span class="BtnViewBack">
+				<?php if ($getorderdata['DocStatus'] != "Draft" && $getorderdata['DocStatus'] != "Submitted") {?>
+						<a  id="shipttreckdata" class="newLinkText load mobile-button printBtn alignRight" data-toggle="modal" data-target="#shipment-track" id="shipopenmodel" href="javascript:void(0);" style="pointer-events: none;opacity:0.5">Track order</a>
+
+
+				<?php } ?>
+			</span>
+		</div>
+	</div>
+	<div class="order-history">
+		<div class="tab-accordiant">
+			<div class="block block-dashboard-info" tab-info="order history">
+				<div class="block-title active" ><strong class="upperCaseText">Order Details</strong>
+				</div>
+				<div id="collapseOne" class="block-content orderhistorySection " aria-labelledby="headingOne">
+					<div class="box-information-wapper">
+						<div class="d-flex">
+							<div class="box-information ">
+								<div class="box-descrition">
+									<span>P.O. Number</span>
+									<div class="box-content">
+										<p><span id="poNumber"><?php echo $getorderdata['NumatCardPo']; ?></span></p>
+									</div>
+								</div>
+							</div>
+							<div class="box-information ">
+								<div class="box-descrition">
+									<span>Order Date</span>
+									<div class="box-content">
+										<p><span id="orderDate"><?php echo str_replace('-', '/', $getorderdata['CreateDate']) ?></span></p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="d-flex">
+							<div class="box-information ">
+								<div class="box-descrition">
+									<span><?php echo !empty($getorderdata['WebOrderId']) ? 'Web Order ID' : 'Order Method'; ?></span>
+									<div class="box-content">
+										<p><span class="orderNumbr"><?php echo !empty($getorderdata['WebOrderId']) ? $getorderdata['WebOrderId'] : $getorderdata['u_jk_order_method']; ?></span></p>
+									</div>
+								</div>
+							</div>
+							<div class="box-information ">
+								<div class="box-descrition">
+									<span>Ship Date</span>
+									<div class="box-content">
+										<p><span id="shippedVia"><?php echo isset($getorderdata['DeliveryDate']) ? date("m/d/Y", strtotime($getorderdata['DeliveryDate'])) : ''; ?></span></p>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="d-flex">
+								<div class="box-information ">
+								<div class="box-descrition">
+									<span>Order Status</span>
+									<div class="box-content">
+										<p><span class="orderNumbr"><?php echo ($getorderdata['DocStatus'] == 'PartiallyShipped') ? 'Partially Shipped' : $getorderdata['DocStatus']; ?></span></p>
+									</div>
+								</div>
+							</div>
+
+							<!-- <div class="box-information ">
+								<div class="box-descrition">
+									<span>Order Number</span>
+									<div class="box-content">
+										<p><span id="orderNumber"><?php echo isset($getorderdata['DocNum']) ? $getorderdata['DocNum'] : '' ?></span></p>
+									</div>
+								</div>
+							</div> -->
+							<div class="box-information ">
+								<div class="box-descrition">
+									<span>Shipped Via</span>
+									<div class="box-content">
+										<p><span id="shippedVia"><?php echo $shippingType; ?></span></p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="block block-dashboard-info" tab-info="shipping address">
+				<div class="block-title" ><strong class="upperCaseText">Shipping Address</strong>
+				</div>
+				<div id="collapseTwo" class="block-content shippingAddsDtls activehide" aria-labelledby="headingtwo">
+					<div class="box-information-wapper">
+						<div class="box-information ">
+							<div class="box-descrition">
+								<?php
+									$ShippingStateCode = "";
+									if ($getorderdata['DocStatus'] == "Draft" || $getorderdata['DocStatus'] == "Submitted") {
+										$ShippingStateCode = isset($getorderdata['ShippingStateCode']) ? $getorderdata['ShippingStateCode'] : "";
+									} else {
+										$ShippingStateCode = isset($getorderdata['ShippingState']) ? $getorderdata['ShippingState'] : "";
+									}
+
+									$checkgetAddress = (isset($getorderdata['ShippingId']) || isset($getorderdata['ShippingAddress']) || isset($getorderdata['ShippingCity']) || !empty($ShippingStateCode) || isset($getorderdata['ShippingZip']) || isset($getorderdata['Attn']) || isset($getorderdata['ShippingStreetNo'])) ? 1 : 0;
+									?>
+								<div class="box-content">
+									<p><span>
+										<?php if ($checkgetAddress > 0) {?>
+											<?php if (isset($getorderdata['ShippingId'])) {?><span id="ShippingId"><?php echo ucwords(strtolower($getorderdata['ShippingId'])) ?></span><br><?php }?>
+											<?php if (isset($getorderdata['Attn'])) {?><span id="Attn"><?php echo ucwords(strtolower($getorderdata['Attn'])) ?></span><br><?php }?>
+											<?php if (isset($getorderdata['ShippingStreetNo'])) {?><span id="ShippingStreetNo"><?php echo ucwords(strtolower($getorderdata['ShippingStreetNo'])) ?></span><br><?php }?>
+											<?php if (isset($getorderdata['ShippingAddress']) && $getorderdata['ShippingAddress'] != '') {?><span id="AddressID"><?php echo ucwords(strtolower($getorderdata['ShippingAddress'])) ?></span><br><?php }?>
+											<?php if (isset($getorderdata['ShippingCity']) && $getorderdata['ShippingCity'] != "") {?><span id="City"><?php echo (isset($getorderdata['ShippingCity'])) ? ucwords(strtolower($getorderdata['ShippingCity'])) : ''; ?></span><?php }?><?php if (isset($ShippingStateCode) && !empty($ShippingStateCode)) {?>, <span id="State"><?php echo ucwords(strtolower($ShippingStateCode)) ?></span><?php }?><?php if (isset($getorderdata['ShippingZip']) && !empty($getorderdata['ShippingZip'])) {?> <span id="ZipCode"><?php echo $getorderdata['ShippingZip'] ?></span><?php }?>
+										<?php } else {echo "";}?>
+									</span></p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="block block-dashboard-info" tab-info="ShippingCity history">
+				<div class="block-title" ><strong class="upperCaseText">Billing Address</strong>
+				</div>
+				<div id="collapseThree" class="block-content activehide" aria-labelledby="headingtwo">
+						<div class="box-information-wapper">
+							<div class="box-information ">
+								<?php
+								$BillingStateCode = "";
+								if ($getorderdata['DocStatus'] == "Draft" || $getorderdata['DocStatus'] == "Submitted") {
+									$BillingStateCode = isset($getorderdata['BillingStateCode']) ? $getorderdata['BillingStateCode'] : "";
+								} else {
+									$BillingStateCode = isset($getorderdata['BillingState']) ? $getorderdata['BillingState'] : "";
+								}
+
+								$checkBillingAddress = (isset($getorderdata['BillingAddress']) && isset($getorderdata['BillingCity']) && !empty($BillingStateCode) && isset($getorderdata['BillingZip']) && isset($getorderdata['CardName'])) ? 1 : 0;
+								?>
+								<div class="box-descrition">
+									<div class="box-content">
+										<p>
+											<?php if ($checkBillingAddress > 0) {?>
+												<?php if (isset($getorderdata['CardName'])) {?><span id="CardName"><?php echo ucwords(strtolower($getorderdata['CardName'])) ?></span><br><?php }?>
+												<?php if (isset($getorderdata['BillingAddress'])) {?><span id="AddressID"><?php echo ucwords(strtolower($getorderdata['BillingAddress'])) ?></span><br><?php }?>
+												<?php if (isset($getorderdata['BillingCity'])) {?><span id="City"><?php echo (isset($getorderdata['BillingCity'])) ? ucwords(strtolower($getorderdata['BillingCity'])) : '' ?></span><?php }?><?php if (!empty($BillingStateCode)) {?>, <span id="State"><?php echo ucwords(strtolower($BillingStateCode)); ?></span><?php }?><?php if (isset($getorderdata['BillingZip'])) {?> <span id="ZipCode"><?php echo $getorderdata['BillingZip'] ?></span><?php }?>
+											<?php } else {echo "";}?>
+										</p>
+									</div>
+
+								</div>
+							</div>
+						</div>
+				</div>
+			</div>
+			<div class="block block-dashboard-info" tab-info="line item">
+				<div class="block-title" ><strong class="upperCaseText">Line items and totals</strong>
+				</div>
+				<div id="collapseFour" class="block-content orderlineItem activehide" aria-labelledby="headingtwo">
+					<div class="box-information-wapper">
+						<div class="orderListing">
+							<table class="orderList lineItemsList" style="table-layout: fixed;width:100%">
+								<thead>
+									<tr>
+										<th style="width: 20%; ">Status</th>
+										<th style="width: 20%; ">Style</th>
+										<th style="width: 15%; ">Color</th>
+										<th style="width: 15%;">Qty</th>
+										<th style="width: 25%;">Total</th>
+										<th style="width: 10%; "></th>
+									</tr>
+								</thead>
+								<?php if(isset($data) && !empty($data)):?>
+									<tbody>
+										<?php
+											$sub_row_html .= '<table class="d-none subtable">';
+											$style_count = 0;
+											$tot_qty = 0;
+											foreach($data as $key => $Colordata):
+												foreach ($Colordata as $subkey => $data):
+													$tot_qty += (INT)$data['QTYOrdered'];
+													if(empty($data['RowStatus']))
+													{
+														$data['RowStatus'] = 'Pending';
+													}
+													if(!empty($rowStatusArray) && isset($data['ColorCode']) && $data['Style'] !='')
+													{
+
+														$inarrayrowstatusarray = array();
+														$inarrayrowstatusarray = $rowStatusArray[$data['Style'].'_'.$data['ColorCode']];
+														if (in_array("Processing", $inarrayrowstatusarray) || in_array("PartiallyShipped", $inarrayrowstatusarray) || in_array("Pending", $inarrayrowstatusarray) || in_array("Open", $inarrayrowstatusarray))
+														{
+															$data['RowStatus'] = "Open";
+														}
+
+														if (in_array("Shipped", $inarrayrowstatusarray) && !in_array("Processing", $inarrayrowstatusarray) && !in_array("PartiallyShipped", $inarrayrowstatusarray) && !in_array("Pending", $inarrayrowstatusarray)) {
+															$data['RowStatus'] = "Shipped";
+														}
+														if (in_array("Canceled", $inarrayrowstatusarray) && !in_array("Shipped", $inarrayrowstatusarray) && !in_array("Processing", $inarrayrowstatusarray) && !in_array("PartiallyShipped", $inarrayrowstatusarray) && !in_array("Pending", $inarrayrowstatusarray) && !in_array("Open", $inarrayrowstatusarray)) {
+															$data['RowStatus'] = "Shipped";
+														}
+														if(in_array("Shipped", $inarrayrowstatusarray) && in_array("Open", $inarrayrowstatusarray)){
+															$data['RowStatus'] = "Open";
+														}
+														if (in_array("Shipped", $inarrayrowstatusarray) && in_array("Canceled", $inarrayrowstatusarray) && !in_array("Processing", $inarrayrowstatusarray) && !in_array("PartiallyyShipped", $inarrayrowstatusarray) && !in_array("Pending", $inarrayrowstatusarray)) {
+															$data['RowStatus'] = "Shipped";
+														}
+													}
+												?>
+
+													<tr class="orderviewtableDataShow" attr-id="<?php echo $data['Style'].'_'.$data['ColorCode'];?>" style="cursor: pointer;" >
+														<td><span class="green">
+															<?php
+																if($data['RowStatus'] == 'Shipped'){ ?>
+																	<span class="done-shippine"><i class="fa fa-check" aria-hidden="true"></i>  Shipped </span>
+																<?php }else{
+																	echo isset($data['RowStatus']) ? $data['RowStatus'] : 'Pending'; ?>
+															<?php }			?>
+															</span>
+
+														</td>
+														<td><?php echo $data['Style']?></td>
+														<td><?php echo $data['ColorCode']?></td>
+														<td><?php echo number_format((INT)$data['QTYOrdered'])?></td>
+														<td>$<?php echo number_format((float)$data['total'],2);?></td>
+														<td>
+															<div class="action-class">
+																<span>
+																	<i class="fa fa-angle-down arrows" aria-hidden="true"></i>
+																</span>
+															</div>
+														</td>
+													</tr>
+													<?php
+															$sub_row_html .= '<tr class="toggleTable tr_'.$data['Style'].'_'.$data['ColorCode'].'" >
+																<td colspan="13"><div class="overflow" style="overflow-x: auto !important;"><table class="lineItemsList lineItemsList1 "><tbody>';
+															$sub_row_html_staus = '<tr><td>Status</td>';
+															$sub_row_html_sorder = '<tr><td>Size</td>';
+															$sub_row_html_qtyo = '<tr><td>Order</td>';
+															$sub_row_html_dqty = '<tr><td>Shipped</td>';
+															$sub_row_html_open = '<tr><td>Open</td>';
+															$sub_row_html_eta = '<tr><td>Eta</td>';
+															$sub_row_html_uprice = '<tr><td>Price</td>';
+															$sub_row_html_dprice = '<tr><td>Discount %</td>';
+															$sub_row_html_pdiscount = '<tr><td>Disc. Price</td>';
+															$sub_row_html_total = '<tr><td>Line Total </td>';
+															$ETA = 0; $DiscountFalg =0;
+															  // sort alphabetically by name
+  															// usort($data, 'compare_lastname');
+  															usort($data['items'], "cmp");
+															foreach ($data['items'] as $key => $sizedata):
+																if($sizedata['RowStatus'] == 'PartiallyShipped')
+																{
+																	$sizedata['RowStatus'] = 'Partially Shipped';
+																}
+																$etadate = '';
+																if(isset($sizedata['ETA']) && !empty($sizedata['ETA']) && strtotime($sizedata['ETA']) > 0)
+																{
+																	$etadate = date("m/d/Y", strtotime($sizedata['ETA']));
+																}
+
+																$sub_row_html_staus .='<td>'.(isset($sizedata['RowStatus']) ? $sizedata['RowStatus'] : 'Pending').'</td>';
+																$sub_row_html_sorder .='<td data-order="'.$sizedata['Size'].'">'.(isset($sizedata['Size']) ? $sizedata['Size'] : '-').'</td>';
+																$sub_row_html_qtyo .='<td>'.number_format((INT)$sizedata['QTYOrdered']).'</td>';
+																$sub_row_html_dqty .='<td>'.number_format((INT)$sizedata['DeliveredQTY']).'</td>';
+																$sub_row_html_open .='<td>'.number_format((INT)$sizedata['OpenQTY']).'</td>';
+																if(strtolower($data['RowStatus']) == strtolower('Open'))
+																{
+																	$sub_row_html_eta .= '<td>'.$etadate.'</td>';
+																	$ETA = 1;
+																}
+																if($sizedata['DiscountPer'] > 1){
+																	$DiscountFalg = 1;
+																}
+
+																$sub_row_html_uprice .= '<td>$'.number_format((float)$sizedata['UnitPrice'],2).'</td>';
+																$sub_row_html_dprice .='<td>'.number_format((float)$sizedata['DiscountPer'],2).' %</td>';
+																$sub_row_html_pdiscount .='<td>$'.number_format((float)$sizedata['PriceAfterDiscount'],2).'</td>';
+																$sub_row_html_total .='<td>$'.number_format((float)$sizedata['TotalPrice'],2).'</td>';
+
+															endforeach;
+															$sub_row_html_staus .= '</tr>';
+															$sub_row_html_sorder .= '</tr>';
+															$sub_row_html_qtyo .= '</tr>';
+															$sub_row_html_dqty .= '</tr>';
+															$sub_row_html_open .= '</tr>';
+															if($ETA > 0 && $data['RowStatus'] === 'Open'){
+																$sub_row_html_eta .= '</tr>';
+															}else{
+																$sub_row_html_eta = '';
+															}
+															if($DiscountFalg > 0){
+																$sub_row_html_dprice .= '</tr>';
+																$sub_row_html_pdiscount .= '</tr>';
+
+															}else{
+																$sub_row_html_dprice = '';
+																$sub_row_html_pdiscount = '';
+
+															}
+															$sub_row_html_uprice .= '</tr>';
+
+															$sub_row_html_total .= '</tr>';
+															$sub_row_html .= $sub_row_html_sorder. $sub_row_html_staus . $sub_row_html_qtyo. $sub_row_html_dqty. $sub_row_html_open.$sub_row_html_eta. $sub_row_html_uprice. $sub_row_html_dprice.$sub_row_html_pdiscount. $sub_row_html_total;
+															$sub_row_html .= '</tbody> </table></div></td> </tr>';
+												endforeach;
+											endforeach;
+
+										?>
+									</tbody>
+									<tfoot>
+										<tr>
+											<td colspan="3">&nbsp;</td>
+											<td><?php echo $tot_qty;?></td>
+											<td colspan="9">&nbsp;</td>
+										</tr>
+									</tfoot>
+								<?php else:?>
+								<tr>
+									<td colspan="13">No items found.</td>
+								</tr>
+								<?php endif;?>
+							</table>
+							<?php
+								$sub_row_html .= '</table>';
+								if(isset($data) && !empty($data)):?>
+									<div class="cf">
+										<div class="orderSummary">
+											<div class=""><strong>Total Before Discount:</strong> <span class="labelValue">$<?php echo  number_format((float)$getorderdata['TotalBeforeDiscount'],2);?></span></div>
+											<div class=""><strong>Discount Applied: </strong><span class="labelValue">(<?php echo $FlatDiscount;?>%) - $<?php echo $DiscountAmount ; ?></span> </div>
+											<div class=""><strong>Freight/Handling: </strong><span class="labelValue">$<?php echo number_format((float)$getorderdata['FreightAmount'],2);?></span> </div>
+											<div class=""><strong>Coupon: </strong> <span class="labelValue"><?php echo ($getorderdata['CouponCampaign'] < 0) ? '-' : '';?>$<?php echo number_format((float)abs($getorderdata['CouponCampaign']),2);?> <?php echo ($getorderdata['CouponCampaignRemark'] != '') ? '('.trim($getorderdata['CouponCampaignRemark']).')' : "";?> </span> </div>
+											<div class="orderTotal"><strong>Total Amount: <span class="labelValue">$<?php echo number_format((float)$getorderdata['DocTotal'],2);?></span> </strong></div>
+										</div>
+									</div>
+								<?php endif;
+								?>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<?php echo $sub_row_html; ?>
+<?php if ($getorderdata['DocStatus'] != "Draft" && $getorderdata['DocStatus'] != "Submitted") {
+		$block->setDocEntryReg($getorderdata['DocEntry']);
+		echo $this->getLayout()->createBlock("Sttl\Customerorder\Block\Orderview")->setTemplate("Sttl_Customerorder::shiptrack.phtml")->toHtml();?>
+		<input type="hidden" name="ship_shiowdata" id="ship_shiowdata" value="0">
+<?php }?>
+
+<script type="text/javascript">
+    function PrintDiv()
+	{
+		var headContent = document.getElementsByTagName('head')[0].innerHTML;
+		//var popupWin = window.open('');
+		var popupWin =  window.open('', '_blank', 'toolbar=0,location=0,menubar=0');
+		var content = jQuery(".column.main").clone();
+
+		var content_area = jQuery("<div />").append(jQuery(content).find(".printBtn").remove().end()).html();
+		var content_area = jQuery("<div />").append(jQuery(content_area).find(".BtnViewBack").remove().end()).html();
+		var print_content = '<html><head>' + headContent + '</head><body onload="window.print()"><div class="print_pg_logo"><h1 class="logo">' + jQuery("#mainNav .logo").html() + '</h1></div> ' + content_area + '</html>';
+
+		popupWin.document.open();
+		popupWin.document.write(print_content);
+		popupWin.document.close();
+	}
+</script>
+
+<script>
+	require([
+    'jquery',
+	'Sttl_Customerorder/js/jquery.dataTables.min'
+	], function($){
+        $(".toggleTable").hide();
+
+        $(".orderviewtableDataShow").click(function(){
+						if($(this).find('.action-class').hasClass('active')){
+							$(this).find('.action-class').removeClass('active');
+							$(this).next('tr.toggleTable').removeClass('active').addClass('removetr');
+							    setTimeout(function() {
+			                               $('.removetr').remove();
+			                            }, 1000);
+
+							$(this).removeClass('subtable-show');
+
+						}else{
+							// $('table.orderList.lineItemsList tr.toggleTable').remove();
+							$(this).find('.action-class').addClass('active');
+							var val = $(this).attr("attr-id");
+							var html = $(".subtable .tr_"+val).html();
+							$(this).addClass('subtable-show')
+							if($(this).next('tr.toggleTable').length < 1){
+								$('<tr class="toggleTable">'+html+'</tr>').insertAfter($(this));
+							}
+							var position = 	$(this).offset().top ;
+							$(this).next('tr.toggleTable').addClass('active');
+
+							$("body, html").animate({
+								scrollTop: position
+							},1000);
+
+						}
+					});
+		$(".orderList").find("thead").on('click', 'th', function(){
+			$(".orderviewtableDataShow").find('td .action-class i').addClass('fa fa-angle-down').removeClass('fa fa-angle-up');
+		});
+
+		$(document).on("click",".block.block-dashboard-info .block-title",function(e){
+			var that = $(this);
+			// if(!$('.block-title.active').next().is(':visible')){
+			// 	$('.block-title.active').next().hide(10);
+			// 	$('.block-title').removeClass('active');
+			// }
+
+			if(!$(this).next().is(':visible')){
+					that.addClass('active');
+			}else{
+				that.removeClass('active');
+			}
+
+			$(this).next().slideToggle(800);
+
+					var position = 	$(this).offset().top;
+					var toggle = $(this).next().outerHeight() || 200;
+					var windowSize = $(window).height();
+					var limit  = windowSize/2;
+					console.log(position,'>',limit,'----',windowSize);
+						// if(windowSize < 400){
+						// 	$("body, html").animate({
+						// 		scrollTop: position
+						// 	},1000);
+						// }
+						// else if(position > limit){
+
+							$("body, html").animate({
+								scrollTop:  position - 50
+							},1000);
+						// }
+
+		})
+
+		$(".mfp-close-inside").click(function(){
+
+			$(".EditBack .BtnViewBack #shipttreckdata").addClass("mobile-button");
+			$(".EditBack .BtnViewBack #shipttreckdata").removeClass("mobile-button-click");
+		})
+		$(window).load(function() {
+ 				var doentrty = '<?php echo $block->getDocEntryReg(); ?>';
+				var ajaxcall = $('#ship_shiowdata').val()
+				if(ajaxcall != 1 && doentrty !='')
+				{
+					$.ajax({
+					url: "<?php echo $block->getshipdataUrl(); ?>",
+					enctype: 'multipart/form-data',
+					type: "POST",
+					data:{doentrty:doentrty},
+					showLoader: false,
+					cache: true,
+					success: function(response){
+						$('.shipdatainfo').html('')
+						$('.shipdatainfo').html(response)
+						$('#ship_shiowdata').val(1)
+						$("#shipttreckdata").css({"pointer-events": "all", "opacity": "1"});
+						$(".BtnViewBack a").removeClass("load");
+						$('#lodingshippdata').hide();
+						if( jQuery(".trackPack").length) {
+							console.log('1');
+							jQuery('[data-toggle="tooltip"]').tooltip()
+						}
+						if(jQuery(".trackPack").length){
+							console.log('2');
+							setTimeout(function(){
+							jQuery(".trackPack").mCustomScrollbar();
+							},200);
+						}
+						}
+					});
+				}else{
+					$( "#shipopenmodel" ).trigger( "click" );
+				}
+		});
+
+	// 	$(document).ready(function() {
+	// 		$('.orderList').DataTable({
+	// 			"bPaginate": false,
+	// 			"searching": false,
+	// 			"info": false,
+	// 			columnDefs: [ { orderable: false, targets: 0}],
+	// 			"order": [[ 2, "asc" ],[ 3, "asc" ]]
+	// 		});
+	// });
+
+	});
+</script>
+<style>
+	.load:after {
+      content: '.';
+    animation: dots 1s steps(5, end) infinite;
+    padding: 0px 6px 1px 0px !important;
+    font-size: 16px;
+}
+
+@keyframes dots {
+  0%, 20% {
+    color: rgba(0,0,0,0);
+    text-shadow:
+      .25em 0 0 rgba(0,0,0,0),
+      .5em 0 0 rgba(0,0,0,0);}
+  40% {
+    color: white;
+    text-shadow:
+      .25em 0 0 rgba(0,0,0,0),
+      .5em 0 0 rgba(0,0,0,0);}
+  60% {
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 rgba(0,0,0,0);}
+  80%, 100% {
+    text-shadow:
+      .25em 0 0 white,
+      .5em 0 0 white;}}
+      /*.accountPageContainer.orderShippingStatus .EditBack #shipttreckdata{ padding: 7px 18px !important; }*/
+</style>
+<?php
+}
+?>

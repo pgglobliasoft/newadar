@@ -1,0 +1,75 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+ 
+// @codingStandardsIgnoreFile
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$jsonHelper = $objectManager->get('\Magento\Framework\Json\Helper\Data');
+$resource = $objectManager->get('\Magento\Framework\App\ResourceConnection');
+$directory = $objectManager->get('\Magento\Framework\Filesystem\DirectoryList');
+$connection = $resource->getConnection();
+$tableName = $resource->getTableName("core_config_data"); 
+//Select Data from table
+$sql = "Select value FROM " . $tableName." WHERE `path` LIKE '%sttl/image_library/permission%'";
+$result = $connection->fetchAll($sql); // gives associated array, table fields as key in array.
+//$storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+//echo var_dump($collection->addScopeFilter($storeScope, 0, "sttl/image_library/permission"));
+//$dir_list = $block->getFileList($directory->getRoot()."/app/code/Sttl");
+//$dir_list = $block->getFileList($directory->getRoot()."/ftp_images/");
+$dir_list = $block->dirToArray($directory->getRoot()."/ftp_images/");
+
+//$dir_list_ul_li = $block->make_list($dir_list["tree"], 'class="jstree-no-dots"');
+//$get_imagelibrary_data = $objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface')->getValue('sttl/image_library/permission',$storeScope);
+$get_imagelibrary_permission = [];
+$get_imagelibrary_data = '';
+if (!empty($result)) :
+	$get_imagelibrary_data = $result[0]["value"];
+endif;
+
+if (!empty($get_imagelibrary_data)) {
+	$get_imagelibrary_permission = json_decode($get_imagelibrary_data, true);
+}
+
+$data["dir"]["rolesTree"]["treeInitData"] = $block->make_array($dir_list);
+$data["dir"]["rolesTree"]["treeInitSelectedData"] = $get_imagelibrary_permission;
+
+$home_admin_url =  str_replace("admin/", "", $this->helper('Magento\Backend\Helper\Data')->getHomePageUrl());
+$json = $jsonHelper->jsonEncode($data["dir"]);
+
+?>
+
+<?php
+/** @var $block \Magento\User\Block\Role\Tab\Edit */
+?>
+
+<script>
+	require(["jquery", "jquery/jstree/jquery.jstree"], function ($, jstree) {
+		
+        $(function () {
+            $('#jsTree').jstree({
+                plugins: ["themes", "json_data", "ui", "crrm", "types", "hotkeys"]
+            });
+        });
+    });
+</script>
+
+<?= $block->getChildHtml() ?>
+
+<fieldset class="fieldset form-inline entry-edit">
+    <legend class="legend">
+        <span><?= /* @escapeNotVerified */ __('Image Library') ?></span>
+    </legend>
+	<form method="post" name="edit_form" id="edit_form" action="<?php echo $home_admin_url.'fdirectory/index/save';?>">
+		<div><p>Please select the folders you'd like to display in the image library:&nbsp;<button id="id_b84d81141f4992ab22801475b15c1567" title="Save Permissions" type="submit" class="action-default scalable save primary save-role ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" data-ui-id="page-actions-toolbar-savebutton" role="button" aria-disabled="false" style="float:right;"><span class="ui-button-text"><span>Save</span></span></button></p></div>
+		<input type="hidden" name="form_key" value="<?php echo $block->getFormKey() ?>" />
+		<div class="field" data-role="tree-resources-container">
+			<label class="label"><span><?= /* @escapeNotVerified */ __('Folder') ?></span></label>
+
+			<div class="control">
+				<div class="tree x-tree" id="jsTree" data-role="resource-tree" data-mage-init='<?php echo $json;?>'></div>
+			</div>
+		</div>
+	</form>
+</fieldset>

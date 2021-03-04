@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+    <referenceContainer name="content">
+        <block class="Vendor\Rules\Block\Adminhtml\Example\Material" name="adminhtml.block.example.material.grid.container">
+            <block class="Magento\Backend\Block\Widget\Grid" name="adminhtml.block.example.material.grid" as="grid">
+                <arguments>
+                    <argument name="id" xsi:type="string">example_rule_grid</argument>
+                    <argument name="dataSource" xsi:type="object">Vendor\Rules\Model\ResourceModel\Material\Collection</argument>
+                    <argument name="default_sort" xsi:type="string">sort_order</argument>
+                    <argument name="default_dir" xsi:type="string">ASC</argument>
+                    <argument name="save_parameters_in_session" xsi:type="string">1</argument>
+                </arguments>
+
+                <block class="Magento\Backend\Block\Widget\Grid\ColumnSet" as="grid.columnSet" name="adminhtml.example.material.grid.columnSet">
+                    <arguments>
+                        <argument name="rowUrl" xsi:type="array">
+                            <item name="path" xsi:type="string">vendor_rules/*/edit</item>
+                            <item name="extraParamsTemplate" xsi:type="array">
+                                <item name="id" xsi:type="string">getId</item>
+                            </item>
+                        </argument>
+                    </arguments>
+
+                    <block class="Magento\Backend\Block\Widget\Grid\Column" as="id">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">ID</argument>
+                            <argument name="index" xsi:type="string">id</argument>
+                            <argument name="column_css_class" xsi:type="string">col-id</argument>
+                            <argument name="header_css_class" xsi:type="string">col-id</argument>
+                            <!-- <argument name="filtertype" xsi:type="string">number</argument> -->
+                            <argument name="type" xsi:type="string">number</argument>
+                        </arguments>
+                    </block>
+                    <block class="Magento\Backend\Block\Widget\Grid\Column" as="item_code">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">Sku</argument>
+                            <argument name="index" xsi:type="string">item_code</argument>
+                        </arguments>
+                    </block>
+
+                    <block class="Magento\Backend\Block\Widget\Grid\Column" as="item_name">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">Name</argument>
+                            <argument name="index" xsi:type="string">item_name</argument>
+                        </arguments>
+                    </block>
+                     <block class="Magento\Backend\Block\Widget\Grid\Column" as="item_url">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">Image</argument>                           
+                            <argument name="index" xsi:type="string">item_url</argument>
+                            <argument name="renderer" xsi:type="string">Vendor\Rules\Block\Adminhtml\Example\Material\Grid\Renderer\Image</argument> 
+                            <argument name="filter" xsi:type="boolean">false</argument>
+                        </arguments>
+                    </block>
+                     <block class="Magento\Backend\Block\Widget\Grid\Column" as="price">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">price</argument>
+                            <argument name="index" xsi:type="string">price</argument>
+                            <argument name="renderer" xsi:type="string">Vendor\Rules\Block\Adminhtml\Example\Material\Grid\Renderer\Price</argument>                            
+                        </arguments>
+                    </block>
+
+                    <block class="Magento\Backend\Block\Widget\Grid\Column" as="maximum_pre_order">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">maximum pre order</argument>
+                            <argument name="index" xsi:type="string">maximum_pre_order</argument>
+                        </arguments>
+                    </block>
+
+                    <block class="Magento\Backend\Block\Widget\Grid\Column" as="free_after">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">free after</argument>
+                            <argument name="index" xsi:type="string">free_after</argument>
+                            <argument name="renderer" xsi:type="string">Vendor\Rules\Block\Adminhtml\Example\Material\Grid\Renderer\Price</argument> 
+                        </arguments>
+                    </block>
+                      <block class="Magento\Backend\Block\Widget\Grid\Column" as="minimum_order_amt">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">min order should be</argument>
+                            <argument name="index" xsi:type="string">minimum_order_amt</argument>
+                            <argument name="renderer" xsi:type="string">Vendor\Rules\Block\Adminhtml\Example\Material\Grid\Renderer\Price</argument> 
+                        </arguments>
+                    </block>
+
+
+                    <block class="Magento\Backend\Block\Widget\Grid\Column" as="is_active">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">Status</argument>
+                            <argument name="index" xsi:type="string">is_active</argument>
+                            <argument name="type" xsi:type="string">options</argument>
+                            <argument name="options" xsi:type="array">
+                                <item name="active" xsi:type="array">
+                                    <item name="value" xsi:type="string">1</item>
+                                    <item name="label" xsi:type="string" translate="true">Active</item>
+                                </item>
+                                <item name="inactive" xsi:type="array">
+                                    <item name="value" xsi:type="string">0</item>
+                                    <item name="label" xsi:type="string" translate="true">InActive</item>
+                                </item>
+                                <item name="tempinactive" xsi:type="array">
+                                    <item name="value" xsi:type="string">2</item>
+                                    <item name="label" xsi:type="string" translate="true">Temporarily Inactive</item>
+                                </item>
+                            </argument>
+                        </arguments>
+                    </block>
+
+                    <block class="Magento\Backend\Block\Widget\Grid\Column" as="category">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">category</argument>
+                            <argument name="index" xsi:type="string">category</argument>
+                        </arguments>
+                    </block>
+
+                    <block class="Magento\Backend\Block\Widget\Grid\Column" as="create_at">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">create_at</argument>
+                            <argument name="type" xsi:type="string">date</argument>
+                            <argument name="index" xsi:type="string">create_at</argument>
+                            <argument name="column_css_class" xsi:type="string">col-date</argument>
+                            <argument name="header_css_class" xsi:type="string">col-date</argument>
+                        </arguments>
+                    </block>
+                    
+                     <block class="Magento\Backend\Block\Widget\Grid\Column" as="shortorder">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">short order</argument>
+                            <argument name="index" xsi:type="string">shortorder</argument>
+                        </arguments>
+                    </block>
+                    
+                </block>
+
+            </block>
+        </block>
+    </referenceContainer>
+    </body>
+</page>

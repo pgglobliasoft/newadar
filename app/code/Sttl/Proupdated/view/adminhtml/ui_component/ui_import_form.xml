@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">ui_import_form.uiexample_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Announcement Information</item>
+        <item name="reverseMetadataMerge" xsi:type="boolean">true</item>
+    </argument>
+    <settings>
+        <buttons>            
+            <button name="save" class="Sttl\Proupdated\Block\Adminhtml\Index\Edit\Button\Save"/>
+            <button name="reset" class="Magento\Customer\Block\Adminhtml\Edit\ResetButton"/> 
+            <button name="delete" class="Magento\Customer\Block\Adminhtml\Edit\DeleteButton"/>
+            <button name="back" class="Magento\Customer\Block\Adminhtml\Edit\BackButton"/>
+        </buttons>
+        <layout>
+            <navContainerName>left</navContainerName>
+            <type>tabs</type>
+        </layout>
+        <deps>
+            <dep>ui_import_form.uiexample_form_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="customer_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <!-- <validateUrl path="sttl_proupdated/announcement/validate"/> -->
+            <submitUrl path="sttl_proupdated/announcement/save"/>
+        </settings>
+        <dataProvider class="Sttl\Proupdated\Model\DataProvider" name="uiexample_form_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>  
+    <fieldset name="customer">
+        <settings>
+            <label translate="true">Announcement Information</label>
+        </settings>
+        <field name="id" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">id</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <visible>false</visible>
+            </settings>
+         </field>
+         <field name="title">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Announcement title</item>
+                        <item name="visible" xsi:type="boolean">true</item>
+                        <item name="dataType" xsi:type="string">text</item>
+                        <item name="formElement" xsi:type="string">input</item>
+                        <item name="validation" xsi:type="array">
+                            <item name="required-entry" xsi:type="boolean">true</item>
+                        </item>
+                    </item>
+                </argument>
+         </field>
+          <field name="button_name">
+             <argument name="data" xsi:type="array">
+                 <item name="config" xsi:type="array">
+                     <item name="label" xsi:type="string" translate="true">Button Name</item>
+                     <item name="visible" xsi:type="boolean">true</item>
+                     <item name="dataType" xsi:type="string">text</item>
+                     <item name="formElement" xsi:type="string">input</item>
+                 </item>
+             </argument>
+         </field>
+         <field name="url_key">
+             <argument name="data" xsi:type="array">
+                 <item name="config" xsi:type="array">
+                     <item name="label" xsi:type="string" translate="true">Button Url</item>
+                     <item name="visible" xsi:type="boolean">true</item>
+                     <item name="dataType" xsi:type="string">text</item>
+                     <item name="formElement" xsi:type="string">input</item>
+                 </item>
+             </argument>
+         </field>
+         <field name="status" formElement="select">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Status</label>
+                <dataScope>status</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="1" xsi:type="array">
+                                <item name="value" xsi:type="string">1</item>
+                                <item name="label" xsi:type="string">Enable</item>
+                            </option>
+                            <option name="2" xsi:type="array">
+                                <item name="value" xsi:type="string">0</item>
+                                <item name="label" xsi:type="string">Disable</item>
+                            </option>                          
+                        </options>
+                        <caption translate="true">-- Please Select --</caption>
+                    </settings>
+                </select>
+           
+            </formElements>
+         </field>
+         <field name="preview">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="formElement" xsi:type="string">textarea</item>
+                    <item name="cols" xsi:type="number">15</item>
+                    <item name="rows" xsi:type="number">5</item>
+                    <item name="label" translate="true" xsi:type="string">Short Description</item>
+                    <item name="dataType" translate="true" xsi:type="string">text</item>
+                    <item name="validation" xsi:type="array">
+                            <item name="required-entry" xsi:type="boolean">true</item>
+                        </item>
+                </item>
+            </argument>
+        </field>
+        <field name="sort_order">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Short Order</item>
+                        <item name="visible" xsi:type="boolean">true</item>
+                        <item name="dataType" xsi:type="string">text</item>
+                        <item name="formElement" xsi:type="string">input</item>
+                        <item name="validation" xsi:type="array">
+                            <item name="validate-digits" xsi:type="boolean">true</item>
+                        </item>
+                    </item>
+                </argument>
+         </field>
+    <field name="banners" formElement="select">
+                <argument name="data" xsi:type="array">
+                    <item name="options" xsi:type="object">Sttl\Proupdated\Model\Banner\Attribute\Source\BannerList</item>
+                    <item name="config" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Banners of Slider</item>
+                        <item name="componentType" xsi:type="string">field</item>
+                        <item name="visible" xsi:type="boolean">true</item>
+                        <item name="component" xsi:type="string">Magento_Catalog/js/components/new-category</item>
+                        <item name="elementTmpl" xsi:type="string">ui/grid/filters/elements/ui-select</item>
+                        <item name="filterOptions" xsi:type="boolean">true</item>
+                        <item name="showCheckbox" xsi:type="boolean">true</item>
+                        <item name="disableLabel" xsi:type="boolean">true</item>
+                        <item name="multiple" xsi:type="boolean">true</item>
+                        <item name="levelsVisibility" xsi:type="number">1</item>
+                        <item name="required" xsi:type="boolean">false</item>
+                        <!-- <item name="validation" xsi:type="array">
+                            <item name="required-entry" xsi:type="boolean">true</item>
+                        </item> -->
+                    </item>
+                </argument>                                      
+            </field>
+        
+        <field name="post_content" sortOrder="50" formElement="wysiwyg">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="wysiwygConfigData" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Popup contain</item>
+                        <item name="height" xsi:type="string">300px</item>
+                        <item name="add_variables" xsi:type="boolean">true</item>
+                        <item name="add_widgets" xsi:type="boolean">true</item>
+                        <item name="add_images" xsi:type="boolean">true</item>
+                        <item name="add_directives" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+            <settings>
+                <label>Content</label>
+            </settings>
+            <formElements>
+                <wysiwyg>
+                    <settings>
+                        <rows>8</rows>
+                        <wysiwyg>true</wysiwyg>
+                    </settings>
+                </wysiwyg>
+            </formElements>
+        </field>        
+   </fieldset>
+
+  <!--   <fieldset name="banner_grid_listing">
+        <settings>
+            <level>1</level>
+            <collapsible>true</collapsible>
+            <label translate="true">Select banner for slider</label>
+        </settings>      
+          <insertListing name="product_listing" >
+            <settings>
+                <dataLinks>
+                    <exports>false</exports>
+                    <imports>true</imports>
+                </dataLinks>
+                <autoRender>true</autoRender>
+                <selectionsProvider>
+                    product_listing.product_listing.columns.ids
+                </selectionsProvider>
+                <dataScope>product_listing</dataScope>
+                <ns>product_listing</ns>
+            </settings>
+        </insertListing>   -->
+        <!-- <insertListing name="banner_grid_listing">
+            <settings>
+                <dataLinks>
+                    <exports>false</exports>
+                    <imports>true</imports>
+                </dataLinks>
+                <externalProvider>banner_grid_listing.banner_grid_listing_data_source</externalProvider>
+                <selectionsProvider>banner_grid_listing.banner_grid_listing_data_source.ids</selectionsProvider>
+                <autoRender>true</autoRender>
+                <dataScope>banner_grid_listing</dataScope>
+                <ns>banner_grid_listing</ns>
+                <exports>
+                    <link name="banners">${ $.externalProvider }:params.banners</link>
+                </exports>
+                <imports>
+                    <link name="banners">${ $.provider }:data.banners.entity_id</link>
+                </imports>
+            </settings>
+        </insertListing> -->
+    <!-- </fieldset> -->
+</form>

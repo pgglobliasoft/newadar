@@ -1,0 +1,176 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var \Magento\Customer\Block\Form\Register $block */
+$customer = $this->getCustomerDetails();
+// echo '<pre>';  print_r($customer['email']); die();
+
+?>
+<?= $block->getChildHtml('form_fields_before') ?>
+<?php /* Extensions placeholder */ ?>
+<?= $block->getChildHtml('customer.form.register.extra') ?>
+<form class="form create account form-create-account" action="<?= $block->escapeUrl($block->getPostActionUrl()) ?>" method="post" id="register-child-form-validate" enctype="multipart/form-data" autocomplete="off" data-hasrequired="<?php /* @escapeNotVerified */ echo __('* Required Fields') ?>"
+      data-mage-init='{"validation":{}}'>
+    <?= /* @noEscape */ $block->getBlockHtml('formkey'); ?>
+  	<input type="hidden" name="form_key_hidden" id="form_key_hidden" value="<?= md5($customer['email'])?>" />
+  	<input type="hidden" name="edit_hidden" id="key_hidden" child="" value="<?= md5($customer['email'])?>" />
+    <div class="registrationPage child-customer">   
+      <div class="col-md-12 mb-12 input-section">
+        <div class="row">
+          <div class="col-md-6 input-conatiner">            
+            <div class="row">
+              <div class="field subject col-md-12 required">
+                <label class="label" for="fullname"><span>Full Name</span></label>
+                <div class="control">
+                  <input type="text" id="fullname" name="fullname" value="" title="First Name" class="input-text required-entry validate-alphanum-with-spaces validate-no-html-tags" data-validate="{required:true}" autocomplete="off" aria-required="true" placeholder="Full NAME">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field subject col-md-12">
+                <label class="label" for="email"><span>Login Email</span></label>
+                <div class="control">
+                    <input type="email" name="email" autocomplete="off" id="reg_email_address" value="" title="Email" class="input-text" data-validate="{required:true, 'validate-email':true}" aria-required="true" placeholder="LOGIN EMAIL">
+                    <input name="customer_number" id="customer_number" value="<?= $customer['customer_number'] ?>" type="hidden">
+                    <input name="webaccess_code" id="webaccess_code" value="<?= $customer['webaccess_code']?>" type="hidden" />
+
+                </div>
+              </div>
+            </div>            
+            <div class="row">
+            	<div class="field subject col-md-12 password required">
+	                <label class="label" for="password"><span>Password</span></label>
+	                <div class="control">
+	                  <input type="password" name="password" id="regpassword"
+	                       title="<?= $block->escapeHtmlAttr(__('Password')) ?>"
+	                       class="input-text"
+	                       data-password-min-length="<?= $block->escapeHtmlAttr($block->getMinimumPasswordLength()) ?>"
+	                       data-password-min-character-sets="<?= $block->escapeHtmlAttr($block->getRequiredCharacterClassesNumber()) ?>"
+	                       data-validate="{required:true, 'validate-customer-password':true}"
+	                       autocomplete="off" placeholder="PASSWORD">
+	              	</div>
+	            </div>
+            </div>
+     		    <div class="row">
+              <div class="field subject col-md-12 confirmation required">
+                <label class="label" for="password-confirmation"><span>Confirm Password </span></label>
+                <div class="control">
+                  <input type="password" name="password_confirmation" title="<?= $block->escapeHtmlAttr(__('Confirm Password')) ?>" id="password-confirmation" class="input-text" data-validate="{required:true, equalTo:'#regpassword'}" autocomplete="off"  placeholder="PASSWORD">
+                  <input type="hidden" name="customer" value="<?= $customer['entity_id']; ?>">
+                </div>
+              </div>
+            </div>
+            <div class="row" id='editdatainfo'>
+            	<div class="field col-md-12">
+	            	<p class="created"> <strong>User Created : </strong><span class="ans"></span> </p>
+	            	<p class="last_login"> <strong>Last Login Time</strong> <span class="ans"></span> </p>
+	            	<p class="active_status"> This user account is <span class="ans"> </span> </p>
+	            	<label for="allow_user_login" class="customer_status"> <input type="checkbox" class="allow_user" id="allow_user_login" name="status" value="0" /><span>Allow this user to login</span> </label>
+	            	<div class="Delete_customer_button" id="Delete_the_customer"><span class="Delete_customer" >Delete User </span></div>
+	            </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-12 permission-conatiner">
+          	<div class="multi-select">  
+          		<fieldset class="permission-section">
+          			<legend class="title"> Permissions </legend>
+    					   <fieldset class="filter">                 
+                    <div class="accountinfo">
+        					    	<legend>Account Info<span class="all"> <input class="all" type="checkbox" id="accountinfo" >All</span></legend>
+        						    <label for="0" class="child-lable">
+        						      <input type="checkbox" id="0" name="check_list[accountinfo][1]" value="view_customer" >View Customer Statement
+        						    </label>
+        						    <label for="1" class="child-lable">
+        						      <input type="checkbox" id="1" name="check_list[accountinfo][2]" value="payment_info">Manage Payment Info
+        						    </label>
+        						    <label for="2" class="child-lable">
+        						      <input type="checkbox" id="2" name="check_list[accountinfo][3]" value="shipping_info">Manage Shipping Addresses
+        						    </label>		
+                        <label for="10" class="child-lable" >
+                          <input type="checkbox" id="10" name="check_list[accountinfo][4]" value="user_manage">Manage Users 
+                        </label> 
+                    </div>   				    
+    					   </fieldset>
+    					   <fieldset class="filter">
+                    <div class="orderview">
+      					    	<legend>Orders<span class="all"> <input class="all" type="checkbox" id="orderview">All</span></legend>					    
+      						    <label for="3" class="child-lable">
+      						      <input type="checkbox" id="3" name="check_list[order][1]" value="place_oder">Place Orders
+      						    </label>
+      						    <label for="4" class="child-lable">
+      						      <input type="checkbox" id="4" name="check_list[order][2]" value="view_order">View Order History
+      						    </label>	
+                    </div>					   					    
+    					  </fieldset>
+    					   <fieldset class="filter">
+                    <div class="invoiceview">
+      					    	<legend>View & Pay Invoices<span class="all"> <input class="all" type="checkbox" id="invoiceview">All</span></legend>				    
+      						    <label for="5" class="child-lable">
+      						      <input type="checkbox" id="5" name="check_list[invoice][1]" value="pay_invoice">Pay Invoices
+      						    </label>
+      						    <label for="11" class="child-lable">
+      						      <input type="checkbox" id="11" name="check_list[invoice][2]" value="view_invoice">View Invoice History
+      						    </label>		
+                    </div>				   					    
+    					  </fieldset>
+    					  <fieldset class="filter">
+                    <div class="downlaod_library">
+      					    	<legend>Downlaod Library<span class="all"> <input class="all" type="checkbox" id="downlaod_library">All</span></legend>	 
+      					    	<label for="7" class="child-lable">
+      						      <input type="checkbox" id="7" name="check_list[downlaod_library][1]" value="view_catalog">View Catalogs, Image Library
+      						    </label>
+      						    <label for="8" class="child-lable">
+      						      <input type="checkbox" id="8" name="check_list[downlaod_library][2]" value="view_inventory">View Inventory files
+      						    </label>
+      						    <label for="9" class="child-lable">
+      						      <input type="checkbox" id="9" name="check_list[downlaod_library][3]" value="view_product">View Price List and Product Data files
+      						    </label>
+                    </div>
+    					  </fieldset>
+    				</div>		
+          	</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 mrgB20  rltv">
+            <div class="col-md-12 mrgT20 mrgB20 rltv">
+              <button type="submit" title="Submit" class="registrationBtn">Create a New User </button>
+            </div>
+          </div>
+        </div>
+      </div>
+     </div>
+    </div>
+</form>
+<script>
+require([
+    'jquery',
+    'customerRules',
+    'mage/mage'
+], function($,rules){
+
+    $('input.all').on('click',function(e){rules.Checkall(this); });
+
+    /*child chekbox select uncheck all*/
+    $('.child-lable').on('click',function(e){rules.uncheckall(this); });
+
+    /*submit form*/
+    $('#register-child-form-validate').submit(function (e) { e.preventDefault(); rules.registerCustomer() });
+
+});
+</script>
+
+<script type="text/x-magento-init">
+    {
+        ".field.password": {
+            "passwordStrengthIndicator": {
+                "formSelector": "form.form-create-account"
+            }
+        }
+    }
+</script>

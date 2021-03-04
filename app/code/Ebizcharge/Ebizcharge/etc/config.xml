@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!--
+/**
+* Defines default configurations for Ebizcharge.
+*
+* @author      Century Business Solutions <support@centurybizsolutions.com>
+* @copyright   Copyright (c) 2016 Century Business Solutions  (www.centurybizsolutions.com)
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Magento/Store/etc/config.xsd">
+    <default>
+        <payment>
+            <ebizcharge_ebizcharge>
+                <active>1</active>
+                <model>Ebizcharge\Ebizcharge\Model\Payment</model>
+                <payment_action>authorize</payment_action>
+                <title>eBiz</title>
+                <cctypes>AE,VI,MC,DI,JCB</cctypes>
+                <allowspecific>0</allowspecific>
+                <min_order_total>0.50</min_order_total>
+                <order_status>pending_payment</order_status>
+                <save_payment>0</save_payment>
+            </ebizcharge_ebizcharge>
+        </payment>
+    </default>
+</config>

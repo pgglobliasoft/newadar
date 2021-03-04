@@ -1,0 +1,33 @@
+<div class="linetableScroll">
+	<table class="orderList mobile lineItemsList" style="table-layout:fixed;">
+		<tbody>
+			<tr> 
+				<th></th>
+				<th>Style</th>
+				<th>Color</th>
+<!-- 				<th>Qty.</th>
+				<th>Total</th>
+				<th></th> -->
+			</tr>
+			<%
+				_.each(finalorderrendere, function(valuetype, index) {
+					_.each(valuetype, function(parent_styles_value, style_name) {
+						_.each(parent_styles_value, function(parent_styles_colorcode_value, style_colorcode) { %>
+							<tr id="togglebutton">
+								<td class="toggleshow-line">
+									<span class="line_item_coll_icon" style="cursor: pointer;">
+										<i class="fa fa-caret-down" aria-hidden="true"></i>
+									</span>
+									<input type="hidden" class="delete_style" id="delete_style_<%=style_name%>_<%=style_colorcode%>" name="delete_style" value="<%=style_name%>">
+									<input type="hidden" name="delete_color" class="delete_color" id="delete_color_<%=style_name%>_<%=style_colorcode%>" value="<%=style_colorcode%>">
+								</td>
+								<td class="toggleshow-line"><%=style_name%></td>
+								<td class="toggleshow-line"><%=style_colorcode%></td>
+							</tr>
+						<% });
+					});
+				});
+			%>
+		</tbody>
+	</table>
+</div>

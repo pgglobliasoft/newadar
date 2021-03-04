@@ -1,0 +1,503 @@
+
+<?php
+	$q = @$block->getRequest()->getParam('q');
+	$po_number = @$block->getRequest()->getParam('po_number');
+	$order_stats = @$block->getRequest()->getParam('order_stats');
+	$status = ($q == 'd') ? 'Draft' : $order_stats;
+	$orders = $block->getALLOrdersList($status, $po_number,$q);
+	$page_title = ($q == 'd') ? 'Purchase Order Drafts' : 'Order Status';
+	$page_class = ($q == 'd') ? 'purchase_drafts' : 'order_status';
+	$back_redirect = $this->getBaseUrl()."customerorder/customer/index";
+	$neworder = $this->getBaseUrl()."customerorder/customer/neworder";
+	$BaseUrl = $this->getBaseUrl();
+	?>
+<div class="accountPageContainer 
+	<?= $page_class ?>">
+	<div class="page-title">
+		<div class="icon_div">
+			<h6>
+				<?php echo $page_title;?>
+			</h6>
+			<a href="#" class="serach">
+				<svg version="1.1" id="Layer_1"
+					xmlns="http://www.w3.org/2000/svg"
+					xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	  viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+					<g>
+						<g>
+							<path d="M338.752,99.482c-65.965-65.974-173.306-65.974-239.277,0c-65.967,65.964-65.967,173.305,0,239.269 c63.708,63.712,165.99,65.879,232.342,6.544l13.413,13.413c-3.34,8.56-1.59,18.623,5.311,25.528l70.782,70.782 c9.305,9.31,24.397,9.305,33.696,0c9.31-9.299,9.31-24.387,0-33.696l-70.777-70.772c-6.905-6.899-16.988-8.65-25.533-5.311 l-13.413-13.423C404.636,265.465,402.463,163.188,338.752,99.482z M119.698,318.539c-54.819-54.819-54.819-144.015,0-198.834 c54.819-54.83,144.017-54.819,198.836,0s54.819,144.02,0,198.839S174.517,373.358,119.698,318.539z"/>
+							<path d="M153.1,151.877c23.944-23.95,51.774-41.331,81.037-52.169c-33.153-1.886-68.66,11.014-95.909,38.253 c-27.624,27.626-40.488,63.746-38.142,97.302C110.841,205.137,128.511,176.46,153.1,151.877z"/>
+						</g>
+					</g>
+				</svg>
+			</a>
+			<a href="#" class="filter">
+				<img src="
+					<?php echo $BaseUrl;?>pub/media/Sttl_Customerorder/filter.png">
+				</a>
+				<a href="
+					<?php echo $neworder?>" class="place-order">
+					<img src="
+						<?php echo $BaseUrl;?>pub/media/Sttl_Customerorder/plus.png">
+					</a>
+				</div>
+			</div>
+			<div class="cf sidebarSearch orderpage" style="display: none;">
+				<div class="form po_search col-lg-12"
+							  id="po_search"
+							  data-hasrequired="
+					<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"
+							  data-mage-init='{"validation":{}}'>
+					<!-- <span class="searchLable">Search an existing order</span> -->
+					<div class="searchInput-conatiner">
+						<div class="searchInput">
+							<input type="text" name="po_number" id="order_po_serach" placeholder="P.O. Number or Order Number" data-validate="{required:true}" >
+							</div>
+							<button type="submit" class="pothemeBtn" title="Search">
+								<i class="fa fa-search" aria-hidden="true"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+				<div class="orderSearch orderSearchForm">
+					<div class="order-wapper">
+						<form class="form order_search col-lg-12"
+				action=""
+				id="order_search"
+				method="get"
+				data-hasrequired="
+							<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"
+				data-mage-init='{"validation":{}}'>
+							<span class="close-filter">
+								<i class="fa fa-times" aria-hidden="true"></i>
+							</span>
+							<div class="statusDropdown" style="display: flex; margin: 15px 0px;">
+								<div id="date-range" >
+									<!-- <span>Search by date range:<span class="reqField">*</span></span> -->
+									<input name="date-from" id="date-from" readonly="true" type="input" class="datepicker"  data-validate="{required:true}" placeholder="From Date"  />
+									<strong>to</strong>
+									<input name="date-to" id="date-to" readonly="true" type="input" class="datepicker" data-validate="{required:true}" placeholder="To Date" />
+								</div>
+								<?php
+				if($q == '')
+				{
+					?>
+								<!-- <div class="clearfix pt-3"></div> -->
+								<!-- <span>Status:</span> -->
+								<select name="order_stats" id="order_stats" >
+									<option value="">View All</option>
+									<option 
+										<?php echo ($status == 'Draft') ? 'selected="selected"' : '';?> value="Draft">Draft
+									</option>
+									<option 
+										<?php echo ($status == 'Submitted') ? 'selected="selected"' : '';?> value="Submitted">Submitted
+									</option>
+									<option 
+										<?php echo ($status == 'Processing') ? 'selected="selected"' : '';?> value="Processing">Processing
+									</option>
+									<option 
+										<?php echo ($status == 'Shipped') ? 'selected="selected"' : '';?> value="Shipped">Shipped
+									</option>
+									<option 
+										<?php echo ($status == 'PartiallyShipped') ? 'selected="selected"' : '';?> value="PartiallyShipped">Partially Shipped
+									</option>
+								</select>
+								<?php
+				}
+				?>
+								<button type="submit" class="themeBtn action dateRangeFilter"  title="Search">
+									<i class="fa fa-search"></i>
+								</button>
+								<button type="button" class="themeBtn btnreset action save ml-2" title="Reset">
+									<i class="fa fa-repeat" aria-hidden="true"></i>
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+				<!--- tables div -->
+				<div class="orderpage-container">
+					<div class="orderItem-loader" style="display: none;">
+						<div class="loader">
+							<img src="
+								<?= /* @escapeNotVerified */ $block->getViewFileUrl('images/loader-1.gif') ?>"
+                     alt="
+								<?= /* @escapeNotVerified */ __('Loading...') ?>">
+							</div>
+						</div>
+						<div class="orderTable">
+							<table class="orderList">
+								<thead>
+									<tr class="table-header">
+										<th class="item-sort" sort-type='DESC' data-sort-by="DocStatus">
+											<span class="grid-shorting" > Status </span>
+											<i class="fa b2b-grid-sort-icon fa-sort"></i>
+										</th>
+										<?php if($q == '') { ?>
+										<th class="item-sort" sort-type='DESC' data-sort-by="DocNum">
+											<span class="grid-shorting" > SO NO. </span>
+											<i class="fa b2b-grid-sort-icon fa-sort"></i>
+										</th>
+										<?php } ?>
+										<th class="item-sort" sort-type='DESC' data-sort-by="NumatCardPo">
+											<span class="grid-shorting" >PO NO. </span>
+											<i class="fa b2b-grid-sort-icon fa-sort"></i>
+										</th>
+										<th class="item-sort" sort-type='DESC' data-sort-by="CreateDate">
+											<span class="grid-shorting" > Order Date </span>
+											<i class="fa b2b-grid-sort-icon fa-sort"></i>
+										</th>
+										<!-- <th></th> -->
+									</tr>
+								</thead>
+								<tbody>
+									<?php
+				$ordered = 0;
+				$open = 0;
+				$shipped = 0;
+				$total_order = 0;
+				$total = count($orders);
+				$totalPage = ceil($total/30);
+				if($total > 0)
+				{
+					$count = 1;
+					foreach(array_slice($orders, 0,30) as $order)
+					{
+						$ordered += ($order['TotalQTYUnits'] > 0) ? $order['TotalQTYUnits'] : 0;
+						$open += ($order['TotalOpen'] > 0) ? $order['TotalOpen'] : 0;
+						$shipped += ($order['TotalShipped'] > 0) ? $order['TotalShipped'] : 0;
+						$total_order += ($order['DocTotal'] > 0) ? $order['DocTotal'] : 0;
+
+						$id_b_e = base64_encode($order['Id']);
+						if($order['dataFrom'] == 'V')
+						{
+							$id_b_e = base64_encode($order['DocNum']);
+						}
+
+						$order_view_url = $block->getBaseUrl().'customerorder/customer/orderview/id/'.$id_b_e.'/back/'.base64_encode($back_redirect).'/df/'.base64_encode($order['dataFrom']);
+							$getorderdata = $block->getOrderDataDetails($order['DocNum'], $order['dataFrom']);
+						if($order['DocStatus'] == "Draft")	{
+							$order_view_url = $block->getBaseUrl().'customerorder/customer/payment?back_order_id='.$id_b_e.'&back_po_number='.base64_encode($order['NumatCardPo']);
+						}
+
+						?>
+									<tr style="cursor: pointer; width: 100%;" class="main-row">
+										<td class="option-redirect 
+											<?=  $order['DocStatus']  ?>">
+											<?php
+										if($order['DocStatus'] == 'PartiallyShipped') {
+											echo 'Partially
+											<br>Shipped';
+										}elseif ($order['DocStatus'] == 'Shipped') {
+											echo '
+												<span class="shipped-span">
+													<i class="fa fa-check"></i> Shipped 
+												</span>';
+										}
+										else{
+											echo $order['DocStatus'];
+										}
+								?>
+											</td>
+											<?php if($q == '') { ?>
+											<td class="option-redirect">
+												<?php echo ($order['DocNum'] != '') ? strlen($order['DocNum']) > 6 ? substr($order['DocNum'],0,6)."..." : $order['DocNum'] : "-";?>
+											</td>
+											<?php } ?>
+											<td class="option-redirect">
+												<?php //if($order_stats == "Draft" || $order['DocStatus'] == "Draft" || $order_stats == "Submitted" || $order['DocStatus'] == "Submitted"){ ?>
+												<?php echo ($order['NumatCardPo'] != '') ? strlen($order['NumatCardPo']) > 6 ? substr($order['NumatCardPo'],0,6)."..." : $order['NumatCardPo'] : "-";?>
+												<?php /* }else{ ?>
+												<?php echo ($order['NumatCardPo'] != '') ? $order['NumatCardPo'] : "-";?>
+												<?php }*/ ?>
+											</td>
+											<td class="option-redirect action">
+												<div class="d-flex">
+													<span>
+														<?php
+
+								$getdate = str_replace("-","/",$order['CreateDate']);
+
+								$time = strtotime($getdate);
+
+								$newformat = date('m-d-y',$time);
+
+								echo $newformat;
+
+
+								?>
+													</span>
+													<span class="icon-fa">
+														<i class="fa fa-chevron-down"></i>
+													</span>
+													<div>
+													</td>
+													<!-- <td></td> -->
+												</tr>
+												<tr class="toggleTable">
+													<td colspan="4" class="custom-td">
+														<div class="expandable_row" style="display:none;">
+															<table class="togg-tlb">
+																<thead>
+																	<tr>
+																		<th>Ordered</th>
+																		<th>Open</th>
+																		<th>Shipped </th>
+																		<th>Total Order</th>
+																	</tr>
+																</thead>
+																<tbody>
+																	<tr>
+																		<td>
+																			<?php echo ($order['TotalQTYUnits'] > 0) ? number_format((int)$order['TotalQTYUnits']) : 0.00;?>
+																		</td>
+																		<td>
+																			<?php echo ($order['TotalOpen'] > 0) ? number_format((int)$order['TotalOpen']) : 0.00;?>
+																		</td>
+																		<td>
+																			<?php echo ($order['TotalShipped'] > 0) ? number_format((int)$order['TotalShipped']) : 0.00;?>
+																		</td>
+																		<td>$
+																			<?php echo number_format((float)$order['DocTotal'],2);?>
+																		</td>
+																	</tr>
+																	<tr>
+																		<td colspan="4">
+																			<?php if($order['DocStatus'] == "Draft")	{  ?>
+																			<a class="newLinkText mobile-button" href="
+																				<?php echo $this->getBaseUrl();?>customerorder/customer/neworder/id/
+																				<?php echo base64_encode($order['Id']);?>/ncp/
+																				<?php echo base64_encode($order['NumatCardPo']);?>">Edit Order
+																			</a>
+																			<a class="newLinkText deletedraft mobile-button"  link="
+																				<?php echo $this->getBaseUrl();?>customerorder/customer/delete/id/
+																				<?php echo base64_encode($order['Id']).'/back/'.base64_encode($back_redirect);?>/">Delete Order
+																			</a>
+																			<?php }else{?>
+																			<a class="newLinkText mobile-button" href="
+																				<?php echo $order_view_url?>">View Order
+																			</a>
+																			<?php if(@$getorderdata['DocEntry']){ ?>
+																			<a class="newLinkText mobile-button" href="#" data-backdrop="false"  data-toggle="modal" data-target="#shipment-track"  id="shipttreckdata" data-num="
+																				<?= $getorderdata['DocEntry'] ?>" >Track Order 
+																			</a>
+																			<?php } ?>
+																			<?php }?>
+																		</td>
+																	</tr>
+																</tbody>
+															</table>
+														</div>
+													</td>
+												</tr>
+												<?php
+						$count++;
+					}?>
+											</tbody>
+											<tfoot>
+												<tr class="paginationRow" id="paginationId" data-id=1>
+													<td colspan="9" class="testTable" rowspan="1">
+														<div class="d-flex">
+															<div class="fa-pull-left recordTotal"> 1 to 
+																<?= $count-1 ?> of 
+																<?= $total ?>
+															</div>
+															<?php if($total > 30){?>
+															<div class="pagination">
+																<div class="dataTables_paginate paging_full_numbers" id="example_paginate">
+																	<a class="paginate_button first disabled" aria-controls="example" data-dt-idx="0" tabindex="0" id="example_first">
+																		<span class="first">
+																			<i class="fa fa-step-forward" aria-hidden="true"></i>
+																		</span>
+																	</a>
+																	<a class="paginate_button previous disabled" aria-controls="example" data-dt-idx="1" tabindex="0" id="example_previous">
+																		<span class="previous">
+																			<i class="fa fa-chevron-left" aria-hidden="true"></i>
+																		</span>
+																	</a>
+																	<span class="cdatatableDetails">
+																		<input type="text" value="1" class="direct-serach" data-dt-idx="1">
+																			/ <span class="total"><?php echo $totalPage; ?></span>
+																		</span>
+																		<a class="paginate_button next" aria-controls="example" data-dt-idx="2" tabindex="0" id="example_next">
+																			<span class="next">
+																				<i class="fa fa-chevron-right" aria-hidden="true"></i>
+																			</span>
+																		</a>
+																		<a class="paginate_button last" aria-controls="example" data-dt-idx="
+																			<?php echo $totalPage; ?>" abindex="0" id="example_last">
+																			<span class="last">
+																				<i class="fa fa-step-forward" aria-hidden="true"></i>
+																			</span>
+																		</a>
+																	</div>
+																</div>
+																<?php } ?>
+															</div>
+														</td>
+													</tr>
+												</tfoot>
+												<?php
+				}
+				else
+				{?>
+												<tr>
+													<td class="no-records" colspan="9" >No Orders Found!</td>
+												</tr>
+												<?php } ?>
+											</table>
+										</div>
+									</div>
+									<!--  -->
+									<div class="modal fade" id="removeUser" role="dialog" style="z-index: 1600;">
+										<div class="modal-dialog" role="document">
+											<div class="modal-content">
+												<div class="quickViewCont">
+													<div class="comingSoonTxt center">
+														<div class="comingSoonTxt center">
+															<p  class="mrgT20 padB20">Are you sure you want to delete?</p>
+														</div>
+														<div class="center mrgB20">
+															<button class="themeBtn mobile-button" id="goback" data-dismiss="modal" type="button">No</button>
+															<button class="themeBtn mrgL20 mobile-button" id="savecontinue" type="submit">Yes</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<?php
+
+		echo $this->getLayout()->createBlock("Sttl\Customerorder\Block\Orderview")->setTemplate("Sttl_Customerorder::shiptrack.phtml")->toHtml();?>
+									<input type="hidden" name="ship_shiowdata" id="ship_shiowdata" value="0">
+										<?php ?>
+	<script type="text/x-magento-init">
+	    {
+	        "*": {
+	        	"orderList":{
+	        		"BaseUrl" : "<?php echo $this->getBaseUrl();  ?>",
+	        		"ordertotal" : <?= $block->getordercount(); ?>,
+	        		"paramBaseUrl" : "<?php echo $this->getBaseUrl().'customerorder/customer/orderlist?po_number='.$po_number.'&q='.$block->getRequest()->getParam('q');  ?>"	     
+		        }
+	    	}
+    	}
+    </script>
+<script>
+	require([
+		'jquery',
+		'customer',
+        'Magento_Ui/js/modal/modal',
+		'mage/calendar'
+		],function($, script, modal){
+			 $("body").on( "click", ".main-row", function( event ){
+					 event.preventDefault();
+
+					 var targetrow = $(this).closest('tr').next('.toggleTable');
+					 // console.log('targetrow',targetrow.height())
+					 targetrow.show().find('div').slideToggle('800', function(){
+						 if (!$(this).is(':visible')) {
+							 targetrow.hide();
+						 }
+					 });
+
+					var a = $(this);
+					if($(a).find('span.icon-fa').hasClass('active')){
+						$(a).find('span.icon-fa').removeClass('active');
+						// $(a).find('span.icon-fa').addClass('fa-chevron-up', 500);
+					}else{
+						$(a).find('span.icon-fa').addClass('active');
+						// $(a).find('span.icon-fa i').removeClass('fa-chevron-up', 500);
+						var position = 	$(this).offset().top;
+						var toggle = $('body tr.toggleTable').outerHeight() || 200;
+						var windowSize = $(window).height();
+						var limit  = windowSize/2;
+						console.log(position,'>',limit,'----',windowSize);
+						if(windowSize < 400){
+							$("body, html").animate({
+								scrollTop: position
+							},800);
+						}
+						else if(position > limit){
+							$("body, html").animate({
+								scrollTop: position-200
+							},800);
+						}
+					}
+				});
+
+
+			 $('.serach').on('click',function(e){
+				$(".cf.sidebarSearch.orderpage").slideToggle("slow")
+			})
+
+			 $(".filter , .close-filter").click(function() {
+				$(".orderSearch.orderSearchForm").slideToggle("slow")
+			});
+			
+			$( document ).on( "click", ".deletedraft", function(e) {
+				var opt = {autoOpen: false
+				};
+				link = $(this).attr("link");
+				// console.log("aaaaaaa");
+				 $("#goback,#savecontinue").removeClass('mobile-button-click');
+  				 $("#goback,#savecontinue").addClass('mobile-button');
+				var theDialog = $("#removeUser").dialog(opt);
+						theDialog.dialog("open");
+			})
+			$('#savecontinue').click(function() {
+				$('#removeUser').dialog('close');
+
+					window.location.replace(link);
+					return true;
+			});
+			$('#goback').click(function()
+			{
+				$(".deletedraft").removeClass("mobile-button-click");
+				$(".deletedraft").addClass("mobile-button");
+				$('#removeUser').dialog('close');
+			});
+
+
+
+			$( document ).on( "click", "#shipttreckdata ", function(e) {
+				e.preventDefault();
+				$('#ship_shiowdata').val(0);
+				$('.shipdatainfo').addClass('loading');
+
+				var url = "<?= $this->getBaseUrl() . 'customerorder/customer/shiptracking' ?>"
+				console.log(url);
+				var doentrty = $(this).attr('data-num');
+				var ajaxcall = $('#ship_shiowdata').val()
+				if(doentrty !='')
+				{
+					$.ajax({
+					url: url,
+					enctype: 'multipart/form-data',
+					type: "POST",
+					data:{doentrty:doentrty},
+					showLoader: false,
+					cache: true,
+					success: function(response){
+						$('.shipdatainfo').html('')
+						$('.shipdatainfo').html(response)
+						$('#ship_shiowdata').val(1);
+						$('#lodingshippdata').hide();
+						$('.shipdatainfo').removeClass('loading');
+						if( jQuery(".trackPack").length) {
+							jQuery('[data-toggle="tooltip"]').tooltip()
+						}
+						if(jQuery(".trackPack").length){
+
+							setTimeout(function(){
+							jQuery(".trackPack").mCustomScrollbar();
+							},200);
+						}
+						}
+					});
+				}else{
+					$( "#shipopenmodel" ).trigger( "click" );
+				}
+
+			});
+		})
+</script>

@@ -1,0 +1,90 @@
+<?php
+$params = $this->getRequest()->getParams();
+$helper = $this->helper('Sttl\Feature\Helper\Data');
+$collection = $block->getCollection();
+?>
+<div class="shop-by-feature">
+    <?php if ($helper->getConfig('list_page_settings/description') != ''): ?>
+        <div class="description">
+            <?php echo $helper->getConfig('list_page_settings/description'); ?>
+        </div>
+    <?php endif; ?>
+    <?php if ($helper->getConfig('list_page_settings/show_featured_features')): ?>
+        <?php echo $block->getChildHtml('feature_list_featured'); ?>
+    <?php endif; ?>
+	<div class="feature-search">
+		<?php echo $block->getChildHtml('feature_search'); ?>
+		<?php echo $block->getChildHtml('feature_filter_by_character'); ?>
+	</div>
+    <div class="all-features widget sttl-feature">
+        <?php $flagDigit = false; ?>
+        <?php if ($collection->count()): ?>
+            <div class="content">
+                <ul class="feature-list row">
+                    <?php $i=0; foreach ($collection as $feature): $i++; ?>
+                        <?php if (isset($params['char']) && $params['char'] != '' && $params['char'] == '0-9') : ?>
+                            <?php $letter = strtoupper(substr($feature->getName(), 0, 1)); ?>
+                            <?php if (ctype_digit($letter)): ?>
+                                <?php $flagDigit = true; ?>
+								<li class="item col-md-custom-5 col-sm-4 col-xs-6<?php if($i % 5 == 1): ?> first-row-item<?php endif ?><?php if($i % 3 == 1): ?> first-sm-item<?php endif ?><?php if($i % 2 == 1): ?> first-xs-item<?php endif ?>">
+									<div class="image">
+										<a title="<?php echo $feature->getName(); ?>" href="<?php echo $feature->getUrl(); ?>">
+											<img class="img-responsive" alt="<?php echo $feature->getName(); ?>" src="<?php echo $feature->getSmallImageUrl(); ?>">
+										</a>
+									</div>
+									<?php if ($this->getConfig('list_page_settings/show_feature_name')): ?>
+										<div class="feature-name">
+											<h4 class="feature-title">
+												<a title="<?php echo $feature->getName(); ?>" href="<?php echo $feature->getUrl(); ?>">
+													<?php echo $feature->getName(); ?>
+													<?php if ($this->getConfig('list_page_settings/show_product_count')): ?>
+														<span><?php echo __('(%1)', $block->getProductCount($feature)); ?></span>
+													<?php endif; ?>
+												</a>
+											</h4>
+										</div>
+									<?php endif; ?>
+								</li>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <li class="item col-md-custom-5 col-sm-4 col-xs-6<?php if($i % 5 == 1): ?> first-row-item<?php endif ?><?php if($i % 3 == 1): ?> first-sm-item<?php endif ?><?php if($i % 2 == 1): ?> first-xs-item<?php endif ?>">
+								<div class="image">
+									<a title="<?php echo $feature->getName(); ?>" href="<?php echo $feature->getUrl(); ?>">
+										<img class="img-responsive" alt="<?php echo $feature->getName(); ?>" src="<?php echo $feature->getSmallImageUrl(); ?>">
+									</a>
+								</div>
+								<?php if ($this->getConfig('list_page_settings/show_feature_name')): ?>
+									<div class="feature-name">
+										<h4 class="feature-title">
+											<a title="<?php echo $feature->getName(); ?>" href="<?php echo $feature->getUrl(); ?>">
+												<?php echo $feature->getName(); ?>
+												<?php if ($this->getConfig('list_page_settings/show_product_count')): ?>
+													<span><?php echo __('(%1)', $block->getProductCount($feature)); ?></span>
+												<?php endif; ?>
+											</a>
+										</h4>
+									</div>
+								<?php endif; ?>
+                            </li>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+					<li class="clear"></li>
+                </ul>
+            </div>
+            <?php if (isset($params['char']) && $params['char'] != '' && $params['char'] == '0-9' && $flagDigit == false): ?>
+                <script type="text/javascript">
+                    require(['jquery'], function ($) {
+                        $('ul.feature-list').hide();
+                    });
+                </script>
+                <div class="message">
+                    <div><?php echo __('Have no features.') ?></div>
+                </div>
+            <?php endif; ?>
+        <?php else: ?>
+            <div class="message">
+                <div><?php echo __('Have no features.') ?></div>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>

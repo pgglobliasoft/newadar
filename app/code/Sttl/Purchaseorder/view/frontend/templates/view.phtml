@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			
+			.page-title-wrapper {
+				display: none;
+			}
+			.invoiceview .box-information {
+				width: 33.33% !important;
+				display: inline-block;
+				padding: 0px 20px 25px 0px;
+				vertical-align: top;
+			}
+			.page-title.invoice-title {
+				border-bottom: 1px solid #eee;
+				padding-bottom: 10px;
+			}
+			.block-content.invoiceview.last {
+				border-bottom: 1px solid #eee;
+				padding-bottom: 10px;
+			}
+			.block-content.fl-right p {
+				margin: 0 0 8px;
+			}
+			.block-content.fl-right {
+				float: right;
+			}
+			p span {
+				float: right;
+			}
+			
+		
+			
+			#maincontent > div.container > div.column.main > div.block.block-dashboard-info > div:nth-child(6) > div:nth-child(2) {
+				float: left;
+			}
+			#maincontent > div.container > div.column.main > div.block.block-dashboard-info > div:nth-child(4) > div:nth-child(2) {
+				float: left;
+			}
+			
+		</style>
+	</head>
+<body>
+	<div class="block block-dashboard-info">
+		<a href="" class="printBtn"><strong><span class="fa fa-angle-left"></span> Back</strong></a>
+		<br>
+			<div class="page-title invoice-title"><strong>Purchase Order No: 123465</strong> <a href="" class="printBtn alignRight"> <span class="fa fa-print"></span> Print Invoice</a></div>
+		<br>
+    <div class="block-content invoiceview last">
+        <div class="box box-information">
+            <strong class="box-title">
+                <span>P.O.Number:</span>
+            </strong>
+            <div class="box-content">
+                <p>
+                    123456<br>
+                </p>
+            </div>
+        </div>
+          
+         <div class="box box-information">
+             <strong class="box-title">
+                <span>Sales Rep:</span>
+            </strong>
+            <div class="box-content">
+                <p>
+                     CA-FSR<br>
+                </p>
+            </div>
+       </div>
+            
+	</div>
+
+	<br>
+	<div class="block-content invoiceview last">
+	
+		<div class="box box-information">
+             <strong class="box-title">
+                <span>Billing Address</span>
+            </strong>
+            <div class="box-content">
+                <p>
+                     Madelene Eng<br>
+					240 W 37th St<br>
+					New York, NY 10018<br>
+                </p>
+            </div>
+       </div>
+	   <div class="box box-information">
+             <strong class="box-title">
+                <span>Sales Rep:</span>
+            </strong>
+            <div class="box-content">
+                <p>
+                     Madelene Eng<br>
+					240 W 37th St<br>
+					New York, NY 10018<br>
+                </p>
+            </div>
+       </div>
+	</div>
+	
+	<div class="block-content invoiceview last">
+		<br>
+		<strong class="box-title"> <span>Line Items</span> </strong>
+		<div class="block-content">
+				<table class="otherUserTable">
+					<tbody>
+						<tr>
+							<th></th>
+							<th>Style No.</th>
+							<th>Color</th>
+							<th>Quantity</th>
+							<th>Price</th>
+							<th>Discount %</th>
+							<th>Line Total</th>
+						</tr>
+						<tr>
+							<td><input type="checkbox"></td>
+							<td>702</td>
+							<td>White</td>
+							<td>10</td>
+							<td>$10.95</td>
+							<td>0.00</td>
+							<td>$109.50</td>
+						</tr>
+					</tbody>
+				</table>
+				
+				<table class="otherUserTable">
+					<tbody>
+						<tr>
+							<th></th>
+							<th>Style No.</th>
+							<th>Color</th>
+							<th>Quantity</th>
+							<th>Price</th>
+							<th>Discount %</th>
+							<th>Line Total</th>
+						</tr>
+						<tr>
+							<td><input type="checkbox"></td>
+							<td>702</td>
+							<td>White</td>
+							<td>10</td>
+							<td>$10.95</td>
+							<td>0.00</td>
+							<td>$109.50</td>
+						</tr>
+					</tbody>
+				</table>
+				
+				<table class="otherUserTable">
+					<tbody>
+						<tr>
+							<th></th>
+							<th>Style No.</th>
+							<th>Color</th>
+							<th>Quantity</th>
+							<th>Price</th>
+							<th>Discount %</th>
+							<th>Line Total</th>
+						</tr>
+						<tr>
+							<td><input type="checkbox"></td>
+							<td>702</td>
+							<td>White</td>
+							<td>10</td>
+							<td>$10.95</td>
+							<td>0.00</td>
+							<td>$109.50</td>
+						</tr>
+					</tbody>
+				</table>
+		</div>
+		<div class="block-content fl-right">
+			<p>Total Before Discount: <span>$100</span></p>
+			<p>Discount Applied : </p>
+			<p>Additional Expenses: <span>$10</span></p>
+			<p>Total Amount: <span>$110</span></p>
+			<p>Payment/Credit Applied:<span> - </span></p>
+			<p>Balance Due:<span>$110</span></p>
+		</div>
+	</div>
+	<div class="block-content invoiceview fl-right">
+		<div class="loginSection">
+			<a data-toggle="modal" href="#">PAY INVOICE</a>
+		</div>
+	</div>
+</div>
+</body>
+</html>

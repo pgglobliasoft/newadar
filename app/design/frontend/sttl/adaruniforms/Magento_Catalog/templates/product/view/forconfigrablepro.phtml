@@ -1,0 +1,54 @@
+<strong class="type features"></strong>
+<div class="u-fabric-care">
+          <div class="box"><a class="fabric-care-chart" data-toggle="modal" data-target="#fabriccarePopupModal">(Fabric features & care)</a></div>
+</div>
+
+<ul class="productQuality product attribute feature">
+	
+</ul>
+
+<strong class="type productdescription"></strong>
+<div class="product attribute description">
+	<div class="value">
+		
+	</div>
+</div>
+
+
+<div class="product attribute bulletsdetails">
+	<strong class="type details"></strong>
+	<div class="value">
+
+	</div>
+	
+</div>
+
+<div class="product attribute fabriccontent">
+        <strong class="type fabric"></strong>
+        <div class="fabriccontent-subdiv">
+            <div class="value">
+            	
+            </div>
+        </div>
+        <div class="fabriccontent-value model-wears">       
+        </div>
+</div>
+
+
+<style type="text/css">
+  .product-info-main .customattribute { position: relative;}
+  .product-info-main .customattribute .u-fabric-care { position: absolute; top: 3px; right: 0;}
+  .product-info-main .customattribute .productQuality.product.attribute .u-fabric-care {top: 36px; right: 20px; }
+</style>
+
+<script>
+   requirejs(["jquery"], function($) {
+      $(document).ready(function(e){
+        if($(window).width() < 768){
+          $(".u-fabric-care").first().remove();
+          $(".productQuality.product.attribute .u-fabric-care").show();
+        }
+      });
+   });
+
+</script>

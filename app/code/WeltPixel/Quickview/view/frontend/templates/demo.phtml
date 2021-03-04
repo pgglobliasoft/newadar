@@ -1,0 +1,136 @@
+<?php
+// @codingStandardsIgnoreFile
+
+/** @var $block \WeltPixel\Quickview\Block\Initialize */
+?>
+
+<style>
+    .quickViewCont.container: nth-of-type(3) {
+        background: #fff;
+    }
+    .mfp-content {
+        max-width: 800px !important;
+    }
+    .quickViewContent.column.main {
+        width: 100% !important;
+    }
+    .mfp-preloader {
+        width: 100px;
+        height: 100px;
+        -webkit-transition: all 2s ease;
+        -moz-transition: all 2s ease;
+        -ms-transition: all 2s ease;
+        transition: all 2s ease;
+    }
+    .loaderZomm {
+        width: 500px;
+        height: 500px;
+    }
+    #test-popup .page-title span{
+            font-size: 18px;
+            font-family: 'Futura PT Bold' !important;
+            color: #000;
+    }
+    #test-popup{
+    /*	width:300px;
+    	height: 200px;  */  	
+    	max-width: 100%;
+    }
+</style>
+<div id="test-popup" class=" catalog-product-view"></div>
+<script>
+    requirejs(['jquery', 'magnificPopup'], function($, magnificPopup) {
+        var css , prodURL;
+        $(document).ready(function() {
+            window.weltpixel_quickview.showMiniCartFlag = false;      
+            $(".weltpixel-quickview.weltpixel_quickview_button_v2").magnificPopup({
+                type: "inline",
+                midClick: true,
+                mainClass: "mfp-fade",
+                tLoading: '',
+                closeOnBgClick: false,
+                preloader: false,
+                callbacks: {
+                    open: function() {
+                      $('body').css('overflow','hidden');
+                      var html , testbody;
+                	  var mp = $.magnificPopup.instance,
+			          t = $(mp.currItem.el[0]);
+			          var URL = t.data('quickviewUrl').replace('/view/', '/ProView/')				      	  
+			      	  $.ajax({
+                            url: URL,
+                            type: 'GET', 
+                           	async: false,                       
+                            cache: true,
+                            contentType: "application/json",
+        					dataType: 'json',                                                   
+                            success: function(data) { 
+                            	html = data.output;
+                            	    $.ajax({
+				                        url: t.data('quickviewUrl'),
+				                        type: 'GET',
+				                        async: true,
+				                        dataType: 'html',
+				                        cache: true,
+				                        success: function(data) {
+				                            css = $(data).filter("link[rel='stylesheet']");
+				                            css.each(function(index) {
+				                                $('head').append(this);
+				                            });
+				                            var data = data.replace('<body', '<body><div id="quickViewbody"').replace('</body>', '</div></body>');
+				                            var body = $(data).filter('#quickViewbody');
+				                            $('#test-popup').html(body);
+                                             $('.mfp-content').animate({'height': 400}, "slow",function(){ $('.mfp-content').animate({'height': 700}, 1000);     });	                                    	                            
+				                            $('.mfp-content').animate({'height': 700}, 1000);                                           
+				                            $('[data-gallery-role=gallery-placeholder]').trigger('contentUpdated');
+				                        }
+				                 });
+                            }
+                       });			      	
+
+			      	  $('.mfp-content').animate({
+                           'width': 760,
+                           'height': 500,	                           
+                      }, 1200 , function(){	                      	
+                      		 $('#test-popup').append(html);                      		
+                      }); 
+				                                                   
+                    },
+                    close: function() {
+                        $('body').css('overflow', '');
+                        css.each(function(index) {
+                            $('link[href="' + $(this).attr('href') + '"]').last().remove();
+                        });
+                    },
+                    beforeClose: function() {
+                    	var url = window.weltpixel_quickview.baseUrl + 'weltpixel_quickview/index/updatecart';
+                    	console.log("url close beofre", url);
+                        if (window.weltpixel_quickview.showMiniCartFlag) {
+                            $('[data-block="minicart"]').trigger('contentLoading');
+                            $.ajax({
+                                url: url,
+                                method: "POST"
+                            });
+                        }
+                    },
+                    afterClose: function() {
+                        /* Show only if product was added to cart and enabled from admin */
+                        var showMiniCart = parseInt(window.weltpixel_quickview.showMiniCart);
+                        console.log('demod showminicart', showMiniCart);
+                        if (window.weltpixel_quickview.showMiniCartFlag && showMiniCart) {
+                            $("html, body").animate({
+                                scrollTop: 0
+                            }, "slow");
+                            setTimeout(function() {
+                                if (!jQuery('.block-minicart').is(":visible")) {
+                                    $('.action.showcart').trigger('click');
+                                }
+                            }, 1000);
+                        }
+                    }
+                },
+            });
+        });
+    });
+    window.weltpixel_quickview = <?php /* @escapeNotVerified */ echo \Zend_Json::encode($block->getConfig()); ?>;
+</script>

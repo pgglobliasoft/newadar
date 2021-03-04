@@ -1,0 +1,50 @@
+<div class="product-info-main-prd-opt">
+    <?php
+    if ($block->isLoggedIn()) : 
+    // $product = $objectManager->get('Magento\Framework\Registry')->registry('current_product');
+        $parent_style = $block->getCurrentProduct();
+
+        $parent_color_data = $block->getJsonStyleInventoryStatus($parent_style); //json_encode($saphelper->getStyleInventoryStatus($parent_style)); 
+        ?>
+        <div id="importinverdata">
+            <input type="hidden" name="productviewstyle" value="<?php echo $parent_style;?>">
+        </div>
+        <script>
+            require(['jquery'],function($){         
+                        var parent_color_data = '<?php echo $parent_color_data ?>';
+                        if (parent_color_data && parent_color_data instanceof Array && !parent_color_data.length) {
+                         var productview = '' 
+                        } else {
+                             var productview = 'productview' 
+                        }
+                        var parent_style = '<?php echo $parent_style?>';
+                        
+                        if(productview !='')
+                        {
+                            $.ajax({
+                            url: "<?php echo $block->getproductinvurl();?>",
+                            enctype: 'multipart/form-data',
+                            type: "POST",
+                            data:{productview:productview,parent_style:parent_style,parent_color_data,parent_color_data},
+                            showLoader: false,
+                            cache: true,
+                            success: function(response){                               
+                                    if(response.html.length)
+                                    {
+                                        $(".buyNowBtnMain").css({"pointer-events": "all", "opacity": "1"});
+                                        $('.loadShipping').hide()
+                                        $('.productinebuynow').show();
+                                        $('#importinverdata').html(response.html);  
+
+                                    }else{
+                                        $('.loadShipping').hide()
+                                        $('.buyNowBtnMain').text('Not Available');
+                                    }                                    
+                                }                                
+                            }); 
+                        }
+                    // }
+                });   
+        </script>
+    <?php endif; ?>
+</div>

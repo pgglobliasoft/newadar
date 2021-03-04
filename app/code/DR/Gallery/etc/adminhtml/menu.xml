@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+    	<add id="DR_Gallery::gallery" title="Downloads" module="DR_Gallery" sortOrder="8" resource="DR_Gallery::gallery" parent="Sttl_Inquiries::main"/>
+        <!--<add id="DR_Gallery::gallery" title="Download" module="DR_Gallery" sortOrder="0" parent="Magento_Backend::content" resource="DR_Gallery::gallery"/>
+         <add id="DR_Gallery::gallery_gallery" title="Galleries" module="DR_Gallery" sortOrder="0" parent="DR_Gallery::gallery" action="gallery/gallery" resource="DR_Gallery::gallery_gallery"/> -->
+        <add id="DR_Gallery::gallery_image" title="Manage Documents" module="DR_Gallery" sortOrder="9" parent="DR_Gallery::gallery" action="gallery/image" resource="DR_Gallery::gallery_image"/>
+    </menu>
+</config>

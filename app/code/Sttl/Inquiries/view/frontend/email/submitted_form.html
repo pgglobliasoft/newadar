@@ -1,0 +1,69 @@
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+
+<!--@vars {
+"var data.comment":"Comment",
+"var data.email":"Sender Email",
+"var data.name":"Sender Name",
+"var data.telephone":"Sender Telephone"
+} @-->
+<!--@subject {{var mail_subject}}  @-->
+
+{{template config_path="design/email/header_template"}}
+Hello Admin.
+<p>
+    {{trans 'Below are details of new Contact Us inquiry:'}}
+</p>
+
+
+<table class="message-details">
+    <tr>
+        <td><b>{{trans "Subject :"}}</b></td>
+        <td>{{var subject}}</td>
+    </tr>
+    <tr>
+        <td><b>{{trans "Name :"}}</b></td>
+        <td>{{var name}}</td>
+    </tr>
+    <tr>
+        <td><b>{{trans "Email :"}}</b></td>
+        <td>{{var email}}</td>
+    </tr>
+    <tr>
+        <td><b>{{trans "Phone :"}}</b></td>
+        <td>{{var phone_no}}</td>
+    </tr>
+    <tr>
+        <td><b>{{trans "Company :"}}</b></td>
+        <td>{{var company}}</td>
+    </tr>
+    <tr>
+        <td><b>{{trans "Address :"}}</b></td>
+        <td>{{var address}}</td>
+    </tr>
+    <tr>
+        <td><b>{{trans "Sub Address :"}}</b></td>
+        <td>{{var sub_address}}</td>
+    </tr>
+    <tr>
+        <td><b>{{trans "City :"}}</b></td>
+        <td>{{var city}}</td>
+    </tr>
+    <tr>
+        <td><b>{{trans "State :"}}</b></td>
+        <td>{{var state}}</td>
+    </tr>
+    <tr>
+        <td><b>{{trans "Zipcode :"}}</b></td>
+        <td>{{var zipcode}}</td>
+    </tr>
+    
+</table>
+<p><b>{{trans "Message :"}}</b></p>
+<p>{{var comment}}</p>
+
+{{template config_path="design/email/footer_template"}}

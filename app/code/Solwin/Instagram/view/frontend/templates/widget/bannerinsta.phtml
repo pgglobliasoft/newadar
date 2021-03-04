@@ -1,0 +1,54 @@
+<?php
+/**
+ * Solwin Infotech
+ * Solwin Instagram Extension
+ * 
+ * @category   Solwin
+ * @package    Solwin_Instagram
+ * @copyright  Copyright © 2006-2016 Solwin (https://www.solwininfotech.com)
+ * @license    https://www.solwininfotech.com/magento-extension-license/
+ */
+$helper = $this->helper('\Solwin\Instagram\Helper\Data');
+$enable = $helper->getConfig('instagramsection/instagramgroup/active');
+$userId = $helper->getConfig('instagramsection/instagramgroup/userid');
+$accessToken = $helper->getConfig('instagramsection/instagramgroup/accesstoken');
+$imageNumber = $this->getData('numberimage');
+$imageResolution = $this->getData('resolution');
+?>
+
+<?php
+if ($enable) {
+		$accessToken.'&count='.$imageNumber;
+        $url = 'https://api.instagram.com/v1/users/self/media/recent/?access_token=' . $accessToken;
+        $args = stream_context_create(array('http' => array('timeout' => 2500,)));
+        //for Live server
+        //$instagramFeedsData = file_get_contents($url, false, $args);
+        // for Local Server
+        $instagramFeedsData = $helper->getInstangramData($url);
+        $instagramFeeds = json_decode($instagramFeedsData);
+
+        $instangramData = $instagramFeeds->data;
+		$username = !empty($instangramData[0]->user->username) ? $instangramData[0]->user->username : '';
+    ?>
+		<ul class="prodSlider">
+        <?php 
+        foreach ($instangramData as $instagramFeed) {
+            $instagramImage = $instagramFeed->images->$imageResolution->url;
+			
+            ?>
+            <?php
+            $caption_text = 'Instagram';
+            if (is_object($instagramFeed->caption)) {
+                $caption_text = $instagramFeed->caption->text;
+            }
+            ?>
+				<li> 
+					<a href ="<?php echo $instagramFeed->link; ?>" target="_blank">
+						<img src="<?php echo $instagramImage; ?>" title="<?php echo $caption_text; ?>" alt="<?php echo $caption_text; ?>"/>
+					</a>
+				</li>
+            <?php
+        } ?>
+		</ul>
+    <div class="clear gap-30"></div>
+<?php }

@@ -1,0 +1,65 @@
+<?php
+$_helper = $this->helper('Magento\Catalog\Helper\Output');
+$_product = $block->getProduct();
+$_call = $block->getAtCall();
+$_code = $block->getAtCode();
+$_className = $block->getCssClass();
+$_attributeLabel = $block->getAtLabel();
+$_attributeType = $block->getAtType();
+$_attributeAddAttribute = $block->getAddAttribute();
+
+if ($_attributeLabel && $_attributeLabel == 'default') {
+    $_attributeLabel = $_product->getResource()->getAttribute($_code)->getFrontendLabel();
+}
+if ($_attributeType && $_attributeType == 'text') {
+    $_attributeValue = ($_helper->productAttribute($_product, $_product->$_call(), $_code)) ? $_product->getAttributeText($_code) : '';
+} else {
+    $_attributeValue = $_helper->productAttribute($_product, $_product->$_call(), $_code);
+}
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$brands_collection = $objectManager->get('Sttl\Brand\Model\Brand')->getCollection()->addFieldToFilter('status', array('eq' => '1'));
+
+//$brandaarray = $brandata->getData();
+
+$storeManager = $objectManager->get('Magento\Store\Model\StoreManagerInterface');
+$currentStore = $storeManager->getStore();
+$path =  $currentStore->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+?>
+    <div class="product attribute <?php /* @escapeNotVerified */ echo $_className?>">
+                    <div class="brand-info">
+                    <div class="brand-des">
+                        <p>This item is available from one of our Specialty Retailers below. Click a logo to check out.</p>
+                    </div>
+                    <div class="brand-media brand_slider">
+					<?php 
+					if($brands_collection->count())
+					{
+						foreach($brands_collection as $brand)
+						{
+							if($brand->getName() != "Adar"){
+							?>
+									<a title="<?php echo $brand->getName(); ?>" target="_blank" href="<?php echo !empty($brand->getUrlKey()) ? $brand->getUrlKey() : 'javasctipt:void(0)'; ?>">
+										<img src="<?php echo $brand->getSmallImageUrl(); ?>" alt="<?php echo $brand->getName();?>" title="<?php echo $brand->getName();?>" />
+									</a>
+							<?php  
+									/* for quick view new same page
+									url="<?php echo !empty($brand->getUrlKey()) ? $brand->getUrlKey() : 'javasctipt:void(0)'; ?>"*/
+							}
+						}
+					}
+					?>
+                    </div>
+
+                    </div>
+    </div>
+	<script>
+	require(["jquery"], function ($) {
+		/*$(document).ready(function() {
+			$('.brand_slider a').click(function () {
+				var url ;
+				url = $(this).attr('url');
+				top.location = url;
+			});
+		});*/
+	});
+</script>

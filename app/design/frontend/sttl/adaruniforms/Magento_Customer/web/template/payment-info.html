@@ -1,0 +1,252 @@
+<%
+	var baseurl = window.location.origin;
+%>
+<div class="blocktitle">	
+	<strong class="upperCaseText">Payment Information</strong>
+</div>
+<div id="collapseThree" class="payment-section paddL15" aria-labelledby="headingOne">
+	<div class="row">
+	<div class="box box-information col-md-4 col-sm-6"> 
+		<strong class="box-title"> Your Credit Limit: </strong>
+			<div class="box-content">
+		<%	if(customerdata.PaymentTerm && customerdata.PaymentTerm != 'Credit Card Auto'){ 
+			var credit_limit = 0;
+			if(parseFloat(customerdata.CreditLine) == 0){
+				credit_limit = '0.00';
+			}else{
+					credit_limit = parseFloat(customerdata.CreditLine);
+					credit_limit = currencyconvert(credit_limit.toFixed(2));
+			}
+		%>
+					<p class="blue">$<%=credit_limit%></p>
+		<% }else{ %>
+					<p>$0.00</p>
+		<% } %>
+		</div>
+	</div>
+	<div class="box box-information col-md-4 col-sm-6"> 
+				<strong class="box-title"> Available Credit: </strong>
+				<div class="box-content">
+		<%	if(customerdata.PaymentTerm && customerdata.PaymentTerm != 'Credit Card Auto'){ 
+			var ava_limit = 0;
+			if(parseFloat(customerdata.AvailCredit,2) == 0){
+				ava_limit = '0.00';
+			}else{
+				var str = customerdata.AvailCredit;
+				if(customerdata.AvailCredit < 0){
+					if(str.slice(0,1) == '-'){
+						str = str.substring(1);
+						ava_limit = parseFloat(str,2);
+						ava_limit = "<a class='warning'>"+"$-"+currencyconvert(ava_limit.toFixed(2))+"</a>";
+					}else{
+						ava_limit = parseFloat(customerdata.AvailCredit,2);
+						ava_limit = "$"+currencyconvert(ava_limit.toFixed(2));
+					}
+				}else{
+					ava_limit = parseFloat(customerdata.AvailCredit,2);
+					ava_limit = "$"+currencyconvert(ava_limit.toFixed(2));
+				}
+			}
+		%>
+					<p><%=ava_limit%></p>
+		<% }else{ %>
+					<p>$0.00</p>
+		<% } %>
+				</div>
+	</div>
+	<div class="box box-information col-md-4 col-sm-6"> 
+		
+				<strong class="box-title"> Payment Terms: </strong>
+				<div class="box-content">
+					<p><%=customerdata.PaymentTerm%></p>
+				</div>
+	</div>
+	</div>
+	<div class="box box-information payment-section-info">
+		<strong class="box-title">
+			Your Payment Method
+		</strong>
+		<div class="container1">
+          <div class="wrapper">
+            <div class="dropdown">
+              <label data-value="">Select an option</label>
+              <i class="fa fa-angle-down" aria-hidden="true"></i>
+              <% if(savedcard.length > 0){ %>
+              <ul class="select_payment_options" style="display: none;">
+
+
+              	<%
+					var i = 0;
+					_.each(savedcard, function(value, index) {
+						var card_expiry = '';
+						
+						if(value.CardExpiration && value.CardExpiration != ''){
+							var c_date = new Date(value.CardExpiration);
+
+							var card_date = (c_date.getMonth() + 1)+"/"+c_date.getFullYear().toString().substr(-2);
+							card_expiry = card_date; 
+						}else{
+							card_expiry = '';
+						} 
+						var attr_selectr = '';
+						cc_type = value.CardType;
+							var imgurl = ''	
+			                var img = '';
+			                var cname = '';
+			                if (cc_type == "V") {
+			                    imgurl = viewfileurl+"/images/visa-card.jpg";
+			                    cname = "Visa card"
+			                }
+			                if (cc_type == "M") {
+			                    imgurl = viewfileurl+"/images/master-card.jpg";
+			                    cname = "Master card"
+			                }
+			                if (cc_type == "A") {
+				                imgurl = viewfileurl+"/images/american-express.jpg";
+				                cname = "American Express"
+			                }
+			                if (cc_type == "DS") {
+			                	imgurl = viewfileurl+"/images/discover.jpg";
+			                	cname = "Discover"
+			                }
+			            
+			                var myString = value.CardNumber
+							
+							var cardno=myString.replaceAll('X', '');
+
+						if(i === 0){ %>
+							<li data-value="1" class="selected">
+			                  <img src="<%=imgurl%>" alt="">
+			                  <div class="dropdown_text">
+			                    <p><%=cname%> ending in <%=cardno%> </p>
+			                    <p>expires <%=card_expiry%></p>
+			                  </div>
+			                </li>
+						<% }else{ %>
+							<li data-value="1">
+			                  <img src="<%=imgurl%>" alt="">
+			                  <div class="dropdown_text">
+			                    <p><%=cname%> ending in <%=cardno%> </p>
+			                    <p>expires <%=card_expiry%></p>
+			                  </div>
+			                </li>
+						<% }
+						i++;
+					});
+				%>
+              </ul>
+              <% } %>
+            </div>
+          </div>
+        </div>
+		<div class="box-content">
+			<!-- <div class="paymentAddress"></div> -->
+			<input type="button" value="+ Add New"  data-toggle="modal" data-target="#customer-add-payment"  class="editlink" />
+		
+		</div>
+	</div>
+</div>
+<div class="modal fade block block-customer-add-payment comingSoon commonPopup1" id="customer-add-payment" tabindex="-1" role="dialog" aria-labelledby="addPaymentModal" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="modalContainer block-content" aria-labelledby="block-customer-login-heading">
+					<div class="messages">
+						<div class="message message-error error">
+							<div></div>
+						</div>
+					</div>
+					<div class="quickViewCont">
+						<div class="container bg-primary p-2">
+							<div class="row">
+								<div class="col-md-12 text-center customer-edit-title">
+									<span class="popUpTitle">Add Payment Method</span>
+									<button type="button" data-dismiss="modal" class="close mfp-close-inside"><i class="fa fa-times"></i></button>
+								</div>
+							</div>
+						</div>
+						<div class="registrationPage comingSoonTxt" id="comingSoonForm">
+							<form class="form custom-customer-add-payment"
+								action="<%=baseurl%>/customerlogin/ajax/addPayment"
+								method="post"
+								id="customer-add-payment-validate"
+								enctype="multipart/form-data"
+								data-hasrequired="* Required Fields"
+								autocomplete="off"
+								novalidate="novalidate"
+							>
+								<div class="response-msg"></div>
+								<%=formkey%>
+								<div class="field field-name-fullname required">
+									<label class="label " for="fullname">
+										<span>Choose One:</span>
+									</label>
+									<div class="control">
+										<div>
+											<% var custNum = '';
+												if(objCustomers.Customers && (objCustomers.Customers).length > 0){
+													objCustomer = objCustomers.Customers;
+													
+													objCustomer = objCustomer[0];
+													if(objCustomer.CustNum){
+														custNum = objCustomer.CustNum;
+													}
+												} %>
+												<input type="hidden" id="ebiz_customer_number" name="ebiz_customer_number" value="<%=custNum%>">
+												<input type="radio" id="card_type_visa" name="card_type" disabled ="true" value="VI" class="input-text required-entry valid" data-validate="{required:true}" aria-required="true">
+												<span><img src= "<%=viewfileurl%>/images/visa-card.jpg" alt="Visa"></span>
+												<input type="radio" id="card_type_mc" name="card_type" value="MC"  disabled ="true" class="input-text required-entry valid" data-validate="{required:true}" aria-required="true">
+												<span><img src= "<%=viewfileurl%>/images/master-card.jpg" alt="Master Card"></span>
+												<input type="radio" id="card_type_dc" name="card_type" value="DI"  disabled ="true" class="input-text required-entry valid" data-validate="{required:true}" aria-required="true">
+												<span><img src= "<%=viewfileurl%>/images/discover.jpg" alt="Discover"></span>
+												<input type="radio" id="card_type_ae" name="card_type" value="AE"  disabled ="true" class="input-text required-entry valid" data-validate="{required:true}" aria-required="true">
+												<span><img src= "<%=viewfileurl%>/images/american-express.jpg" alt="Amrican Express"></span>
+										</div>
+									</div>
+								</div>
+								<div class="field field-name-fullname required">
+									<label class="label " for="fullname"><span>Full Name</span><span class="reqField">*</span></label>
+									<div class="control">
+										<input type="text" autocomplete="off" id="fullname" name="fullname" value="" title="Full Name" class="input-text required-entry validate-no-html-tags validate-alphanum-with-spaces valid" data-validate="{required:true}" aria-required="true" placeholder="Full Name">
+									</div>
+								</div>
+								<div class="field field-name-card_no required">
+									<label class="label " for="card_no"><span>Credit Card Number</span><span class="reqField">*</span></label>
+									<div class="control">
+										<input type="text" autocomplete="off" id="card_no" name="card_no" title="Credit Card Number" class="input-text valid required-entry  validate-cc-number validate-no-html-tags" data-validate="{'required':true, 'validate-cc-number' : true, 'validate-number':true}" maxlength="19"  aria-required="true" placeholder="Credit Card Number">
+									</div>
+								</div>
+								<div class="row">
+									<div class="field field-name-security-code required col-md-6">
+										<label class="label " for="security_code"><span>Security Code</span><span class="reqField">*</span></label>
+										<div class="control">
+											<input type="text" autocomplete="off" id="security_code" name="security_code" value="" title="Security Code" class="input-text required-entry valid adar_cc_cvv" data-validate="{required:true}" aria-required="true" placeholder="Security Code">
+										</div>
+									</div>
+									<div class="field field-name-expiration-date col-md-6">
+										<label class="label " for="expiration_date"><span>Expiration Date</span><span class="reqField">*</span></label>
+										<div class="control">
+											<input type="text" autocomplete="off" id="expiration_date" name="expiration_date" value="" title="Expiration Date" class="input-text validate-no-html-tags validate-cc-exp adar_cc_exp valid" maxlength="5" data-validate="{required:true}" aria-required="true" placeholder="MM/YY">
+										</div>
+									</div>									
+								</div>
+								<div class="row">
+									<div class="field field-name-security-code required col-md-6">
+										<div class="control">
+											<input type="checkbox" id="cc_default" name="cc_default" value="1" class="input-text">&nbsp;<label class="label"><span>Default</span></label>
+										</div>
+									</div>
+								</div>
+								<div class="actions-toolbar mt-2">
+									<div class="text-center">
+										<button type="submit" class="themeBtn action save" title="Submit"><span>Submit</span></button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

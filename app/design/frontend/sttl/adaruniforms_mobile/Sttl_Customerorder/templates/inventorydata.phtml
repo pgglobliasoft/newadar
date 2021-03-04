@@ -1,0 +1,304 @@
+ <?php 
+ $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+ // $objectManager->get('Magento\Store\Model\StoreManagerInterface')
+                    // ->getStore()
+                    // ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+?>
+<style type="text/css">
+.highlight{ color:#a93939; }
+	
+
+</style> 
+	<div class="accountPageContainer">
+		<h1 class="page-title">Inventory Status</h1>	
+		
+		
+
+
+		<div class="orderpage-container">
+			<div class="orderItem-loader" style="display: none;">
+	            <div class="loader">
+	                <img src="<?= /* @escapeNotVerified */ $block->getViewFileUrl('images/loader-2.gif') ?>"
+	                     alt="<?= /* @escapeNotVerified */ __('Loading...') ?>">
+	            </div>
+	        </div>
+	        <div class="orderSearch orderSearchForm">
+				<input name="invsearch" id="invsearch" class="form order_search col-lg-12"  type="input" data-validate="{required:true}" placeholder="Search" /> 
+				<button type="submit" class="themeBtn action save Search" title="Search"><i class="fa fa-search"></i></button>
+		</div>
+			<div class="orderTable">
+				 
+				<table class="orderList" id="DataTable1">
+					<thead>
+			
+					</thead>
+					<tfoot><tr role="row"><td colspan="8"><div class="paginationRow"><span class="fa-pull-left recordTotal"></span><span class="tfootnext"></span></div></td></tr></tfoot>
+				</table>
+			</div>
+		</div>
+	</div>
+
+
+	<script type="text/javascript">
+
+		require([
+		'jquery' ,
+		'magnificPopup',
+		'mage/mage' ,		
+		'dshightlight',
+		'datatables.net' ,		
+		'datatables.net-buttons',
+		'datatables.buttons.html5' ,
+		'datatables.hightlight',
+		// 'datatables.net-buttons' ,		
+		], function($,magnificPopup,DataTable){
+			var table =  '';
+			$.ajax({
+	            url: "<?php echo $block->getBaseUrl().'customerorder/customer/inventoryitems' ?>",
+	            type: "text",
+				showLoader: true,
+				processData:true,
+				contentType: false,
+				cache: true,
+				beforeSend: function(){
+			    // Show image container
+			    $(".orderItem-loader").show();
+			   },
+	            success: function(response) {
+	            	var data = response;
+	            	console.log(response)				;
+					if (data.success) {	
+						 var dataSet = new Array;
+				        if (data) {
+				            $.each(data.AllproductData, function (index, value) {
+				                var tempArray = new Array;
+				                for (var o in value) {
+				                    tempArray.push(value[o]);
+				                }
+				                dataSet.push(tempArray);
+				            })				 
+				 			
+				 			
+
+				            table =  $('#DataTable1').DataTable({	
+				            	"deferRender": true,
+				          //   	dom: 'Bfrtip',
+						        // buttons: [
+						        //      {
+              //                               extend: 'csv',
+              //                               text : 'Export to CSV',
+              //                               exportOptions : {
+              //                                   modifier : {
+              //                                       // DataTables core
+              //                                       order : 'current',  // 'current', 'applied', 'index',  'original'
+              //                                       page : 'all',      // 'all',     'current'
+              //                                       search : 'applied'     // 'none',    'applied', 'removed'
+              //                                   }
+              //                               }
+              //                           }
+						        // ],
+						        searchHighlight: true,
+				            	select: false,
+	            				"pageLength": 60,
+	            				"info": false,
+	            				"ordering":false,
+	            				"processing": true,
+  								// "dom": 't<"top"if><"clear">',  
+				                data: dataSet,				             
+					            "oLanguage": {
+							      "oPaginate": {
+							        "sFirst": "<span class='pageIcon first'><i class='fa fa-step-forward' aria-hidden='true'></i></span>",
+							        "sLast":"<span class='pageIcon last'><i class='fa fa-step-forward' aria-hidden='true'></i></span>",
+							        "sNext":"<span class='pageIcon next'><i class='fa fa-chevron-right' aria-hidden='true'></i></span>",
+							        "sPrevious":"<span class='pageIcon previous'><i class='fa fa-chevron-left' aria-hidden='true'></i></span>"
+							      }
+							    },
+							    "pagingType":"full_numbers",
+					            "bLengthChange": false,	
+					            select: 'single',
+				                columns: [
+				         
+				                    { title: "ItemCode" },
+				                    // { title: "ItemName" },
+				                    { title: "Style" },
+				                    { title: "ColorCode" },
+				                    { title: "Size" },
+				                    { title: "Available Qty" },
+				                    { title: "ETA" },
+				                    { title: "UnitPrice" },
+				                    { title: "DisPrice" },
+				                    // { title: "Committed" },
+				                ],
+				                createdRow: function( row, data, dataIndex ) {
+				                	// console.log(data);
+							        $( row ).attr('u_image',data[9]);
+							    },
+				                drawCallback: function() {
+					            	// console.log(this);
+					            	// console.log(this.api().page.info());
+					            	
+					            	var info = this.api().page.info();					            	
+					            	
+					            	var start = info.start +1 ;
+					            	var end = info.end ;
+					            	$('.cdatatableDetails').remove();
+				                    $('.paginationRow .recordTotal').text(' Displaying '+start +' to '+end +' of '+ info.recordsDisplay);
+				                    if(info.recordsDisplay > 0){
+				                    	$('.paginationRow').removeClass('disabled');
+					                    $('.paginate_button.next').before($('<span>',{
+							                'html':'<input type="text" value='+ (info.page+1) +' class="direct-serach"/> / '+info.pages,
+							                class:'cdatatableDetails'
+							              }));
+				                    }else{
+				                    	// console.log('disabled');
+				                    	$('.paginationRow').addClass('disabled');
+				                    	// $('.cdatatableDetails').addClass('disabled');
+				                    }
+					               	
+					            	$('#DataTable1_paginate').appendTo('tfoot .paginationRow');		                        
+						        
+						    },
+						        "footerCallback": function ( row, data, start, end, display ) {
+				            			var api = this.api(), data;	
+				            			var intVal = function ( i ) {
+								                return typeof i === 'string' ?
+								                    i.replace(/[\$,]/g, '')*1 :
+								                    typeof i === 'number' ?
+								                        i : 0;
+								            };
+								        
+							            
+				            	}
+				            });
+				            table.search('').draw();
+				            table.on( 'draw', function () {
+						        var body = $( table.table().body() );
+						 
+						        body.unhighlight();
+						        body.highlight( table.search() );  
+						    });
+ 							var info = table.page.info();
+				           $("#invsearch").keyup(function(){
+				           	
+				           		if($(this).val() != ''){
+					            	table.search($(this).val()).draw();	        	
+					           	}else{
+					           		var info = table.page.info();
+					           		$('.paginate_button.next').before($('<span>',{
+						                'html':'<input type="text" value='+ (info.page) +' class="direct-serach"/> / '+info.pages,
+						                class:'cdatatableDetails'
+						              }));
+					           		table.search('').draw();
+					           	}
+				           });
+
+				           
+
+
+				           	$(document).on('input', '#DataTable1_filter input', function(e) {				          					           		
+				           		var tr = $('#DataTable1 tbody tr:first-of-type');
+				           		tr.removeClass('selected');
+				           		tr.addClass('selected')
+				           		
+
+				           });
+
+
+
+				           $(document).on('keypress','.direct-serach',function(e){
+				            	var keycode = (event.keyCode ? event.keyCode : event.which);
+				            	// console.log(keycode);
+				            	if(keycode == '13' && $(this).val()){
+				            		table.page(parseInt($(this).val() - 1)).draw(false);	
+				            	}
+				            })
+
+				        }
+				        else {
+				            alert(data.error);
+				        }												
+					} else {
+					//ERROR
+						console.log("if else");	
+					}
+	            },
+	            complete:function(data){
+			    // Hide image container
+			    $(".orderItem-loader").hide();
+			   }
+	        });
+
+
+			$(document).on('keyup', '#DataTable1_filter input', function(e) {
+	          	
+	           	var tr = $('#DataTable1 tbody tr.selected');
+	           	if (event.keyCode == 40){ //arrow down
+				     table.$('tr.selected').removeClass('selected');
+				     console.log(tr.next().length )
+				     if(tr.next().length > 0){
+					     var trnuevo = tr.next().addClass('selected');					   
+					}else{
+						var trnuevo = tr.first().addClass('selected');
+
+					}
+				 	tr = table.$('tr.selected'); // this is what i needed
+				}
+				if (event.keyCode == 38){ //arrow up
+		          	table.$('tr.selected').removeClass('selected');
+		          	if(tr.prev().length > 0)
+		          		tr.prev().addClass('selected');
+		          	else		          	
+		          		tr.first().addClass('selected');
+		          	tr = table.$('tr.selected'); // same here						 
+		      	}
+
+		      	
+           });
+
+			$(document).on('keyup', '#invsearch', function(e) {
+				if($(this).val()){
+				$("#DataTable1 tbody tr:first-of-type td").css("color", "#958c8c");
+				}else{
+					$("#DataTable1 tbody tr:first-of-type td").css("color", "#03121d");
+				}
+			});
+
+
+
+			$(document).on("click", "#DataTable1 tbody tr td:first-of-type", function(e) {	 
+			
+			    $.magnificPopup.open({
+			      items: {
+			        src: $(this).closest('tr').attr("u_image"),
+			      },	    
+			      type: "image",	      
+			      closeOnBgClick: true,
+			      showCloseBtn:true,
+			      	mainClass: 'mfp-with-zoom mfp-zoom-in mfp-img-mobile',
+			      preloader: true,
+			      tLoading: "",	      
+			      callbacks: {
+			       		beforeOpen: function() {
+					      // just a hack that adds mfp-anim class to markup 
+					       this.st.image.markup = this.st.image.markup.replace('mfp-figure', 'mfp-figure mfp-with-anim');
+					       this.st.mainClass = 'mfp-zoom-in';
+					    },
+					    open: function() {
+					    	// $('.mfp-content figure').prepend('<div class="container order-img-header bg-primary p-2" ><div class="row"><div class="col-md-4 offset-md-4 text-center">	<img src="<?php echo $this->getViewFileUrl('images/mobile-logo-white.png'); ?>"></div><div class="col-md-4"><button type="button" class="close mfp-close"></button></div></div></div>');
+					    	// $('.mfp-content .mfp-figure .mfp-close').first().remove();
+					    },			    
+			      	},
+			    });
+			});
+
+		});
+
+
+	</script>
+	<style>
+		 .mfp-close { color: #000 !important; width: fit-content !important; font-weight: 100 !important; right: 3px !important;}
+.mfp-figure.mfp-with-anim .mfp-img {
+    padding: 0 !important;
+    border-radius: 10px 10px 10px 10px;
+}
+	</style>

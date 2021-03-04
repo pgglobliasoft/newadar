@@ -1,0 +1,45 @@
+<style type="text/css">
+	.highlight{ color:#a93939; }
+	.customerorder-customer-inventorydata .mfp-content {  
+		max-width: 300px !important;
+		vertical-align: text-bottom; margin-top: 5%;
+	    position: relative;
+	    display: inline-block;
+	    vertical-align: middle;
+	    margin: 0 auto;
+	    text-align: left;
+	    z-index: 1045;
+	    min-height: unset !important;
+	} 
+	.customerorder-customer-inventorydata .mfp-content .order-img-header {
+		background: #19415b !important;
+	}
+	.customerorder-customer-inventorydata .mfp-content  img{ padding-top: 0 !important; }
+	.customerorder-customer-inventorydata .orderItem-loader .loader{ width: 100%; , height: 100%; }
+	.customerorder-customer-inventorydata .orderItem-loader .loader img{ margin: auto; }
+	.mfp-content .order-img-header .row{ display: contents;width: 100%; }
+	.mfp-content .order-img-header .row>div:first-of-type img{ margin: 0; }
+	.mfp-content .order-img-header .row>div:nth-child(2) { position: absolute; right: -10px; top: 5px;}
+	.mfp-content .order-img-header .row>div:nth-child(2)  button{ position: unset; }
+	table#DataTable1 tbody tr td:first-of-type {text-decoration: underline;cursor: pointer; }
+</style>
+	<div class="accountPageContainer" data-role="inventory_data_items">
+		<h1 class="page-title">Inventory Status</h1>	
+		<div class="orderpage-container">
+			<div class="orderItem-loader">
+	            <div class="loader">
+	                <img src="<?= /* @escapeNotVerified */ $block->getViewFileUrl('images/loader-1.gif') ?>"
+	                     alt="<?= /* @escapeNotVerified */ __('Loading...') ?>">
+	            </div>
+	        </div>
+			<div class="orderTable"> 
+				<table class="orderList" id="DataTable1">
+					<thead>
+			
+					</thead>
+					<tfoot><tr role="row"><td colspan="8"><div class="paginationRow"><span class="fa-pull-left recordTotal"></span><span class="tfootnext"></span></div></td></tr></tfoot>
+				</table>
+			</div>
+		</div>
+	</div>
+

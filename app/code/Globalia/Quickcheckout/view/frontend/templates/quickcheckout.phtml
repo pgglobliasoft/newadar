@@ -1,0 +1,31 @@
+<?php
+
+// $regorderdata = $block->getRegisterData(); 
+// print_r($regorderdata);
+// echo $this->getLayout()->createBlock("Globalia\Quickcheckout\Block\Dashboard\quickcheckout")->setTemplate("Sttl_Customerorder::createorder/savepament.phtml")->toHtml();
+ // echo $this->getLayout()->createBlock("Magento\Framework\View\Element\Template")->setCustomernumber($customer_number)->setTemplate("Sttl_Customerinvoices::paymentcardform.phtml")->toHtml();
+  
+if ($block->customerlogin()):
+  $customerdata =$block->getCustomerDetails();
+  $confirmetioncms = json_encode($block->getcmsblockdata());
+?>
+<?php echo $this->getLayout()->createBlock("Sttl\Customerorder\Block\Payment")->setTemplate("Sttl_Customerorder::createorder/Shipppingform.phtml")->toHtml();?>
+ <?php echo $this->getLayout()->createBlock("Sttl\Customerorder\Block\Payment")->setTemplate("Sttl_Customerorder::createorder/paymentcardform.phtml")->toHtml();?>
+ <?php echo $this->getLayout()->createBlock("Sttl\Customerorder\Block\Payment")->setTemplate("Sttl_Customerorder::createorder/billingform.phtml")->toHtml();?>
+<!-- <a id="quickcheckoutelink" po-number = "Q0hBSU1HRUxMRVI=" order-id="QVUxNDYx" data-toggle="modal" data-target="#quickcheckout">Queckcheckout</a> -->
+
+
+
+<script type="text/x-magento-init">
+  {
+      "*": {
+          "Globalia_Quickcheckout/js/render_quickcheckout": {         
+              "baseurl" : "<?= $this->getBaseUrl(); ?>",
+              "customerdata" : <?= json_encode($customerdata); ?>,
+              "cmsdata":  <?=$confirmetioncms?>
+          }
+      }
+  }</script>
+  <?php
+  endif;
+  ?>

@@ -1,0 +1,63 @@
+<?php
+
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$customerSession = $objectManager->create('Magento\Customer\Model\Session');
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+$baseUrl = $storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+$request = $objectManager->get('\Magento\Framework\App\Request\Http');
+$cur_action = $request->getFullActionName();
+
+$customerorderUrl = $baseUrl."customerorder/customer/index";
+$customerinvoices = $baseUrl."customerinvoices/customer/index?order_stats=Open&order_by=DueDays&opt=ASC";
+$downloadlibraryUrl = $baseUrl."downloadlibrary/category/index";
+$policies_procedures = $baseUrl."policies-procedures";
+$neworderUrl = $baseUrl."customerorder/customer/neworder";
+?>
+<?php if($block->customerLoggedIn()): ?>
+	<div class="loginMenu">
+		<input type="hidden" id ="customerlogin" name="customerlogin" value="1"> 
+		<span><a href="<?php echo $baseUrl."customer/account/index/";?>">welcome,</a> <span><a href="<?php echo $baseUrl."customer/account/index/";?>"><?php echo  $customerSession->getCustomer()->getName();?></a></span></span></a>
+		<ul class="afterLoginMenu">
+			<li <?php if ($cur_action == "customer_account_index") {?>class="current"<?php }?>><a href="<?php echo $baseUrl."customer/account/index/";?>">My Account</a></li> <?php /*echo $baseUrl."sales/order/history/";*/ ?>
+			<li <?php if ($cur_action == "customerorder_customer_neworder") {?>class="current"<?php }?>><a href="<?php echo $neworderUrl;?>">Create Order</a></li> <?php /*echo $baseUrl."/paypal/billing_agreement/";*/ ?>
+			<li <?php if ($cur_action == "customerorder_customer_index" && $block->getRequest()->getParam('q') == '') {?>class="current"<?php }?>><a href="<?php echo $customerorderUrl; ?>">Order Status</a></li>
+			<li <?php if ($cur_action == "customerinvoices_customer_index") {?>class="current"<?php }?>><a href="<?php echo $customerinvoices;?>">Invoices</a></li> <?php /*echo $baseUrl."/paypal/billing_agreement/";*/ ?>
+			<li <?php if ($cur_action == "customerorder_customer_index" && $block->getRequest()->getParam('q') == 'd') {?>class="current"<?php }?>><a href="<?php echo $customerorderUrl; ?>?q=d">Purchase Order Drafts</a></li>
+			<li <?php if ($cur_action == "downloadlibrary_category_index") {?>class="current"<?php }?>><a href="<?php echo $downloadlibraryUrl; ?>">Download Library</a></li>
+			<!--<li><a href="<?php echo $policies_procedures; ?>">Policies & Procedures</a></li>-->
+			<li><a href="<?php echo $baseUrl."customerlogin/account/logout/";?>">Sign out</a></li>
+		</ul>
+	</div>	
+<?php else:?>
+<div class="loginSection">
+<input type="hidden" id ="customerlogin" name="customerlogin" value="0">
+<?php
+$urlInterface = \Magento\Framework\App\ObjectManager::getInstance()->get('Magento\Framework\UrlInterface');
+$getCurrentUrl = $urlInterface->getCurrentUrl();
+/*if($_SERVER['SERVER_ADDR'] != '127.0.0.1'){
+	if($getCurrentUrl == $baseUrl.'custom-login'){
+	?>
+	<div class="authorization-link">
+		<a href="javascript:void(0);">CUSTOMER PORTAL</a> 
+	</div>
+	<?php }else{ ?>
+	<a data-toggle="modal" data-target="#loginModal">CUSTOMER PORTAL</a>
+	<?php } } else{ ?>
+<div class="authorization-link">
+	<a href="javascript:void(0);">CUSTOMER PORTAL</a> 
+</div>
+<?php }*/ ?>
+	<div class="authorization-link">
+			<a href="javascript:void(0);">CUSTOMER PORTAL</a> 
+	</div>
+</div>
+<?php endif; ?>
+<script type="text/javascript">
+    require(['jquery'], function($) {
+	        $(document).ready(function() {
+	       	 $(".afterLoginMenu").click(function(e){
+	       	     $('body').trigger('processStart');
+	       	 	});
+	        });
+        }); 
+</script>

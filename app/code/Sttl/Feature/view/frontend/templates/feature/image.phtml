@@ -1,0 +1,8 @@
+<?php
+$feature = $block->getCurrentFeature();
+$img = '';
+if ($img = $feature->getImageUrl()) { ?>
+    <div class="feature-image">
+        <img class="img-responsive" src="<?php echo $img; ?>" alt="<?php echo $feature->getName(); ?>" class="image"/>
+    </div>
+<?php } ?>

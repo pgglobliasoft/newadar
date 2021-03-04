@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Solwin Infotech
+ * Solwin Instagram Extension
+ * 
+ * @category   Solwin
+ * @package    Solwin_Instagram
+ * @copyright  Copyright © 2006-2016 Solwin (https://www.solwininfotech.com)
+ * @license    https://www.solwininfotech.com/magento-extension-license/
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Magento/Backend/etc/menu.xsd">
+    <menu>
+	<add id="Solwin_Instagram::instagram" title="Instagram" module="Solwin_Instagram" sortOrder="56" resource="Solwin_Instagram::instagram" parent="Solwin_Extensions::extensions"/>
+	<add id="Solwin_Instagram::instagramtitle" title="Instagram" module="Solwin_Instagram" sortOrder="56" resource="Solwin_Instagram::instagramtitle" parent="Solwin_Extensions::extensions"/>
+        <add id="Solwin_Instagram::instagram_config" title="Configuration" module="Solwin_Instagram" sortOrder="20" parent="Solwin_Instagram::instagram" action="adminhtml/system_config/edit/section/instagramsection" resource="Solwin_Instagram::instagram_config"/>
+    </menu>
+</config>

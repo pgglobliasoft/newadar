@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="ManishJoy_Login::css/login.css"/>        
+    </head>
+    <body>
+        <referenceBlock name="header.container" remove="true" />
+        <referenceBlock name="footer" remove="true" />
+        <referenceBlock name="footer-container" remove="true" />
+        <referenceBlock name="page.top" remove="true" />
+        <referenceContainer name="footerr" remove="true" />
+        <referenceBlock name="copyright" remove="true" />
+        <referenceBlock name="page.main.title"  remove="true" />
+        <referenceBlock name="content"  remove="true" />
+        <referenceBlock name="page.messages"  remove="true" />        
+        <referenceContainer name="page.wrapper">
+            <container name="section-conatiner" htmlTag="div" before="main.content">
+                <!-- must have content to display -->
+                <block class="ManishJoy\Login\Block\Login" name="login_index" template="ManishJoy_Login::section.phtml"> </block>
+            </container>
+        </referenceContainer>
+        <referenceContainer name="footer" remove="true" />
+    </body>
+</page>

@@ -1,0 +1,361 @@
+<?php
+	$regorderdata = $block->getRegisterData();
+	$customerdata = $regorderdata['customerdata'];
+	$customerdata = $customerdata[0];
+	$orderdata = $regorderdata['orderdata'];
+	$currentorderdata = $orderdata[0];
+	if(isset($regorderdata['eBizChargedata']))
+	{
+		$objCustomers = $regorderdata['eBizChargedata'];
+	}
+	$custNum = '';
+	if(isset($objCustomers->Customers) && count($objCustomers->Customers) > 0)
+	{
+		$objCustomer = $objCustomers->Customers;
+		$objCustomer = $objCustomer[0];
+		if (isset($objCustomer->CustNum)) {
+			$custNum = $objCustomer->CustNum;
+		}
+	}
+	
+	$saved_cards = (isset($objCustomer->PaymentMethods) && count($objCustomer->PaymentMethods) > 0) ? $objCustomer->PaymentMethods : array();
+	$paymentsecation = 'hide';
+	if($customerdata['PaymentTerm'] == 'Credit Card Auto' && $this->getRequest()->getParams('back_order_id') != '')
+	{
+		
+	}
+?>
+
+
+	
+<div class="block block-dashboard-info paymentBlock row">
+	
+	<div class="cover-div paymentblockmethod col-md-4">
+		<div class="box box-information s-border">
+		
+			<div class="box-title" id="paymentshoe">
+		    	<strong ><?= $block->escapeHtml(__('Payment Method')) ?></strong>
+			</div>
+		    <div class="block-content" >
+				<div class="box box-information paymentmethodblockwidth">
+					<div class="box-content paymentAddresscontentdiv">
+						<?php if($customerdata['PaymentTerm'] == 'Credit Card Auto' && $this->getRequest()->getParams('back_order_id') != '') { ?>
+						<div>
+							
+						</div>	
+							<div class="paymentmethoddropdown">
+								     	<div class="paymentAddressparantdiv">
+										      <label class="paymentAddress paymentdetaildata"></label>
+										      <i class="fa fa-angle-down" aria-hidden="true"></i>
+										</div>
+										<select class="paymentMethod" id="selectcard_id" name="selectcard_id">
+										<option value="">Please Select</option>
+										<?php 
+											$i = 0;
+											foreach($saved_cards as $card)
+											{ 
+												$card_expiry = (isset($card->CardExpiration) && !empty($card->CardExpiration)) ? date("m/Y", strtotime($card->CardExpiration)) : NULL;
+											?>
+											<option value="<?php echo $card->MethodID;?>" attr-ccno = "<?php echo $card->CardNumber;?>" attr-MethodName = "<?php echo $card->MethodName;?>" attr-ccexpiry = "<?php echo $card_expiry;?>" attr-cctype = "<?php echo $card->CardType;?>" <?php if($currentorderdata['CardID']== $card->MethodID ) { ?> selected <?php }?>><?php echo $card->CardNumber;?></option>
+											<?php 
+											$i++; } ?>
+									</select>
+									<p class="selectcard_id_error maxqtyvaldi"></p>
+							</div>	
+				<!-- 	<div class="paymentAddress"></div> -->
+					<div class="cf">
+						<input type="button" value="+ Add a new credit/debit card"  data-toggle="modal" data-target="#customer-add-payment"  class="delUrl" />
+						<span style="float: left;opacity:0.5">+ Add a Bank Account</span>
+					</div>
+					<?php }else{ ?>
+						<span><?php echo $customerdata['PaymentTerm'];?></span>
+					<?php } ?>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+
+	<div class="cover-div col-md-4 paymentblockbilling">
+		<div class="box box-information s-border">
+			<div class="addressInfo">
+				<strong class="box-title">
+	                <span>Billing Address</span>
+	            </strong>
+	            <div class="box-content">
+	            	<?php if (isset($currentorderdata) && !empty($currentorderdata)) { 
+	                       ?>
+	                    <?php if($currentorderdata["BillingName"] != '') {?>
+	                        <span id="BillingName"><?php echo ucwords(strtolower($currentorderdata["BillingName"]));?></span><br/> 
+	                    <?php } ?>
+	                    <?php if($currentorderdata["BillingAddress"] != '') {?>
+	                        <span id="BillingAddress"><?php echo ucwords(strtolower($currentorderdata["BillingAddress"]));?></span><br/> 
+	                    <?php } ?>
+	                     <?php if(isset($currentorderdata["BillingCity"]) && $currentorderdata["BillingCity"] != '') {?>
+	                        <span id="BCity"><?php echo ucwords(strtolower($currentorderdata["BillingCity"]));?>,</span>
+	                    <?php } ?>
+	                     <?php if($currentorderdata["BillingStateCode"] != '') {?>
+	                        <span id="BState"><?php echo ucwords(strtolower($currentorderdata["BillingStateCode"]));?></span>
+	                    <?php } ?>
+	                    
+	                    <?php if($currentorderdata["BillingZip"] != '') {?>
+	                        <span id="BZipCode"><?php echo ucwords(strtolower($currentorderdata["BillingZip"]));?></span>
+	                    <?php } ?>
+	                    <?php /*if($currentorderdata["BillingCountry"] != '') {?>
+	                        <span id="BCountry">,<?php echo $currentorderdata["BillingCountry"];?></span>
+	                    <?php }*/ ?>
+
+	                <?php 
+	                   } ?>
+	        
+	            </div>
+	        </div>
+		</div>
+	</div>
+
+	<div class="cover-div col-md-4 paymentblockcoupan">
+		<div class="box box-information s-border">
+	        <strong class="box-title">
+	            <span>Coupon Code</span>
+	        </strong>
+	        <div class="box-content mrgB10">
+				<input type="text" placeholder="ENTER COUPON CODE" name="coupon_code" value="<?php echo $currentorderdata['CouponCampaign']?>">
+				<span class="couponTxt">Note: Coupon will be applied once the order is processed.</span>              
+	        </div>
+		</div>
+	</div>
+	
+	
+</div>
+
+<script type="text/javascript">
+    require(['jquery'], function($) {
+		var changeText = "<?php echo __('Please Wait...') ?>";
+		var changeSubmit = "<?php echo __('Submit') ?>";
+		var findButton = $('#customer-add-payment-validate').find('button[type=submit]'),
+		form = $('#customer-add-payment-validate');
+		form.submit(function (e) {
+			if (form.validation('isValid')) {
+				findButton.text(changeText);
+				findButton.attr("disabled", "disabled");
+				var url = form.attr('action');
+				var formData = getFormData($(this));
+				e.preventDefault();
+					$.ajax({
+						type: "POST",
+						url: url,
+						showLoader: true,
+						data: formData,
+						success: function(data) {
+							showResponse(data);
+							if(data.error) {
+	                            findButton.text(changeSubmit);
+	                            findButton.removeAttr('disabled');
+								}  
+								else 
+								{
+		                            if(data.html != '')
+		                            {
+		                            	$('#selectcard_id').html(data.html)
+		                            }
+		                             if(data.html_popup == 'done'){
+		                             	findButton.text(changeSubmit);
+	                            		findButton.removeAttr('disabled');
+		                             }
+	                            selectcardinfo();
+	                            $(".mfp-close-inside").trigger("click");
+	                            $('#paymentshoe').show();
+	                            $('#selectcard_id').show();
+	                       		} 
+							}
+						});
+					}
+				});
+		
+		function getFormData(formElem){
+			var unindexed_array = formElem.serializeArray();
+			var indexed_array = {};
+			jQuery.map(unindexed_array, function(n, i){
+				indexed_array[n['name']] = n['value'];
+			});
+			return indexed_array;
+		}
+		
+		function showResponse(data) {
+			if(data.error) {
+                $('.block-customer-add-payment .response-msg').html("<div class='error'>"+data.error+"</div>");
+				} else {
+                $('.block-customer-add-payment .response-msg').html("<div class='success'>You saved the payment information.</div>");
+			}
+			setTimeout(function(){ $('.block-customer-add-payment .response-msg').html(null); }, 5000);
+		}
+		function bishowResponse(data) {
+              if(data.error) {
+                $('.block-customer-edit-address .response-msg').html("<div class='error'>"+data.error+"</div>");
+              } else {
+                $('.block-customer-edit-address .response-msg').html("<div class='success'>You saved the shipping information.</div>");
+              }
+              setTimeout(function(){ $('.response-msg').html(null); }, 5000);
+            }
+			var bifindButton = $('#customer-edit-billaddress-validate').find('button[type=submit]'),
+            biform = $('#customer-edit-billaddress-validate');
+            biform.submit(function (e) {
+                if (biform.validation('isValid')) {
+                    var biformData = getFormData($(this));
+                    e.preventDefault();
+                    		$("#BillingAddress").html(biformData.billaddress1.toLowerCase());
+                            $("#BCity").html(biformData.BCity.toLowerCase());
+                            $("#BState").html(biformData.BState.toLowerCase());
+                            $("#BStateName").html(biformData.BStatename.toLowerCase());
+                            $("#BZipCode").html(biformData.BZipCode.toLowerCase());
+                            $("#BCountry").html(biformData.BillingCountry.toLowerCase());
+							$("#billaddress1").val(biformData.billaddress1.toLowerCase());
+                            $("#BCity").val(biformData.BCity.toLowerCase());
+                            $("#BState").val(biformData.BState.toLowerCase());
+                            $("#BStatename").val(biformData.BStatename.toLowerCase());
+                            $("#BZipCode").val(biformData.BZipCode);
+                            $("#BCountry").val(biformData.BillingCountry.toLowerCase());
+                            $(".mfp-close-inside").trigger("click");
+                }
+            });
+		$(function() {
+			$('.modal.block-customer-add-payment').on('hidden.bs.modal', function(){
+				$('#customer-add-payment-validate').find('input[type="text"]').val('');
+				var validator = $("#customer-add-payment-validate").validate();
+				validator.resetForm();
+
+				$("input[name='card_type']").removeClass("selected_cc").prop('checked', false).attr("disabled", true).next('span').removeClass("img-container");
+			});
+			$(".paymentMethod").change();
+		});
+		
+		$(document).on("change", ".paymentMethod", function(){
+			var Objsel = $(this).find('option:selected');
+			var cc_no = $(Objsel).attr("attr-ccno"),
+			cc_expiry = $(Objsel).attr("attr-ccexpiry"),
+			attrMethodName = $(Objsel).attr("attr-MethodName"),
+			cc_type = $(Objsel).attr("attr-cctype"),
+			cc_details = [];
+			if (typeof cc_type !== typeof undefined && cc_type !== false && cc_type.trim() != '') {
+				var img = '';
+				if (cc_type == "V") {
+					cc_details.push("<img src='<?php echo $this->getViewFileUrl('images/visa-card.jpg');?>' >");
+				}
+				if (cc_type == "M") {
+					cc_details.push("<img src='<?php echo $this->getViewFileUrl('images/master-card.jpg');?>' >");
+				}
+				if (cc_type == "A") {
+					cc_details.push("<img src='<?php echo $this->getViewFileUrl('images/american-express.jpg');?>' >");
+				}
+				if (cc_type == "DS") {
+					cc_details.push("<img src='<?php echo $this->getViewFileUrl('images/discover.jpg');?>' >");
+				}
+			}
+			
+			if (typeof cc_no !== typeof undefined && cc_no !== false && cc_no.trim() != '') {
+				cc_details.push('<span>'+cc_no+'</span>');
+				cc_details.push('<input type="hidden" id="cc_no_hidden" name="cc_no_hidden" value="'+cc_no+'">');
+
+			}
+			
+			if (typeof cc_expiry !== typeof undefined && cc_expiry !== false && cc_expiry.trim() != '') {
+				cc_details.push('<span>'+cc_expiry+'</span>');
+				cc_details.push('<input type="hidden" id="cc_expiry_hidden" name="cc_expiry_hidden" value="'+cc_expiry+'">');
+			}
+			if (typeof attrMethodName !== typeof undefined && attrMethodName !== false && attrMethodName.trim() != '') {
+				cc_details.push('<input type="hidden" id="cc_attrMethodName_hidden" name="cc_attrMethodName_hidden" value="'+attrMethodName+'">');
+			}
+			
+			if (cc_details.length) {
+				$(".paymentAddress").html(cc_details.join(" "));
+			}
+			else{ 
+			$(".paymentAddress").html("Please Select");
+			}
+		});
+		$(document).ready(function() {
+			selectcardinfo();
+		});
+		function selectcardinfo(){
+			var Objsel = $("#selectcard_id").find('option:selected');
+			var cc_no = $(Objsel).attr("attr-ccno"),
+			cc_expiry = $(Objsel).attr("attr-ccexpiry"),
+			attrMethodName = $(Objsel).attr("attr-MethodName"),
+			cc_type = $(Objsel).attr("attr-cctype"),
+			cc_details = [];
+			console.log(cc_no);
+			if (typeof cc_type !== typeof undefined && cc_type !== false && cc_type.trim() != '') {
+				var img = '';
+				if (cc_type == "V") {
+					cc_details.push("<img src='<?php echo $this->getViewFileUrl('images/visa-card.jpg');?>' >");
+				}
+				if (cc_type == "M") {
+					cc_details.push("<img src='<?php echo $this->getViewFileUrl('images/master-card.jpg');?>' >");
+				}
+				if (cc_type == "A") {
+					cc_details.push("<img src='<?php echo $this->getViewFileUrl('images/american-express.jpg');?>' >");
+				}
+				if (cc_type == "DS") {
+					cc_details.push("<img src='<?php echo $this->getViewFileUrl('images/discover.jpg');?>' >");
+				}
+			}
+			
+			if (typeof cc_no !== typeof undefined && cc_no !== false && cc_no.trim() != '') {
+				cc_details.push('<span>'+cc_no+'</span>');
+				cc_details.push('<input type="hidden" id="cc_no_hidden" name="cc_no_hidden" value="'+cc_no+'">');
+
+			}
+			
+			if (typeof cc_expiry !== typeof undefined && cc_expiry !== false && cc_expiry.trim() != '') {
+				cc_details.push('<span>'+cc_expiry+'</span>');
+				cc_details.push('<input type="hidden" id="cc_expiry_hidden" name="cc_expiry_hidden" value="'+cc_expiry+'">');
+			}
+			if (typeof attrMethodName !== typeof undefined && attrMethodName !== false && attrMethodName.trim() != '') {
+				cc_details.push('<input type="hidden" id="cc_attrMethodName_hidden" name="cc_attrMethodName_hidden" value="'+attrMethodName+'">');
+			}
+			if (cc_details.length) {
+				$(".paymentAddress").html(cc_details.join(" "));
+			}
+			else{ 
+			$(".paymentAddress").html("Please Select");
+			}	
+		}
+		$(document).on("keyup", "#card_no", function(){
+			var value = $(this).val();
+			var ctype = '';
+			// visa
+			var re = new RegExp("^4");
+			if (value.match(re) != null)
+				ctype =  "VI";
+			if (/^(5[1-5][0-9]{14}|2(22[1-9][0-9]{12}|2[3-9][0-9]{13}|[3-6][0-9]{14}|7[0-1][0-9]{13}|720[0-9]{12}))$/.test(value)) 
+				ctype =  "MC";
+			// AMEX
+			re = new RegExp("^3[47]");
+			if (value.match(re) != null)
+				ctype = "AE";
+			
+			// Discover
+			re = new RegExp("^(6011|622(12[6-9]|1[3-9][0-9]|[2-8][0-9]{2}|9[0-1][0-9]|92[0-5]|64[4-9])|65)");
+			if (value.match(re) != null)
+				ctype = "DI";
+			$("input[name='card_type']").removeClass("selected_cc").prop('checked', false).attr("disabled", true).next('span').removeClass("img-container selected_cc");
+			if(value != ''){
+			$("input[name='card_type'][value='"+ctype+"']").prop('disabled', false).prop('checked', true).addClass("selected_cc").next('span').addClass("img-container selected_cc");
+			}
+
+		});
+		
+		$(document).on("keyup", "#expiration_date", function(){
+			var value = $(this).val().replace("/","");
+			var str = '';
+			for (var i=0,ic=value.length;i<ic;i++) {
+				str += value[i];
+				if (str.length == 2)
+					str += "/";
+			}
+			$(this).val(str);
+		});	
+	});
+	
+</script>

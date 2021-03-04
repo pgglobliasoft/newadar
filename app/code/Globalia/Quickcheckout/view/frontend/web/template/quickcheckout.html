@@ -1,0 +1,636 @@
+<div class="modalContainer quickViewCont">
+        <div id="quickcheckoutdetail">
+        		<div class="scrollable_content">
+					<form name="payemtnaction" id="payemtnaction" method="POST" enctype="multipart/form-data" data-hasrequired="* Required Fields" autocomplete="off" novalidate="novalidate">
+
+					<div class="block-title">
+						<strong>1 Click Checkout...</strong>
+					</div>
+					<div class="steptitel">
+						<strong>Enter your payment and shipping details</strong>
+						<div class="headerpo">
+							<span class="ponumbertitle">P.O. Number:</span><span> <%=back_po_number%></span>
+						</div>
+					</div>
+					<%
+					var customerdata = data.customerdata[0];
+					var currentorderdata = data.orderdata[0];
+					%>
+					<div class="row">
+						<div class="cover-div paymentblockmethod col-md-4">
+							<div class="box box-information s-border">
+							
+								<div class="box-title" id="paymentshoe">
+							    	<strong >Payment Method</strong>
+								</div>
+							    <div class="block-content" >
+									<div class="box box-information paymentmethodblockwidth">
+										<div class="box-content paymentAddresscontentdiv">
+											<!-- <?php if($customerdata['PaymentTerm'] == 'Credit Card Auto' && $this->getRequest()->getParams('back_order_id') != '') { ?> -->
+											<%
+											if(customerdata.PaymentTerm == 'Credit Card Auto' && back_order_id != '')
+											{
+											%>
+											<div>
+												
+											</div>	
+												<div class="paymentmethoddropdown">
+													     	<div class="paymentAddressparantdiv">
+															      <label class="paymentAddress paymentdetaildata"></label>
+															      <i class="fa fa-angle-down" aria-hidden="true"></i>
+															</div>
+															<select class="paymentMethod" id="selectcard_id" name="selectcard_id">
+															<option value="">Please Select</option>
+															<%
+															var objCustomers = '';
+															var custNum = '';
+															 if(data.eBizChargedata != '')
+															 {
+															 	objCustomers = data.eBizChargedata;
+															 }
+															 if(objCustomers.Customers != '')
+															 {
+															 	objCustomers = objCustomers.Customers[0];
+
+															 }
+															 if(objCustomers.CustNum != '')
+															 {
+															 	custNum = objCustomers.CustNum;
+															 } 
+															 var saved_cards = (objCustomers.PaymentMethods != '' && (objCustomers.PaymentMethods).length > 0) ? objCustomers.PaymentMethods : [] ;
+
+															%>
+															<%
+															_.each(saved_cards,function(value,index){
+																
+																var card_expiry = (value.CardExpiration != '') ? value.CardExpiration : null ;
+																if(card_expiry){
+																	const card_expiry_formated = card_expiry.split('-');
+																	card_expiry = card_expiry_formated[1]+"/"+card_expiry_formated[0]
+																}
+
+																if(currentorderdata.CardID == value.MethodID ) {
+																		%>
+																		<option value="<%=value.MethodID%>" attr-ccno = "<%=value.CardNumber%>" attr-MethodName = "<%=value.MethodName%>" attr-ccexpiry = "<%=card_expiry%>" attr-cctype = "<%=value.CardType%>" selected><%=value.CardNumber%></option>
+																		<%
+																}
+																else
+																{
+																	%>
+																		<option value="<%=value.MethodID%>" attr-ccno = "<%=value.CardNumber%>" attr-MethodName = "<%=value.MethodName%>" attr-ccexpiry = "<%=card_expiry%>" attr-cctype = "<%=value.CardType%>"><%=value.CardNumber%></option>
+																	<%
+																}
+															});
+															%>
+															
+														</select>
+														<p class="selectcard_id_error maxqtyvaldi"></p>
+												</div>	
+									<!-- 	<div class="paymentAddress"></div> -->
+										<div class="cf">
+											<input type="button" value="+ Add a new credit/debit card"  data-toggle="modal" data-target="#customer-add-payment"  class="delUrl" />
+											<span style="float: left;opacity:0.5">+ Add a Bank Account</span>
+										</div>
+										<%
+											}
+											else
+											{
+												%>
+													<span><%=customerdata.PaymentTerm%></span>
+												<%
+
+											}
+										%>
+										<!-- <?php }else{ ?>
+											<span><?php echo $customerdata['PaymentTerm'];?></span>
+										<?php } ?> -->
+										</div>
+									</div>
+									
+								</div>
+							</div>
+						</div>
+
+
+					<div class="cover-div col-md-4 paymentblockbilling">
+							<div class="box box-information s-border">
+								<div class="addressInfo">
+									<strong class="box-title">
+						                <span>Billing Address</span>
+						            </strong>
+						            <div class="box-content">
+						            	<% 
+						            	
+						            	if(currentorderdata != '' && currentorderdata != null)
+						            	{
+						            		if(currentorderdata.BillingName != '' && currentorderdata.BillingName != null)
+						            		{ %>
+						            			<span id="BillingName"><%=(currentorderdata.BillingName).toLowerCase()%></span>
+						            			<%
+						            		}
+						            		if(currentorderdata.BillingAddress != '' && currentorderdata.BillingAddress != null)
+						            		{
+						            			%>
+						            			</br><span id="BillingAddress"><%=(currentorderdata.BillingAddress).toLowerCase()%></span>
+						            			<%
+						            		}
+						            		if(currentorderdata.BillingCity != '' && currentorderdata.BillingCity != null)
+						            		{
+						            			%>
+						            			</br><span id="BillingCity"><%=(currentorderdata.BillingCity).toLowerCase()%>,</span>
+						            			<%
+						            		}
+						            		if(currentorderdata.BillingStateCode != '' && currentorderdata.BillingStateCode != null)
+						            		{
+						            			%>
+						            			<span id="BillingStateCode"><%=(currentorderdata.BillingStateCode).toLowerCase()%></span>
+						            			<%
+						            		}
+						            		if(currentorderdata.BillingZip != '' && currentorderdata.BillingZip != null)
+						            		{
+						            			%>
+						            			<span id="BillingZip"><%=(currentorderdata.BillingZip).toLowerCase()%></span>
+						            			<%
+						            		}
+						            		if(currentorderdata.BillingCountry != '' && currentorderdata.BillingCountry != null)
+						            		{
+						            			%>
+						            			<span id="BillingCountry"><%=(currentorderdata.BillingCountry).toLowerCase()%></span>
+						            			<%
+						            		}
+
+						            	}
+
+						            	%>
+
+						        
+						            </div>
+						        </div>
+							</div>
+						</div>
+
+
+						<div class="cover-div col-md-4 paymentblockcoupan">
+							<div class="box box-information s-border">
+						        <strong class="box-title">
+						            <span>Coupon Code</span>
+						        </strong>
+						        <div class="box-content mrgB10">
+						        	<% 
+						        		var couponcampiagn = (currentorderdata.CouponCampaign) ? currentorderdata.CouponCampaign : '';
+						        	 %>
+									<input type="text" placeholder="ENTER COUPON CODE" name="coupon_code" value="<%=couponcampiagn%>">
+									<span class="couponTxt">Note: Coupon will be applied once the order is processed.</span>              
+						        </div>
+							</div>
+						</div>
+
+
+					</div>
+
+
+					 		<div class="bdrLine pma"></div>
+					        <div class="shippingmethodblockpatment row">
+					           <div class="box box-information col-md-4 shippingmethodblock">
+					               
+					                <strong class="box-title">
+					                    <span>Choose Shipping Method</span>
+					                </strong>
+					                 <div class="box-content" >
+					                   <span class="couponTxt">Note: Freight charges will be calculated while processing your order.</span>
+					                    <%
+					                    if(customerdata.ShipCode && customerdata.ShipType != "All" && customerdata.ShipCode != '' && customerdata.ShipType != '')
+					                    {
+					                    	if(customerdata.ShipType ==  customerdata.ShipCode)
+					                    	{
+					                    		%>
+					                    		<span class='v-center'><input type="radio" checked name="shiiping_method" id="shiiping_method1" value='<%=customerdata.ShipCode%>' selected = "selected"></span>
+					                    		<%
+					                      	} 
+					                    	else
+					                    	{
+					                    		%>
+					                    		<span class='v-center'><input type="radio" checked name="shiiping_method" id="shiiping_method1" value='<%=customerdata.ShipCode%>'></span>
+					                    		<%
+					                    	}
+					                    	%>
+					                    		 <label for="shiiping_method1">
+						                            <%=customerdata.ShipType%><span class="default_tag">(Default)</span>
+						                        </label>
+						                        </br>
+					                    	<%
+					                    } %>
+					                    <% 
+					                    	if(currentorderdata.ShippingType == "STD")
+					                    	{
+					                    		%>
+					                     		<span class="v-center"><input type="radio" name="shiiping_method" id="shiiping_method2" value="STD" checked></span>
+					                    		<%
+					                    	}
+					                    	else
+					                    	{
+					                    		%>
+					                     		<span class="v-center"><input type="radio" name="shiiping_method" id="shiiping_method2" value="STD"></span>
+
+					                    		<%
+					                    	}
+					                    %> <label for="shiiping_method2">Ground (3 - 5 business)</label>
+					                     <% 
+					                    	if(currentorderdata.ShippingType == "NXD")
+					                    	{
+					                    		%>
+					                     		</br><span class="v-center"><input type="radio" name="shiiping_method" id="shiiping_method3" value="NXD" checked= "checked"></span>
+					                    		<%
+					                    	}
+					                    	else
+					                    	{
+					                    		%>
+					                     		</br><span class="v-center"><input type="radio" name="shiiping_method" id="shiiping_method3" value="NXD"></span>
+					                    		<%
+					                    	}
+					                    %><label for="shiiping_method3">Next Day</label>
+					                    <% 
+					                    	if(currentorderdata.ShippingType == "SCD")
+					                    	{
+					                    		%>
+					                     		</br><span class="v-center"><input type="radio" name="shiiping_method" id="shiiping_method4" value="SCD" checked= "checked"></span>
+					                    		<%
+					                    	}
+					                    	else
+					                    	{
+					                    		%>
+					                     		</br><span class="v-center"><input type="radio" name="shiiping_method" id="shiiping_method4" value="SCD"></span>
+					                    		<%
+					                    	}
+					                    %><label  for="shiiping_method4">2nd Day </label>
+					                    <% 
+					                    	if(currentorderdata.ShippingType == "THD")
+					                    	{
+					                    		%>
+					                     		</br><span class="v-center"><input type="radio" name="shiiping_method" id="shiiping_method5" value="THD" checked= "checked"></span>
+					                    		<%
+					                    	}
+					                    	else
+					                    	{
+					                    		%>
+					                     		</br><span class="v-center"><input type="radio" name="shiiping_method" id="shiiping_method5" value="THD"></span>
+					                    		<%
+					                    	}
+					                    %> <label for="shiiping_method5">3 Day Select</label>
+					                    <% 
+					                    	
+					                    	if(currentorderdata.ShippingType == "4")
+					                    	{
+					                    		%>
+					                     		</br><span class="v-center"><input type="radio" name="shiiping_method" id="shiiping_method6" value="4" checked= "checked"></span>
+					                    		<%
+					                    	}
+					                    	else
+					                    	{
+					                    		%>
+					                     		</br><span class="v-center"><input type="radio" name="shiiping_method" id="shiiping_method6" value="4"></span>
+					                    		<%
+					                    	}
+					                    %> <label for="shiiping_method6">Pick Up</label>  
+
+					            	</div>
+					            	 <p class="shiiping_method_error maxqtyvaldi"></p>
+					            </div>
+
+					            <%
+					            	var backmode = false;
+					            	if(back_order_id != '')
+									{
+										backmode = true;
+									}
+									var tyle = '';
+									if(backmode != true)
+									{
+										if(currentorderdata.ShippingType == '4' || customerdata.ShipCode == 4) 
+										{	
+											tyle = "display: none;";
+										}
+									}else{
+										if(currentorderdata.ShippingType == '4' || customerdata.ShipCode == 4) 
+										{	
+											tyle = "display: none;";
+										}
+									}
+									if(customerdata.ShipCode != '4' && currentorderdata.ShippingType != '4') 
+									{	
+										tyle = "display: block;";
+									}
+									if(currentorderdata.ShippingType != '4' && currentorderdata.ShippingType !=  '') 
+									{	
+										tyle = "display: block;";
+									}
+
+								if(data.shippingdata != 0)
+								{
+									var shippingdata = data.shippingdata;
+								}
+								else
+								{
+									var shippingdata = [];
+								}
+					            %>
+
+
+					            <div class="box box-information addressInfo shippingAdds col-md-4" style="<%=tyle%>">
+						            <strong class="box-title">
+						                <span>Shipping Address</span>
+						            </strong>
+						            <div class="shipping-address-wrap">
+						            	<div class="box-content">
+							            	<div class="select-section">
+								            	<div class="addressdropdowndemo">
+								            	     <label class="shipAddress"></label>
+								            	     <i class="fa fa-angle-down" aria-hidden="true"></i>
+								            	</div>
+								                   <select class="shippingMeethod" name="shippingaddress" id="shippingaddress">
+								                   	<option value="">Please Select</option>
+								                   	<%
+								                   		if(shippingdata != '')
+								                   		{
+								                   			var cnt = 1;
+								                   			var ad_temp_address = true;	
+								                   			_.each(shippingdata, function(value,index){
+								                   				var selected = '';
+								                   				
+								                   				if(currentorderdata.length > 0 && currentorderdata.ShippingId != '' && currentorderdata.ShippingId != null)
+								                   				{
+
+								                   					var ShippingId = currentorderdata.ShippingId.replace("'","’");
+								                   					if(value.AddressID.toLowerCase() == ShippingId.toLowerCase())
+								                   					{
+								                   						selected  = 'selected';
+																		ad_temp_address = false;
+								                   					}
+								                   				} else {
+								                   					selected = (value.DefaultAdd == 'Y') ? "selected" : "";
+								                   				}
+								                   			
+								                   				if(value.BlindDropship != '' && value.BlindDropship != null){
+									                   				if(value.BlindDropship == 'no' || value.BlindDropship == "NO" || value.BlindDropship == 'No') {
+																		value.BlindDropship = 0;
+																	}
+																	if(value.BlindDropship == 'yes' || value.BlindDropship == "NO" || value.BlindDropship == 'Yes') {
+																		value.BlindDropship = 1;
+																	}
+
+								                   				}
+								                   				var default_message = (value.DefaultAdd == 'Y') ? "(Default Address)" : "";
+																if(default_message != '')
+																{
+																	%>
+																		<option value="<%=cnt%>" attr-CardName="<%=value.CardName%>" attr-addressID="<%=value.AddressID%>" attr-addr1="<%=value.AddStreetNo%>" attr-addr2="<%=value.Address2%>" attr-State="<%=value.State%>" attr-ZipCode="<%=value.ZipCode%>" attr-Country="<%=value.Country%>" attr-city="<%=value.City%>,<%=value.State%> <%=value.ZipCode%>" attr-city1="<%=value.City%>" attr-blindDropship="<%=value.BlindDropship%>" attr-tel="<%value.PhoneNo%>" selected><%=value.AddressID%><%=default_message%></option>
+
+
+																	<%
+																}
+																else
+																{
+																	%>												%>
+																		<option value="<%=cnt%>" attr-CardName="<%=value.CardName%>" attr-addressID="<%=value.AddressID%>" attr-addr1="<%=value.AddStreetNo%>" attr-addr2="<%=value.Address2%>" attr-State="<%=value.State%>" attr-ZipCode="<%=value.ZipCode%>" attr-Country="<%=value.Country%>" attr-city="<%=value.City%>,<%=value.State%> <%=value.ZipCode%>" attr-city1="<%=value.City%>" attr-blindDropship="<%=value.BlindDropship%>" attr-tel="<%value.PhoneNo%>"><%=value.AddressID%><%=default_message%></option>
+
+
+																	<%
+																}
+															
+								                   		})
+								                   		}
+								                   	%>
+
+
+								                   </select>
+							               	</div>
+							            	   <p class="shiiping_method_shipAddress maxqtyvaldi"></p>
+								    	</div>
+
+								           <%
+								           var style = '';
+								           
+								           if(currentorderdata.ShippingType == '4'|| (customerdata.ShipType).toLowerCase() == ("Pick Up").toLowerCase()){
+								           	   %>
+								            	<input type="button" value="+ Add new address"  data-toggle="modal" data-target="#customer-edit-address"  class="delUrl removeeditshipurl" style = "display: none;"/>
+								       		<%} else {
+								       			%>
+								            	<input type="button" value="+ Add new address"  data-toggle="modal" data-target="#customer-edit-address"  class="delUrl removeeditshipurl"/>
+								       		
+								       		<% } %>
+						       		</div>
+					      		</div>
+
+
+					      		<div class="box box-information dlvrNote col-md-4">
+					                <span class="box-title">
+					                    <strong>Delivery Notes (Optional)</strong>
+					                </span>
+					                <div class="box-content">
+					                    <textarea rows="3" cols="5" name="delivery_note" maxlength="255"><%=currentorderdata.DeliveryNotes%></textarea>
+					                </div>
+					            </div>
+
+					        </div>
+					        <div class="bdrLine pma"></div>
+					        <div>
+					                
+					                <input type="hidden" name="order_id" id="order_id" value="<%=currentorderdata.Id%>">
+					                <input type="hidden" name="po_number" id="po_number" value="<%=currentorderdata.NumatCardPo%>">
+					         </div>
+					         <div class="box-actions alignRight neworderbuttondiv">
+					                <button type="button" class="themeBtn neworderbuttonsubmit alignRight submitorder paymentsubmit" style="display: none;"><span>Review Order</span></button>
+					         </div>
+
+					</form>
+					<form name="ordersummary" id="ordersummary" method="POST" enctype="multipart/form-data" data-hasrequired="* Required Fields" action="<%=baseurl%>/customerorder/customer/reviewordersubmit" autocomplete="off"  novalidate="novalidate">
+					<!-- action="<%=baseurl%>/customerorder/customer/reviewordersubmit" -->
+					<!-- <div class="block-title">
+					    <strong>STEP 4: Review and submit your order.</strong>
+					</div> -->
+					<div class="cf">
+					        <input type="hidden" name="order_id" id="order_id" value="<%=currentorderdata.Id%>">
+					        <input type="hidden" name="po_number" id="po_number" value="<%=currentorderdata.NumatCardPo%>">
+					        <input type="hidden" name="WebOrderId" id="WebOrderId" value="<%=currentorderdata.WebOrderId%>">
+					        <input type="hidden" name="order_method" id="order_method" value="Desktop">
+					</div>
+
+					<!-- <div class="lineitemtitle">
+						<strong>Line Items</strong>
+					</div> -->
+					</form>
+				</div>
+				<div class="orderSummary-data">
+					<div class="forescrollertable">
+					<%
+						_.each(finalorderrendere, function(valuetype, index) {
+							var viewtype_index = index;
+
+
+							var isorderdata = index.substr(0, 8);
+							
+							if(isorderdata == "viewtype"){ 
+							%>
+									<table class="orderList lineItemsList">
+									<tbody>
+										<!-- Table Header Rendering Start -->
+										<tr>
+											<!-- <th width="30px"><input type="checkbox" name="selectall" class="selectallRecord" value=""></th> -->
+											<th width="50px">Style #</th>
+					                        <th width="50px">Color</th>
+											<%
+												var stylegroup_number = index.substr((index.length)-1, 1);
+												_.each(databystylegroup, function(value, index) {
+													if(index == stylegroup_number){
+														_.each(value, function(value, index) {%>
+															<th width="50px"><%=value%></th>
+														<% });
+													}
+												});
+											%>
+											<th width="50px">QTY</th>
+											<th width="70px">Total</th>
+										</tr>
+										<!-- Table Header Rendering End -->
+										<!-- Table Item Rendering Start -->
+										<% 
+										var order_item_count = 1;
+										var colspancount = 2;
+										var grandtotalqty = 0;
+										var grandtotal = 0;
+										var tmpstylecolorcode = '';
+										
+										_.each(valuetype, function(parent_styles_value, style_name) {
+
+											_.each(parent_styles_value, function(parent_styles_colorcode_value, style_colorcode) {
+
+
+												colspancount = 2; 
+												tmpstylecolorcode = ''; %>
+												<tr>
+													<%
+														var total_raw_qty = 0;
+														var total_raw_price = 0;
+													%>
+													<!-- <td>
+														<input type="checkbox" name="deleteMultiRecord[]" class="deleteMultiRecord" value="">
+														<input type="hidden" class="delete_style" id="delete_style_<%=style_name%>_<%=style_colorcode%>" name="delete_style" value="<%=style_name%>">
+														<input type="hidden" name="delete_color" class="delete_color" id="delete_color_<%=style_name%>_<%=style_colorcode%>" value="<%=style_colorcode%>">
+													</td> -->
+													<td><%=style_name%></td>
+													<td><%=style_colorcode%></td>
+													<% 
+													var stylegroup_number = viewtype_index.substr((viewtype_index.length)-1, 1);
+													_.each(databystylegroup, function(groupby_style_value, index) {
+														if(index == stylegroup_number){
+															var valueprinted = false;
+															_.each(groupby_style_value, function(groupby_style_final_value, index) {
+																colspancount++;
+																_.each(parent_styles_colorcode_value, function(order_item, order_item_index) {
+
+																	var current_style_size = order_item.Size;
+																	if(groupby_style_final_value == current_style_size){ 
+																		valueprinted = true;													
+																		total_raw_qty = parseInt(total_raw_qty) + parseInt(order_item.QTYOrdered);
+																		total_raw_price = parseFloat(total_raw_price) + parseFloat(order_item.TotalPrice);
+																		 %>
+																		<td><%=order_item.QTYOrdered%></td>	
+																	<% }
+																});
+																if(!valueprinted){ %>
+																	<td></td>
+																<%}else{
+																	valueprinted = false;
+																}
+															});
+														}
+													});
+													grandtotalqty = parseInt(grandtotalqty)+parseInt(total_raw_qty);
+													grandtotal = parseFloat(grandtotal)+parseFloat(total_raw_price);
+													order_item_count++;
+													%>
+													<td><%=total_raw_qty%></td>
+													<td class="price">$<%=convertcurrency(total_raw_price.toFixed(2))%></td>
+												
+												<% 
+													tmpstylecolorcode = style_colorcode;
+												}); %>
+											</tr>
+											<input type="hidden" name="grandTotal" id="grandTotal_<%=style_name%>_<%=tmpstylecolorcode%>" class="grandTotal" value='<%=grandtotal.toFixed(2)%>' >
+											<input type="hidden" class="qtyTotal" name="qtyTotal" id="qtyTotal_<%=style_name%>_<%=tmpstylecolorcode%>" value='<%=grandtotalqty%>' >
+									 		<% 	}); %>
+									 		<tr class="totalcolumncolor">
+									 			<td colspan="<%=colspancount%>"></td>
+									 			<td><%=grandtotalqty%></td>
+									 			<td class="price">$<%=convertcurrency(grandtotal.toFixed(2))%></td>
+									 			<td></td>
+									 		</tr>
+										<!-- Table Item Rendering End -->
+									</tbody>
+								</table>
+							 <%
+							}
+						});
+					%>
+					</div>
+				
+					<div class="ordersummarysubmit">
+						<div class="orderSummary">
+							<div class="">
+								Subtotal/Qtytotal: <span class="labelValue">$<%=convertcurrency(parseFloat(data.getOrdersData[0].TotalBeforeDiscount).toFixed(2))%>/<%=data.getOrdersData[0].TotalQTYUnits%></span>
+
+							</div>
+							<div class="orderSummary_discountlabel_sec">
+								<%
+									var discount = parseFloat(data.getOrdersData[0].DiscountPer).toFixed(2);
+									var split = discount.split('.');
+									if(split[1] == 00 || split[1] == 0)
+									{
+										discount = split[0];
+									}
+									else
+									{
+										discount = parseFloat(data.getOrdersData[0].DiscountPer).toFixed(2);					
+									}
+								%>
+								<span class="lineitem-discount quickview">Order Discount: </span>
+								<span class="labelValue">(<%=discount%>%) - $<%=convertcurrency(parseFloat(data.getOrdersData[0].DiscountAmount).toFixed(2))%></span>
+							</div>
+							<div class="">
+								
+								<%
+								if(data.getOrdersData[0].FreightAmount != '' && data.getOrdersData[0].FreightAmount != null)
+								{
+									var feight = data.getOrdersData[0].FreightAmount;
+								}
+								else
+								{
+									var feight = '-';
+								}
+
+								%>
+								Freight/Handling: <span class="labelValue"><%=feight%></span>
+							</div>
+							<div class="">
+								<%
+								var coupon = '';
+								if(data.getOrdersData[0].CouponCampaign != '' && data.getOrdersData[0].CouponCampaign != null)
+								{
+									coupon = data.getOrdersData[0].CouponCampaign;
+								}
+								else
+								{
+									coupon = '-';
+								}
+								%>
+								Coupon/Campaign: <span class="labelValue"><%=coupon%></span>
+							</div>
+							<div class="orderTotal">
+								<strong>Total: </strong><span class="labelValue">$<%=convertcurrency(parseFloat(data.getOrdersData[0].DocTotal).toFixed(2))%></span>
+								<input type="hidden" name="doctotalconfirm" value="<%=convertcurrency(parseFloat(data.getOrdersData[0].DocTotal).toFixed(2))%>">
+							</div>
+						</div>
+					</div>
+				</div>
+		</div>
+</div>

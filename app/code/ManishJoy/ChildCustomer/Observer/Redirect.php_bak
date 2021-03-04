@@ -1,0 +1,93 @@
+<?php
+namespace ManishJoy\ChildCustomer\Observer;
+
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\Response\Http;
+use Magento\Framework\App\ViewInterface;
+use Magento\Framework\Event\Observer;
+use Magento\Framework\Event\ObserverInterface;
+use Magento\Customer\Model\Session;
+use ManishJoy\ChildCustomer\Model\PostFactory;
+use Magento\Store\Model\StoreManagerInterface;
+use ManishJoy\ChildCustomer\Helper\Customer as HelperData;
+
+class Redirect implements ObserverInterface
+{
+    protected $_response;
+    protected $_view;
+    protected $_request;
+    protected $_HelperData;
+    protected $_customerSession;
+    protected $_postFactory;
+    private $storeManager;
+
+    public function __construct(
+        HelperData $helperData,
+        Http $response,
+        ViewInterface $view,
+        StoreManagerInterface $storeManager,
+        PostFactory $postFactory,
+        RequestInterface $request,
+        Session $customerSession 
+    ) {
+        $this->_helperData = $helperData;
+        $this->_response = $response;
+        $this->_view = $view;
+        $this->_request = $request;
+        $this->storeManager = $storeManager;
+        $this->_postFactory = $postFactory;
+        $this->session = $customerSession;
+    }
+
+    public function execute(Observer $observer)
+    {
+          if ($this->session->isLoggedIn())
+        {   
+            $currentpageurl = $this->storeManager->getStore()->getCurrentUrl();
+            $urlparse = parse_url($currentpageurl);
+            $url = $urlparse['path'];
+            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $requestInterface = $objectManager->get('Magento\Framework\App\RequestInterface');
+            $routeName      = $requestInterface->getRouteName();
+            $moduleName     = $requestInterface->getModuleName(); 
+            $actionName     = $requestInterface->getActionName();
+            $controllerName = $requestInterface->getControllerName(); 
+
+             $url = "$routeName".'/'. "$controllerName".'/'."$actionName";
+             // echo $url;
+            $all_url = array("customer/account/index"=>"view_customer", 
+                                "customerorder/customer/neworder"=>"place_oder",
+                                "customerorder/customer/index"=>"view_order",
+                                "customerinvoices/customer/index"=>"pay_invoice",
+                                "customerorder/customer/orderview"=>"view_invoice",
+                                "downloadlibrary/category/index"=>"view_catalog",
+                                "customerorder/customer/inventorydata"=>"view_inventory",
+                              );
+                if(array_key_exists($url,$all_url))
+                {
+                    $urlvalue = $all_url[$url];
+                
+                $c_id = $this->session->getCustomeradminId();
+                $post = $this->_postFactory->create();
+                $collection = $post->getCollection()->addFieldToSelect('permission')->addFieldToFilter('c_id', 318);
+                $permission =  $collection->getData();
+                $permissionarray = json_decode($permission[0]['permission'], true);
+                // echo "<pre>";
+                // print_r($permissionarray);die;
+                $finalpermission = false;
+                    foreach ($permissionarray as $value) { 
+					foreach ($value as $upermission) { 
+				    	 if($upermission === $urlvalue){
+				    	 	$finalpermission = true;
+				    	 }
+				  	}     
+				} 
+				if(!$finalpermission){
+					$observer->getControllerAction()->getResponse()->setRedirect('/undercustomer/index/redirect'); 
+				}
+            }
+            
+        }
+    }
+}
+    

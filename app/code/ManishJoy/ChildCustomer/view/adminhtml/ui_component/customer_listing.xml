@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <columns name="customer_columns">
+        <column name="child_customer" class="ManishJoy\ChildCustomer\Ui\Component\Listing\Column\ChildCustomer">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">text</item>
+                    <item name="label" translate="true" xsi:type="string">Child Customer</item>
+                </item>
+            </argument>
+            <settings>
+               <label translate="true">Child Customers</label>
+               <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+               <sortable>false</sortable>
+            </settings>
+        </column>
+    </columns>
+</listing>
+
+

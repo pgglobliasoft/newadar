@@ -1,0 +1,35 @@
+<%
+	<!-- Formate the DATA START -->
+		var ItemName = data.ShortDesc ? data.ShortDesc : '',
+			placeholder = baseurl+'pub/media/catalog/product/placeholder/default/image.jpg',
+			itemnameforalt = ItemName,
+			DisPercent = data.DisPercent,
+			imagurltag= baseurl+'pub/media/Sttl_Customerorder/discount.png',
+			itemPrice = currencyconvert(data.UnitPrice),
+			ItemName_trimmed = itemnameforalt.replace(/ /g,''),
+			pro_img = data.U_WImage1 ? data.U_WImage1 : placeholder;
+	<!-- Formate the DATA END -->
+%>
+<div class='item product product-item' gname='<%=data.GroupName%>' id="<%=data.Style%>">
+	<a class='product-item-link'>
+		<span class='product-image-wrapper' style='padding-bottom: 133.94495412844%; width: auto;'>
+			<img class='img-responsive owl-lazys' src='<%=pro_img%>' width='218' height='292' alt="<%=ItemName_trimmed%>" />
+		</span>
+	</a>
+	<div class='product details product-item-details'>
+		<strong class='product name product-item-name'>
+			<a class='product-item-link' title="<%=ItemName%>" ><%=ItemName%></a>
+		</strong>
+		<div class="flex-markitem-align">
+			<span class='product price product-item-price'>$<%=itemPrice%></span>
+			<div class="num-in"> 
+				<span class="minus dis"></span> 
+				<input type="number" placeholder="Qty" inputmode="numeric" class="qty_add_num" value="0" min="0"> 
+				<input name="addstyleqty" id="addstyleqty[<%=data.Style%>]" type="hidden" value=""> 
+				<input name="mark_item_sku" id="mark_sku[<%=data.Style%>]" type="hidden" value="<%=data.Style%>"> 
+				<input name="mark_item_price" id="mark_price[<%=data.Style%>]" type="hidden" value="<%=itemPrice%>"> 
+				<span class="plus"></span> 
+			</div>
+		</div>
+	</div>
+</div>

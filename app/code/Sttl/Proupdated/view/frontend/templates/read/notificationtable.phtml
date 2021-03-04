@@ -1,0 +1,89 @@
+<?php 
+	$readNoData = $block->getReadNoJson();
+	$readNoJson = [];
+	$readcount = 0;
+	if(!empty($readNoData)){
+	$readNoJson = json_decode($readNoData[0]['read_json'],true);
+	$collections=$this->getPostCollection();
+	foreach ($collections as $collection) {
+		if (array_key_exists($collection['id'],$readNoJson))
+	  	{	
+	  		$readNoJson[$collection['id']] == 0 ? $readcount++ : '';
+	  	}	
+	}
+}
+?>
+<div class="myAccountCustomBanner">
+		<?php echo $this->getSliderHtml(); ?>
+		<div class="notificationsection">
+					<table border="1">
+			<thead>
+			<tr><th>Important Announcement 
+				<div class="impnotification notify show-count" id="notification" data-count="<?php echo $readcount;?>"></div>
+			</th></tr>
+			</thead>
+			<tbody>
+			<?php
+			 
+			 foreach ($collections as $collection) {
+			 	$activeclassvalue = '';
+			 	if (array_key_exists($collection['id'],$readNoJson))
+				  {
+				  	$activeclassvalue = $readNoJson[$collection['id']] == 0 ? 'notread' : '';
+				  }
+			 	echo "<tr class='openmodal ".$activeclassvalue."' data-toggle='modal' data-id='".$collection['id']."' data-target='#notificationinfo'><td>";
+			 	if(strlen($collection['title']) > 30)
+			 	 {
+			 	   echo "<p>".substr($collection['title'], 0, 30)."...</p>";
+			 	 }  
+			 	 else{
+			 	 	echo "<p>".$collection['title']."</p>";
+			 	 }
+
+			 	if(strlen($collection['preview']) > 30){
+			 		echo "<p>".substr($collection['preview'], 0, 30)."...</p></td></tr>";
+			 	}else{
+			 		echo "<p>".$collection['preview']."</p></td></tr>";
+			 	}
+			}
+			?>
+		</tbody>
+	</table>
+		</div>
+	</div>
+	  <?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$collections=$this->getPostCollection();
+echo "<div id='notificationinfo' class='notificationinfo'>";
+foreach ($collections as $collection) {
+ echo "<div class='modal-content' id='data-target-".$collection['id']."' style='display:none' ><p class='title'>".$collection['title']."</p>";
+ $bannerdata = json_decode($collection['banners'],true);
+ if($bannerdata){?>
+	 <div class="insta-banner-owlslider" >
+		<ul class=" <?php echo count($bannerdata) > 1 ? 'InstadSlider': ''; ?>" >
+		 <?php foreach ($bannerdata as $key => $value) {
+			$datacollection = $this->getBannerData($value);
+				if($datacollection){			 	
+		 	?>
+			<li>						
+				<a href="<?php echo $datacollection['click_url']?>" target="_blank"><img src="<?php echo $this->getBaseUrlMedia($datacollection['image']); ?>" alt=""></a>
+			</li>
+	 	<?php }}?>
+		</ul>
+	</div>
+ <?php } ?>
+ <?php 
+ // print_r($datacollection);die;
+ 	$filterManager = $objectManager->get('Magento\Cms\Model\Template\FilterProvider')->getPageFilter()->filter($collection['post_content']);
+ echo"<p>".$filterManager."</p>";
+ if(!empty($collection['button_name']) && !empty($collection['url_key'])){
+ 	echo  "<div class='buttonoptional'>";
+ 	echo "<a href='".$collection['url_key']."' target='_blank' class='optionalbutton' >".$collection['button_name']."</a></div>";
+ }
+ echo "<button type='button' class='close' data-dismiss='modal' aria-label='Close'><span>Close window</span></button></div>";
+
+ ?>	
+<?php 
+}
+ echo "</div>";
+?>

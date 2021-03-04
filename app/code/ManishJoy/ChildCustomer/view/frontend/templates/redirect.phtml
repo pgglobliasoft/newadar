@@ -1,0 +1,71 @@
+<?php
+ $param = $this->getRequest()->getParam('target');
+ if($param != 'adaruniforms/index/productinv'){
+?>	
+<div class="access-redirect">
+
+<h1>Access Denied</h1>
+<p>
+You Don't have to permission to access <a href="#">"<?php echo $block->getUrl('/').$param; ?>"</a>
+</p>
+<a class="Back" href="javascript:history.go(-1)" ><span>Back</span></a>
+<a class="Home" href="<?php echo $block->getUrl('/'); ?>"><span>Home</span></a>
+</div>
+
+<?php }else{?>
+  
+<script>
+    require(['jquery','swal'], function($,swal) {   
+        $(document).on('click','.buyNowBtnMain',function(e){
+               // swal("Access Denied", "You Don't have to permission to access :)", "error");
+               var title = 'Access Denied';
+                var classname = 'error';
+                var message = "You Don't have to permission to access please contact your Admin :)";
+                  swal({
+                    title: title, 
+                    text: message, 
+                    type: classname,             
+                    timer: 4000,
+                    showCancelButton: false,   
+                    className: "swal-customer-"+classname                   
+                  }) 
+                
+        });
+    });
+</script>
+
+
+
+
+<?php }?>
+
+
+
+
+
+<style>
+    .catalog-category-view .mfp-wrap{ position: fixed !important; top: 0 !important; }
+	.access-redirect {
+    display: block;
+    text-align: center;
+    border: 1px solid #0c4269;
+    padding: 25px 25px;
+    width: 477px;
+    height: fit-content;
+    margin: auto;	
+}
+.access-redirect a,a.Home,a.Back{text-decoration: none; color:#0c4269;}
+a.Home span,a.Back span{	
+	border: 1px solid #0c4269;
+    color: #0c4269;
+    padding: 4px 12px;
+    font-size: 16px;
+    font-weight: 500;
+    margin-right: 10px;
+    cursor: pointer;
+}
+a.Home span:hover,a.Back span:hover{
+	color: #fff;
+	background: #0c4269;
+}
+</style>

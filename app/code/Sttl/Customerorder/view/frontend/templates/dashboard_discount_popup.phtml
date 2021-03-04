@@ -1,0 +1,112 @@
+<div class="modal fade block block-customer-edit-address comingSoon bulkDiscount" id="bulk-discount" tabindex="-1" role="dialog" aria-labelledby="addressModal" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="modalContainer block-content" aria-labelledby="block-customer-login-heading">
+					<div class="quickViewCont">        
+						<div class="container bg-primary p-2" style="padding: 12px 15px !important;">
+							<div class="row">
+								<div class="col-md-4 offset-md-4 text-center">
+									<img src="<?php echo $this->getViewFileUrl('images/mobile-logo-white.png'); ?>">
+								</div>
+								<div class="col-md-4">
+									<button type="button" data-dismiss="modal" class="close mfp-close-inside"><i class="fa fa-times"></i></button>
+								</div>
+							</div>
+						</div>
+						<div class="discountCont discount_popup_data">
+							
+						</div>
+					</div>   
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<style type="text/css">
+
+.info_table thead th {
+	color: #fff;
+	text-align: center;
+	background: #1c4165;
+	vertical-align: middle;
+	border-bottom: 0px solid #dee2e6;
+	border-top: none;
+}
+.info_table thead th:nth-child(1) {
+	background: #fff;
+}
+.info_table table.table {
+	border: 1px solid #1c4165;
+}
+.info_table thead th:nth-child(2) {
+	border-left: 1px solid #dee2e6;
+	border-right: 1px solid #dee2e6;
+}
+.info_table tbody tr td {
+	text-align: center !important;
+	color: #000 !important;
+	font-weight: 500 !important;
+	border:none !important;
+	border-right: 1px solid #dee2e6 !important;
+	border-top: 1px solid #dee2e6 !important;
+	vertical-align: middle;
+}
+.info_table tbody tr td:nth-child(1) {
+	font-weight: 800;
+}
+.info_table tbody tr:nth-child(odd) {
+    background: #f7f6f4;
+}
+.info_table table.table tbody tr.info_table_selected {
+	border: 1px solid #1c4165;
+	box-shadow: 0px 0px 7px 1px rgba(0,0,0, 0.3);
+}
+.info_table table.table tbody tr.info_table_selected td {
+    border-top: 1px solid #1c4165 !important;
+    border-bottom: 1px solid #1c4165 !important;
+}
+.info_table table.table tbody tr.info_table_selected td:last-child {
+    border-right: 1px solid #1c4165 !important;
+}
+.info_table tbody tr td:last-child {
+    border-right: 1px solid #1c4165 !important;
+}
+.info_table table.table tbody tr.info_table_selected td.info_selected_text span {
+    display: block;
+    height: 40px;
+    width: 40px;
+    border: 1px solid #000;
+    text-align: center;
+    line-height: 38px;
+    border-radius: 50px;
+    margin: auto;
+    background: #f3f2f3;
+    position: relative;
+}
+.info_table table.table tbody tr.info_table_selected td.info_selected_text {
+    position: relative;
+}
+.info_table table.table tbody tr.info_table_selected td.info_selected_text::before {
+    content: "YOUR TIER";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44%;
+    display: block;
+    left: 0;
+    font-size: 11px;
+    font-weight: 500;
+    background: #1c4165;
+    color: #fff;
+    padding: 1px 0px 2px 0px;
+}
+
+.bulkDiscount .modal-dialog .shipdatainfo .info_table table:not(.an_sp_br) tbody tr td {
+	height: 80px;
+}
+
+.bulkDiscount .modal-dialog .shipdatainfo .info_table table thead tr th {
+	border-bottom: unset !important;
+}
+</style>

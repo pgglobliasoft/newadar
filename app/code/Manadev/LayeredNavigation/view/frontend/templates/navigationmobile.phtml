@@ -1,0 +1,96 @@
+<?php
+
+$objectManager =  \Magento\Framework\App\ObjectManager::getInstance();
+
+$categoryFactory = $objectManager->get('\Magento\Catalog\Model\CategoryFactory');
+$categoryHelper = $objectManager->get('\Magento\Catalog\Helper\Category');
+$categoryRepository = $objectManager->get('\Magento\Catalog\Model\CategoryRepository');
+$get_category = $objectManager->get('Magento\Framework\Registry')->registry('current_category');//get current category
+//$categoryId = 11;
+$parentCategories = array();
+$params = $this->getRequest()->getParam('q');
+$url_query = http_build_query($this->getRequest()->getParams());
+$cat = $this->getRequest()->getParam('category');
+
+/* if(!isset($params) && empty($params))
+{ */
+if(isset($get_category) && !empty($get_category)){
+	if(in_array($get_category->getId(), array(8,5,4,7,6)))
+	{
+		$categoryId = $get_category->getId();
+	}
+    else if($get_category->getData('level') == 3 || $get_category->getData('level') == 4)
+    {
+	   $categoryId = $get_category->getParentCategory()->getId();
+    }
+    else
+    {
+        $categoryId = $get_category->getId();
+    }
+	$category = $categoryFactory->create()->load($categoryId);
+	$parentCategories = $category->getChildrenCategories();
+	//print_r($parentCategories->getData());
+}
+elseif(isset($cat) && !empty($cat))
+{
+	$collectionSubCatArray = array('Addition'=>8,'Responsive'=>5,'Pro'=>4,'Lab'=>7,'Universal by adar'=>6);
+	if(isset($collectionSubCatArray[$cat]) && !empty($collectionSubCatArray[$cat]))
+	{
+		$category = $categoryFactory->create()->load($collectionSubCatArray[$cat]);
+		$parentCategories = $category->getChildrenCategories();
+
+	}
+}
+/* } */
+?>
+
+<?php if ($block->isVisible()): ?>
+        <?php $filtered = count(iterator_to_array($block->getAppliedFilters())) ?>
+            <?php $noFilters = true; ?>
+
+            <?php if ($block->hasState() && $block->isAppliedFilterVisible()) : ?>
+			<div class="filter-clearall-parent">
+				<div class="block-actions filter-actions mobile-clearall">
+					<a href="<?php echo $block->getClearUrl() ?>"<?php echo $block->getClearLinkAttributes() ?> class="action clear filter-clear"><span><?php echo __('Clear All') ?></span></a>
+				</div>
+			</div>
+			<?php endif; ?>
+<?php endif; ?>
+<script>
+/* 	require(['jquery.bootstrap','Manadev_Core/js/StatefulAccordionWidget'], function ($,jquery)
+{
+
+	jQuery("#narrow-by-list").accordion({
+		header : "#title-1",
+		content : "#content-1",
+		trigger : "#trigger-1",
+		multipleCollapsible: true
+	});
+	//jQuery( "#narrow-by-list" ).accordion( "activate" );
+	//jQuery( "#narrow-by-list" ).accordion( "deactivate" );
+}); */
+require(['functions','jquery.bootstrap'], function ($,jquery)
+{
+		'use strict';
+		jQuery.noConflict();
+		jQuery(document).ready( function(){
+			if(jQuery(window).width() <= 768){
+				jQuery('.filter-options-item').removeAttr('data-bind');
+			}else{
+				jQuery('.filter-options').show();
+			}
+			jQuery("#shopByClose").click(function () {
+				jQuery('#layered-filter-block').removeClass('active');
+				jQuery('body').removeClass('filter-active');
+			});
+		});
+		jQuery(window).resize( function(){
+			if(jQuery(window).width() <= 768){
+				jQuery('.filter-options-item').removeAttr('data-bind');
+			}else{
+				jQuery('.filter-options').show();
+			}
+		});
+
+});
+</script>

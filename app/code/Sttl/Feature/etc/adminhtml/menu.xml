@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Backend/etc/menu.xsd">
+	
+	<menu>
+		<add id="Sttl_Feature::features" title="Adar Features" module="Sttl_Feature" sortOrder="3" resource="Sttl_Feature::manage_feature" parent="Sttl_Inquiries::main"/>
+		
+		<add id="Sttl_Feature::manage_feature" title="Manage Features" module="Sttl_Feature" sortOrder="12" action="feature/feature/" resource="Sttl_Feature::manage_feature" parent="Sttl_Feature::features"/>		
+		<!--<add id="Sttl_Feature::configuration" title="Configuration" module="Sttl_Feature" sortOrder="13" action="adminhtml/system_config/edit/section/feature" resource="Sttl_Feature::configuration" parent="Sttl_Feature::features"/>-->      
+    </menu>
+</config>

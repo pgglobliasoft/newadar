@@ -1,0 +1,45 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/**
+ * @var $block \Magento\Theme\Block\Html\Title
+ */
+$_product = $block->getProduct();
+$title = '';
+    $title = '<span class="base" data-ui-id="page-title-wrapper " >'
+        . $block->escapeHtml($_product->getName()) . '</span>';
+?>
+
+<script>
+    window.productid = <?php  echo \Zend_Json::encode($_product->getId()); ?>;
+    window.productsku = <?php  echo \Zend_Json::encode($_product->getSku()); ?>;
+
+</script>
+
+<?php if ($title): ?>
+<div class="page-title-wrapper product">
+    <h3 class="page-title" >
+        <?= /* @escapeNotVerified */ $title ?>
+    </h3>
+</div>
+            <?php $collcationValue =  $_product->getResource()->getAttribute('collecttion')->getFrontend()->getValue($_product); ?>
+                    <div class="show-product-dis-box">
+                        <?php if($collcationValue): ?>
+                         <span><?php echo $collcationValue; ?> collection </span>
+                         <?php endif;?>
+                    </div>
+                    <div class="show-product-dis-box-more">
+                        <span><lable>Style:</lable></span>
+                        <span><?php echo $_product->getSku();?></span>
+                    </div>
+           
+            <div class="catBtns">
+                
+            </div>
+            
+<?php endif; ?>

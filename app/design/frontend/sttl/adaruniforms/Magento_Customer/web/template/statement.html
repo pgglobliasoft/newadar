@@ -1,0 +1,82 @@
+    <div class="blocktitle"><strong class="upperCaseText">Customer Statement</strong>
+    </div>
+    <div id="collapseTwo" class="customerStatement">
+        <div class="box box-information">
+            <strong class="box-title">
+                <span>Customer Code:</span>
+            </strong>
+            <div class="box-content">
+                    <%if(customerdata.CardCode){%>
+                        <p><%=customerdata.CardCode%></p>
+                    <%}else{%>
+                        <p>N/A</p>
+                    <%}%>
+            </div>
+             </div>
+           <div class="box box-information">
+            <strong class="box-title">
+                <span>Location:</span>
+            </strong>
+            <div class="box-content">
+                <%if(customerdata.BCity || customerdata.BState){%>
+                        <p><%=customerdata.BCity%>,<%=customerdata.BState%></p>
+                    <%}else{%>
+                        <p>N/A</p><br>
+                    <%}%>
+            </div>
+        </div>
+        <div class="box box-information">
+            <strong class="box-title">
+                <span>Current Open Balance:</span>
+            </strong>
+            <div class="box-content">
+                <%if(customerdata.AccountBalance){
+                    var price1 = currencyconvert(customerdata.AccountBalance)
+                    price1 = parseFloat(price1)
+                %>
+                        <p>$<%=price1.toFixed(2)%></p>
+                    <%}else{%>
+                        <p>N/A</p><br>
+                    <%}%>
+            </div>
+             </div>
+        <div class="box box-information">
+             <strong class="box-title">
+                <span>Customer Name:</span>
+            </strong>
+            <div class="box-content">
+                <%if(customerdata.CardName){%>
+                        <p><%=customerdata.CardName%></p>
+                    <%}else{%>
+                        <p>N/A</p><br>
+                    <%}%>
+            </div>
+       </div>
+        <div class="box box-information">
+             <strong class="box-title">
+                <span>Discount Program / Tier:</span>
+            </strong>
+            <div class="box-content">
+                <%if(customerdata.Tier){%>
+                        <p><%=customerdata.Tier%></p>
+                    <%}else{%>
+                        <p>N/A</p><br>
+                    <%}%>
+            </div>
+       </div>
+       <div class="box box-information">
+             <strong class="box-title">
+                <span>Current Open Orders:</span>
+            </strong>
+            <div class="box-content">
+                <%if(customerdata.OpenOrder){
+                    var price = currencyconvert(customerdata.OpenOrder)
+                    price = parseFloat(price)
+                %>
+                    <p>$<%=price.toFixed(2)%></p>
+                    <%}else{%>
+                        <p>N/A</p><br>
+                    <%}%>
+            </div>
+       </div>
+    </div>

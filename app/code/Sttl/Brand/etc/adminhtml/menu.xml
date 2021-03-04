@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Backend/etc/menu.xsd">
+
+	<menu>
+		<add id="Sttl_Brand::brands" title="Adar Brands" module="Sttl_Brand" sortOrder="2" resource="Sttl_Brand::manage_brand" parent="Sttl_Inquiries::main"/>
+
+		<add id="Sttl_Brand::manage_brand" title="Manage Brands" module="Sttl_Brand" sortOrder="12" action="brand/brand/" resource="Sttl_Brand::manage_brand" parent="Sttl_Brand::brands"/>
+
+		<add action="sttl_importproductbrand/importproductbrand/index" id="Sttl_Importproductbrand::sttl_importproductbrand_importproductbrand" module="Sttl_Importproductbrand" parent="Sttl_Brand::manage_brand" resource="Magento_Backend::content" sortOrder="9999" title="Import Product Brand" />
+
+		<!-- <add id="Sttl_Brand::configuration" title="Configuration" module="Sttl_Brand" sortOrder="13" action="adminhtml/system_config/edit/section/brand" resource="Sttl_Brand::configuration" parent="Sttl_Brand::brands"/>        -->
+
+    <add id="Sttl_Brand::fabric_import" title="Import Fabric Data" sortOrder="50" module="Sttl_Brand" resource="Sttl_Brand::manage_brand" parent="Sttl_Inquiries::main"/>
+
+    <add id="Sttl_Brand::excel_fabric_import" title="Import Fabric Data from Excel" sortOrder="10" module="Sttl_Brand" parent="Sttl_Brand::fabric_import" action="brand/excel/import" resource="Magento_Backend::content"/>
+
+    </menu>
+</config>

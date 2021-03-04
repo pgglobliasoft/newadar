@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page layout="1column" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Globalia_Quickcheckout::css/render_quickcheckout.css"/>
+		<css src="WeltPixel_Quickview::css/magnific-popup.css" />
+        <css src="Sttl_Customerorder::css/viewstock.css" />
+        <remove src="mage/calendar.css"/>
+        <remove src="gallery/gallery.css"/>
+        <remove src="Magestorm_ReCaptcha::css/default.css"/>
+        <remove src="css/print.css"/>
+       <script src="Sttl_Customerorder::js/viewstockpopup.js"/>
+       <script src="Magento_Catalog::js/configproduct.js"/>
+    </head>
+    <update handle="catalog_product_opengraph" />
+    <update handle="page_calendar"/>
+    <referenceBlock name="product.info.media.video" remove="true" />
+    <referenceBlock name="page.messages" remove="true"/>
+    <body>
+        <attribute name="itemtype" value="http://schema.org/Product" />
+        <attribute name="itemscope" value="itemscope"/>
+        <referenceBlock name="head.components">
+            <block class="Magento\Framework\View\Element\Js\Components" name="checkout_page_head_components" template="Magento_Catalog::js/components.phtml"/>
+        </referenceBlock>
+        <referenceBlock name="head.components" remove="true" />
+        <referenceContainer name="columns.top">
+            <referenceBlock name="page.main.title" remove="true" />
+            <referenceBlock name="product.info.price" remove="true" />
+            <referenceBlock name="product.info.details" remove="true" />
+            <referenceBlock name="product.info.addtocart.additional" remove="true" />
+            <referenceContainer name="product.info.extrahint" remove="true" />
+        </referenceContainer>
+        <referenceBlock name="root">
+            <arguments>
+                <argument name="add_attribute" xsi:type="string">itemscope itemtype="http://schema.org/Product"</argument>
+            </arguments>
+        </referenceBlock>
+
+        <referenceBlock name="breadcrumbs" template="Magento_Catalog::product/breadcrumbs.phtml">
+            <arguments>
+                <argument name="viewModel" xsi:type="object">Magento\Catalog\ViewModel\Product\Breadcrumbs</argument>
+            </arguments>
+        </referenceBlock>
+        <referenceContainer name="content">
+            <container name="product.info.main" htmlTag="div" htmlClass="product-info-main" before="-">
+                <block class="Magento\Catalog\Block\Product\View" name="productview.main.title" template="product/view/title.phtml"/>
+                <container name="alert.urls" as="alert_urls" label="Alert Urls" after="product.price.tier"/>
+                <block class="Magento\Catalog\Block\Product\View" name="product.info" template="Magento_Catalog::product/view/form.phtml" after="alert.urls">
+                    <block class="Magento\Framework\View\Element\Template" name="product.info.form.options" as="options_container">
+                        <block class="Magento\Catalog\Block\Product\View" name="product.info.options.wrapper" as="product_options_wrapper" template="Magento_Catalog::product/view/options/wrapper.phtml">
+                            <block class="Magento\Catalog\Block\Product\View\Options" name="product.info.options" as="product_options" template="Magento_Catalog::product/view/options.phtml">
+                                <block class="Magento\Catalog\Block\Product\View\Options\Type\DefaultType" name="product.info.options.default" as="default" template="Magento_Catalog::product/view/options/type/default.phtml"/>
+                                <block class="Magento\Catalog\Block\Product\View\Options\Type\Text" name="product.info.options.text" as="text" template="Magento_Catalog::product/view/options/type/text.phtml"/>
+                                <block class="Magento\Catalog\Block\Product\View\Options\Type\File" name="product.info.options.file" as="file" template="Magento_Catalog::product/view/options/type/file.phtml"/>
+                                <block class="Magento\Catalog\Block\Product\View\Options\Type\Select" name="product.info.options.select" as="select" template="Magento_Catalog::product/view/options/type/select.phtml"/>
+                                <block class="Magento\Catalog\Block\Product\View\Options\Type\Date" name="product.info.options.date" as="date" template="Magento_Catalog::product/view/options/type/date.phtml"/>
+                            </block>
+
+                        </block>
+                    </block>
+                </block>
+             <container name="productview.customattribute" htmlTag="div" as="productview.customattribute" label="productview.customattribute" htmlClass="customattribute" after="product.info">
+                <block class="Magento\Framework\View\Element\Template" name="configrationproduct" template="Magento_Catalog::product/view/forconfigrablepro.phtml" after="product.price.tier">
+                </block>
+                </container>
+                <block class="Magento\Catalog\Block\Product\View\Description" name="product.info.action_button" template="Magento_Catalog::product/view/actions_button.phtml" before="productview.customattribute" />
+				<container name="product.info.main.prd.opt" htmlTag="div" htmlClass="product-info-main-prd-opt" after="-">
+                    <block class="Sttl\Adaruniforms\Block\View" name="product.info.main.prd.opt.block"  template="Magento_Catalog::product/ViewStockpopup.phtml" />
+				</container>
+                <block class="Globalia\Quickcheckout\Block\Dashboard\Quickcheckout" name="quickcheckout" template="Globalia_Quickcheckout::quickcheckout.phtml" />
+            </container>
+            <container name="product.info.media" htmlTag="div" htmlClass="product media" after="product.info.main">
+                <referenceBlock name="product.info.media.image" remove="true" />
+                 <block class="Magento\Catalog\Block\Product\View" name="product.info.media.image.custom" template="product/view/customgallery.phtml"/>
+            </container>
+            <container name="product.info.main.sizechartpopup" htmlTag="div" htmlClass="sizechartpopupContainer" after="-">
+                <block class="Magento\ConfigurableProduct\Block\Product\View\Type\Configurable" name="product.info.main.sizechartpopup.block"  template="Magento_Catalog::product/view/sizechartpopup.phtml" />
+            </container>
+            <container name="product.info.main.fabriccare" htmlTag="div" htmlClass="fabriccarepopupContainer" after="-">
+                <block class="Magento\ConfigurableProduct\Block\Product\View\Type\Configurable" name="product.info.main.fabriccarepopup.block"  template="Magento_Catalog::product/view/fabriccarepopup.phtml" />
+            </container>
+        </referenceContainer>
+        <referenceContainer name="content.aside">
+            <block class="Magento\Catalog\Block\Product\ProductList\Related" name="catalog.product.related" template="product/list/items.phtml">
+                <arguments>
+                    <argument name="type" xsi:type="string">related</argument>
+                </arguments>
+                <block class="Magento\Catalog\Block\Product\ProductList\Item\Container" name="related.product.addto" as="addto">
+                    <block class="Magento\Catalog\Block\Product\ProductList\Item\AddTo\Compare"
+                           name="related.product.addto.compare" as="compare"
+                           template="Magento_Catalog::product/list/addto/compare.phtml"/>
+                </block>
+            </block>
+            <block class="Magento\Catalog\Block\Product\View\Additional" name="product.info.additional" as="product_additional_data"/>
+        </referenceContainer>
+    </body>
+</page>

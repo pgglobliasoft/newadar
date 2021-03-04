@@ -1,0 +1,22 @@
+
+<?php
+// @codingStandardsIgnoreFile
+
+/** @var $block \WeltPixel\Quickview\Block\Initialize */
+?>
+
+
+<script>
+  requirejs(['jquery', 'magnificPopup'],
+      function   ($, magnificPopup) { 
+         $(document).ready(function() {             
+              $('.mfp-close-inside').bind('click', function() {               
+                  var magnificPopup = $.magnificPopup.instance; // save instance in magnificPopup variable
+                  magnificPopup.close();
+                  $('#quickView-popup').html('');
+             });
+                     
+          });
+      });
+     window.weltpixel_quickview = <?php /* @escapeNotVerified */ echo \Zend_Json::encode($block->getConfig()); ?>;
+</script>

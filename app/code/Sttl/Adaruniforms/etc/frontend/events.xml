@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * See LICENSE.txt for license details (http://opensource.org/licenses/osl-3.0.php).
+ *
+ * Glory to Ukraine! Glory to the heroes!
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+<!--     <event name="customer_save_before">
+        <observer name="sttl_adaruniform_customer_save_before" instance="Sttl\Adaruniforms\Observer\CheckSapUserBeforeObserver" />
+    </event> -->
+    <event name="customer_register_success">
+        <observer name="sttl_adaruniform_customer_account_createPost" instance="Sttl\Adaruniforms\Observer\CustomerRegisterSuccess" />
+    </event>
+    <event name="controller_action_predispatch">
+       <observer name="sttl_adaruniform_redirect" instance="Sttl\Adaruniforms\Observer\Redirect" shared="false" />
+    </event> 
+
+    <event name="catalog_category_load_after">
+        <observer instance="Sttl\Adaruniforms\Observer\CategoryLoadAfter" 
+                  name="adaruniforms_magento_observer_frontend_categoryloadafter_catalog_product_load_after"
+        />
+    </event>
+
+    <event name="catalog_product_load_after">
+        <observer instance="Sttl\Adaruniforms\Observer\CatalogLoadAfter" 
+                  name="adaruniforms_magento_observer_frontend_catalogloadafter_catalog_product_load_after"
+        />
+    </event>
+
+    <!-- <event name="customer_login">
+        <observer name="sttl_adaruniform_customer_login_data" instance="Sttl\Adaruniforms\Observer\CheckCustomerStatus" shared="false" />
+    </event> -->
+</config>

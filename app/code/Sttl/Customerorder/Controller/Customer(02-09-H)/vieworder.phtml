@@ -1,0 +1,150 @@
+<?php
+$orderdata = $block->getRegisterData();
+$helper = $this->helper('Sttl\Adaruniforms\Helper\Sap');
+$data = $helper->getCustomerShippingAddressDetails();
+$customerdata = $helper->getCustomerDetails();
+if(isset($customerdata) && isset($customerdata['errors'])) 
+{
+	echo $customerdata['message'];
+}
+else
+{
+	$post = $this->getRequest()->getParams();
+	$orderdata = $helper->getSapOrders($customerdata[0]['CardCode'],$post['po_number'],$post['order_id']);
+	$currentorderdata = $orderdata[0];
+	$customerdata = $customerdata[0];
+	$notshow = true; 
+if(strtolower($currentorderdata['DocStatus']) == strtolower('Submitted'))
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $redirect = $objectManager->get('\Magento\Framework\App\Response\Http');
+        $baseurl =  $block->getBaseUrl().'customerorder/customer/index';
+        $redirect->setRedirect($baseurl);
+    }
+?>
+<form name="ordersummary" id="ordersummary" method="POST" enctype="multipart/form-data" data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>" autocomplete="off" data-mage-init='{"validation": {"errorClass": "mage-error"}, "theAdarValidationMethod":{}}' action="<?php echo $block->getBaseUrl().'customerorder/customer/revieworder' ?>">
+	<div class="block block-dashboard-info cf newOrderStep3 ordersummary">
+    	<div class="block-title">
+			<strong>STEP 4: Review and submit your order.</strong>
+		</div>
+		<div class="cols12 mb-2">
+			<div class="box box-information padL10"><strong>P.O. Number:</strong> <span id="poNumber"><?php echo $currentorderdata['NumatCardPo'];?></span></div>
+		</div>
+		<div class="cols6">
+            <strong class="box-title">
+                <span>Shipping Details:</span>
+			</strong>
+            <?php echo $this->getLayout()->createBlock("Magento\Framework\View\Element\Template")->setTemplate("Sttl_Customerorder::createorder/summaryshippinginformation.phtml")->toHtml();?>
+			<div class="box box-information shmet">
+				<strong class="box-title">
+					<span>Shipping Method:</span>
+				</strong>
+				<div class="box-content">
+					<?php if($currentorderdata['ShippingType'] != '') { ?>
+						<?php if($currentorderdata['ShippingType'] == $customerdata['ShipCode']) {
+							$notshow = false;
+						 ?>
+							<span><?php echo $customerdata['ShipType'];?></span>
+						<?php } ?>   
+						<?php if($currentorderdata['ShippingType'] == "STD") { ?>
+							<span>Ground (3 - 5 business)</span>
+						<?php } ?>   
+						<?php if($currentorderdata['ShippingType'] == "NXD") { ?>
+							<span>Next Day</span>
+						<?php } ?>   
+						<?php if($currentorderdata['ShippingType'] == "SCD") { ?>
+							<span>2nd Day</span>
+						<?php } ?>   
+						<?php if($currentorderdata['ShippingType'] == "THD") { ?>
+							<span>3 Day Select</span>
+						<?php } ?> 
+						<?php if($currentorderdata['ShippingType'] == "4" && $notshow) { ?>
+							<span>Pick Up</span>
+						<?php } ?> 
+						
+						<?php  }else{ ?>
+						<select class="col-md-12" name="shiiping_method" >
+							<option>Select</option>
+							<?php if($customerdata['ShipCode'] != '128' && $customerdata['ShipType'] != 'All') { ?>
+								<option value="<?php echo $customerdata['ShipCode'];?>" <?php if($currentorderdata['ShippingType'] ==  $customerdata['ShipCode']) { echo 'selected="selected"'; } ?> ><?php echo $customerdata['ShipType'].'(Default Shipping Method)'; ?></option>
+							<?php }?>
+							<option value="STD" <?php if($currentorderdata['ShippingType'] == "STD") { echo 'selected="selected"'; } ?> >Ground (3 - 5 business)</option>
+							<option value="NXD" <?php if($currentorderdata['ShippingType'] == "NXD") { echo 'selected="selected"'; } ?>>Next Day </option>
+							<option value="SCD" <?php if($currentorderdata['ShippingType'] == "SCD") { echo 'selected="selected"'; } ?>>2nd Day </option>
+							<option value="THD" <?php if($currentorderdata['ShippingType'] == "THD") { echo 'selected="selected"'; } ?>>3 Day Select</option>
+						</select>
+					<?php } ?>
+				</div>
+			</div>
+		</div>
+		<div class="cols6 billingDtl">
+			<strong class="box-title">
+                <span>Billing Details:</span>
+			</strong>
+			
+			<?php echo $this->getLayout()->createBlock("Magento\Framework\View\Element\Template")->setTemplate("Sttl_Customerorder::createorder/summarysavepament.phtml")->toHtml();?>
+			
+		</div>
+		<div class="cf">
+            <input type="hidden" name="order_id" id="order_id" value="<?php echo $post['order_id']?>">
+            <input type="hidden" name="po_number" id="po_number" value="<?php echo $post['po_number']?>">
+            <input type="hidden" name="WebOrderId" id="WebOrderId" value="<?php echo $currentorderdata['WebOrderId']?>">
+		</div>
+		<div class="cols12 mb-2">
+			<p><strong>Delivery Notes:</strong> <span id="DeliveryNotes"><?php echo (isset($currentorderdata['DeliveryNotes']) && !empty($currentorderdata['DeliveryNotes'])) ? $currentorderdata['DeliveryNotes'] : "";?></span></p>
+		</div>
+        <div class="cf line-item">
+            <h3 class="subTitle">Line Items <!-- <a href="javascript:void(0);" class="printBtn alignRight"> <span class="fa fa-print"></span> Print/Export PDF</a> --></h3>
+            <div class="orderListing">
+                <?php 
+					$distinstyle = $helper->gettempOrdrstyle($post['order_id']); 
+					$values = array_map('array_pop', $distinstyle);
+					$implodedStyle = implode("','", $values);
+					$distinstyle = $helper->getsizegroup($implodedStyle); 
+					$sizegrouparray = array();
+					foreach($distinstyle as $key => $data)
+					{
+						$sizegrouparray[$data['SizeGroup']][] = $data['Style'];
+					}
+					$filnalHtml ='';
+					foreach($sizegrouparray as $key => $value)
+					{
+						$renderDataByColor = '';
+						$groupstyle =implode("','", $value);
+						$renderDataByColor = $helper->newrenderOrderItemHtml($post['order_id'],'','','ordersummary',$groupstyle);  
+						$filnalHtml .= $renderDataByColor;
+					}
+					echo $filnalHtml .= $helper->renderOrderItemHtmltotal($post['order_id'],'ordersummary');
+					
+					
+					//echo $renderDataByColor = $helper->renderOrderItemHtml($post['order_id'],'','','ordersummary');
+				?>
+			</div>
+		</div>
+        <div class="cf orderBtnRow">
+            <div class="box-actions alignRight">
+                <a href="<?php echo $block->getBaseUrl();?>customerorder/customer/payment?back_order_id=<?php echo base64_encode($post['order_id']);?>&back_po_number=<?php echo base64_encode($post['po_number']) ?>" class="delUrl newLinkText">Back</a>
+                <button type="submit" class="themeBtn action save submitorder_sttl" title="Submit Order"><span>Submit Order</span></button>
+			</div>
+		</div>
+	</div>
+</form>
+<script type="text/javascript">
+    require(['jquery'], function($) {
+        $(document).ready(function() {
+			$(".submitorder_sttl").click(function(e){
+				$('body').trigger('processStart');
+			});
+			$(".newLinkText").click(function(e){
+				$('body').trigger('processStart');
+			});
+            $('.removeeditbillurl').remove();
+            $('.removeeditshipurl').remove();
+		});
+		
+	});
+	
+</script>
+<?php
+}
+?>

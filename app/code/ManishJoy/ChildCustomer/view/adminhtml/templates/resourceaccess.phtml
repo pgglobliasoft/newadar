@@ -1,0 +1,200 @@
+<?php
+/**
+ * @var $block \Magento\User\Block\Role\Tab\Edit
+ * @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer
+ */
+
+$tmp_permmi = $block->getPermmistion();
+$permission = '';
+if(!empty($tmp_permmi)){
+  $permission = $tmp_permmi[0]["permission"];
+}
+?>
+<style type="text/css">ul {line-height: normal; list-style: none; } li.tree-top ul {margin-left: 22px; } li.tree-top {margin-left: 10px; margin-bottom: 15px; } legend.title {font-size: 20px; } .field {margin-left: 16px; margin-bottom: 15px; } label.label {font-size: 15px; } .col-md-6.mb-12.permission-conatiner {} .col-md-6.mb-12.permission-conatiner .field {} .col-md-6.mb-12.permission-conatiner .field .control select {width: 200px; height: 33px; font-size: 15px; padding: 0 15px; } .col-md-6.mb-12.permission-conatiner label {line-height: 2; cursor: pointer; } input#accountinfo label {font-weight: 900; } input#accountinfo + label {font-weight: 800; } input[type='checkbox'], input[type='radio'] {width: 18px !important; height: 18px !important; }
+h2.Resources{    border-bottom: 1px solid #ccc; width: 23%;}
+h2.Resources + div.control{ margin-left: 15px; }
+li.tree-top legend label{  font-weight: 900; padding-left: 6px; font-size: 16px;}
+li.tree-top legend{ margin-bottom: 8px !important; }
+button.registrationBtn {background-color: #eb5202; border-color: #eb5202; color: #ffffff; text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25); font-size: 18px; padding: 10px 25px; margin-bottom: 15px; float: right; }
+.child-ul li{ cursor: pointer; }
+</style>
+<form id="register-child-form-validate" 
+      class="form create account form-create-account" 
+      action="<?= $block->escapeUrl($block->getUrl('childcustomer/resourceaccess/Save')) ?>" 
+      method="post" 
+      enctype="multipart/form-data" 
+      autocomplete="off" 
+      data-hasrequired="<?php echo __('* Required Fields') ?>"
+      data-mage-init='{"validation":{}}'>
+    <?= /* @noEscape */ $block->getBlockHtml('formkey'); ?>
+  	<input type="hidden" name="form_key_hidden" id="form_key_hidden" value="" />
+  	<input type="hidden" name="edit_hidden" id="key_hidden" child="" value="" />
+    <input type="hidden" name="admin_customer_id" id="key_hidden1" value="<?=$block->getCustomerId();?>" />
+    <input type="hidden" name="admin_customer_entity_id" id="key_hidden2" value="<?= @$block->getEntityId() ? $block->getEntityId() : '';?>" />
+    <div class="row">
+        <div class="col-md-12 mrgB20  rltv">
+          <div class="col-md-12 mrgT20 mrgB20 rltv">
+            <button class="registrationBtn"> <span>Grant Access</span> </button>
+          </div>
+        </div>
+      </div>
+
+    <div class="registrationPage child-customer">   
+      <div class="col-md-12 mb-12 input-section">
+        <div class="row">
+          <div class="col-md-6 mb-12 permission-conatiner">
+          	<div class="multi-select">  
+          		<fieldset class="permission-section">
+          			<legend class="title"> Permissions </legend>
+                <div class="field">
+                    <label class="label" for="all"><span><?= $block->escapeHtml(__('Resource Access')) ?></span></label>
+
+                    <div class="control">
+                        <select id="all" name="all" class="select">
+                            <option value="0">
+                                <?= $block->escapeHtml(__('Custom')) ?>
+                            </option>
+                            <option value="1" >
+                                <?= $block->escapeHtml(__('All')) ?>
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field"
+                     data-role="tree-resources-container">
+                    <!--   <h2 class="Resources"><label class="label"><span><?= $block->escapeHtml(__('Resources')) ?></span></label></h2> -->
+
+                    <div class="control">
+                        <div class="tree x-tree" data-role="resource-tree">
+                          <ul>
+                            <?php
+                              $access_list = $block->getAclResources();
+                              $count = 1;
+                              foreach ($access_list as $key => $value) { ?>
+                                <li data-id="<?=$value['id']?>" class="tree-top">
+                                 <legend>                                    
+                                    <span class="all"><input type="checkbox" class="jstree-real-checkbox-parent" id="<?=$value['id']?>" name="checklist_<?=$value['id']?>" value="<?=$value['title']?>"></span>
+                                     <label><?=$value['title']?></label>
+                                  </legend>
+                                  <?php
+                                    if(count($value['title']) > 0){?>
+                                      <ul class="child-ul">
+                                        <?php
+                                          foreach ($value['children'] as $keys => $values) { ?>
+                                            <li data-id="<?=$value['id']?>" class="tree-child">
+                                              <input type="checkbox" class="jstree-real-checkbox-child" id="SDR_<?=$value['id'].'_'.$keys?>" name="check_list[<?=$value['id'].']['.$count++?>]" value="<?=$values['value']?>">
+                                              <label for="SDR_<?=$value['id'].'_'.$keys?>"><?=$values['title']?></label>
+                                            </li>
+                                          <? }
+                                        ?>
+                                      </ul>
+                                    <? }
+                                  ?>
+                                </li>
+                              <? }
+                            ?>
+                          </ul>
+                        </div>
+                    </div>
+                </div>
+              </fieldset>
+    				</div>		
+        	</div>
+        </div>
+      </div>
+      
+    </div>
+</form>
+<script>
+require(['jquery', 'Magento_Ui/js/modal/alert', "mage/mage", "loadingPopup", 'mage/translate'], function(jQuery, uiAlert){
+
+    (function ($) {
+
+      var permission = '<?php echo $permission; ?>'
+      var obj = '';
+      if(permission){
+        obj = JSON.parse(permission);
+      }
+      $(".permission-section ul input").each(function(){
+          var val = $(this).val();
+          var check = false;
+           $.each(obj, function(k, v) {
+                 $.each(obj[k], function(k, v) {
+                    if(v == val){
+                      check = true;
+                    }       
+              }); 
+            })
+        $(this).prop('checked',check);       
+      })
+       
+     $('.permission-section ul li').each(function() {
+            var allcheck = false;
+            $(this).find('.tree-child input').each(function(){
+              if($(this).prop("checked") == true){
+                  allcheck = true;
+              }else{
+                allcheck = false;
+                return false;   
+              }
+            })
+            $(this).find("span.all input[type='checkbox']").prop("checked",allcheck);
+          })
+
+        $('select#all').on('change', function(){
+          jQuery('[data-role=tree-resources-container]').toggle()
+        });
+
+        $('.tree-top input.jstree-real-checkbox-parent').on('click', function(){
+          console.log($(this).is(":checked"))
+          if($(this).is(":checked")){
+            console.log($(this).parents().closest("ul"))
+            console.log($(this).closest("li"))
+            $(this).closest("li").find(".child-ul li input").prop('checked', true);
+          }else{
+            $(this).closest("li").find(".child-ul li input").prop('checked', false);
+          }
+        });
+
+        $('.tree-child input').on('click', function(){
+          var selec = $(this).parents('.child-ul');
+          var total_elememt_count = selec.children().length;
+          var selected_count = selec.find("input:checked").length;
+          console.log(total_elememt_count);
+          console.log(selected_count);
+
+          if(total_elememt_count === selected_count){
+            selec.parents(".tree-top").find(".jstree-real-checkbox-parent").prop('checked', true);
+          }else{
+            selec.parents(".tree-top").find(".jstree-real-checkbox-parent").prop('checked', false);
+          }
+        });
+
+
+        // $("#register-child-form-validate").submit(function(e) {
+          $(document).on("click",".registrationBtn",function(e){
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+            
+            var url =  $("#register-child-form-validate").attr('action');
+            
+            $.ajax({
+                   type: "POST",
+                   url: url,
+                   data:  $("#register-child-form-validate").serialize(),
+                   showLoader: true,
+                   success: function(data)
+                   {
+                       uiAlert({
+                          content: $.mage.__(data.message)
+                      });
+                       $('#key_hidden2').attr("value",data.id);
+                   }
+                 });
+        });
+
+     
+
+    })(jQuery);
+
+});
+</script>

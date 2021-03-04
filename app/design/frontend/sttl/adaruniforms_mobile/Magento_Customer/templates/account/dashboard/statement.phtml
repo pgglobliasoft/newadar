@@ -1,0 +1,105 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var \Magento\Customer\Block\Account\Dashboard\Info $block */
+
+$helper = $this->helper('Sttl\Adaruniforms\Helper\Sap');
+$data = $helper->getCustomerDetails(["CardCode", "BCity", "BState", "AccountBalance", "CardName", "Program", "Tier", "OpenOrder"]);
+if(isset($data) && !isset($data['errors'])) {
+//echo "<pre>";print_r($data);
+?>
+<div class="block block-dashboard-info">
+    <div class="block-title collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"><strong class="upperCaseText"><?= $block->escapeHtml(__('Customer Statement')) ?></strong>
+    </div>
+    <div id="collapseTwo" class="block-content customerStatement collapse" aria-labelledby="headingOne">
+        <div class="box box-information">
+            <strong class="box-title">
+                <span><?= $block->escapeHtml(__('Customer Code:')) ?></span>
+            </strong>
+            <div class="box-content">
+                <p>
+                    <?php echo isset($data[0]['CardCode']) ? $data[0]['CardCode'] : 'N/A' ; ?><br>
+                </p>
+            </div>
+             </div>
+           <div class="box box-information">
+            <strong class="box-title">
+                <span><?= $block->escapeHtml(__('Location:')) ?></span>
+            </strong>
+            <div class="box-content">
+                <p>
+                    <?php
+						$cust_location = [];
+						if (isset($data[0]['BCity']) && !empty($data[0]['BCity']))
+							$cust_location[] = $data[0]['BCity'];
+
+						if (isset($data[0]['BState']) && !empty($data[0]['BState']))
+							$cust_location[] = $data[0]['BState'];
+
+						echo (!empty($cust_location)) ? implode(", ", $cust_location) : 'N/A';
+					?>
+                </p>
+            </div>
+        </div>
+        <div class="box box-information">
+            <strong class="box-title">
+                <span><?= $block->escapeHtml(__('Current Open Balance:')) ?></span>
+            </strong>
+            <div class="box-content">
+                <p>
+                    <?php echo isset($data[0]['AccountBalance']) ? '$'.number_format($data[0]['AccountBalance'],2) : 'N/A' ; ?><br>
+                </p>
+            </div>
+        </div>
+        <div class="box box-information">
+            <strong class="box-title">
+                <span><?= $block->escapeHtml(__('Customer Name:')) ?></span>
+            </strong>
+            <div class="box-content">
+                <p>
+                    <?php echo isset($data[0]['CardName']) ? $data[0]['CardName'] : 'N/A' ; ?><br>
+                </p>
+            </div>
+        </div>
+        <div class="box box-information">
+            <strong class="box-title">
+                <span><?= $block->escapeHtml(__('Discount Program / Tier:')) ?></span>
+            </strong>
+            <div class="box-content">
+                <p>
+                    <?php
+					$discount_program = "N/A";
+					if (isset($data[0]['Program']) && !empty($data[0]['Program'])) {
+						$flateDiscount = (isset($data[0]['Program']) && !empty($data[0]['Program'])) ? $data[0]['Program'] :  'N/A';
+						$tier = (isset($data[0]['Tier']) && !empty($data[0]['Tier'])) ? $data[0]['Tier'] : 'N/A';
+						$discount_program = $flateDiscount.' / '.$tier ;
+					}
+                    echo $discount_program; ?><br>
+                </p>
+            </div>
+        </div>
+        <div class="box box-information">
+            <strong class="box-title">
+                <span><?= $block->escapeHtml(__('Current Open Orders:')) ?></span>
+            </strong>
+            <div class="box-content">
+                <p>
+                    <?php echo isset($data[0]['OpenOrder']) ? '$'.number_format($data[0]['OpenOrder'], 2) : 'N/A' ; ?><br>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<?php
+
+}
+else if($data['type'] != 'server')
+{
+	echo $data['message'];
+}
+?>

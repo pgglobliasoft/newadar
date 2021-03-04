@@ -1,0 +1,353 @@
+<div class="popup-product-images">
+</div>
+	<script type="text/javascript">
+
+			require([
+			'jquery' ,
+			'magnificPopup',
+			'mage/mage',
+			], function($,magnificPopup){
+
+
+		$(function() {
+		  	$(document).on("click", '#Prev', function(e) {
+		    e.preventDefault();
+		    $('#thumb').animate({
+		      scrollLeft: "-=150px"
+		    }, "slow");
+		  });
+
+
+	   	$(document).on("click", '#Next', function(e) {
+			    e.preventDefault();
+			    $('#thumb').animate({
+			     scrollLeft: "+=150px"
+			    }, "slow");
+			  });
+		});
+
+				var table =  '';
+
+				$(document).on("click", ".image-1 img, .popup_magnify_icon", function(e) {
+					imgarr = [];
+					thumbarr = [];
+
+
+					if($(".popup-product-images .popup-img-0").val() || $(".popup-product-images .popup-thumnb-0").val() ){
+					imgarr.push($(".popup-product-images .popup-img-0").val());
+					thumbarr.push($(".popup-product-images .popup-thumnb-0").val());
+					}
+					if($(".popup-product-images .popup-img-1").val() || $(".popup-product-images .popup-thumnb-1").val() ){
+					imgarr.push($(".popup-product-images .popup-img-1").val());
+					thumbarr.push($(".popup-product-images .popup-thumnb-1").val());
+					}
+					if($(".popup-product-images .popup-img-2").val() || $(".popup-product-images .popup-thumnb-2").val() ){
+					imgarr.push($(".popup-product-images .popup-img-2").val());
+					thumbarr.push($(".popup-product-images .popup-thumnb-2").val());
+					}
+					if($(".popup-product-images .popup-img-3").val() || $(".popup-product-images .popup-thumnb-3").val() ){
+					imgarr.push($(".popup-product-images .popup-img-3").val());
+					thumbarr.push($(".popup-product-images .popup-thumnb-3").val());
+					}
+					if($(".popup-product-images .popup-img-4").val() || $(".popup-product-images .popup-thumnb-4").val() ){
+					imgarr.push($(".popup-product-images .popup-img-4").val());
+					thumbarr.push($(".popup-product-images .popup-thumnb-4").val());
+					}
+					if($(".popup-product-images .popup-img-5").val() || $(".popup-product-images .popup-thumnb-5").val() ){
+					imgarr.push($(".popup-product-images .popup-img-5").val());
+					thumbarr.push($(".popup-product-images .popup-thumnb-5").val());
+					}
+					// console.log(imgarr)
+					// console.log(thumbarr);
+					res = [];
+					if(imgarr.length){
+						for(i = 0; i < imgarr.length; i++){
+							res.push({
+					        src: imgarr[i],
+					      },)
+						}
+					}else{
+						res.push({
+					        src: "<?php echo $block->getBaseUrl().'pub/media/catalog/product/placeholder/default/image.jpg' ?>",
+					      },)
+					}
+
+
+					thumbwrapper = "<div class='rg-thumbs'> <div class='es-carousel-wrapper'> <div class='es-carousel' id= 'thumb'> <ul class='imgpopoup_thumb_list' style=' display: block; margin-left: 0px;'>";
+					if(imgarr.length){
+						for(i = 0; i < imgarr.length; i++){
+								thumbwrapper += " <li style='width: 75px;' class=''> <a href='#' class='thumb"+i+"' thumbindex='"+i+"' style='border-width: 2px;'> <img src='"+imgarr[i]+"' data-large='images/1.jpg' alt='image01' data-description='From off a hill whose concave womb reworded'> </a> </li>";
+						}
+					}
+
+					if(imgarr.length >= 4){
+						thumbwrapper +=	"</ul><div id='Prev'><i  class='fa fa-angle-left' aria-hidden='true'></i></div><div id='Next'><i class='fa fa-angle-right' aria-hidden='true'></i></div></div> </div> </div>";
+					}else{
+						thumbwrapper += "</ul></div> </div>"
+					}
+
+
+					$(document).on("click","ul.imgpopoup_thumb_list li a", function(){
+							var tumbindex = $(this).attr("thumbindex");
+							$(".mfp-content").find("figure").children('img').attr("src",imgarr[tumbindex]);
+							$(".mfp-content").find("figure").children('img').addClass("active-tab");
+							setTimeout(function(){
+								$(".mfp-content").find("figure").children('img').removeClass("active-tab");
+							},1500)
+
+							$("ul.imgpopoup_thumb_list li").removeClass("active-tab");
+							$(this).parent().addClass("active-tab");
+					});
+
+				    $.magnificPopup.open({
+				      items: res,
+					    gallery: {
+					      enabled: true,
+								arrowMarkup: '<button title="%title%" type="button" class="mfp-arrow new_custom_arrow mfp-arrow-%dir%"><i class="fa"></i></button>'
+					    },
+					    type: 'image',
+				      closeOnBgClick: false,
+				      mainClass: 'mfp-with-zoom mfp-zoom-in mfp-img-mobile',
+				      preloader: true,
+							tLoading: '',
+				      showCloseBtn:true,
+				      tLoading: "",
+				      callbacks: {
+				       		beforeOpen: function() {
+						      // just a hack that adds mfp-anim class to markup
+						       this.st.image.markup = this.st.image.markup.replace('mfp-figure', 'mfp-figure mfp-with-anim');
+						       this.st.mainClass = 'mfp-zoom-in';
+						    },
+						    open: function() {
+						    	// $('.mfp-content figure').prepend('<div class="container" ><button type="button" class="close mfp-close"></button></div>');
+									// $('body').css('overflow', 'hidden');
+									if(thumbarr.length > 1){
+										$('.mfp-content figure').append(thumbwrapper);
+									}else{
+										$(".mfp-figure.mfp-with-anim .mfp-img").addClass("nothumnb")
+									}
+						    	// $(".mfp-figure").append(thumbwrapper);
+									if($(".mfp-arrow.new_custom_arrow").hasClass("mfp-arrow-left")){
+										$(".mfp-arrow.new_custom_arrow.mfp-arrow-left").find("i").addClass("fa-angle-left");
+									}
+
+									if($(".mfp-arrow.new_custom_arrow").hasClass("mfp-arrow-right")){
+										$(".mfp-arrow.new_custom_arrow.mfp-arrow-right").find("i").addClass("fa-angle-right");
+									}
+									// $("figure").find(".mfp-img").trigger("click");
+									// $("figure .rg-thumbs ul.imgpopoup_thumb_list li").first().find("img").trigger("click");
+
+						    },
+								close: function() {                       // When the window
+				            $('body').css('overflow', '');        // is closed, the
+				        },
+						    buildControls: function() {
+									this.contentContainer.append(this.arrowLeft);
+									this.contentContainer.append(this.arrowRight);
+									// re-appends controls inside the main container
+
+						    },
+
+				      	},
+
+				    });
+				});
+
+
+
+			});
+
+
+	</script>
+	<style type="text/css">
+
+	.fotorama__stage__shaft { cursor: pointer !important;}
+
+		.mfp-zoom-in .mfp-content .container.order-img-header {
+    cursor: pointer;
+    background: linear-gradient(to bottom, rgb(14,66,106) 0%,rgb(12,65,107) 51%,rgb(13,65,105) 100%);
+    min-height: 47px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+ul.imgpopoup_thumb_list li a img { padding: 0 4px;}
+
+/* ul.imgpopoup_thumb_list li:nth-child(1) a img { border-bottom-left-radius: 17px; }
+ul.imgpopoup_thumb_list li:last-child a img { border-bottom-right-radius: 17px; } */
+
+.mfp-wrap.mfp-gallery.mfp-ready .mfp-content figure .rg-thumbs ul.imgpopoup_thumb_list li.active-tab {
+	animation: blureffect 1s;
+	animation-fill-mode: both;
+}
+
+.mfp-wrap.mfp-gallery.mfp-ready .mfp-content figure .mfp-img.active-tab {
+	animation: main-imgeffect 1s;
+	animation-fill-mode: both;
+}
+
+@keyframes main-imgeffect {
+    0% {
+      	/* filter: brightness(1); */
+				/* transform: scale(1); */
+    }
+    50% {
+				/* filter: brightness(0.7); */
+				/* transform: scale(1.1); */
+    }
+		100% {
+				/* filter: brightness(1); */
+				/* transform: scale(1); */
+    }
+
+}
+
+@keyframes blureffect {
+    0% {
+      	filter: brightness(1);
+    }
+    50% {
+				filter: brightness(0.7);
+    }
+		100% {
+				filter: brightness(1);
+    }
+
+}
+
+.mfp-preloader {
+  width: 55px;
+  height: 55px;
+	top: 30% !important;
+  background-color: #FFF;
+	background-size: contain;
+	background-repeat: no-repeat;
+  opacity: 0.65;
+  margin: 0 auto;
+  -webkit-animation: rotateplane 1s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+  animation: rotateplane 1s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+}
+
+@keyframes rotateplane {
+  0% {
+    background-image: url("https://dev.adaruniforms.com/pub/media/catalog/loader/mobile_popup_image_loader.gif");
+  }
+  100% {
+		background-image: url("https://dev.adaruniforms.com/pub/media/catalog/loader/mobile_popup_image_loader.gif");
+  }
+}
+@-webkit-keyframes rotateplane {
+  0% {
+    background-image: url("https://dev.adaruniforms.com/pub/media/catalog/loader/mobile_popup_image_loader.gif");
+  }
+  100% {
+  background-image: url("https://dev.adaruniforms.com/pub/media/catalog/loader/mobile_popup_image_loader.gif");
+  }
+}
+
+.rg-thumbs { background-color: white; border-radius: 0 0 10px 10px; padding-bottom: 10px;}
+.rg-thumbs .es-carousel { border-radius: 0 0 10px 10px; }
+ul.imgpopoup_thumb_list li { float: left;}
+
+.mfp-arrow.new_custom_arrow{ top: 30% !important;}
+.mfp-arrow.new_custom_arrow i { font-size: 50px; color: #3d5c73;}
+.mfp-arrow.new_custom_arrow.mfp-arrow-left i { float: left; padding-left: 15%;}
+.mfp-arrow.new_custom_arrow.mfp-arrow-right i { float: right; padding-right: 15%;}
+
+ul.imgpopoup_thumb_list {
+	width: max-content;
+	list-style-type: none;
+	overflow: hidden;
+	padding-left: 0;
+	margin: 0;
+}
+.fotorama__arr.fotorama__arr--next{ display: none !important; }
+.fotorama__arr.fotorama__arr--prev{ display: none !important; }
+.mfp-gallery .rg-thumbs .es-carousel { overflow: scroll; padding-top: 10px; position: relative !important; scrollbar-width:none;}
+
+.mfp-zoom-in .mfp-content .container.order-img-header {
+    width: 100%;
+}
+
+.mfp-close { color: #000 !important; width: fit-content !important; font-weight: 100 !important; right: 3px !important;}
+
+.mfp-gallery .rg-thumbs .es-carousel::-webkit-scrollbar {
+    width: 0px;  /* Remove scrollbar space */
+		height: 0;
+    background: transparent;  /* Optional: just make scrollbar invisible */
+}
+
+.mfp-figure.mfp-with-anim .mfp-img.nothumnb { border-radius: 10px !important;}
+
+.mfp-figure.mfp-with-anim:after{ box-shadow: 0 !important;}
+
+.mfp-figure.mfp-with-anim .mfp-img {
+    padding: 0 !important;
+		border-radius: 10px 10px 0 0;
+}
+
+@media (max-height: 319px){
+	.mfp-zoom-in .mfp-content{
+		max-width: 200px;
+	}
+}
+
+@media (min-height: 320px) and (max-height: 410px){
+	.mfp-zoom-in .mfp-content{
+		max-width: 224px;
+	}
+}
+
+@media (min-height: 411px){
+	.mfp-zoom-in .mfp-content{
+		max-width: 300px;
+	}
+}
+
+.mfp-zoom-in .mfp-content {
+    vertical-align: text-bottom;
+    margin-top: 5%;
+}
+.mfp-zoom-in.mfp-ready .mfp-with-anim {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.mfp-arrow.new_custom_arrow:before { display: none;}
+
+.mfp-counter{display: none;}
+div#Arrows {
+    display: flex;
+    justify-content: space-between;
+    /*height: -9px;*/
+    position: absolute;
+    width: 290px;
+    bottom: 8px;
+}
+
+div#Arrows i {
+    font-size: 30px;
+    color: #3d5c73;
+}
+#Prev i, #Next i { font-size: 25px !important; color: black; }
+#Prev{
+  	position: fixed;
+    bottom: 5px;
+    left: 0;
+    padding: 45px 10px;
+    background-color: #ffffff3d;
+    border-radius: 0px 10px 10px 0;
+		cursor: pointer;
+}
+#Next{
+	position: fixed;
+    bottom: 5px;
+    right: 0;
+		cursor: pointer;
+    padding: 45px 10px;
+    background-color: #ffffff3d;
+    border-radius: 10px 0px 0px 10px;
+}
+
+	</style>

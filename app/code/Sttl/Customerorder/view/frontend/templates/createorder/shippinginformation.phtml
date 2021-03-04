@@ -1,0 +1,391 @@
+<?php
+$regorderdata = $block->getRegisterData();
+$customerdata = $regorderdata['customerdata'];
+$orderdata = $regorderdata['orderdata'];
+$helper = $this->helper('Sttl\Adaruniforms\Helper\Sap');
+if(isset($regorderdata['shiipintgData']))
+{
+	$data = $regorderdata['shiipintgData'];
+}
+$backmode = false;
+if($this->getRequest()->getParams('back_order_id') != '')
+{
+	$backmode = true;
+}
+$currentorderdata = $orderdata[0];
+$tyle = '';
+if($backmode != true)
+{
+	if($currentorderdata['ShippingType'] == '4' || $customerdata[0]['ShipCode'] == 4) 
+	{	
+		$tyle = 'style="display: none;"';
+	}
+}else{
+	if($currentorderdata['ShippingType'] == '4' || $customerdata[0]['ShipCode'] == 4) 
+	{	
+		$tyle = 'style="display: none;"';
+	}
+}
+		if($customerdata[0]['ShipCode'] != '4' && $currentorderdata['ShippingType'] != '4') 
+		{	
+			$tyle = 'style="display: block;"';
+		}
+		if($currentorderdata['ShippingType'] != '4' && $currentorderdata['ShippingType'] !=  '') 
+		{	
+			$tyle = 'style="display: block;"';
+		}
+
+?>
+<div class="box box-information addressInfo shippingAdds col-md-4" <?php echo $tyle;?>>
+            <strong class="box-title">
+                <span>Shipping Address</span>
+            </strong>
+            <div class="box-content">
+            	<div class="select-section">
+	            	<div class="addressdropdowndemo">
+	            	     <label class="shipAddress"></label>
+	            	     <i class="fa fa-angle-down" aria-hidden="true"></i>
+	            	</div>
+                   <select class="shippingMeethod" name="shippingaddress" id="shippingaddress">
+							<option value="">Please Select</option>
+							<?php if (isset($data) && !empty($data)) { 
+								$cnt = 1;
+								$ad_temp_address = true;
+								foreach($data as $addKey => $addVal) {
+									$addVal["PhoneNo"] = '';
+									$addVal["Id"] = $cnt;
+									//if($backmode && $addVal["CardName"] == $currentorderdata['ShippingId'])
+									$selected = "";
+									if(!empty($currentorderdata['ShippingId']) && $currentorderdata['ShippingId'] != "")
+									{
+										$ShippingId = str_replace("'", '’', $currentorderdata['ShippingId']);
+										//echo $ShippingId;exit;
+
+										if(strtolower($addVal["AddressID"]) == strtolower($ShippingId))
+										{
+											$selected  = 'selected';
+											$ad_temp_address = false;
+										}
+									}
+									else
+									{
+										$selected = ($addVal["DefaultAdd"] == "Y") ? "selected" : "";
+									}
+									$default_message = ($addVal["DefaultAdd"] == "Y") ? "(Default Address)" : "";
+									if(strtolower($addVal["BlindDropship"]) == 'no')
+									{
+										$addVal["BlindDropship"] = 0;
+									}
+									if(strtolower($addVal["BlindDropship"]) == 'yes')
+									{
+										$addVal["BlindDropship"] = 1;
+									}
+										// echo "<pre>";
+										// print_r($currentorderdata);
+										// die;	
+
+									echo '<option value="'.$cnt.'" attr-CardName="'.$addVal["CardName"].'" attr-addressID="'.$addVal["AddressID"].'" attr-addr1="'.$addVal["AddStreetNo"].'" attr-addr2="'.$addVal["Address2"].'" attr-State="'.$addVal["State"].'"  attr-ZipCode="'.$addVal["ZipCode"].'" attr-Country="'.$addVal["Country"].'" attr-city="'.$addVal["City"].', '.$addVal["State"].' '.$addVal["ZipCode"].'" attr-city1="'.$addVal["City"].'" attr-blindDropship="'.$addVal["BlindDropship"].'" attr-tel="'.$addVal["PhoneNo"].'" '. $selected.' >'.ucwords(strtolower($addVal["AddressID"])).$default_message.'</option>';
+							$cnt++; } 
+							if($ad_temp_address)
+							{
+								//echo "<prE>";print_R($currentorderdata);exit;
+								$selected  = 'selected';
+								if($currentorderdata['ShippingId'] !='')
+								{
+									if(strtolower($currentorderdata["BlindDropship"]) == 'no')
+									{
+										$currentorderdata["BlindDropship"] = 0;
+									}
+									if(strtolower($currentorderdata["BlindDropship"]) == 'yes')
+									{
+										$currentorderdata["BlindDropship"] = 1;
+									}
+									// echo "<pre>";
+									// print_r($currentorderdata);
+									// die;
+									echo '<option value="'.$cnt.'" attr-addressID="'.$currentorderdata['ShippingId'].'" attr-addr1="'.$currentorderdata['ShippingStreetNo'].'" attr-addr2="'.$currentorderdata['ShippingAddress'].'" attr-State="'.$currentorderdata['ShippingStateCode'].'"  attr-ZipCode="'.$currentorderdata['ShippingZip'].'" attr-Country="'.$currentorderdata['ShippingCountryCode'].'" attr-city="'.$currentorderdata['ShippingCity'].', '.$currentorderdata['ShippingStateCode'].' '.$currentorderdata['ShippingZip'].'" attr-city1="'.$currentorderdata['ShippingCity'].'" attr-blindDropship="'.$currentorderdata["BlindDropship"].'" '. $selected.' >'.ucwords(strtolower($currentorderdata['ShippingId'])).'</option>';
+								}
+								
+							}
+							} ?>
+					</select>
+				</div>
+				<p class="shiiping_method_shipAddress maxqtyvaldi"></p>
+				<!-- <div class="shipAddress"></div> -->
+            </div>
+              <input type="button" value="+ Add new address"  data-toggle="modal" data-target="#customer-edit-address"  class="delUrl removeeditshipurl" <?php echo ($currentorderdata['ShippingType'] == '4'|| trim(strtolower($customerdata[0]['ShipType'])) == strtolower("Pick Up")) ? 'style="display: none;"' : '' ?> />
+		</div>
+<!--         <div class="cf">
+        </div> -->
+<script type="text/javascript">
+    require(['jquery'], function($) {
+		$(document).on("change", "#shippingaddress", function(){
+			shippingchnage();
+		});
+
+		$(document).ready(function() {
+        	
+			/*$('[data-dismiss=modal]').on('click', function (e) {
+			    var $t = $(this),
+			        target = $t[0].href || $t.data("target") || $t.parents('.modal') || [];
+			    
+			  $(target)
+			    .find("input,textarea,select")
+			       .val('')
+			       .end()
+			    .find("input[type=checkbox], input[type=radio]")
+			       .prop("checked", "")
+			       .end();
+			})*/
+			$('#Country [value="US"]').attr('selected', 'true');
+			setTimeout(
+              		function(){ 
+              			$("#Country").trigger('change');
+              			}, 3000);
+			shippingchnage();
+			$("#state").children('option:gt(0)').hide();
+			    $("#Country").change(function() {
+			    	var selectedoption = $(this).find('option:selected').val()
+			    	$('#ContryLable').val($(this).find("option:selected").text());
+			    	$('#show_country').val($(this).find("option:selected").val());
+			    	showstateoption(selectedoption)
+			    }).trigger('change');
+			    $("#state").children('option:gt(0)').hide();
+			    $("#state").change(function() {
+			    	$('#StateLable').val($(this).find("option:selected").text())
+			    })
+				
+			});
+		function showstateoption(selectedoption){
+			$('#state option[value=""]').prop('selected', true);
+			$("#state").children('option').hide();
+			if($("#state").children('option[contry-code^="'+selectedoption+'"]').length > 0)
+			{
+				$("#state").children('option[contry-code^="'+selectedoption+'"]').show();	
+			}else{
+				$('#state option[value=""]').prop('selected', true);
+				$("#state").children('option[contry-code^="selected"]').show();
+				
+			}
+		}
+		var changeText = "<?php echo __('Please Wait...') ?>";
+	  var changeSubmit = "<?php echo __('Submit') ?>";
+      var findButton = $('#customer-edit-address-validate').find('button[type=submit]'),
+                form = $('#customer-edit-address-validate');
+	            form.submit(function (e) {
+	            	e.preventDefault();
+	                if (form.validation('isValid')) {
+	                    var url = form.attr('action');
+	                    var formData = getFormData($(this));
+	                    var getalloptions = $("#shippingaddress>option");
+	                    var valIsExists = false;
+	                     $(getalloptions).each(function() {
+	                     	if ($.trim($(this).attr("attr-cardname")).toLowerCase() == $.trim(formData.fullname_shiiping).toLowerCase()) 
+				            {
+				            	valIsExists = true;
+				            }
+				        });
+				        if(valIsExists)
+	                    {
+	                    	showResponse('',"It seems like this address was previously added and saved. If you'd like to add it anyway please change the name in the 'Full Name' field to differ from the one you already added.");
+		                    return false;
+	                    }
+	                    findButton.text(changeText);
+                  		findButton.attr("disabled", "disabled");
+                  		if ($('#save_future').is(":checked"))
+						{
+								$.ajax({
+			                      type: "POST",
+			                      url: url,
+			                      showLoader: true,
+			                      data: formData,
+			                      success: function(data) {
+			                          showResponse(data);
+			                          if(data.error) {
+			                            findButton.text(changeSubmit);
+			                            findButton.removeAttr('disabled');
+			                          } else {
+			                          	//$("#customer-edit-address").modal('hide');
+			                         }
+			                      }
+			                  });
+						}
+						var shippingaddresscount = $('#shippingaddress option').length;
+						if(formData.blindDropship == '')
+						{
+							formData.blindDropship = 0;
+						}
+					$('#shippingaddress').append($("<option></option>")
+						.attr("value",shippingaddresscount)
+						.attr("attr-cardname",formData.fullname_shiiping)
+						.attr("attr-addressid",formData.fullname_shiiping)
+						.attr("attr-addr1",formData.AddStreetNo)
+						.attr("attr-addr2",formData.address2)
+						.attr("attr-state",formData.state)
+						.attr("attr-zipcode",formData.zipcode)
+						.attr("attr-country",formData.Country)
+						.attr("attr-city",formData.city+', '+formData.state+' '+formData.zipcode)
+						.attr("attr-city1",formData.city)
+						.attr("attr-blindDropship",formData.blindDropship)
+						.attr("attr-tel",'')
+						.text(formData.fullname_shiiping)); 
+
+						//$("#fullname_shiiping").val(formData.fullname_shiiping);
+                        //$("#AddStreetNo").val(formData.AddStreetNo);
+                        //$("#address2").val(formData.address2);
+                        //$("#city").val(formData.city);
+                        //$("#state").val(formData.state);
+                        //$("#zipcode").val(formData.zipcode);
+                        //$("#Country").val(formData.Country);
+	                    var data = '';
+	                    showResponse(data)
+	                    $("#shippingaddress").val(shippingaddresscount).change();
+	                    shippingchnage();
+
+	                }
+	            });
+
+            function getFormData(formElem){
+                var unindexed_array = formElem.serializeArray();
+                var indexed_array = {};
+                jQuery.map(unindexed_array, function(n, i){
+                    indexed_array[n['name']] = n['value'];
+                });
+                return indexed_array;
+            }
+
+            function showResponse(data,Errordata) {
+              if(data.error || Errordata) {
+              	if(Errordata != '')
+              	{
+              		var error = Errordata;
+              	}else{
+              		var error = data.error;
+              	}
+                $('.block-customer-edit-address .response-msg').html("<div class='error'>"+error+"</div>");
+              } else {
+                $('.block-customer-edit-address .response-msg').html("<div class='success'>You saved the shipping information.</div>");
+              }
+              setTimeout(
+              		function(){ 
+              			$('.response-msg').html(null); 
+              			$(".mfp-close-inside").trigger("click");
+              			 var findButton = $('#customer-edit-address-validate').find('button[type=submit]');
+              			     findButton.text('Submit');
+                    		findButton.removeAttr('disabled');
+                    		
+	          		}, 5000);
+            }
+		function shippingchnage()
+		{
+			var Objsel = $('#shippingaddress').find('option:selected');
+			if(Objsel.val() != '')
+			{
+			var addline1 = $(Objsel).attr("attr-addr1"),
+			addline0 = $(Objsel).attr("attr-addressID"),
+			addline2 = $(Objsel).attr("attr-addr2"),
+			addline3 = $(Objsel).attr("attr-city"),
+			addline4 = $(Objsel).attr("attr-tel"),
+
+			attrcardname = $(Objsel).attr("attr-cardname"),
+			attraddressid = $(Objsel).attr("attr-addressid"),
+			attrzipcode = $(Objsel).attr("attr-zipcode"),
+			attrcountry = $(Objsel).attr("attr-country"),
+			attrstate = $(Objsel).attr("attr-state"),
+			attrcity1 = $(Objsel).attr("attr-city1"),
+			attrblindDropship = $(Objsel).attr("attr-blindDropship"),
+			address = [];
+			var address_concet = "";
+			
+			
+			if (typeof addline0 !== typeof undefined && addline0 !== false && addline0.trim() != '') {
+				address.push(addline0);
+				$('#hidden_AddStreetNo').val(addline0);
+				//$('#AddStreetNo').text(addline1);
+			}
+			if (typeof addline1 !== typeof undefined && addline1 !== false && addline1.trim() != '') {
+				address.push(addline1);
+				$('#hidden_AddStreetNo').val(addline1);
+				//$('#AddStreetNo').text(addline1);
+			}
+			
+			if (typeof addline2 !== typeof undefined && addline2 !== false && addline2.trim() != '') {
+				address.push(addline2);
+				$('#hidden_address2').val(addline2);
+				//$('#address2').text(addline2);
+			}	
+			/*if (typeof addline2 !== typeof undefined && addline2 !== false && addline2.trim() != '') {
+				address.push(addline2);
+
+				if (typeof addline2 !== typeof undefined && addline1 !== false && addline1.trim() != '' && typeof addline2 !== typeof undefined && addline2 !== false && addline2.trim() != '') {
+					address_concet = ',';
+				}
+				$('#hidden_AddStreetNo').val(addline1);
+				$('#AddStreetNo').text(addline1);
+			}*/
+			if (typeof addline3 !== typeof undefined && addline3 !== false && addline3.trim() != '') {
+				address.push(addline3);
+			}
+			
+			if (typeof addline4 !== typeof undefined && addline4 !== false && addline4.trim() != '') {
+				address.push(addline4);
+			}
+			if (typeof attrcountry !== typeof undefined && attrcountry !== false && attrcountry.trim() != '') {
+				//address.push(attrcountry);
+				$("#hidden_country").val(attrcountry).change();
+			}
+			if (typeof attraddressid !== typeof undefined && attraddressid !== false && attraddressid.trim() != '') {
+				$('#hidden_fullname_shiiping').val(attraddressid);
+				//$('#fullname_shiiping').text(attraddressid);
+
+			}
+			if (typeof attrstate !== typeof undefined && attrstate !== false && attrstate.trim() != '') {
+				// showstateoption(attrcountry)
+				$("#hidden_state").val(attrstate).change();
+				//$('#state').val(attrstate).attr("selected", "selected");
+				//$('#state').val(attrstate);
+				//$('#state').text(attrstate);
+
+			}
+			if (typeof attrcity1 !== typeof undefined && attrcity1 !== false && attrcity1.trim() != '') {
+				$('#hidden_city').val(attrcity1);
+				//$('#city').text(attrcity1);
+
+			}
+			if (typeof attrblindDropship !== typeof undefined && attrblindDropship !== false && attrblindDropship.trim() != '') {
+				$('#hidden_blindDropship').val(attrblindDropship);
+				//$('#city').text(attrcity1);
+
+			}else{
+				$('#hidden_blindDropship').val(0);
+			}
+			
+			if (typeof attrzipcode !== typeof undefined && attrzipcode !== false && attrzipcode.trim() != '') {
+				$('#hidden_zipcode').val(attrzipcode);
+				//$('#zipcode').text(attrzipcode);
+			}
+			
+			
+			
+			if (address.length)
+			$(".shipAddress").html(address.join("<br/>"));
+			else 
+			$(".shipAddress").html("Please Select");
+			}else{
+				$(".shipAddress").html("Please Select");
+			}
+		}
+		$(function() {
+			$('.modal.block-customer-edit-address').on('hidden.bs.modal', function(){
+				$('#customer-edit-address-validate').find('input[type="text"]').val('');
+				$('#Country [value="US"]').attr('selected', 'true');
+				$("#Country").trigger('change');
+				$('#customer-edit-address-validate').find('input[type=checkbox]').attr('checked', false);
+				var validator = $("#customer-edit-address-validate").validate();
+				validator.resetForm();
+			});
+			
+			//$("#shippingaddress").change();
+		});
+	});
+</script>

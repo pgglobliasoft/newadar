@@ -1,0 +1,6 @@
+<?php
+$_product = $block->getProduct();
+if ($_product->getTypeId() == "configurable") :
+	echo $blockObj= $this->getLayout()->createBlock('Magento\Swatches\Block\Product\Renderer\Configurable')->toHtml();
+endif;
+?>

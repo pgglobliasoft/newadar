@@ -1,0 +1,724 @@
+<?php
+	//$time_start = microtime(true); 
+	$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+	$redirect = $objectManager->get('\Magento\Framework\App\Response\Http');
+	$helper = $this->helper('Sttl\Adaruniforms\Helper\Sap');
+	$fields = array('ShipCode', 'ShipType');
+	$customerdata = $helper->getCustomerDetails($fields);
+
+	if(isset($customerdata) && isset($customerdata['errors'])) 
+	{
+		?>
+		<div class="page-title-wrapper">
+			<h1 class="page-title">
+				<span class="base" data-ui-id="page-title-wrapper">Order Details</span>
+			</h1>
+		</div>
+		<?php
+		echo $customerdata['message'];
+	}
+	else
+	{	
+		$order_id = $block->getRegisterData();
+		$back_parms = base64_decode($this->getRequest()->getParam('back'));
+		$data_from = base64_decode($this->getRequest()->getParam('df'));
+		$getorderdata = $block->getOrderDataDetails($order_id,$data_from);
+		$order_status = $block->getBaseUrl().'customerorder/customer/index/';
+		if(empty($getorderdata))
+		{
+			header("Location: $order_status");exit;
+		}
+	
+		$getGroupbyColor = $block->getOrderItems($order_id,$data_from);
+		$back_redirect = $block->getBaseUrl().'customerorder/customer/index';
+		if($back_parms == 1)
+		{
+			$back_redirect = $block->getBaseUrl().'customerorder/customer/index?q=d';
+		}
+		$shippingType = isset($getorderdata['ShippingType']) ? $getorderdata['ShippingType']: '';
+		if($shippingType !='')
+		{
+			if(isset($customerdata[0]['ShipCode']) && $customerdata[0]['ShipCode'] != ''  && $customerdata[0]['ShipCode'] == $shippingType)
+			{
+				$shippingType =  $customerdata[0]['ShipType'];
+			}
+		}
+		if($shippingType == 4)
+		{
+			$shippingType = 'Pick Up';
+		}
+		$lineitemsarrray = array();
+		$checkinarray = array();
+		$total = 0;							
+
+		$QTYOrdered = 0; 							
+		$QTYShipped = 0; 
+		$OpenQTY = 0; 
+		$PriceAfterDiscount = 0;
+		$i = 0;
+		$rowStatusArray = array();
+		$availableitemssku = array();
+		$invdatabysku = array();
+
+		foreach($getGroupbyColor as $key => $Colordata){
+			$availableitemssku[] = $Colordata['ItemCode'];
+		}
+		$opendata = $helper->getProductsBySkus($availableitemssku);
+
+		foreach ($opendata as $key => $value) {
+			$invdatabysku[$value['ItemCode']] = $value;
+		}
+		if(!empty($getGroupbyColor))
+		{
+			foreach($getGroupbyColor as $key => $Colordata)
+			{
+				$instock = isset($invdatabysku[ucwords($Colordata['ItemCode'])]['ActualQty']) ? $invdatabysku[ucwords($Colordata['ItemCode'])]['ActualQty'] : 0;
+				$sizeorder =  isset($invdatabysku[ucwords($Colordata['ItemCode'])]['SizeOrder']) ? $invdatabysku[ucwords($Colordata['ItemCode'])]['SizeOrder'] : 1;
+				$Colordata['InStock'] = $instock;
+				$Colordata['SizeOrder'] = $sizeorder;
+				$data[$Colordata['Style']][$Colordata['ColorCode']]['RowStatus'] = $Colordata['RowStatus'];
+				$data[$Colordata['Style']][$Colordata['ColorCode']]['StyleStatus'] = $Colordata['StyleStatus'];
+				$data[$Colordata['Style']][$Colordata['ColorCode']]['ColorStatus'] = $Colordata['ColorStatus'];
+				$data[$Colordata['Style']][$Colordata['ColorCode']]['DiscountPer'] = $Colordata['DiscountPer'];
+				 
+				$data[$Colordata['Style']][$Colordata['ColorCode']]['Style'] = $Colordata['Style'];
+				$data[$Colordata['Style']][$Colordata['ColorCode']]['ColorCode'] = $Colordata['ColorCode'];
+				$data[$Colordata['Style']][$Colordata['ColorCode']]['ETA'] = $Colordata['ETA'];
+				$data[$Colordata['Style']][$Colordata['ColorCode']]['InStock'] = $Colordata['InStock'];
+				$data[$Colordata['Style']][$Colordata['ColorCode']]['ColorName'] = $Colordata['ColorName'];
+				if(!in_array($Colordata['Style'].'_'.$Colordata['ColorCode'], $checkinarray)) {
+					$total = intval(str_replace(',', '', $Colordata['TotalPrice']));
+					$QTYOrdered = intval(str_replace(',', '', $Colordata['QTYOrdered']));
+					$QTYShipped = intval(str_replace(',', '', $Colordata['DeliveredQTY']));
+					$OpenQTY = intval(str_replace(',', '', $Colordata['OpenQTY']));
+					$data[$Colordata['Style']][$Colordata['ColorCode']]['Frist_UnitPrice'] = $Colordata['UnitPrice'];	
+					$data[$Colordata['Style']][$Colordata['ColorCode']]['PriceAfterDiscount'] = $Colordata['PriceAfterDiscount'];
+					$checkinarray[] = $Colordata['Style'].'_'.$Colordata['ColorCode'];
+				} else {
+					$total = $total + intval(str_replace(',', '', $Colordata['TotalPrice']));
+					$QTYOrdered = $QTYOrdered + intval(str_replace(',', '', $Colordata['QTYOrdered']));
+					$QTYShipped = $QTYShipped + intval(str_replace(',', '', $Colordata['DeliveredQTY']));
+					$OpenQTY = $OpenQTY + intval(str_replace(',', '', $Colordata['OpenQTY']));				
+				}
+				$data[$Colordata['Style']][$Colordata['ColorCode']]['total'] = $total;
+				$data[$Colordata['Style']][$Colordata['ColorCode']]['QTYOrdered'] = $QTYOrdered;
+				$data[$Colordata['Style']][$Colordata['ColorCode']]['DeliveredQTY'] = $QTYShipped;
+				$data[$Colordata['Style']][$Colordata['ColorCode']]['OpenQTY'] = $OpenQTY;
+				$data[$Colordata['Style']][$Colordata['ColorCode']]['items'][] = $Colordata;
+				$rowStatusArray[$Colordata['Style'].'_'.$Colordata['ColorCode']][] = $Colordata['RowStatus'];  
+				// if($Colordata['RowStatus'] !='')
+				// {
+				// 	$rowStatusArray[$Colordata['Style'].'_'.$Colordata['ColorCode']][] = $Colordata['RowStatus'];  
+				// }
+			}
+		}
+		$FlatDiscount = number_format((float) $getorderdata['DiscountPer'] + $getorderdata['TotalDiscountPer'],2);
+		$FlatDic = explode('.',number_format($FlatDiscount,2));
+		if(isset($FlatDic[1]) && $FlatDic[1] == 00){
+			$FlatDiscount = $FlatDic[0];
+		}
+		$DiscountAmount =  number_format((float)$getorderdata['DiscountAmount'] + $getorderdata['TotalDiscountAmount'],2);
+		$sub_row_html = '';
+
+	?>
+	<div class="accountPageContainer orderShippingStatus">
+		<div class="title-wrapper">
+			<h1 class="page-title">Order Details</h1>
+			<div class="EditBack">
+				<?php if($getorderdata['DocStatus'] == "Draft"){ ?>
+					<span class="BtnViewBack">
+						<a href="<?php echo $block->getBaseUrl();?>customerorder/customer/neworder/id/<?php echo base64_encode($getorderdata['Id']);?>/ncp/<?php echo base64_encode($getorderdata['NumatCardPo']);?>" class="newLinkText">Edit</a>
+					</span>
+				<?php } ?>
+				<span class="BtnViewBack">
+					<a href="javascript:void(0);" onclick="location.href = document.referrer;" class="newLinkText">Back</a>
+				</span>
+				
+			</div>
+		</div>
+	    
+	    <input type="hidden" name="DocEntry" id="DocEntry" value="<?php echo isset($getorderdata['DocEntry']) ? $getorderdata['DocEntry'] : '';?>">
+		<div class="orderNmbrDtls">
+			<div class="orderNum"><span>Web Order ID</span> <span class="orderStatus"><?php echo $getorderdata['WebOrderId'] ? $getorderdata['WebOrderId'] : 'N/A';?></span></div>
+			<div class="orderNum"><span>Order Status</span><span class="orderStatus"><?php echo ($getorderdata['DocStatus'] == 'PartiallyShipped') ? 'Partially Shipped' : $getorderdata['DocStatus'];?></span></div>
+			<div class="orderNum"><span>P.O. Number</span> <span class="orderStatus"><?php echo $getorderdata['NumatCardPo'];?></span></div>
+			<div class="orderNum"><span>Order Number</span><span class="orderStatus"><?php echo isset($getorderdata['DocNum']) ? $getorderdata['DocNum'] : '--'?></span></div>
+			<div class="order-print"><span class="BtnViewBack">
+					<a href="javascript:void(0);" onClick="PrintDiv();" class="printBtn alignRight"> <span class="fa fa-print"></span> Print Order</a>
+			<?php if($getorderdata['DocStatus'] == "Shipped"){ ?>				
+					<a url="<?php echo $block->getBaseUrl();?>customerorder/orderexcel/excel" class="downloadorderexcel printBtn alignRight">
+						<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" version="1.1" width="20" height="20" x="0" y="0" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path xmlns="http://www.w3.org/2000/svg" d="m256 362.667969c-8.832031 0-16-7.167969-16-16v-330.667969c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v330.667969c0 8.832031-7.167969 16-16 16zm0 0" fill="#000000" data-original="#000000" style=""></path><path xmlns="http://www.w3.org/2000/svg" d="m256 362.667969c-4.097656 0-8.191406-1.558594-11.308594-4.695313l-85.332031-85.332031c-6.25-6.25-6.25-16.382813 0-22.636719 6.25-6.25 16.382813-6.25 22.636719 0l74.023437 74.027344 74.027344-74.027344c6.25-6.25 16.386719-6.25 22.636719 0 6.25 6.253906 6.25 16.386719 0 22.636719l-85.335938 85.332031c-3.15625 3.136719-7.25 4.695313-11.347656 4.695313zm0 0" fill="#000000" data-original="#000000" style=""></path><path xmlns="http://www.w3.org/2000/svg" d="m453.332031 512h-394.664062c-32.363281 0-58.667969-26.304688-58.667969-58.667969v-96c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v96c0 14.699219 11.96875 26.667969 26.667969 26.667969h394.664062c14.699219 0 26.667969-11.96875 26.667969-26.667969v-96c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v96c0 32.363281-26.304688 58.667969-58.667969 58.667969zm0 0" fill="#000000" data-original="#000000" style=""></path></g></svg>
+						<span class="xlsx-wrapper">
+							<span class="xlsx-downaload">Download</span>
+							<br>
+							<span class="xlsx-type">(XLSX)</span>
+						</span>
+					</a>
+			<?php } ?>
+				</span></div>
+		</div>
+		<div class="otherOrderDtls">			
+		</div>
+		<div class="shipAndBillAdd">
+			<div class="cols6">
+				
+				<strong>Order Date:</strong> <span id="orderDate"><?php echo str_replace('-','/', $getorderdata['CreateDate'])?></span> <br />
+				<strong>Ship Date:</strong> <span id="shippedDate"><?php echo isset($getorderdata['DeliveryDate']) ? date("m/d/Y", strtotime($getorderdata['DeliveryDate'])) : ''; ?></span><br />
+				<strong>Shipped Via:</strong> <span id="orderDate"><?php echo $shippingType; ?></span> 
+
+				<?php if($getorderdata['DocStatus'] != "Draft" && $getorderdata['DocStatus'] != "Submitted"){ ?>
+
+					<button id="shipttreckdata" class="themeBtn disabled track_button_order_view" data-toggle="modal" data-target="#shipment-track" id="shipopenmodel" href="javascript:void(0);">Track Order 
+						<span id="lodingshippdata" class="loadShipping">
+							<span class="loadDots">
+								<span></span>
+								<span></span>
+								<span></span>
+							</span>
+						</span>
+					</button>
+				<?php } ?>
+
+			</div>
+			<div class="cols6 shippingAddsDtls" > <strong class="box-title" <?php echo ($shippingType == 'Pick Up') ? 'style="display: none;"' : '' ?>> <span>Shipping Address:</span> </strong>
+				<div class="box-content" <?php echo ($shippingType == 'Pick Up') ? 'style="display: none;"' : '' ?>>
+					<?php 
+						
+						$ShippingStateCode = "";
+						if($getorderdata['DocStatus'] == "Draft" || $getorderdata['DocStatus'] == "Submitted"){
+							$ShippingStateCode =  isset($getorderdata['ShippingStateCode']) ? $getorderdata['ShippingStateCode'] : "";
+							}else{
+							$ShippingStateCode =  isset($getorderdata['ShippingState']) ? $getorderdata['ShippingState'] : "";
+						}
+						
+						$checkgetAddress = (isset($getorderdata['ShippingId']) || isset($getorderdata['ShippingAddress']) || isset($getorderdata['ShippingCity']) || !empty($ShippingStateCode) || isset($getorderdata['ShippingZip']) || isset($getorderdata['Attn']) || isset($getorderdata['ShippingStreetNo']))? 1:0; 
+					?>
+					<p> 
+						<?php if($checkgetAddress > 0){ ?>
+							<?php if(isset($getorderdata['ShippingId'])){ ?><span id="ShippingId"><?php echo ucwords(strtolower($getorderdata['ShippingId']))?></span><br><?php } ?>
+							<?php if(isset($getorderdata['Attn'])){ ?><span id="Attn"><?php echo ucwords(strtolower($getorderdata['Attn']))?></span><br><?php } ?>
+							<?php if(isset($getorderdata['ShippingStreetNo'])){ ?><span id="ShippingStreetNo"><?php echo ucwords(strtolower($getorderdata['ShippingStreetNo']))?></span><br><?php } ?>
+							<?php if(isset($getorderdata['ShippingAddress']) && $getorderdata['ShippingAddress'] !=''){ ?><span id="AddressID"><?php echo ucwords(strtolower($getorderdata['ShippingAddress']))?></span><br><?php } ?>
+							<?php if(isset($getorderdata['ShippingCity']) && $getorderdata['ShippingCity'] != ""){ ?><span id="City"><?php echo (isset($getorderdata['ShippingCity'])) ? ucwords(strtolower($getorderdata['ShippingCity'])) : '';?></span><?php } ?><?php if(isset($ShippingStateCode) && !empty($ShippingStateCode)){ ?>, <span id="State"><?php echo strtoupper(strtolower($ShippingStateCode))?></span><?php } ?><?php if(isset($getorderdata['ShippingZip']) && !empty($getorderdata['ShippingZip'])){ ?> <span id="ZipCode"><?php echo $getorderdata['ShippingZip']?></span><?php } ?>
+						<?php }else{ echo ""; }?>
+					</p>
+				</div>
+			</div>
+			<div class="cols6 shippingAddsDtls"> <strong class="box-title"> <span>Billing Address:</span> </strong>
+				<div class="box-content">
+					<?php 
+						$BillingStateCode = "";
+						if($getorderdata['DocStatus'] == "Draft" || $getorderdata['DocStatus'] == "Submitted"){
+							$BillingStateCode =  isset($getorderdata['BillingStateCode']) ? $getorderdata['BillingStateCode'] : "";
+							}else{
+							$BillingStateCode =  isset($getorderdata['BillingState']) ? $getorderdata['BillingState'] : "";
+						}
+						
+						$checkBillingAddress = (isset($getorderdata['BillingAddress']) && isset($getorderdata['BillingCity']) && !empty($BillingStateCode) && isset($getorderdata['BillingZip']) && isset($getorderdata['CardName'])) ? 1:0; 
+					?>
+					<p> 
+						<?php if($checkBillingAddress > 0){ ?>
+							<?php if(isset($getorderdata['CardName'])){ ?><span id="CardName"><?php echo ucwords(strtolower($getorderdata['CardName']))?></span><br><?php } ?>
+							<?php if(isset($getorderdata['BillingAddress'])){ ?><span id="AddressID"><?php echo ucwords(strtolower($getorderdata['BillingAddress']))?></span><br><?php } ?>
+							<?php if(isset($getorderdata['BillingCity'])){ ?><span id="City"><?php echo (isset($getorderdata['BillingCity'])) ? ucwords(strtolower($getorderdata['BillingCity'])): '' ?></span><?php } ?><?php if(!empty($BillingStateCode)){ ?>, <span id="State"><?php echo strtoupper(strtolower($BillingStateCode));?></span><?php } ?><?php if(isset($getorderdata['BillingZip'])){ ?> <span id="ZipCode"><?php echo $getorderdata['BillingZip']?></span><?php } ?>
+						<?php }else{ echo ""; }?>
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="cf"></div>
+		
+		<div class="cf line-item">
+			<h3 class="subTitle">Line Items</h3>
+			<div class="orderListing">
+				<table class="orderList lineItemsList" style="width:100%">
+					<thead>
+						<tr>
+							<th></th>
+							<th>Status</th>
+							<th>Style</th>
+							<th>Color</th>
+							<th>Qty</th>
+							<th>Shipped</th>
+							<th>Open</th>
+							<!--<th>Eta</th>-->
+							<th>Style Status</th>
+							<th>Color Status</th>
+							<th>Price</th>
+							<th>Discount %</th>
+							<th>Disc. Price</th>
+							<th>Line Total</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php if(isset($data) && !empty($data)):?>
+						<?php
+							$sub_row_html .= '<table class="d-none subtable">';
+							$style_count = 0;
+							$tot_qty = 0;
+							foreach($data as $key => $Colordata): 
+							foreach ($Colordata as $subkey => $data):
+							
+							$tot_qty += (INT)$data['QTYOrdered'];
+							if(empty($data['RowStatus']))
+							{
+								$data['RowStatus'] = 'Pending';
+							}
+
+							if(!empty($rowStatusArray) && isset($data['ColorCode']) && $data['Style'] !='')
+							{
+								
+								$inarrayrowstatusarray = array();
+								$inarrayrowstatusarray = $rowStatusArray[$data['Style'].'_'.$data['ColorCode']];   
+								if (in_array("Processing", $inarrayrowstatusarray) || in_array("PartiallyShipped", $inarrayrowstatusarray) || in_array("Pending", $inarrayrowstatusarray) || in_array("Open", $inarrayrowstatusarray)) 
+								{
+									$data['RowStatus'] = "Open";
+								}
+								
+								if (in_array("Shipped", $inarrayrowstatusarray) && !in_array("Processing", $inarrayrowstatusarray) && !in_array("PartiallyShipped", $inarrayrowstatusarray) && !in_array("Pending", $inarrayrowstatusarray)) {
+									$data['RowStatus'] = "Shipped";
+								}
+								if (in_array("Canceled", $inarrayrowstatusarray) && !in_array("Shipped", $inarrayrowstatusarray) && !in_array("Processing", $inarrayrowstatusarray) && !in_array("PartiallyShipped", $inarrayrowstatusarray) && !in_array("Pending", $inarrayrowstatusarray) && !in_array("Open", $inarrayrowstatusarray)) {
+									$data['RowStatus'] = "Shipped";
+								}
+								if(in_array("Shipped", $inarrayrowstatusarray) && in_array("Open", $inarrayrowstatusarray)){
+									$data['RowStatus'] = "Open";
+								}
+								if (in_array("Shipped", $inarrayrowstatusarray) && in_array("Canceled", $inarrayrowstatusarray) && !in_array("Processing", $inarrayrowstatusarray) && !in_array("PartiallyyShipped", $inarrayrowstatusarray) && !in_array("Pending", $inarrayrowstatusarray)) {
+									$data['RowStatus'] = "Shipped";
+								}
+							}
+							$mainetadate = '';
+							if(isset($data['ETA']) && !empty($data['ETA']))
+							{
+								$mainetadate = date("m/d/Y", strtotime($data['ETA']));
+							}
+							$head_discprice = intval(str_replace(',', '', $data['PriceAfterDiscount']));
+
+						?>
+						<tr class="orderviewtableDataShow" style="cursor: pointer;" attr-id="<?php echo $data['Style'].'_'.$data['ColorCode'];?>" >
+							<td><a href="javascript:void(0);" id="<?php echo $data['Style'].'_'.$data['ColorCode']?>" class="newLinkText"><span class="fa fa-plus"></span></a></td>
+							<td><span class="green"><?php echo isset($data['RowStatus']) ? $data['RowStatus'] : 'Pending'; ?></span></td>
+							<td><?php echo $data['Style']?></td>
+							<td><?php echo $data['ColorCode']?></td>
+							<td><?php echo number_format((INT)$data['QTYOrdered'])?></td>
+							<td><?php echo isset($data['DeliveredQTY']) ? number_format((INT)$data['DeliveredQTY']) : ''; ?></td>
+							<td><?php echo isset($data['OpenQTY']) ? number_format((INT)$data['OpenQTY']) : ''?></td>
+							<!--<td><?php //echo $mainetadate;?></td>-->
+							<td><?php echo isset($data['StyleStatus']) ? $data['StyleStatus']: ""; ?></td>
+							<td><?php echo isset($data['ColorStatus']) ? $data['ColorStatus']: "";?></td>
+							<td>$<?php echo number_format((float)$data['Frist_UnitPrice'],2);?></td>
+							<td><?php echo number_format((float)$data['DiscountPer'],2); ?> %</td>
+							<td>$<?php echo number_format((float)$head_discprice,2); ?></td>
+							<td>$<?php echo number_format((float)$data['total'],2);?></td>
+						</tr>
+						
+						<?php $sub_row_html .= '<tr class="toggleTable tr_'.$data['Style'].'_'.$data['ColorCode'].'" >
+							<td colspan="13"><table class="lineItemsList lineItemsList1">
+								<thead>
+									<tr>
+										<th width="20"></th>
+										<th>Status</th>
+										<th>Size</th>
+										<th></th>
+										<th>Order</th>
+										<th>Shipped</th>
+										<th>Open</th>
+										<th>In Stock</th>
+										<th>Eta</th>
+										<th>Price</th>
+										<th>Discount %</th>
+										<th>Disc. Price</th>
+										<th>Line Total</th>
+									</tr>
+								</thead>
+								<tbody>
+									';  
+										foreach ($data['items'] as $key => $sizedata):
+											if($sizedata['RowStatus'] == 'PartiallyShipped')
+											{
+												$sizedata['RowStatus'] = 'Partially Shipped';
+											}
+											$etadate = '-';
+											if(isset($sizedata['ETA']) && !empty($sizedata['ETA']))
+											{
+												$etadate = date("m/d/Y", strtotime($sizedata['ETA']));
+											}
+						
+									$totalprice = str_replace(',', '', $sizedata['TotalPrice']);
+									$discprice = str_replace(',', '', $sizedata['PriceAfterDiscount']);
+
+
+									$sub_row_html .='<tr>
+										<td></td>
+										<td>'.(isset($sizedata['RowStatus']) ? $sizedata['RowStatus'] : 'Pending').'</td>
+										<td data-order="'.$sizedata['SizeOrder'].'">'.$sizedata['Size'].'</td>
+										<td></td>
+										<td>'.number_format((INT)$sizedata['QTYOrdered']).'</td>
+										<td>'.number_format((INT)$sizedata['DeliveredQTY']).'</td>
+										<td>'.number_format((INT)$sizedata['OpenQTY']).'</td>
+										<td>'.number_format((INT)$sizedata['InStock']).'</td>
+										<td>'.$etadate.'</td>
+										<td>$'.number_format((float)$sizedata['UnitPrice'],2).'</td>
+										<td>'.number_format((float)$sizedata['DiscountPer'],2).' %</td>
+										<td>$'.number_format((float)$discprice,2).'</td>
+										<td>$'.number_format((float)$totalprice,2).'</td>
+									</tr>';
+									 endforeach; 
+								$sub_row_html .= '</tbody>
+							</table></td>
+						</tr>'; 
+						
+							endforeach; 
+							endforeach; 
+						?>
+						<!--<tr>
+							<td colspan="4">&nbsp;</td>
+							<td><?php echo $tot_qty;?></td>
+							<td colspan="9">&nbsp;</td>
+						</tr>-->
+						<?php else:?>
+						<tr>
+							<td colspan="13">No items found.</td>
+						</tr>
+						<?php endif;?>
+					</tbody>
+					<?php if(isset($data) && !empty($data)):?>
+					<tfoot>
+						<tr>						
+							<td colspan="4">&nbsp;</td>
+							<td class="order_total_qty"><?php echo $tot_qty;?></td>
+							<td colspan="8">&nbsp;</td>
+						</tr>
+					</tfoot>
+					<?php endif;?>
+				</table>
+				
+				<?php
+				$sub_row_html .= '</table>';	
+				
+				if(isset($data) && !empty($data)):?>
+				<div class="cf">
+					<div class="orderSummary">
+						<div class=""><span>Subtotal:</span> <span class="labelValue">$<?php echo  number_format((float)$getorderdata['TotalBeforeDiscount'],2);?></span></div>
+						<div class=""><strong>Discount Applied: </strong><span class="labelValue success">(<?php echo $FlatDiscount;?>%) - $<?php echo $DiscountAmount ; ?></span> </div>
+						<div class=""><span>Freight/Handling: </span>
+							<span class="labelValue">
+								<?php echo number_format((float)$getorderdata['FreightAmount'],2) <= 0 ? "-":"$".number_format((float)$getorderdata['FreightAmount'],2);?>	
+							</span> </div>
+						<div class=""><span>Coupon: </span> 
+							<span class="labelValue">
+								<?php echo ($getorderdata['CouponCampaign'] < 0) ? '-' : '';?><?php echo number_format((float)abs($getorderdata['CouponCampaign']),2) <= 0 ?'-':"$".number_format((float)abs($getorderdata['CouponCampaign']),2);?> 
+								<?php echo ($getorderdata['CouponCampaignRemark'] != '') ? '('.trim($getorderdata['CouponCampaignRemark']).')' : "";?> 
+							</span>
+						</div>
+						<div class="orderTotal"><strong>Total: <span class="labelValue">$<?php echo number_format((float)$getorderdata['DocTotal'],2);?></span> </strong></div>
+					</div>
+				</div>
+				<?php endif;?>
+			</div>
+		</div>
+		
+	</div>
+	<?php echo $sub_row_html;?>
+	<?php if($getorderdata['DocStatus'] != "Draft" && $getorderdata['DocStatus'] != "Submitted"){ 
+		$block->setDocEntryReg($getorderdata['DocEntry']); 
+		echo $this->getLayout()->createBlock("Sttl\Customerorder\Block\Orderview")->setTemplate("Sttl_Customerorder::shiptrack.phtml")->toHtml(); ?>
+		<input type="hidden" name="ship_shiowdata" id="ship_shiowdata" value="0">
+	<?php } ?>
+
+	<script type="text/javascript">     
+	    function PrintDiv()
+		{
+			var baseurl = '<?php echo $block->getBaseUrl(); ?>';
+			var headContent = document.getElementsByTagName('head')[0].innerHTML;
+			var popupWin =  window.open('', '_blank', 'toolbar=0,location=0,menubar=0');
+			var content = jQuery(".new-container.column.main").clone();
+			
+			var content_area = jQuery("<div />").append(jQuery(content).find(".printBtn,.loginMenu,.serach-user").remove().end()).html();
+			var content_area = jQuery("<div />").append(jQuery(content_area).find(".BtnViewBack").remove().end()).html();
+			var content_area = jQuery("<div />").append(jQuery(content_area).find(".orderTotal strong, .orderTotal span").css("color","black").end()).html();
+
+			var print_content = '<html><head>' + headContent + '</head><body onload="window.print()" class="print-media customerorder-customer-orderview"><div class="print_pg_logo"><h1 class="logo"><a class="logoDesktop" href="'+baseurl+'" title=""> <img src="'+baseurl+'/pub/media/logo/stores/1/logo.png" alt="" width="123" height="34"> </a> <a href="'+baseurl+'/" title="" class="mobileLogo"> <img src="'+baseurl+'/pub/static/version1605674774/frontend/sttl/adaruniforms/en_US/images/mobile-logo.png" alt="Adar Logo" title="Adar Logo"> </a></h1></div> ' + content_area + '</html>';
+			
+			popupWin.document.open();
+			popupWin.document.write(print_content);
+			popupWin.document.close();
+		}
+	</script>
+
+	<script>
+		require([
+	    'jquery',
+		'datatables.net',
+		'FileSaver',
+		'excel_jszip',
+		'myexcel',
+		], function($,FileSaver,excel_jszip,myexcel){
+			$(document).on('click', 'button#shipttreckdata', function (event) {
+				 $('.trackingStatusBar .shipStatus').addClass('move');
+	                          $('.trackingStatusBar .shipStatus.move').css('display','none');
+		       	 var selector = [];
+		          selector.push($("#v-pills-tabContent").find(".tab-pane.show.active .stepCompleted"))
+		          selector.push($("#v-pills-tabContent").find(".tab-pane.show.active .stepInprogress"));
+
+		          $('.trackingStatusBar .stepCompleted').removeClass('add_animation');
+		          $('.trackingStatusBar .stepInprogress').removeClass('add_animation');
+		          var time = 200;
+		         selector.forEach(element => 
+                    element.each(function(index) {
+                        var dd= index;
+                        var $parent = $(this);
+                        setTimeout( function(){ 
+                          if(dd==element.length-1){
+                            $('.trackingStatusBar span.shipStatus.move').css('display','block');
+                          }
+                          $parent.addClass('add_animation'); 
+                        }, time)
+                        time += 500;
+                    })
+                  );
+	        });
+
+	        $(document).on('click', '.trackPack .nav-link', function (event) {
+	              var targetsection = $($(this).attr('href')),
+	                  selector = [];
+	                  selector.push(targetsection.find(".trackingStatusBar .step"))
+
+	              var time = 200;
+	              $('.trackingStatusBar .shipStatus').addClass('move');
+	              $('.trackingStatusBar .shipStatus.move').css('display','none');
+	              $('.trackingStatusBar .step').removeClass('add_animation');
+	              selector.forEach(element => 
+	                element.each(function(index) {
+	                    var $parent = $(this);
+	                    var dd= index;
+	                    setTimeout( function()
+	                      { 
+	                      if(dd==element.length-1){
+	                        $('.trackingStatusBar span.shipStatus.move').css('display','block');
+	                      }
+	                        $parent.addClass('add_animation'); }, 
+	                    time)
+	                    time += 500;                    
+	                }),              
+	              );
+	            });
+
+	        $(".toggleTable").hide();
+	        $(".orderviewtableDataShow").click(function(){
+				if($(this).find('td:first a span').hasClass('fa-plus')){
+					$(this).find('td a span').addClass('fa-minus').removeClass('fa-plus');
+					var val = $(this).attr("attr-id");
+					var html = $(".subtable .tr_"+val).html();
+					$('<tr class="toggleTable">'+html+'</tr>').insertAfter($(this));
+				} else {
+					$(this).find('td a span').addClass('fa-plus').removeClass('fa-minus');
+					$(this).next().remove();
+				}
+			});
+			$(".BtnViewBack .newLinkText").click(function(){
+			  $("select#order_stats").prop('selectedIndex',0);
+				
+			});
+			$(".orderList").find("thead").on('click', 'th', function(){
+				$(".orderviewtableDataShow").find('td a span').addClass('fa-plus').removeClass('fa-minus');
+			});
+			$(window).load(function() {
+	 				var doentrty = '<?php echo $block->getDocEntryReg();?>';
+					var ajaxcall = $('#ship_shiowdata').val()
+					if(ajaxcall != 1 && doentrty !='')
+					{
+						$.ajax({
+						url: "<?php echo $block->getshipdataUrl();?>",
+						enctype: 'multipart/form-data',
+						type: "POST",
+						data:{doentrty:doentrty},
+						showLoader: false,
+						cache: true,
+						success: function(response){
+							$('.shipdatainfo').html('')
+							$('.shipdatainfo').html(response)
+							$('#ship_shiowdata').val(1)
+							$("#shipttreckdata").css({"pointer-events": "all", "opacity": "1"});
+							$('#lodingshippdata').hide();
+							if( jQuery(".trackPack").length) {
+								jQuery('[data-toggle="tooltip"]').tooltip()
+							}
+							if(jQuery(".trackPack").length){
+								console.log('2');
+								setTimeout(function(){
+								jQuery(".trackPack").mCustomScrollbar();			
+								},200);
+							}
+							}
+						});	
+					}else{
+						$( "#shipopenmodel" ).trigger( "click" );
+					}
+			});
+			
+			$('.downloadorderexcel').click(function(){
+
+				var ar = <?php echo json_encode($getorderdata); ?>;
+				var demo= <?php echo json_encode($getGroupbyColor); ?>;
+
+			console.log("ar",ar)
+			console.log("demo",demo)
+				var filename = ar.DocNum;
+				go(ar,demo,filename);
+
+			})
+
+
+			$(document).ready(function() {
+				$('.lineItemsList1').DataTable({
+					"bPaginate": false,
+					"searching": false,
+					"info": false,
+					columnDefs: [ { orderable: false, targets: 0}],
+					"order": [[ 2, "asc" ]]
+				});
+
+				$('.orderList').DataTable({
+					"bPaginate": false,
+					"searching": false,
+					"info": false,
+					columnDefs: [ { orderable: false, targets: 0}],
+					"order": [[ 2, "asc" ],[ 3, "asc" ]]
+				});
+			});
+			
+			function randomDate(start, end) {
+				var d= new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+				return d;
+			}
+
+			function go(ar,demo,filename){
+
+				var finalearray = [];
+				var linetotal = 0.00;
+				demo.filter(function(value,index){
+
+				var DocNum = ar.DocNum;
+				if(DocNum == '' || DocNum == null)
+				{
+					DocNum = ' ';
+				}
+				var NumatCardPo = ar.NumatCardPo;
+				if(NumatCardPo == '' || NumatCardPo == null)
+				{
+					NumatCardPo = ' ';
+				}
+				var TotalPrice = value.TotalPrice;
+				if(TotalPrice != '')
+				{
+					TotalPrice = TotalPrice.replace(/,/g,"");
+				}
+				var PriceAfterDiscount = value.PriceAfterDiscount;
+				if(PriceAfterDiscount != '')
+				{
+					PriceAfterDiscount = PriceAfterDiscount.replace(/,/g,"");
+				}
+
+				var array = {};
+					array['Order'] = DocNum; 
+					array['PO'] = NumatCardPo;
+					array['OrderDate'] = ar.CreateDate;
+					array['SKU'] = value.ItemCode;
+					array['Style'] = value.Style;
+					array['Color'] = value.ColorName;
+					array['Size'] = value.Size;
+					array['Quantity'] = value.QTYOrdered;
+					array['Shipped'] = value.DeliveredQTY;
+					array['Open'] = value.OpenQTY;
+					array['LineStatus'] = value.RowStatus;
+					array['UnitPrice'] = '$'+_convertcurrency(parseFloat(value.UnitPrice).toFixed(2));
+					array['Discount'] = parseFloat(value.DiscountPer).toFixed(2)+'%';
+					array['DiscountPrice'] = '$'+_convertcurrency(parseFloat(PriceAfterDiscount).toFixed(2));
+					array['LineTotal'] = '$'+_convertcurrency(parseFloat(TotalPrice).toFixed(2));
+					array['UPC'] = value.UPC;
+					array['Uhscode'] =  value.U_HS_Code;
+					array['Ujkfabric'] =value.U_JK_Fabric;
+					linetotal = parseFloat(ar['TotalBeforeDiscount']).toFixed(2);
+					finalearray.push(array);
+				})
+			    var excel = $JExcel.new("Calibri light 10 #333333");
+				excel.set( {sheet:0,value:"Sheet 1" } );	
+				var headers=["Order#","PO#","Order Date","SKU","Style","Color","Size","UPC","HS code","Fabric Content","Quantity","Shipped","Open","Line Status","Unit Price","Discount%","Discount Price","Line Total"];
+				var formatHeader=excel.addStyle ( {
+						border: "none,none,none,thin #333333",
+						font: "Calibri 12 #0000AA B"});
+
+				for (var i=0;i<headers.length;i++){
+					excel.set(0,i,0,headers[i]);
+					excel.set(0,i,' ',"auto");
+				}
+
+				finalearray.forEach((number, i) => {
+					i = i +1;
+					excel.set(0,0,i,number.Order);
+					excel.set(0,1,i,number.PO);
+					excel.set(0,2,i,number.OrderDate);
+					excel.set(0,3,i,(number.SKU));
+					excel.set(0,4,i,(number.Style));
+					excel.set(0,5,i,(number.Color));
+					excel.set(0,6,i,(number.Size));
+					excel.set(0,7,i,(number.UPC));
+					excel.set(0,8,i,(number.Uhscode));
+					excel.set(0,9,i,(number.Ujkfabric));
+					excel.set(0,10,i,(number.Quantity));
+					excel.set(0,11,i,(number.Shipped));
+					excel.set(0,12,i,(number.Open));
+					excel.set(0,13,i,(number.LineStatus));
+					excel.set(0,14,i,(number.UnitPrice));
+					excel.set(0,15,i,(number.Discount));
+					excel.set(0,16,i,(number.DiscountPrice));
+					excel.set(0,17,i,(number.LineTotal));
+				});
+					excel.set(0,0,undefined,10); 
+					excel.set(0,1,undefined,10); 
+					excel.set(0,2,undefined,12); 
+					excel.set(0,3,undefined,15); 
+					excel.set(0,4,undefined,8); 
+					excel.set(0,5,undefined,16); 
+					excel.set(0,6,undefined,6); 
+					excel.set(0,7,undefined,15);
+					excel.set(0,8,undefined,15); 
+					excel.set(0,9,undefined,40);  
+					excel.set(0,10,undefined,10); 
+					excel.set(0,11,undefined,10); 
+					excel.set(0,12,undefined,10); 
+					excel.set(0,13,undefined,10); 
+					excel.set(0,14,undefined,10); 
+					excel.set(0,15,undefined,10); 
+					excel.set(0,16,undefined,10); 
+					excel.set(0,17,undefined,10); 
+					excel.set(0,17,finalearray.length+1,'$'+_convertcurrency(linetotal).replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+			    	excel.generate(filename+".xlsx");
+			}
+			function _convertcurrency(price){
+	            var x=price;
+	            x=x.toString();
+	            var afterPoint = '';
+	            if(x.indexOf('.') > 0)
+	            afterPoint = x.substring(x.indexOf('.'),x.length);
+	            x = Math.floor(x);
+	            x=x.toString();
+	            var lastThree = x.substring(x.length-3);
+	            var otherNumbers = x.substring(0,x.length-3);
+	            if(otherNumbers != '')
+	            lastThree = ',' + lastThree;
+	            return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree + afterPoint;
+	        }
+		});
+	</script>
+	<?php } ?>
+<style type="text/css">
+	.lineItemsList1 thead .sorting:after{
+		    content: " " !important;
+	}
+	.lineItemsList1 thead .sorting_asc:after{
+		    content: " " !important;
+	}
+</style>

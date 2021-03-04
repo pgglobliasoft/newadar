@@ -1,0 +1,5 @@
+<?php if ($description = $block->getCurrentFeature()->getDescription()): ?>
+    <div class="feature-description">
+        <?php echo $this->helper('Sttl\Feature\Helper\Data')->filter($description); ?>
+    </div>
+<?php endif; ?>

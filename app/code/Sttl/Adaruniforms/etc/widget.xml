@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Widget:etc/widget_file.xsd">
+    <widget id="products_list">
+        <parameters>
+            <parameter name="template" xsi:type="select">
+                <options>
+                    <option name="bestsellers" value="product/widget/content/bestsellers.phtml">
+                        <label translate="true">Best Sellers</label>
+                    </option>
+					<option name="featured_product" value="product/widget/content/featured-product.phtml">
+                        <label translate="true">Featured Products</label>
+                    </option>
+                </options>
+            </parameter>
+        </parameters>
+    </widget>
+</widgets>

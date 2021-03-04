@@ -1,0 +1,971 @@
+<?php
+    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+    $customerSession = $objectManager->get('Magento\Customer\Model\Session');
+?>
+<script>
+    require(['jquery', 'Magento_Ui/js/modal/modal','mousewheelScroll'],function($, modal){
+
+        jQuery(document).ready(function() {
+                /**
+                 * Event click swatch-option.image active or remove
+                 * @Custom https://i.imgur.com/j9jqr6E.png
+                */
+
+
+                var mainselector = $("#color-data");
+
+                // console.log(styles);
+
+                $(document).on("click", ".swatch-option.image",function()   {              
+            
+                    $('.swtach div , .swatch-option.image').removeClass("active");
+                    $(this).addClass("active");
+                    
+                    const id = $(this).attr('option-color-code');
+                    $(".option-thumbnail div , .colorImage").removeClass("active");
+                    $('#'+$(this).attr("option-id")+'DR'+id).addClass("active");
+                    
+                    $("#"+$(this).attr('id')+'Class').addClass('active');
+                    
+                    var newSta = $(this).attr('option-color-status');
+                    $(".colorstatus #Status").text(newSta);
+                    
+
+                    var newcolor = $(this).attr('option-core-color-name');
+                    $(".core-color-name").text(newcolor);
+                    if(newcolor){
+                    $(".fashion-color-name").text("");
+                        $(".core-color-name").text(newcolor);
+                    }
+                    var facolor = $(this).attr('option-fashion-color-name');
+                    if(facolor){
+                        $(".core-color-name").text("");
+                        $(".fashion-color-name").text(facolor);
+
+                    }
+
+                  setTimeout(function() {  $('#nav-tabContent div.show.active .qtyTd').first().find('input.checkvalue').focus(); },500);
+
+                });
+
+
+                $( document ).on( "click", "#removeUser .mfp-close-inside", function( event, ui ) {
+                    $('#goback').click();
+                });
+
+
+                if($(".product_options").length){
+                    $(".product_options").mCustomScrollbar();
+                }
+
+                $(document).keyup(function(e) {
+                    if (e.which === 27) {
+                      $(".productview-modal-close-inside").trigger("click");
+                    }
+                });
+
+
+                 /**
+                 * Event on hice collapse popup
+                 * @Custom https://i.imgur.com/j9jqr6E.png
+                */
+                $(document).on('hide.bs.collapse', ".collapse", function(e){
+                    if($("#"+this.id).parent().find(".qty_change").val() > 0)
+                    {
+                        return false;
+                    }
+                });
+
+
+                /**
+                 * Event on show collapse popup
+                 * @Custom https://i.imgur.com/j9jqr6E.png
+                */
+                $(document).on('show.bs.collapse', ".collapse", function(e){
+                    if($('.collapse.show').length > 0)
+                    {
+                        var nextopenid = this.id;
+                        $('#activetab_id').val(nextopenid);
+                        var activetavinputs = $(".collapseContainer a[aria-expanded=true]").next('div.show').find('.checkvalue');
+                        var valIsExists = false;
+                        var is_qty_change = $(".collapseContainer a[aria-expanded=true]").find(".qty_change").val();
+                        var prev_obj_id = $(".collapseContainer a[aria-expanded=true]").next('div.show').attr("id");
+                        var is_qty_change = 0;
+                        if (typeof prev_obj_id !== "undefined") {
+
+                            is_qty_change = $("#qty_change_"+prev_obj_id.replace("/", "")).val();
+                        }
+
+                        $(activetavinputs).each(function() {
+                            if ($(this).val() != '')
+                            {
+                                valIsExists = true;
+
+                            }
+                        });
+
+                        if(valIsExists && is_qty_change == 1)
+                        {
+                            var delid = '';
+                            var opt = {autoOpen: false};
+                                var theDialog = $("#removeUser").dialog(opt);
+                                theDialog.dialog("open");
+                                return false;
+
+                        } else {
+                            showtotal();
+                        }
+
+                        $("#cart-form a[data-toggle='collapse']").removeClass("collapse").addClass("collapsed").attr("aria-expanded", false);
+                        var getactivetab_id = $('#activetab_id').val();
+                        $('#'+getactivetab_id).siblings('a').attr("aria-expanded", true).removeClass("collapsed").addClass("collapse");
+                        $('.collapse').removeClass("show");
+                        $('.collapse').addClass("hide");
+                        $(this).focus();
+                    }            
+                    showtotal();
+                });
+
+
+                /**
+                 * popupModal on close add custom code 
+                 * @Custom https://i.imgur.com/d3RUdGb.png
+                */     
+                $('#popupModal').on('hidden.bs.modal', function () {
+                    $("#cart-form #sap_ponumber_id, #cart-form .tabactive, #order_id").val('');
+                    //$('.discardChng').hide();
+                    $("#cart-form .qty_change").val(0);
+                    $("#cart-form #select_existing option:selected").prop("selected", false);
+                    $("#cart-form #select_existing, #cart-form .tabactive").prop("disabled", false);
+                    $('.collapse').removeClass("show");
+                    $("#msg_text").html('');
+
+                        $("#cart-form .checkvalue").each(function() {
+                            $(this).val('')
+                            $(this).next("span").html('');
+                            var selectprice = $(this).closest('td').find('input[type=hidden]').val();
+                            var selectcolor = $(this).closest('td').find('input[name=selectcolor]').val();
+                            var selectsize = $(this).closest('td').find('input[name=selectsize]').val();
+                            $('input[name="inpprice['+selectcolor+']['+selectsize+']"').val('');
+                            $('input[name="inpprice['+selectcolor+']['+selectsize+']"').closest('td').find('span').html('');
+                        });
+                });
+
+
+                /**
+                 * popupModal on open add custom code 
+                 * @Custom https://i.imgur.com/d3RUdGb.png
+                */ 
+                getExstingPONumber("<?php echo $customerSession->getCustomerId();?>")
+                $('#popupModal').on('shown.bs.modal', function () {                	
+                    $('#closepopup').val('');
+                    if($(".core-color-section").is(":visible")){
+                        $(".core-color-section").find(".swatch-option.image").first().trigger("click");
+                    }
+                    $(this).find('.modal-body').css({'max-height':'100%'}); 
+                    $(this).find('.modal-dialog').css({'width': '100%'});
+                    // $(this).find('.modal-dialog').css({'margin-right': ($(document).width()/4+20), 'margin-left': ($(document).width()/4+20) });                                                                  
+                           
+
+                });
+
+
+                /**
+                 * Event goback click 
+                 * @Custom 
+                */
+                $(document).on('click','#goback', function(e) {
+                    $('#removeUser').dialog('close');
+                    $("#closepopup").val(0);
+                    var closepopup = $('#closepopup').val();
+                    showtotal();
+
+                });
+
+
+                 /**
+                 * Event savecontinue click save po 
+                 * @Custom https://i.imgur.com/j9jqr6E.png
+                */
+                $(document).on('click','#savecontinue', function(e) {
+                    $('#removeUser').dialog('close');
+                    $('.collapse').removeClass("show");
+                    $('.collapse').addClass("hide");
+                    var getactivetab_id = $('#activetab_id').val();
+                    $("#cart-form a[data-toggle='collapse']").removeClass("collapse").addClass("collapsed").attr("aria-expanded", false);
+                    $('#'+getactivetab_id).siblings('a').attr("aria-expanded", true).removeClass("collapsed").addClass("collapse");
+                    submitform();
+                    $('#'+getactivetab_id).addClass("show");
+                    $('#'+getactivetab_id).focus();
+                    $("#cart-form .qty_change").val(0);
+
+                });
+
+
+                /**
+                 * Event checkvalue keypress check valid value or not
+                 * @Custom https://i.imgur.com/j9jqr6E.png
+                */
+                $(document).on('focusout','.checkvalue', function(e) {
+                    $('.discardChng').show();
+                    checkvalueUpdate($(this), false);
+                });
+
+
+
+                /**
+                 * Event checkvalue keypress check valid value or not
+                 * @Custom https://i.imgur.com/j9jqr6E.png
+                */
+                $(document).on('keypress,focusout,input','.checkvalue', function(e) {
+
+                    var existponumberText = $('#select_existing :selected').val()
+                    var ponumberText = $(".tabactive").val();
+                    if(existponumberText != '' || $.trim(ponumberText).length > 0)
+                        {
+                            if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+                                  // alert('dfsssssdf');
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            adderror("Please enter a P.O. number or Select an Existing P.O. before entering Qty’s");
+                            return false;
+
+                        }
+                });
+
+
+                /**
+                 * Event tabactive focusout cchnage attribut vaue call function
+                 * @Custom https://i.imgur.com/j9jqr6E.png
+                */
+                $(document).on('focusout','.tabactive', function(e) {
+
+                    var ponumberText = $(this).val();
+                    if($(this).attr('readonly'))
+                    {
+                      return false;
+                    }
+                    if($.trim(ponumberText).length > 0)
+                    {
+                        var IsExists = false;
+                        $('#select_existing option').each(function(){
+                            if (this.text == ponumberText)
+                            IsExists = true;
+                        });
+                        if(IsExists)
+                        {
+
+                            adderror('PO number already exist.')
+                            $('#overlay').show()
+                            $('[data-toggle="collapse"]').prop('disabled',true);
+                            $("#select_existing").prop("disabled", true);
+                            return false;
+                        }
+                        $('.loading-mask').css("display","")
+                        var result = checkEnterPONumber("<?php echo $customerSession->getCustomerId();?>",ponumberText);
+                        if(result == 'true')
+                        {
+                            $('[data-toggle="collapse"]').prop('disabled',false);
+                            $('#overlay').hide()
+                            $("#select_existing").prop("disabled", true);
+                            $("#select_existing option:selected").prop("selected", false)
+                            $('#sap_ponumber_id, #order_id').val('')
+                            //$('.discardChng').hide();
+
+                            }else{
+                            $('#overlay').show()
+                            $('[data-toggle="collapse"]').prop('disabled',true);
+                            $("#select_existing").prop("disabled", true);
+                            return false;
+                        }
+                        $('.loading-mask').css("display","none")
+                    }
+                    else
+                    {
+                        $("#select_existing").prop("disabled", false);
+                    }
+                });
+
+
+                /**
+                 * Event tabactive keypress check valid po number or not
+                 * @Custom https://i.imgur.com/j9jqr6E.png
+                */
+                $(document).on('keypress',".tabactive", function(e) {
+                    var inputVal = this.value + String.fromCharCode(e.keyCode);
+                    var regexAlphanumeric = /^([a-zA-Z0-9\!\@\#\&\*\(\)\-\_\+\/\\\:\;\.\,\>\<\=\|\}\{\]\[]+)$/;
+                    var keycode = (e.keyCode ? e.keyCode : e.which);
+                    if (regexAlphanumeric.test(inputVal) == false && keycode != '13') {
+                        $(this).next("span").html("Please provide valid PO Number.").show().fadeOut(2500);
+                        return false;
+                    }
+
+                    if(keycode == '13'){
+                        e.preventDefault();
+                        console.log("Enter Triggred..")
+                        $(".tab-pane.show.active").find(".checkvalue").first().focus();
+                    }
+                });
+
+
+                /**
+                 * Event click order discardChng button
+                 * @Custom https://i.imgur.com/j9jqr6E.png
+                */
+                $(document).on('click',".discardChng", function() {
+                    var sap_ponumner = $('#sap_ponumber_id, #order_id').val();
+                    if(sap_ponumner !='')
+                    {
+                        updatepopupdata(sap_ponumner)
+                        $('#closepopup').val('');
+                        $("#cart-form .qty_change").val(0);
+                    }else{
+                        $("#cart-form .qty_change").val(0);
+                        $('#closepopup').val('');
+                        $(".checkvalue").each(function() {
+                                $(this).val('');
+                                $(this).removeClass('valuess');
+                                $(this).next("span").html('');
+                                var selectprice = $(this).closest('td').find('input[type=hidden]').val();
+                                var selectcolor = $(this).closest('td').find('input[name=selectcolor]').val();
+                                var selectsize = $(this).closest('td').find('input[name=selectsize]').val();
+                                $('input[name="inpprice['+selectcolor+']['+selectsize+']"').val('');
+                                $('input[name="inpprice['+selectcolor+']['+selectsize+']"').closest('td').find('span').html('');
+                            });
+                    }
+                })
+
+
+                /**
+                 * Event click order table input qty 
+                 * @Custom https://i.imgur.com/9hO1xoK.png
+                 */
+                $(document).on('click',"#chekout", function() {
+                    $('#closepopup').val(0);
+                    var existponumberText = $('#select_existing :selected').val()
+                    var ponumberText = $(".tabactive").val();
+                    if(existponumberText != '' || jQuery.trim(ponumberText).length > 0)
+                    {
+                        var checkinputval = $(".product_options").find('.checkvalue');
+                        var valIsExists = false;
+                        $(checkinputval).each(function() {
+                            if ($(this).val() != '')
+                            {
+                                valIsExists = true;
+                            }
+                        });
+                            if(!valIsExists)
+                            {
+                                adderror('Please provide at least one item quantity to proceed.')
+                            }
+                            if(valIsExists)
+                            {
+                                
+                                 if(jQuery.trim(ponumberText).length >= 4 || existponumberText != ''){
+                                    $("#chekouthidden").val(1);
+                                    submitform();                                    
+                                }
+                                else
+                                {
+                                    adderror("PO Number must be a number or letter special character and at least 4 characters long.");
+                                }
+                            }
+                    }
+                    else
+                    {
+                        adderror("Please enter a P.O. number or Select an Existing P.O. before entering Qty’s");
+                    }
+
+                });
+
+
+                /**
+                 * Event click saveChng button to show popup
+                 * @Custom
+                 */
+
+                $(document).on('click',".saveChng", function() {
+                    var existponumberText = $('#select_existing :selected').val()
+                    var ponumberText = $(".tabactive").val();
+                    if(existponumberText != '' || jQuery.trim(ponumberText).length > 0)
+                    {
+                            var checkinputval = $(this).closest('.show').find('.checkvalue');
+                            var valIsExists = false;
+                            $( checkinputval ).each(function() {
+                                if ($(this).val() != '')
+                                {
+                                    valIsExists = true;
+                                }
+                            });
+                            if(!valIsExists)
+                            {
+                                adderror('Please provide at least one item quantity to proceed.');
+                                return false;
+                            }
+                            var checklink =  $(this).attr("disabled");
+                            if(valIsExists)
+                            {
+                                submitform();
+                                }else{
+                                adderror('Please provide valid data to proceed.');
+                                return false;
+                            }
+                            $("#cart-form .qty_change").val(0);
+                            }
+                    else
+                    {
+                        adderror("Please select a PO or Create a New PO before entering Qty's");
+                    }
+
+                });
+
+
+
+                 /**
+                 * Change Event for update select_existing attribute
+                 * @Custom
+                 */
+                $(document).on('change',"#select_existing", function() {
+
+                    var existponumberText = $('#select_existing :selected').val();
+                    if(existponumberText !='')
+                    {
+                        $(".tabactive").val($('#select_existing :selected').text());
+                        $(".tabactive").prop("readonly", true);
+                    }
+                    updatepopupdata(existponumberText)
+
+                });
+
+        
+                /**
+                 * Change Event for update product_options attribute
+                 * @Custom
+                 */
+                $(document).on('click',".product_options", function() {
+
+                    var existponumberText = $('#select_existing :selected').val()
+                    var ponumberText = $(".tabactive").val();
+                    if(existponumberText != '' || jQuery.trim(ponumberText).length > 0)
+                    {
+                        return true;
+                    }
+                });
+
+
+                /**
+                 * Change for set stick class to product
+                 * @Custom
+                 */
+                var stickclassavil = false;
+                $(".product-info-main #buyBtns .buyNowBtnMain").bind("click",function(){    
+                        console.log("stick");
+
+                    $(".product-info-main").addClass("nonstick");
+                      if($(".product-info-main").hasClass("stick")){
+                        stickclassavil = true;
+                        $(".product-info-main").removeClass("stick");
+                      }     
+                });
+
+                                /**
+                 * on productview-modal-close-inside close event deduct https://i.imgur.com/jmynUdd.png
+                 */
+                $('.productview-modal-close-inside').bind('click', function()
+                {
+                    $(".product-info-main").removeClass("nonstick");
+                    $(".checkvalue").removeClass("valuess");
+                    setTimeout(function(){
+                        $("#popupModal .modal-content").css("left",0);
+                        $("#popupModal .modal-content").css("top",0);
+                    },10)
+                    if(stickclassavil){
+                        $(".product-info-main").addClass("stick");
+                        stickclassavil = false;     
+                    }
+                    $('#closepopup').val(1)
+                    var activetavinputs = $(".collapseContainer a[aria-expanded=true]").next('div.show').find('.checkvalue');
+                    var valIsExists = false;
+                    var is_qty_change = $(".collapseContainer a[aria-expanded=true]").find(".qty_change").val();
+                    var prev_obj_id = $(".collapseContainer a[aria-expanded=true]").next('div.show').attr("id");
+                    var is_qty_change = 0;
+                    if (typeof prev_obj_id !== "undefined") {
+                        is_qty_change = $("#qty_change_"+prev_obj_id.replace("/", "")).val();
+                    }
+                    $("#cart-form a[data-toggle='collapse']").removeClass("collapse").addClass("collapsed").attr("aria-expanded", false);
+
+                    $(activetavinputs).each(function() {
+                        if ($(this).val() != '')
+                        {
+                            valIsExists = true;
+
+                        }
+                    });
+                    if(valIsExists && is_qty_change == 1)
+                    {
+                        var delid = '';
+                        var opt = {autoOpen: false};
+                        var theDialog = $("#removeUser").dialog(opt);
+                        theDialog.dialog("open");
+                        return false;
+                    } else {
+                        showtotal();
+                    }
+                });
+
+                /* 
+                 *Regular, Pettit and Tail
+                 */
+                jQuery(document).on("click",".catBtns .customBtns", function(){
+                    $("#importinverdata .catBtns .customBtns").removeClass("activeCat");
+                    $("#color-data").find(".product_options").removeClass("active");
+                    
+                    var activesku = $(this).attr("product-sku");
+                    
+                    var needtosetstyle = styles[activesku].html;
+
+                    mainselector.append(needtosetstyle);
+                    $(this).parents("#importinverdata").find("#"+activesku).addClass("active");
+                    $(this).addClass("activeCat");
+
+
+
+                    $.each(mainselector.children(), function(key, value){
+                        if($(this).attr("id") != "myTask"){
+                            if(!$(this).hasClass("active")){
+                                $(this).remove();
+                            }
+                        }
+                    });               
+
+                    $("#current_active_style_head").html("");
+                    $("#current_active_style_head").html(activesku);
+
+                    var firstsecselector = $("#"+activesku).find(".swtach").children().first();
+                    firstsecselector.find(".swatch-option.image").first().trigger("click");
+
+                    showtotal();
+                });
+
+
+                /* 
+                 *popup dragable event
+                 */
+
+                 var xLimit = $(window).width() - $("#popupModal .modal-content.ui-draggable").width();
+                 var yLimit = $(window).height() - $("#popupModal .modal-content.ui-draggable").height()
+
+                $("#popupModal .modal-content").draggable({
+                    handle: ".container.bg-primary.p-2",
+                    containment: ".modal-backdrop"
+                });
+
+                
+                /* 
+                 *popup dragable event
+                 */
+                $("#popupModal").mouseup(function(){
+                    if($('.move').hasClass("move-click")){
+                        $(".move").removeClass("move-click")
+                        $("#popupModal .modal-body").css({"cursor":""})
+                        $("#color-data,.container.bg-light.p-2,#popupModal #message").css({"pointer-events":""})
+                    }
+                 })
+                $("#popupModal .container.bg-primary.p-2").mousedown(function(){
+                    $(".move").addClass("move-click")
+                    $("#popupModal .modal-body").css({"cursor":"move"})
+                    $("#color-data,.container.bg-light.p-2,#popupModal #message").css({"pointer-events":"none"})
+                 })
+    
+                
+
+                /* 
+                 * Close popup check event
+                 */
+                $(document).on('click',function(e){     
+                 if (!$(e.target).closest(".container.bg-primary.p-2").length) {              
+                    if($('.move.movea.move-click').length > 0){
+                        $('.move.movea.move-click').removeClass('move-click');
+                    }
+                   }
+                });
+
+
+                var image_option = { 
+                                type: 'popup',
+                                responsive: true,
+                                innerScroll: true,
+                                title: 'popup modal title',
+                                modalClass: "imgquickViewCont",
+                                buttons: [{
+                                    text: $.mage.__('Continue'),
+                                    class: '',
+                                    click: function () {
+                                        this.closeModal();
+                                    }
+                                }]
+                            };
+
+                var imgquickViewCont = modal(image_option, $('#imgquickViewCont'));
+
+                $(document).on("click", "div.option-thumbnail", function(e) {
+                    $("#imgquickViewCont").modal("openModal");
+                    $('.modals-overlay').addClass('added');
+                    $('.modal-backdrop.fade.show').css('opacity', '0');    
+                    $('#imgquickViewCont .ProductShow').attr('src',$(this).find('.active img').attr("src"));
+                });
+
+          
+                $(document).on("click",".close-image-chart-popup",function () {
+                    $('.modals-overlay').removeClass('added');
+                    $('#imgquickViewCont').modal('closeModal');   
+                    $('.modals-overlay').css('opacity', '0');
+                    $('.modal-backdrop.fade.show').css('opacity', '0.5');
+                });
+
+                /*All helper function */
+
+                /*
+                 ** after qty add success popup show
+                */
+                posuccesspopup();
+
+                function posuccesspopup(){
+                  var options = {
+                    type: 'popup',
+                    responsive: true,
+                    innerScroll: true,
+                    modalClass: "po-success-popup",
+                    modalCloseBtn: true,
+                  };
+
+                  var popup = modal(options, jQuery('#posuccess-message'));
+                }
+
+
+                  function adderror(message)
+                  {
+                    jQuery("#posuccess-message p").html(message);
+                    jQuery("#posuccess-message").modal("openModal");
+                    jQuery(".modalContainer").css("pointer-events","none");
+                  setTimeout(function(){
+                    jQuery(".modalContainer").css("pointer-events","");
+                    jQuery("#posuccess-message").modal("closeModal");
+                  }, 3000);
+                    return true;
+                  }
+
+                  function addsuccess(message)
+                  {
+                    jQuery("#posuccess-message p").html(message);
+                    jQuery("#posuccess-message").modal("openModal");
+                    jQuery(".modalContainer").css("pointer-events","none");
+                    setTimeout(function(){
+                    jQuery(".modalContainer").css("pointer-events","");
+                    jQuery("#posuccess-message").modal("closeModal");
+                  }, 3000);
+                    return true;
+                  }
+
+
+                /*
+                *Retunn Status on save po call ajax to save po updated/new data
+                */
+                function updatepopupdata(existponumberText)
+                {
+                    if(existponumberText != '')
+                    {
+                        $('[data-toggle="collapse"]').prop('disabled',false);
+                        $('#overlay').hide()
+                        $("#msg_text").html("");
+                        $('.discardChng').show();
+                        $('#sap_ponumber_id, #order_id').val(existponumberText);
+                        var url = "<?php echo $block->getBaseUrl().'adaruniforms/cart/update' ?>";
+                        var style_id = $(".product_options").attr("id");
+                        $(".checkvalue").each(function() {
+                            $(this).val('')
+                            $(this).next("span").html('');
+                            var selectprice = $(this).closest('td').find('input[type=hidden]').val();
+                            var selectcolor = $(this).closest('td').find('input[name=selectcolor]').val();
+                            var selectsize = $(this).closest('td').find('input[name=selectsize]').val();
+                            $('input[name="inpprice['+selectcolor+']['+selectsize+']"').val('');
+                            $('input[name="inpprice['+selectcolor+']['+selectsize+']"').closest('td').find('span').html('');
+                        });
+                        showtotal();
+                        jQuery.ajax({
+                            url: url,
+                            type: "POST",
+                            data: {'po_number' : existponumberText, 'style_id' : style_id},
+                            showLoader: true,
+                            cache: false,
+                            success: function(response){
+                                if(response.success) {
+                                    var data = response.data;
+                                    if (data != null) {
+                                        jQuery.each( data, function( key, value ) {
+                                            var colorname = value.ColorName,
+                                            size = value.Size,
+                                            qty = value.QTYOrdered;
+
+                                            var inputQty = 'qty['+colorname+']['+size+']';
+                                            if ($("[name='"+inputQty+"']")) {
+                                                var value = $("[name='"+inputQty+"']").val(qty);
+                                                checkvalueUpdate($("[name='"+inputQty+"']"), true);
+                                            }
+                                        });
+
+                                    }
+                                }
+                            }
+                        });
+
+                    }else{
+                        $(".tabactive").prop("readonly", false);
+                        $(".tabactive").val('');
+                        $('#sap_ponumber_id, #order_id').val('');
+                        //$('.discardChng').hide();
+                        $('.collapse').removeClass("show");
+                        $("#cart-form a[data-toggle='collapse']").addClass("collapsed").attr("aria-expanded", false);
+                        $(".checkvalue").each(function() {
+                            $(this).val('')
+                            $(this).next("span").html('');
+                            var selectprice = $(this).closest('td').find('input[type=hidden]').val();
+                            var selectcolor = $(this).closest('td').find('input[name=selectcolor]').val();
+                            var selectsize = $(this).closest('td').find('input[name=selectsize]').val();
+                            $('input[name="inpprice['+selectcolor+']['+selectsize+']"').val('');
+                            $('input[name="inpprice['+selectcolor+']['+selectsize+']"').closest('td').find('span').html('');
+                        });
+                            showtotal();
+                    }
+                }
+
+
+
+                /*
+                 *update po swatches table value 
+                 */
+                function checkvalueUpdate(obj, update)
+                {
+                    
+                    var qty = $(obj).val();                   
+                    var maxQty = $(obj).attr("max");
+                    var selectprice = $(obj).closest('td').find('input[type=hidden]').val();
+                    var selectcolor = $(obj).closest('td').find('input[name=selectcolor]').val();
+                    var selectsize = $(obj).closest('td').find('input[name=selectsize]').val();
+                    if(qty != '' && $.isNumeric(qty))
+                    {
+                        console.log('222')
+                        $(obj).addClass("valuess");
+                        var price = qty * selectprice;
+                        if(parseInt(qty) > parseInt(maxQty))
+                        {                        
+                            var backqty = parseInt(qty) - parseInt(maxQty);
+                            $(obj).next("span").html('Backorder '+ backqty);
+                       
+                        }
+                        else
+                        {
+                            $(obj).next("span").html('');
+                        }
+                        if(update == false)
+                        {
+                            var colorcode = $('input[name="colorcode['+selectcolor+']['+selectsize+']"').val();
+                            $("#qty_change_"+colorcode.replace("/", "")).val(1);
+                        }
+
+                        $('input[name="inpprice['+selectcolor+']['+selectsize+']"').val(price.toFixed(2));
+                        $('input[name="inpprice['+selectcolor+']['+selectsize+']"').closest('td').find('span').html('$'+convertcurrency(price.toFixed(2)));
+                        var savechnagestatus = $(obj).closest('table').find('.maxqtyvaldi').text().length;
+                        if(savechnagestatus <= 0)
+                        {
+                            $('.saveChng').attr('disabled', false);
+                        }
+                    }
+                    else
+                    {
+                        $(obj).val('')
+                        $(obj).next("span").html('');
+                        var selectprice = $(obj).closest('td').find('input[type=hidden]').val();
+                        var selectcolor = $(obj).closest('td').find('input[name=selectcolor]').val();
+                        var selectsize = $(obj).closest('td').find('input[name=selectsize]').val();
+                        $('input[name="inpprice['+selectcolor+']['+selectsize+']"').val('');
+                        $('input[name="inpprice['+selectcolor+']['+selectsize+']"').closest('td').find('span').html('');
+                        $(obj).next("span").html('');
+                    }
+                    showtotal();
+
+                }
+
+
+
+                /*
+                 *update po swatches qty add to cart
+                 */
+                function submitform()
+                {
+                    $("#msg_text").html("");
+                    var url = "<?php echo $block->getBaseUrl().'customerorder/customer/createorder' ?>";
+                    var is_savedata = 'true';
+                    jQuery.ajax({
+                        url: url,
+                        type: "POST",
+                        data: $("#cart-form").serialize()+"&is_savedata="+is_savedata,
+                        showLoader: true,
+                        cache: false,
+                        success: function(response){
+                            if(response.order_id)
+                            {
+                                $('#sap_ponumber_id, #order_id').val(response.order_id);
+                                $('.discardChng').show();
+                            }
+                            if(response.success)
+                            {
+                                addsuccess(response.message);
+                            }
+                            else
+                            {
+                                adderror(response.message);
+                            }
+                            if(response.message) {
+                                $("#message").show();
+                            }
+                            var closepopup = $("#closepopup").val();
+                            if(closepopup == 1)
+                            {
+                                $('.productview-modal-close-inside').trigger( "click" );
+
+                            }
+                            var valuescheckout = $("#chekouthidden").val();
+                            if(valuescheckout == 1 && response.base64_order_id && response.base64_ncp_id)
+                            {
+                                var nexturl = "<?php echo $block->getBaseUrl().'customerorder/customer/neworder/id/'?>"+response.base64_order_id+"/ncp/"+response.base64_ncp_id;
+                                top.location = nexturl;
+                            }
+                        }
+                    });
+                }
+
+
+                /*
+                 *gte all extistin po number form past order & daft
+                 */
+                function getExstingPONumber(customid)
+                {
+                    var ponumber = '';
+                    $('.tabactive').val();
+                    $(".tabactive").prop("readonly", false);
+                    $('#closepopup').val();
+                    var url = "<?php echo $block->getBaseUrl().'adaruniforms/index/ponumber' ?>";
+                    jQuery.ajax({
+                        url: url,
+                        type: "POST",
+                        data: {custom_id: customid,ponumber:ponumber},
+                        showLoader: false,
+                        cache: false,
+                        success: function(response){
+                            if(response.success)
+                            {
+                                $('#select_existing').html(response.success);
+                                }else{
+                                adderror('Session timed out, please refresh the page.');
+                            }
+                        }
+                    });
+                }
+
+
+                /*
+                 *check enter po number in extise in list or not
+                 */
+                function checkEnterPONumber(customid,ponumber)
+                {
+                    var url = "<?php echo $block->getBaseUrl().'adaruniforms/index/ponumber' ?>";
+                    var result = ''
+                    jQuery.ajax({
+                        url: url,
+                        dataType: 'json',
+                        type: "POST",
+                        data: {custom_id: customid,ponumber:ponumber},
+                        showLoader: true,
+                        cache: false,
+                        success: function(response){
+                            if(response.success)
+                            {
+                                //addsuccess(response.success);
+                                $("#msg_text").removeClass("error");
+                                $("#msg_text").html('');
+                                $('[data-toggle="collapse"]').prop('disabled',false);
+                                $('#overlay').hide()
+                                $("#select_existing").prop("disabled", true);
+                                $("#select_existing option:selected").prop("selected", false)
+                                $('#sap_ponumber_id, #order_id').val('')
+                                //$('.discardChng').hide();
+                                result = 'true';
+                                }else{
+                                adderror(response.error);
+                                //$('#overlay').show()
+                                $('[data-toggle="collapse"]').prop('disabled',true);
+                                $("#select_existing").prop("disabled", true);
+                                result = 'false';
+                            }
+                        }
+                    });
+                    return result;
+                }
+
+
+                /*
+                 * After added aty in checkvalue ibput next totl colum show total price * qty
+                 */
+                function showtotal()
+                {
+                    var unittotals = $('.product_options').find('.unittotal');
+                    var gd_total = 0;
+                    $(unittotals).each(function() {
+                        if($(this).val() != '')
+                        {
+                            var total = parseFloat($(this).val());
+                            gd_total = gd_total + total;
+                        }
+
+                    });
+                    var totalprice = convertcurrency(parseFloat(gd_total).toFixed(2));
+                    $('#hi_grandtotal').val(parseFloat(gd_total).toFixed(2));
+                    $('.grandtotal').html('');
+                    $('.grandtotal').html('$'+ totalprice);
+                }
+
+                jQuery(window).resize(function(){
+                    // alert("aaaaa")
+                   jQuery ('.modal-dialog').css({'margin-right': '', 'margin-left': '', 'margin':'1.75rem auto' }); 
+                  jQuery('div#importinverdata .modal-content.ui-draggable').css({'top':'0px','left':'0px'});
+                });
+                /*
+                 * convertcurrency total price * qty
+                 */
+                function convertcurrency(price)
+                {
+                    var x=price;
+
+                    x=x.toString();
+                    var afterPoint = '';
+                    if(x.indexOf('.') > 0)
+                    afterPoint = x.substring(x.indexOf('.'),x.length);
+                    x = Math.floor(x);
+                    x=x.toString();
+                    var lastThree = x.substring(x.length-3);
+                    var otherNumbers = x.substring(0,x.length-3);
+                    if(otherNumbers != '')
+                    lastThree = ',' + lastThree;
+                    return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree + afterPoint;
+
+                }  
+
+        }); 
+        
+        
+    })
+</script>

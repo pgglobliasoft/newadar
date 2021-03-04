@@ -1,0 +1,91 @@
+<?php
+namespace ManishJoy\ChildCustomer\Observer;
+
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\Response\Http;
+use Magento\Framework\App\ViewInterface;
+use Magento\Framework\Event\Observer;
+use Magento\Framework\Event\ObserverInterface;
+use Magento\Customer\Model\Session;
+use ManishJoy\ChildCustomer\Model\PostFactory;
+use Magento\Store\Model\StoreManagerInterface;  
+
+class blockpermission implements ObserverInterface
+{
+    protected $_response;
+    protected $_view;
+    protected $_request;
+    protected $_customerSession;
+    protected $_postFactory;
+    private $storeManager;
+
+    public function __construct(
+
+        Http $response,
+        ViewInterface $view,
+        StoreManagerInterface $storeManager,
+        PostFactory $postFactory,
+        RequestInterface $request,
+        Session $customerSession 
+    ) {
+        $this->_response = $response;
+        $this->_view = $view;
+        $this->_request = $request;
+        $this->storeManager = $storeManager;
+        $this->_postFactory = $postFactory;
+        $this->session = $customerSession;
+    }
+
+    public function execute(Observer $observer)
+    {
+          if ($this->session->isLoggedIn())
+        {   
+
+           $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $requestInterface = $objectManager->get('Magento\Framework\App\RequestInterface');
+            $routeName      = $requestInterface->getRouteName(); 
+            $actionName     = $requestInterface->getActionName();
+            $controllerName = $requestInterface->getControllerName(); 
+            $url = "$routeName".'/'. "$controllerName".'/'."$actionName";
+            if($url === "customer/account/index"){
+            $layout = $observer->getLayout();
+
+            $statement = 'customer_account_dashboard_statement';
+            $savepayment='customer_account_dashboard_savepayment';
+            $shippinginformation='customer_account_dashboard_shippinginformation';
+            $usermanagement='create_custome_index';
+
+            $post = $this->_postFactory->create();
+            $collection = $post->getCollection()->addFieldToSelect('permission')->addFieldToFilter('c_id', 318);
+            $permission =  $collection->getData();
+            $permissionarray = json_decode($permission[0]['permission'], true);
+            $accountinfo = $permissionarray['accountinfo'];
+
+                 if(!in_array("view_customer", $accountinfo)){
+                    $block = $layout->getBlock($statement);
+                    if ($block) {
+                        $layout->unsetElement($statement);
+                    }
+                 }elseif (!in_array("payment_info", $accountinfo)) {
+                     $block = $layout->getBlock($savepayment);
+                    if ($block) {
+                        $layout->unsetElement($savepayment);
+                    }
+                 }elseif (!in_array("shipping_info", $accountinfo)) {
+                     $block = $layout->getBlock($shippinginformation);
+                    if ($block) {
+                        $layout->unsetElement($shippinginformation);
+                    }
+                 }elseif (!in_array("user_manage", $accountinfo)) {
+                     $block = $layout->getBlock($usermanagement);
+                    if ($block) {
+                        $layout->unsetElement($usermanagement);
+                    }
+                 }
+                
+
+            }
+        }
+    }
+}
+    

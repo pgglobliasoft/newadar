@@ -1,0 +1,50 @@
+<?php $items = []; ?>
+<!-- <div class="block block-dashboard-info child-user" id="user-management">
+    <div class="block-title collapsed" data-toggle="collapse" data-target="#collapseFive" aria-expanded="true" aria-controls="collapseFive">
+    	<strong class="upperCaseText"><?= $block->escapeHtml(__('User Management')) ?></strong>		
+	</div>
+	<div id="collapseFive" class="block-content management-section collapse" aria-labelledby="headingOne">
+		<div class="management-conatiner">
+			<div class="add-user">
+				<a class="action added userbtn"  attr-type = "user-management"  data-toggle="modal" data-target="#user-Modal"><span><i class="fa fa-plus" aria-hidden="true"></i>  <?= $block->escapeHtml(__(' Add a new User')) ?></span></a>				
+			</div>
+      <div class="table-conatiner">
+        <span class="action reloadbtn"> <i class="fa fa-refresh" aria-hidden="true"></i> </span>
+  			<div class="user-gird-conatiner">
+          <?php echo $block->getChildHtml('create_custome_index_childusertable'); ?>
+  			</div>
+      </div>
+		</div>		
+	</div>
+	
+</div> -->
+
+  <div class="modal fade" id="user-Modal" tabindex="-1" role="dialog" aria-labelledby="user-ModalLabel" aria-hidden="true" data-action=''>
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="user-ModalLabel">Create A New User</h3>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body user-input-container">      
+          <?php echo $block->getChildHtml('create_custome_index_registartion'); ?>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 
+<script type="text/ ">
+    {
+        "#editcustomer": {
+
+            "child_customer_stores": {                       
+                "editcustomerdat" : <?php /* @escapeNotVerified */  echo json_encode($items); ?>,                
+            }
+
+        }
+    }
+</script> -->

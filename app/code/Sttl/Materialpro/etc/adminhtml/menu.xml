@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+    	<add id="Sttl_Materialpro::Materialpro" title="Marketing Material Products" module="Sttl_Materialpro" sortOrder="10" resource="Sttl_Materialpro::Materialpro" parent="Magento_Backend::marketing"/>
+
+		<add id="Sttl_Materialpro::Materialproduct" title="Marketing Material Product Rules" module="Sttl_Materialpro" sortOrder="10" parent="Sttl_Materialpro::Materialpro" action="amaterialpro/grid/index" resource="Sttl_Materialpro::Materialproduct"/>
+
+    </menu>
+</config>

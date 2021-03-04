@@ -1,0 +1,38 @@
+Plugin Name: Magento2 EBizCharge Gateway
+Plugin URI: https://www.ebizcharge.com/
+Description: Accept all major credit cards directly on your Magento2 site in a seamless and secure checkout environment with EBizCharge.
+Compatible with Version: 2.2.5
+Author: EBizCharge
+Author URI: http://ebizcharge.com
+License: Apache 2
+A Product of: Century Business Solutions
+
+Here are lattest commits for the ebizcharge plugin updates.
+
+== Changelog ==
+
+Whats new in Version 1.0.0 Commit 3? Updated on 22.6.18
+
+1- Make it compatible with IE
+2- Made Customer scenarios If S-key is changes
+3- Compatibility with Magento 2.2.5 is tested
+
+-------------------------------
+
+Whats new in Version 1.0.0 Commit 2? Updated on 5.6.18
+
+1- Enable/dosable CVV
+2- address line 2 error is resolved
+3- CC auto selected added
+4- name is changed to EBizCharge
+5- Code is cleaned
+
+-------------------------------
+
+Whats new in Version 1.0.0 Commit 1? Updated on 5.6.18
+
+not have card auto selected etc issues in progress
+
+
+
+

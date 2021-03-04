@@ -1,0 +1,170 @@
+	<?php
+		$q = @$block->getRequest()->getParam('q');
+		$ordersPacakge = $block->getOrderDataCollection();
+		$orders = json_decode(json_encode($ordersPacakge['data']), true);
+		// echo '<pre>'; print_r($orders); die;
+		$page = $ordersPacakge['page'];
+		$total =  $ordersPacakge['total'];
+		$totalPage = ceil($total/30);
+		$back_redirect = $this->getBaseUrl()."customerorder/customer/index";
+	?>
+		<!--- tables div -->
+
+
+			<table class="orderList">
+				<thead>
+				<tr class="table-header">
+						<th class="item-sort" sort-type='DESC' data-sort-by="DocStatus"> <span class="grid-shorting" > Status </span><i class="fa b2b-grid-sort-icon fa-sort"></i></th>
+						<?php if($q == '') { ?><th class="item-sort" sort-type='DESC' data-sort-by="DocStatus"> <span class="grid-shorting" > SO NO. </span> <i class="fa b2b-grid-sort-icon fa-sort"></i> </th><?php } ?>
+						<th class="item-sort" sort-type='DESC' data-sort-by="DocStatus"> <span class="grid-shorting" >PO NO. </span> <i class="fa b2b-grid-sort-icon fa-sort"></i> </th>
+						<th class="item-sort" sort-type='DESC' data-sort-by="DocStatus"> <span class="grid-shorting" > Order Date </span> <i class="fa b2b-grid-sort-icon fa-sort"></i> </th>
+						<!-- <th></th>					   -->
+					</tr>
+				</thead>
+				<tbody>
+				<?php
+				$ordered = 0;
+				$open = 0;
+				$shipped = 0;
+				$total_order = 0;
+				if($total > 0)
+				{
+					$count = $page * 30 + 1;
+					foreach($orders as $order)
+					{
+						$ordered += $order['TotalQTYUnits'] > 0 ? $order['TotalQTYUnits'] : 0;
+						$open += $order['TotalOpen'] > 0 ? $order['TotalOpen'] : 0;
+						$shipped += $order['TotalShipped'] > 0 ? $order['TotalShipped'] : 0;
+						$total_order += $order['DocTotal'] > 0 ? $order['DocTotal'] : 0;
+
+						$id_b_e = base64_encode($order['Id']);
+						if($order['dataFrom'] == 'V')
+						{
+							$id_b_e = base64_encode($order['DocNum']);
+						}
+
+						$order_view_url = $block->getBaseUrl().'customerorder/customer/orderview/id/'.$id_b_e.'/back/'.base64_encode($back_redirect).'/df/'.base64_encode($order['dataFrom']);
+						$getorderdata = $block->getOrderDataDetails($order['DocNum'], $order['dataFrom']);
+
+						if($order['DocStatus'] == "Draft")	{
+								$order_view_url = $block->getBaseUrl().'customerorder/customer/payment?back_order_id='.$id_b_e.'&back_po_number='.base64_encode($order['NumatCardPo']);
+						}
+					?>
+							<tr option-redirect = "" style="cursor: pointer;" class="main-row">
+								<td class="option-redirect  <?=  $order['DocStatus']  ?>">
+									<?php
+											if($order['DocStatus'] == 'PartiallyShipped') {
+												echo 'Partially<br>Shipped';
+											}elseif ($order['DocStatus'] == 'Shipped') {
+												echo '<span class="shipped-span"><i class="fa fa-check"></i> Shipped </span>';
+											}
+											else{
+												echo $order['DocStatus'];
+
+											}
+											// echo '<h1>'.@$getorderdata['DocEntry'].'</h1>';
+									?>
+
+								</td>
+								<?php if($q == '') { ?> <td class="option-redirect"><?php echo ($order['DocNum'] != '') ? strlen($order['DocNum']) > 6 ? substr($order['DocNum'],0,6)."..." : $order['DocNum'] : "-";?></td> <?php } ?>
+								<td class="option-redirect">
+									<?php //if($order_stats == "Draft" || $order['DocStatus'] == "Draft" || $order_stats == "Submitted" || $order['DocStatus'] == "Submitted"){ ?>
+									<?php echo ($order['NumatCardPo'] != '') ? strlen($order['NumatCardPo']) > 6 ? substr($order['NumatCardPo'],0,6)."..." : $order['NumatCardPo'] : "-";?><?php /* }else{ ?>
+										<?php echo ($order['NumatCardPo'] != '') ? $order['NumatCardPo'] : "-";?>
+									<?php }*/ ?>
+								</td>
+									<td class="option-redirect action"><div class="d-flex">
+								<span><?php
+
+								$getdate = str_replace("-","/",$order['CreateDate']);
+
+								$time = strtotime($getdate);
+
+								$newformat = date('m-d-y',$time);
+
+								echo $newformat;
+
+
+								?></span>
+								<span class="icon-fa"><i class="fa fa-chevron-down"></i></span><div></td>
+							</tr>
+							<tr class="toggleTable">
+								<td colspan="5" class="custom-td">
+									<div class="expandable_row" style="display:none;">
+									<table class="togg-tlb">
+								<thead>
+									<tr>
+										<th>Ordered</th>
+										<th>Open</th>
+										<th>Shipped </th>
+										<th>Total Order</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td><?php echo ($order['TotalQTYUnits'] > 0) ? number_format((int)$order['TotalQTYUnits']) : 0.00;?></td>
+									<td><?php echo ($order['TotalOpen'] > 0) ? number_format((int)$order['TotalOpen']) : 0.00;?></td>
+									<td><?php echo ($order['TotalShipped'] > 0) ? number_format((int)$order['TotalShipped']) : 0.00;?></td>
+									<td>$<?php echo number_format((float)$order['DocTotal'],2);?></td>
+									</tr>
+									<tr>
+										<td colspan="4">
+											<?php if($order['DocStatus'] == "Draft")	{  ?>
+												<a class="newLinkText" href="<?php echo $this->getBaseUrl();?>customerorder/customer/neworder/id/<?php echo base64_encode($order['Id']);?>/ncp/<?php echo base64_encode($order['NumatCardPo']);?>">Edit Order</a>
+												<a class="newLinkText"  href="<?php echo $this->getBaseUrl();?>customerorder/customer/delete/id/<?php echo base64_encode($order['Id']).'/back/'.base64_encode($back_redirect);?>/">Delete Order</a>
+											<?php }else{?>
+												<a class="newLinkText" href="<?php echo $order_view_url?>">View Order</a>
+
+												<?php if(@$getorderdata['DocEntry']){ ?>
+											<a class="newLinkText mobile-button" href="#" data-backdrop="false"  data-toggle="modal" data-target="#shipment-track"  id="shipttreckdata" data-num="<?= $getorderdata['DocEntry'] ?>" >Track Order </a>
+											<?php } ?>
+
+											<?php }?>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+							</td>
+
+							</tr>
+
+					<?php
+					$count++;
+				}?>
+				</tbody>
+				<tfoot>
+					<tr class="paginationRow" id="paginationId" data-id=1>
+						<td colspan="9" class="testTable" rowspan="1">
+							<div class="d-flex">
+								<div class="fa-pull-left recordTotal"> <?= $page * 30+1 ?> to <?= $count-1 ?> of <?= $total ?></div>
+								<?php if($total > 30){?>
+									<div class="pagination">
+										<div class="dataTables_paginate paging_full_numbers" id="example_paginate">
+											<?php if($page > 0){ ?>
+												<a class="paginate_button first" aria-controls="example" data-dt-idx="1" tabindex="0" id="example_first"><span class="first"><i class="fa fa-step-forward" aria-hidden="true"></i></span></a>
+												<a class="paginate_button previous" aria-controls="example" data-dt-idx="<?= $page  ?>" tabindex="0" id="example_previous"><span class="previous"><i class="fa fa-chevron-left" aria-hidden="true"></i></span></a>
+											<?php } ?>
+											<span class="cdatatableDetails">
+												<input type="text" value="<?= $page +1  ?>" class="direct-serach" data-dt-idx="<?= $page +1  ?>"> / <?= $totalPage ?>
+											</span>
+											<?php if($page < $totalPage){ ?>
+												<a class="paginate_button next" aria-controls="example" data-dt-idx="<?= $page+2 ?>" tabindex="0" id="example_next"><span class="next"><i class="fa fa-chevron-right" aria-hidden="true"></i></span></a>
+												<a class="paginate_button last" aria-controls="example" data-dt-idx="<?= $totalPage; ?>" tabindex="0" id="example_last"><span class="last"><i class="fa fa-step-forward" aria-hidden="true"></i></span></a>
+											<?php } ?>
+										</div>
+									</div>
+								<?php } ?>
+							</div>
+						</td>
+					</tr>
+				</tfoot>
+				<?php
+			}
+			else
+			{?>
+				<tr>
+					<td class="no-records" colspan="9" >No Orders Found!</td>
+				</tr>
+			<?php } ?>
+		</table>

@@ -1,0 +1,22 @@
+<div class="container bg-primary p-2">
+	<div class="row">
+		<div class="col-md-4 offset-md-4 text-center">
+			<!--<a href="<?php echo $block->getBaseUrl() ?>" title="" class="mobileLogo" style="display: inline;"></a>-->
+			<img src="<?php echo $this->getViewFileUrl('images/mobile-logo-white.png'); ?>" >
+		</div>
+		<div class="col-md-4">
+			<button type="button" class="close mfp-close-inside"><i class="fa fa-times"></i></button>
+		</div>
+	</div>
+</div>
+<script>
+	require(["jquery"], function ($) {
+		$(document).ready(function() {
+			$('.mfp-close-inside').bind('click', function() {
+				$('.mfp-close', parent.document).click();
+				
+			});
+		});
+		
+	});
+</script>

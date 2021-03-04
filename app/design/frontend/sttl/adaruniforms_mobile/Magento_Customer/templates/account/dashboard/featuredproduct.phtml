@@ -1,0 +1,25 @@
+ <?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$productCollection = $objectManager->create('Magento\Catalog\Model\ResourceModel\Product\Collection');
+$collection = $productCollection->addAttributeToSelect('*')->addAttributeToFilter('featured_product', array('eq' => 1))->load();
+$_imagehelper = $this->helper('Magento\Catalog\Helper\Image');
+?>
+<div class="featured_banner">
+<div><h4>Featured Products</h4></div>
+<div class="row">
+<?php
+foreach ($collection as $product){
+
+		$productImage = $_imagehelper->init($product, 'product_page_image_large')->setImageFile($product->getFile())->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(TRUE)->getUrl();
+		
+		?>
+		<div class="grid-item grid-sizer col-md-4 grid-item--width3">
+			<a class="product-item-link" href="<?= $product->getProductUrl() ?>">
+				<img src="<?php echo $productImage;?>">
+			</a>
+		</div>
+<?Php
+}  
+?>
+</div>
+</div>

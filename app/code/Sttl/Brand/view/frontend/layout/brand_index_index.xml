@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+	<head>
+        <css src="Sttl_Brand::css/sttl_brand.css" media="all"/>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="Sttl\Brand\Block\Brands" name="brand_list" template="Sttl_Brand::brands.phtml">
+                <block class="Sttl\Brand\Block\Search" name="brand_search" template="Sttl_Brand::search.phtml"/>
+                <block class="Magento\Framework\View\Element\Template" name="brand_filter_by_character" template="Sttl_Brand::character.phtml"/>
+                <block class="Sttl\Brand\Block\Brand\Featured" name="brand_list_featured" template="Sttl_Brand::brand/featured.phtml"/>
+            </block>
+        </referenceContainer>
+        <referenceContainer name="sidebar.additional">
+            <block class="Sttl\Brand\Block\Brand\Sidebar" name="brand.sidebar" template="Sttl_Brand::brand/sidebar.phtml" before="-"/>
+        </referenceContainer>
+    </body>
+</page>

@@ -1,0 +1,65 @@
+<div class="col-md-3 price_count">
+	<div class="row">
+		<%
+			var prevent_event_class_cur = '',
+				prevent_event_class_due = '',
+				due_warning = '',
+				due_sected_invoice = '',
+				open_sected_invoice = '';
+			if(customer_AccountBalance <= 0){
+				prevent_event_class_cur = 'prevent_all_event';
+			}
+			if(customer_PastDueAmount <= 0){
+				prevent_event_class_due = 'prevent_all_event';
+			}
+			if(customer_PastDueAmount > 0){
+				due_warning = 'warning';
+			}
+			if(active_invoice_section == 'due_invocie'){
+				due_sected_invoice = 'active_invoice';
+			}else if(active_invoice_section == 'current_invocie'){
+				open_sected_invoice = 'active_invoice';
+			}
+		%>
+		<div class="current_balance col-md-6 <%=prevent_event_class_cur%>">
+			<div class="current_balance_text <%=open_sected_invoice%>" style="font-size: 20px;">
+				<%
+					var current_balance_amount = '0.00',
+						customer_AccountBalance = parseFloat(customer_AccountBalance).toFixed(2);
+					if(customer_AccountBalance && customer_AccountBalance > 0){
+						current_balance_amount = currencyconvert(customer_AccountBalance);
+					}
+				%>
+				$<%=current_balance_amount%>
+			</div>
+			<span class="f-dis">Current Balance</span>
+		</div>
+		<div class="due_by_week col-md-6 <%=prevent_event_class_due%>">
+			<div class="current_balance_text <%=due_warning%> <%=due_sected_invoice%>" style="font-size: 20px;">
+				<%
+					var due_balance_amount = '0.00',
+						customer_PastDueAmount = parseFloat(customer_PastDueAmount).toFixed(2);
+					if(customer_PastDueAmount && customer_PastDueAmount > 0){
+						due_balance_amount = currencyconvert(customer_PastDueAmount);
+					}
+				%>
+				$<%=due_balance_amount%>
+			</div>
+			<span class="f-dis"> Past due amount </span>
+		</div>
+	</div>
+</div>
+<% if(payinvoiceper){ %>
+<div class="col-md-3 pay_full_invoice pay_invoice">
+	<% if(customer_PastDueAmount > 0){ %>
+		<a href="<%=base_url%>/customerinvoices/customer/index?order_stats=pastdue&order_by=DueDays&opt=DESC&dash=pay_due" target="_blank" type="submit" class="themeBtn action save" style="width: 100%; color:#a70010 !important;"><span>PAY PAST DUE AMOUNT</span></a>
+	<% }else{ 
+		var disabled_class = '';
+		if(customer_AccountBalance <= 0){
+			disabled_class = 'btn_disabled';
+		}
+	%>
+		<a href="<%=base_url%>/customerinvoices/customer/index?order_stats=Open&order_by=DueDays&opt=DESC&dash=pay_current" target="_blank" type="submit" class="themeBtn action save <%=disabled_class%>" style="width: 100%;" ><span>PAY CURRENT BALANCE</span></a>	
+	<% } %>
+</div>
+<% } %>

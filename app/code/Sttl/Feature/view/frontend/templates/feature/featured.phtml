@@ -1,0 +1,90 @@
+<?php
+$params = $this->getRequest()->getParams();
+$helper = $this->helper('Sttl\Feature\Helper\Data');
+$collection = $block->getCollection();
+?>
+<?php if ($collection->count()): ?>
+    <div class="featured-features sttl-feature widget feature-list">
+		<div class="content-heading">
+			<h2 class="title"><?php echo __('Featured Features'); ?></h2>
+		</div>
+        <div class="content row">
+            <ul class="featured-feature-list owl-carousel" id="featured-feature-list">
+                <?php foreach ($collection as $feature): ?>
+                    <?php if (isset($params['char']) && $params['char'] != '' && $params['char'] == '0-9') : ?>
+                        <?php $letter = strtoupper(substr($feature->getName(), 0, 1)); ?>
+                        <?php if (ctype_digit($letter)): ?>
+                            <li class="item">
+								<div class="image">
+									<a title="<?php echo $feature->getName(); ?>" href="<?php echo $feature->getUrl(); ?>">
+										<img class="img-responsive" alt="<?php echo $feature->getName(); ?>" src="<?php echo $feature->getSmallImageUrl(); ?>">
+									</a>
+								</div>
+								<?php if ($this->getConfig('list_page_settings/show_feature_name')): ?>
+									<div class="feature-name">
+										<h4 class="feature-title">
+											<a title="<?php echo $feature->getName(); ?>" href="<?php echo $feature->getUrl(); ?>">
+												<?php echo $feature->getName(); ?>
+												<?php if ($this->getConfig('list_page_settings/show_product_count')): ?>
+													<span><?php echo __('(%1)', $block->getProductCount($feature)); ?></span>
+												<?php endif; ?>
+											</a>
+										</h4>
+									</div>
+								<?php endif; ?>
+                            </li>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <li class="item">
+							<div class="image">
+								<a title="<?php echo $feature->getName(); ?>" href="<?php echo $feature->getUrl(); ?>">
+									<img class="img-responsive" alt="<?php echo $feature->getName(); ?>" src="<?php echo $feature->getSmallImageUrl(); ?>">
+								</a>
+							</div>
+							<?php if ($this->getConfig('list_page_settings/show_feature_name')): ?>
+								<div class="feature-name">
+									<h4 class="feature-title">
+										<a title="<?php echo $feature->getName(); ?>" href="<?php echo $feature->getUrl(); ?>">
+											<?php echo $feature->getName(); ?>
+											<?php if ($this->getConfig('list_page_settings/show_product_count')): ?>
+												<span><?php echo __('(%1)', $block->getProductCount($feature)); ?></span>
+											<?php endif; ?>
+										</a>
+									</h4>
+								</div>
+							<?php endif; ?>
+                        </li>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </ul>
+			<script type="text/javascript">
+				require([
+					'jquery',
+					'sttl/owlcarousel'
+				], function ($) {
+					var featuredfeaturelist = $('#featured-feature-list').owlCarousel({
+						items: 5,
+						autoplay: true,
+						autoplayHoverPause: true,
+						nav: true,
+						dots: false,
+						loop: true,
+						navText: ["<i class='fa fa-arrow-left'></i>","<i class='fa fa-arrow-right'></i>"],
+						responsive:{
+								0:{
+									items:2
+								},
+								480:{
+									items:2
+								},
+								768:{
+									items:5
+								}
+							}
+					});
+				});
+				
+			</script>
+        </div>
+    </div>
+<?php endif; ?>

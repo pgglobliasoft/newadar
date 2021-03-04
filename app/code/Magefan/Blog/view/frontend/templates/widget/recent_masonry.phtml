@@ -1,0 +1,67 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * See LICENSE.txt for license details (http://opensource.org/licenses/osl-3.0.php).
+ *
+ * Glory to Ukraine! Glory to the heroes!
+ */
+?>
+<?php
+/**
+ * Blog recent posts widget
+ *
+ * @var $block \Magefan\Blog\Block\Widget\Recent
+ */
+?>
+
+<?php
+    $_postCollection = $block->getPostCollection();
+?>
+<?php if ($_postCollection->count()) { ?>
+<div class="blog-widget-recent blog-widget-recent-masonry tab-pane fade show active" id="blog" role="tabpanel" aria-labelledby="home-tab">
+	<div class="blogAndPressWrap">
+			<?php foreach ($_postCollection as $_post) { ?>
+				<?php
+					$_postUrl = $_post->getPostUrl();
+					$_postName = $block->escapeHtml($_post->getTitle(), null, true);
+				?>
+				<div class="blogAndPressRow cf post-holder-<?php echo $_post->getId() ?>">
+					<?php if ($featuredImage = $_post->getFeaturedImage()) { ?>
+					<div class="blogImg">
+						<img src="<?php echo $featuredImage ?>" alt="<?php echo $_postName ?>" />
+					</div>
+					<?php } ?>
+					<div class="blogDetails">
+						<h3><?php echo $_postName; ?></h3>
+						<?php if ($content = $block->getShorContent($_post)) { ?>
+							<?php echo $content ?>
+						<?php } ?>
+						<span class="blogDate"><?php echo $_post->getPublishDate('F d, Y') ?></span>
+					 </div>
+						<!--<a class="post-read-more" href="<?php //echo $_postUrl ?>" title="<?php //echo $_postName ?>">
+							   <?php //echo __('Read more &#187;') ?>
+						</a>-->
+				</div>
+
+			<?php } ?>
+	</div>
+	<div class="center">
+		 <a href="javascript:void(0)" class="showmore">Show More</a>                  
+	</div>
+	</div>
+<script>
+requirejs( [ 'require', 'jquery', 'Magefan_Blog/js/lib/masonry.pkgd.min' ],
+function( require, $, Masonry ) {
+    require( [ 'jquery-bridget/jquery-bridget' ],
+    function( jQueryBridget ) {
+        jQueryBridget( 'masonry', Masonry, $ );
+        $('.post-list').masonry({
+            itemSelector: '.post-holder',
+            percentPosition: true
+        })
+    });
+});
+<?php /* more info http://masonry.desandro.com/extras.html */ ?>
+</script>
+
+<?php } ?>

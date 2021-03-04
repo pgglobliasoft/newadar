@@ -1,0 +1,110 @@
+<?php
+	/**
+		* Copyright © Magento, Inc. All rights reserved.
+		* See COPYING.txt for license details.
+	*/
+	
+	// @codingStandardsIgnoreFile
+	
+	/** @var \Magento\Customer\Block\Account\Dashboard\Info $block */
+	$payemntpage = false;
+	$ragisterdata = $block->getRegisterData();
+	$customerdata = $ragisterdata['customerdata'];
+	$customerdata = $customerdata[0];
+	$orderdata = $ragisterdata['orderdata'];
+	$post = $this->getRequest()->getParams();
+	$currentorderdata = $orderdata[0];
+	$eBizCharge = $this->helper('Sttl\Adaruniforms\Helper\Ebizcharge');
+	$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+	$customer_number = $customerdata['CardCode'];
+	$search_query=array(
+	array(
+		'Field'=>'CustomerID',  
+		'Type'=>'eq',
+		'Value'=>$customer_number)
+	);
+	if(isset($customer_number) && $customer_number != '')
+	{
+		$objCustomers = $eBizCharge->searchCustomerByParams($search_query,true,0,1);
+	}
+	$custNum = '';
+	if(isset($objCustomers->Customers) && count($objCustomers->Customers) > 0)
+	{
+		$objCustomer = $objCustomers->Customers;
+		$objCustomer = $objCustomer[0];
+		if (isset($objCustomer->CustNum)) {
+			$custNum = $objCustomer->CustNum;
+		}
+	}
+	
+	$saved_cards = (isset($objCustomer->PaymentMethods) && count($objCustomer->PaymentMethods) > 0) ? $objCustomer->PaymentMethods : array();
+	
+?>
+<div class="block block-dashboard-info paymentBlock d-flex">
+		<div class="addressInfo">
+			<strong class="box-title">
+                <span>Billing Address:</span>
+            </strong>
+            <div class="box-content">
+            	<?php if (isset($currentorderdata) && !empty($currentorderdata)) { 
+                       ?>
+                        <?php if($currentorderdata["BillingName"] != '') {?>
+                            <span id="BillingName"><?php echo ucwords(strtolower($currentorderdata["BillingName"]));?></span><br/> 
+                        <?php } ?>
+                        <?php if($currentorderdata["BillingAddress"] != '') {?>
+                            <span id="BillingAddress"><?php echo ucwords(strtolower($currentorderdata["BillingAddress"]));?></span><br/> 
+                        <?php } ?>
+                         <?php if(isset($currentorderdata["BillingCity"]) && $currentorderdata["BillingCity"] != '') {?>
+                            <span id="BCity"><?php echo ucwords(strtolower($currentorderdata["BillingCity"]));?>,</span>
+                        <?php } ?>
+                         <?php if($currentorderdata["BillingStateCode"] != '') {?>
+                            <span id="BState"><?php echo ucwords(strtolower($currentorderdata["BillingStateCode"]));?></span>
+                        <?php } ?>
+                        <?php if($currentorderdata["BillingZip"] != '') {?>
+                            <span id="BZipCode"><?php echo ucwords(strtolower($currentorderdata["BillingZip"]));?></span>
+                        <?php } ?>
+                        <?php /*if($currentorderdata["BillingCountry"] != '') {?>
+                            <span id="BCountry"><?php echo $currentorderdata["BillingCountry"];?></span>
+                        <?php }*/ ?>
+                        
+
+                <?php 
+                   } ?>
+        
+            </div>
+	  	</div>
+	  	<div class="addressInfo">
+			<div class="box-title" id="paymentshoe">
+		    	<strong class="box-title"><span><?= $block->escapeHtml(__('Payment Method:')) ?></span></strong>
+			</div>
+		    <div class="block-content" >
+				<div class="box box-information">
+					<div class="box-content">
+					<?php if($currentorderdata['CardID'] != '' && $customerdata['PaymentTerm'] == 'Credit Card Auto') {?>
+
+						<?php 
+								$i = 0;
+								foreach($saved_cards as $card)
+								{ 
+									$card_expiry = (isset($card->CardExpiration) && !empty($card->CardExpiration)) ? date("m/Y", strtotime($card->CardExpiration)) : NULL;
+
+								if($currentorderdata['CardID']== $card->MethodID) {  ?>
+								 <span>Card Name: </span><span><?php echo $card->MethodName;?></span></br>
+								 <span>Card Number: </span><span><?php echo 'XXXX'.substr($card->CardNumber,-4); ?></span></br>
+								 <span>Card Exp: </span><span><?php echo $card_expiry;?></span></br>
+								
+								<?php }?>
+								
+								<?php 
+								$i++; } ?>
+					<?php }
+					if($customerdata['PaymentTerm'] != 'Credit Card Auto'){ ?>
+					<span><?php echo $customerdata['PaymentTerm']; ?></span>
+						<?php }
+					?>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+</div>

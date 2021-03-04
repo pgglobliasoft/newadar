@@ -1,0 +1,207 @@
+.login-index-index .page-wrapper {
+    padding-top: 0 !important;
+    overflow: hidden;
+    height: 100%
+}
+
+.login-container-form {
+    display: flex;
+    /*display: flex !important;*/
+    background: #fff;
+    position: unset;
+    padding: 0
+}
+
+.login-form {
+    width: 35%;
+    display: flex;
+    position: relative
+}
+
+.login-index-index .innerPageContent {
+    display: none
+}
+
+.sliderBanner-images {
+    width: 65%
+}
+
+.sliderBanner-images img {
+    width: 100%
+}
+
+.form-logo {
+    text-align: center;
+    padding: 15px 25px
+}
+
+.form-login .popup-login-form .inputArea {
+    margin-bottom: 20px
+}
+
+.popup-login-form h1 {
+    margin-bottom: 5px;
+    font-size: 40px;
+    text-align: center;
+    color: #114268;
+    margin-bottom: 50px
+}
+
+.popup-login-form .inputArea label {
+    font-size: 18px;
+    margin-bottom: 7px !important
+}
+
+.popup-login-form .inputArea {
+    margin-bottom: 25px
+}
+
+.popup-login-form .btnRow {
+    padding: 0;
+    margin-bottom: 15px
+}
+
+.popup-login-form .btnRow button {
+    width: 100%;
+    font-size: 13px;
+    color: #0e4169;
+    border: 2px solid #0e4169;
+    text-decoration: none;
+    background: 0 0;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+    transition: background .5s ease
+}
+
+.popup-login-form .btnRow button:hover {
+    background: #114268;
+    border: 2px solid #114268;
+    color: #fff
+}
+
+.popup-login-form .inputArea .textInput {
+    height: 52px;
+    font-size: 14px;
+    transition: border .9s ease
+}
+
+.form-login.popup-login-form {
+    width: 80% !important;
+    margin: auto;
+    display: block !important
+}
+
+.alignc.forgot-link {
+    color: #007c89;
+    text-decoration: none;
+    text-align: center;
+    font-size: 15px
+}
+
+.sliderBanner-images {
+    height: 100vh;
+    position: relative
+}
+
+#right-section {
+    background: url(../images/left-section.jpg);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #d9d9d9;
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-size: cover
+}
+
+.response-msg.success {
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+    background: #abffb669;
+    border: 1px solid #48b556;
+    border-radius: 5px
+}
+
+.response-msg.fail {
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+    background: #ffeded;
+    border: 1px solid red;
+    border-radius: 5px;
+    color: red
+}
+
+.login-form a.action.remind {
+    color: #104168;
+    text-decoration: none;
+    font-size: 16px;
+    margin-bottom: 30px
+}
+
+@media screen and (max-width:980px) {
+    .login-index-index .page-wrapper {
+        overflow-y: visible
+    }
+    #right-section , .sliderBanner-images{
+        display: none;
+    }
+
+    .login-container-form {
+        display: block !important;
+    }
+
+    .form-login.popup-login-form{
+        width: 100% !important; 
+        margin: 0;
+    }
+    .login-form {
+        width: 100% !important;
+        margin: 5% 0;
+        min-height: 600px
+    }
+
+    .sliderBanner-images {
+        width: 100%
+    }
+}
+
+.login-index-index .alignc {
+    text-align: center
+}
+
+.login-index-index .alignc a:hover,
+.account-link a:hover {
+    text-decoration: underline !important
+}
+
+.login-container-form h2 {
+    text-align: center;
+    color: #114268;
+    margin-bottom: 30px;
+    font-size: 26px
+}
+
+.account-link {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 16px
+}
+
+.popup-login-form .inputArea .textInput.mage-error {
+    outline-color: red !important;
+    border: 1px solid red !important
+}
+
+.inputArea div[generated=true] {
+    display: none !important
+}

@@ -1,0 +1,47 @@
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$customerSession = $block->getCustomersettion();
+$_product = $block->getProductRegistry();
+$brands_product_urls = $block->getProductBrandUrl($_product->getSku());
+$brand_product_url = $brands_product_urls->getData();
+?>
+
+		<?php if (!$customerSession->isLoggedIn()) { ?>
+			<div class="container p-2 buyBtns notloggedin" id="buyBtns">
+				<div class="buyBtnContainer">
+					<div class="loginSection mobile-button"><a href="<?php echo $block->getBaseUrl();?>storelocator"><?php echo __("BUY IN STORE");?></a></div>
+				</div>
+				<div class="buyBtnContainer">
+					<div class="loginSection mobile-button">
+					<?php
+							if(count($brand_product_url) == 1 ){ ?>
+								<a class="buyNow" target="_blank" href="<?= $brand_product_url[0]['brand_url'] ?>" ><?php echo __("BUY NOW");?></a>
+						<?php }else{ ?>
+								<a class="buyNow"  href="javascript:void(0);" id='disable' ><?php echo __("BUY NOW");?></a>
+							<?php } ?>
+						</div>
+				</div>
+		</div>
+		<?php } else { ?>
+			<div class="container p-2 buyBtns" id="buyBtns">
+				<div class="view-buyBtnContainer">
+						<div class="view-buyBtnContainer-section">
+							<strong class="viewSection" style="opacity:0.5;" >VIEW STOCK & PRICING
+								<span class="productinebuynow" id="productbuynow" style="">
+									<span id="productviewloding" class="loadShipping">
+										<span class="loadDots">
+											<span></span>
+											<span></span>
+											<span></span>
+										</span>
+									</span>
+								</span>
+							</strong>
+						</div>
+						<div class="search_stock_price_data" style="display: none;"></div>
+				</div>
+			</div>
+		<?php } ?>
+<style>
+	.mobile-button a{ color : #fff; }
+</style>

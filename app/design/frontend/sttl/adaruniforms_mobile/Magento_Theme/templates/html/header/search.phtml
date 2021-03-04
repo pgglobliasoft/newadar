@@ -1,0 +1,88 @@
+<?php
+/** @var $block \Magento\Framework\View\Element\Template */
+/** @var $helper \Magento\Search\Helper\Data */
+$helper = $this->helper(\Magento\Search\Helper\Data::class);
+?>
+<div class="search-product" style="display: none">
+<div class="cf sidebarSearch" >
+	<form class="form minisearch" id="search_mini_form" action="<?= /* @escapeNotVerified */ $helper->getResultUrl() ?>" method="get">
+
+
+		<!-- <span class="searchLable">Search an existing order</span> -->
+		<div class="searchInput">
+			<input
+                           data-mage-init='{"quickSearch":{
+                                "formSelector":"#search_mini_form",
+                                "url":"<?= /* @escapeNotVerified */ $helper->getSuggestUrl()?>",
+                                "destinationSelector":"#search_autocomplete"}
+                           }'
+                           type="text"
+                           name="<?= /* @escapeNotVerified */ $helper->getQueryParamName() ?>"
+                           value=""
+                           class="input-text"
+                           maxlength="<?= /* @escapeNotVerified */ $helper->getMaxQueryLength() ?>"
+                           role="combobox"
+                           aria-haspopup="false"
+                           aria-autocomplete="both"
+                           placeholder="Search Style/Color"
+                           autocomplete="off"/>
+			<!-- <input type="text" name="po_number" placeholder="Search Style/Color" data-validate="{required:true}" > -->
+		</div>
+		<button type="submit"
+                        title="<?= $block->escapeHtml(__('Search')) ?>"
+                        class="action search">
+                    <span class="fa fa-search"></span>
+                </button>
+		<!-- <button type="submit" class="action save" title="Search"><span class="fa fa-search"></span></button> -->
+	</form>
+</div>
+</div>
+<script>
+	require([
+		'jquery'
+		], function($){
+			$(".customerLoggedIn").click(function() {
+				$(".user-logout").slideToggle(300);
+			});
+			$("#search_product_button").click(function() {
+				$(".search-product").slideToggle(300);
+			});
+
+			$(".nav-toggle.action").click(function() {
+				if(!$(this).hasClass("closeToggle")){
+					if($(".user-logout").css("display") === "block"){
+						$(".user-logout").hide(300);
+					}
+				}
+			});
+		});
+</script>
+<style>
+	
+.search-product .cf.sidebarSearch {
+    display: flex;
+    width: 95%;
+    position: absolute;
+    top: 70px;
+    display: flex;
+    left: 6px;
+    margin: 0px;
+}
+
+.search-product .form#search_mini_form{
+    width: 100%;
+    position: absolute;
+}
+.search-product input {
+    width: 100% !important;
+	padding: 10px 20px;
+	    max-width: 100%;
+	    border: 0;
+	    height: 53px;
+	    border-radius: 10px;
+	    background: #fff;
+	    font-size: 16px;
+}
+.search_product_button svg{ width: 25px; }
+
+</style>

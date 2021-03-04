@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_layout.xsd">
+    <update handle="1column"/>
+ 	<move element="page-title-wrapper" htmlClass="center" destination="main.column.mediaPage" after="-"/>
+		<referenceContainer name="main">
+			<container name="main.column.mediaPage" htmlTag="div" htmlClass="col-md-12 mediaPage" >
+					<block class="Magento\Cms\Block\Block" name="home_category"> 
+						<arguments> 
+							<argument name="block_id" xsi:type="string">home_category</argument> 
+						</arguments> 
+					</block> 
+			</container>
+		</referenceContainer>
+    <referenceContainer name="main" htmlClass="column main row"/>
+</layout>

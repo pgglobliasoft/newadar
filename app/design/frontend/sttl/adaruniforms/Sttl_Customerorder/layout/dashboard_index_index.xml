@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd" label="Customer My Account (All Pages)" design_abstraction="custom">
+<update handle="customer_account"/>
+    <head>
+         <css src="Globalia_Quickcheckout::css/render_quickcheckout.css"/>
+        
+        <css src="Sttl_Customerorder::css/dashboard.css"/>
+        <css src="Sttl_Collectionsilder::css/collections.css"/>
+        <css src="mage/gallery/gallery.css"/>
+        <css src="WeltPixel_Quickview::css/customquickview.css"/>
+        <css src="Sttl_Customerorder::css/viewstock.css"/>
+        <remove src="mage/calendar.css"/>
+        <remove src="css/print.css"/>
+        <script src="Sttl_Customerorder::js/dashboard.js"/>
+        <script src="Sttl_Customerorder::js/viewstockpopup.js"/>
+        <script src="Sttl_Customerorder::js/render_invoicedata.js"/>
+    </head>
+    <body>
+          <attribute name="class" value="customerorder-customer-dashboard"/>
+        <referenceContainer name="content">
+            <referenceBlock name="page.main.title" remove="true" />
+            <block class="Sttl\Proupdated\Block\Read" name="read_import" template="Sttl_Proupdated::read/read.phtml" before="-" />
+            <block class="Sttl\Customerorder\Block\Dashboard\Dashboard" name="deskboard_page" cacheable="false" template="Sttl_Customerorder::dashboard.phtml">
+
+                <block class="Magestore\Bannerslider\Block\SliderItem" name="banner_slider_block">
+                  <action method="setSliderId">
+                    <argument name="sliderId" xsi:type="string">6</argument>
+                  </action>
+                </block>
+                <block class="Sttl\Adaruniforms\Block\Info" name="notes_section" template="Sttl_Proupdated::read/notificationtable_dask.phtml"/>
+                <block class="Sttl\Customerorder\Block\Neworder" name="collection_slider" template="Sttl_Collectionsilder::Collectionsilder.phtml"/>
+                <block class="Sttl\Adaruniforms\Block\View" name="viewstockpopup" template="Magento_Catalog::product/ViewStockpopup.phtml"/>
+            </block>
+            <block class="Sttl\Adaruniforms\Block\Info" name="dashboard.discount.popup" cacheable="false" template="Sttl_Customerorder::dashboard_discount_popup.phtml"/>
+            <!-- <block class="Sttl\Adaruniforms\Block\Info" name="quickpopup" template="WeltPixel_Quickview::quickpopup.phtml"/> -->
+             <block class="Globalia\Quickcheckout\Block\Dashboard\Quickcheckout" name="quickcheckout" cacheable="false" template="Globalia_Quickcheckout::quickcheckout.phtml" /> 
+        </referenceContainer>
+
+        
+    </body>
+</page>

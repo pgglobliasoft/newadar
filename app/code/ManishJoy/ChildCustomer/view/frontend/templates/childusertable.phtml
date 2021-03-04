@@ -1,0 +1,45 @@
+<div class="#user-gird-conatiner">
+<?php $items = [];     $result = $this->getCustomerAlldata();
+if(count($result) > 0){
+?>
+
+	<table class='child-user' id="editcustomer">
+	  <head>   
+	    <th>User Name</th>
+	    <th>Name</th>
+	    <th>Login status</th>    
+	    <th>Action</th>
+	  </head>
+	  <body>
+	      <?php
+
+	        $i = 0;     
+	        foreach ($result as $item) {
+	        $items[] = $item->getData();             
+	          ?>
+	            <tr data-id="<?= $item['entity_id'] ?>">             
+	              <td class="fullname"><?= $item['fullname'] ?></td>
+	              <td class="email"><?= $item['email'] ?></td>           
+	              <td> <?= $item['active'] > 0 ? "<span class='active'> Online </span>" : "<span class='inactive'> Not-Online </span>" ?></td>                   
+	              <td class="action"><a class="action edit userbtn" id="<?= $item['entity_id'] ?>" attr-type="user-management" data-toggle="modal" data-target="#user-Modal"><span><i class="fa fa-pencil" aria-hidden="true"></i> edit </span></a></td>                   
+	            </tr>
+	      <?php $i++; } ?>   
+	  </body>
+	</table>
+	<script type="text/x-magento-init">
+	    {
+	        ".user-gird-conatiner": {
+	            "ManishJoy_ChildCustomer/js/child_customer_data":{
+	                
+	                "result" : <?php /* @escapeNotVerified */  echo json_encode($items); ?>,
+	                "actionDurl" : "<?php /* @escapeNotVerified */  echo $this->getDelActionUrl(); ?>",
+	                "dataurl":"<?php /* @escapeNotVerified */  echo $this->getDataActionUrl(); ?>"
+	            }
+
+	        }
+	    }        
+	</script>
+<?php }else{ ?>
+	<style type="text/css"> .action.reloadbtn{ display: none; }</style>
+<?php } ?>
+</div>

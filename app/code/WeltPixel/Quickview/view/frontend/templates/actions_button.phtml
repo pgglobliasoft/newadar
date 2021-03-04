@@ -1,0 +1,33 @@
+<?php $brand_product_url = $block->getproductBrandUrl() ?>
+<div class="container p-2 buyBtns buytBtnLogin">
+		<?php if (!$block->getCustomerSession()->isLoggedIn()) { ?>
+		<div class="buyBtnContainer">
+			<div class="loginSection"><a target="_blank" href="<?php echo $block->getBaseUrl();?>storelocator"><?php echo __("BUY IN STORE");?></a></div>
+		</div>
+		<div class="buyBtnContainer">
+			<div class="loginSection">
+				<!-- <a class="buyOnline"  href="javascript:void(0);"><?php echo __("BUY ONLINE");?></a> -->
+				<?php if(count($brand_product_url) == 1 ){ ?>
+						<a class="buyNow" target="_blank" href="<?= $brand_product_url[0]['brand_url'] ?>"><?php echo __("BUY NOW");?></a>
+				<?php }else{ ?>
+						<a class="buyNow"  href="javascript:void(0);" id='disable' ><?php echo __("BUY NOW");?></a>	
+					<?php } ?>
+
+			</div>			
+		</div>
+		<?php } else { ?>
+		<div class="buyBtnContainer">
+				<div class="loginSection"><a href="javascript:" class="buyNowBtnMain" data-toggle="modal" data-target="#popupModal" style="pointer-events:none;opacity:0.5"><?php echo __("VIEW STOCK & PRICING");?>
+				<span class="productinebuynow" id="productbuynow" style="display:;">
+					<span id="productviewloding" class="loadShipping">
+						<span class="loadDots">
+							<span></span>
+							<span></span>
+							<span></span>
+						</span>
+					</span>
+				</span>
+				</a></div>
+		</div>
+		<?php } ?>
+</div>

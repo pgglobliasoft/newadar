@@ -1,0 +1,171 @@
+
+    <div class="blocktitle"><strong class="upperCaseText">Shipping Information</strong>
+	</div>
+    <div id="collapseFour" class="Shipping-section paddL15" aria-labelledby="headingOne"> 
+		<div class="box box-information">
+			<strong class="box-title">
+				Your Shipping Addresses
+			</strong>
+			<div class="box-content">
+				<div class="shippingdropdownaccount">
+					<select class="shippingMeethod shippingselectaccount" name="shippingaddress" id="shippingaddress">
+						<option>Please Select</option>
+								<%
+								var count = 1;
+								_.each(shippingdata, function(value, key) {
+								if(value.DefaultAdd === "Y"){
+								 %>
+									<option 
+										value= "<%=count%>"
+										attr-CardName= "<%=value.CardName%>"
+										attr-addressID= "<%=value.AddressID%>"
+										attr-addr1= "<%=value.AddStreetNo%>"
+										attr-addr2= "<%=value.Address2%>"
+										attr-State= "<%=value.State%>"
+										attr-ZipCode= "<%=value.ZipCode%>"
+										attr-Country= "<%=value.Country%>"
+										attr-city= "<%=value.City%>,<%=value.State%>,<%=value.ZipCode%>"
+										attr-city1= "<%=value.City%>"
+										attr-blindDropship= "<%=value.BlindDropship%>"
+										attr-tel= "<%=value.PhoneNo%>"
+										selected
+										><%=value.AddressID%>
+									</option>
+							<% }else{%>
+										<option 
+										value= "<%=count%>"
+										attr-CardName= "<%=value.CardName%>"
+										attr-addressID= "<%=value.AddressID%>"
+										attr-addr1= "<%=value.AddStreetNo%>"
+										attr-addr2= "<%=value.Address2%>"
+										attr-State= "<%=value.State%>"
+										attr-ZipCode= "<%=value.ZipCode%>"
+										attr-Country= "<%=value.Country%>"
+										attr-city= "<%=value.City%>,<%=value.State%>,<%=value.ZipCode%>"
+										attr-city1= "<%=value.City%>"
+										attr-blindDropship= "<%=value.BlindDropship%>"
+										attr-tel= "<%=value.PhoneNo%>"
+										><%=value.AddressID%>
+									</option>
+							<% }count++;
+						})%>
+					</select>
+					<div class="accountdropdownicon">
+						<div class="shipAddress"></div>
+						<i class="fa fa-angle-down" aria-hidden="true"></i>
+					</div>
+				</div>
+				
+				<input type="submit" value="+ Add New" data-toggle="modal" data-target="#customer-edit-address"  class="editlink" />
+				
+				
+			</div>
+		</div>
+		
+	</div>
+</div>
+
+
+<div class="modal fade block block-customer-edit-address comingSoon commonPopup1" id="customer-edit-address" tabindex="-1" role="dialog" aria-labelledby="addressModal" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="modalContainer block-content" aria-labelledby="block-customer-login-heading">
+					<div class="messages">
+						<div class="message message-error error">
+							<div></div>
+						</div>
+					</div>
+					<div class="quickViewCont">        
+						<div class="container bg-primary p-2">
+							
+							<div class="row">
+								<div class="col-md-12 text-center customer-edit-title">
+									<span class="popUpTitle">Add Shipping Method</span>
+									<button type="button" data-dismiss="modal" class="close mfp-close-inside"><i class="fa fa-times"></i></button>
+								</div>          
+							</div>
+						</div>
+						<div class="registrationPage comingSoonTxt" id="comingSoonForm">
+							<form   class="form custom-customer-edit-address" 
+									action="<%=baseurl%>customerlogin/ajax/editAddress" 
+									method="post" 
+									id="customer-edit-address-validate" 
+									enctype="multipart/form-data" 
+									data-hasrequired="* Required Fields" 
+									autocomplete="off" 
+									data-mage-init='{"validation": {"errorClass": "mage-error"}}'>
+								<div class="response-msg"></div>
+								<%=formkey%>
+								<div class="field field-name-fullname required">
+									<label class="label " for="fullname"><span>Full Name</span><span class="reqField">*</span></label>
+									<div class="control">
+										<input type="text" id="fullname" name="fullname" value="" title="Full Name" class="input-text required-entry validate-no-html-tags validate-alphanum-with-spaces valid" data-validate="{required:true}" aria-required="true" placeholder="Full Name">
+									</div>
+								</div>
+								<div class="field field-name-address1">
+									<label class="label " for="address1"><span>Address Line 1</span></label>
+									<div class="control">
+										<input type="text" id="address1" name="address1" value="" title="Address Line 1" class="input-text" placeholder="Address Line 1">
+									</div>
+								</div>
+								<div class="field field-name-address2">
+									<label class="label " for="address2"><span>Address Line 2</span></label>
+									<div class="control">
+										<input type="text" id="address2" name="address2" value="" title="Address Line 2" class="input-text" placeholder="Address Line 2">
+									</div>
+								</div>
+								<div class="row">
+									<div class="field field-name-state required col-md-6">
+										<label class="label " for="Country"><span>Country<span class="reqField">*</span></span></label>
+										<div class="control">
+										<select class="validate-select" name="Country" id="Country" >
+											<option value="">Select</option>
+											<% _.each(Countrys, function(value, key) {%>
+												<option value="<%=value.CountryCode%>"><%=value.CountryName%></option>
+												<%})%>
+										</select>
+										<input type="hidden" name="ContryLable" id="ContryLable" value="">
+										</div>
+									</div>
+									<div class="field field-name-state required col-md-6">
+										<label class="label " for="state"><span>State<span class="reqField">*</span></span></label>
+										<div class="control">
+										<select class="validate-select" name="state" id="state" >
+										<option contry-code="selected" value="">Select</option>
+										<% _.each(States, function(value, key) {%>
+												<option contry-code="<%=value.CountryCode%>" value="<%=value.StateCode%>"><%=value.StateName%></option>
+												<%})%>
+										</select>
+										<input type="hidden" name="StateLable" id="StateLable" value="">
+										</div>
+									</div>
+								</div>
+								
+								<div class="row">
+									<div class="field field-name-city required col-md-6">
+										<label class="label " for="city"><span>City</span><span class="reqField">*</span></label>
+										<div class="control">
+											<input type="text" autocomplete="off" id="city" name="city" value="" title="City" class="input-text required-entry validate-no-html-tags valid" data-validate="{required:true}" aria-required="true" placeholder="City">
+										</div>
+									</div>
+									<div class="field field-name-zipcode required col-md-6">
+										<label class="label " for="zipcode"><span>Zip Code</span><span class="reqField">*</span></label>
+										<div class="control">
+											<input type="text" autocomplete="off" id="zipcode" name="zipcode" value="" title="Zip Code" class="input-text required-entry validate-no-html-tags validate-zip valid validate-alphanum-with-spaces" data-validate="{required:true}" aria-required="true" placeholder="Zip Code">
+										</div>
+									</div>
+								</div>
+								<!-- <?= $block->getChildHtml('form_additional_info') ?> -->
+								<div class="actions-toolbar mt-2">
+									<div class="text-center">
+										<button type="submit" class="themeBtn action save" title="<?= $block->escapeHtmlAttr(__('Submit')) ?>"><span>Submit</span></button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>   
+				</div>
+			</div>
+		</div>
+	</div>

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!--
+ @category    Mana
+ @package     Manadev_LayeredNavigation
+ @copyright   Copyright (c) http://www.manadev.com
+ @license     http://www.manadev.com/license  Proprietary License
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="sidebar.main">
+            <block class="Manadev\LayeredNavigation\Blocks\Navigation" name="main.mana.layered_nav" before="-" template="Manadev_LayeredNavigation::navigation.phtml">
+                <arguments>
+                    <argument name="position" xsi:type="string">show_in_main_sidebar</argument>
+                    <argument name="css_prefix" xsi:type="string">main</argument>
+                </arguments>
+                <block class="Manadev\LayeredNavigation\Blocks\FilterRenderer" name="main.mana.layered_nav.filter_renderer" as="filter_renderer"/>
+                <block class="Manadev\LayeredNavigation\Blocks\AppliedItemRenderer" name="main.mana.layered_nav.applied_item_renderer" as="applied_item_renderer"/>
+            </block>
+            <container name="sidebar.main.sorterParent" htmlClass="sorterParent" htmlTag="div" after="-">
+                <block class="Magento\Catalog\Block\Product\ProductList\Toolbar" name="product_list_toolbar_sort_mobile" template="Magento_Catalog::product/list/toolbar/sorter.phtml" />
+                <block class="Manadev\LayeredNavigation\Blocks\Navigationmobile" name="main.mana.layered_nav.mobile" after="product_list_toolbar_sort_mobile" template="Manadev_LayeredNavigation::navigationmobile.phtml">
+                    <arguments>
+                        <argument name="position" xsi:type="string">show_in_main_sidebar</argument>
+                        <argument name="css_prefix" xsi:type="string">main</argument>
+                    </arguments>
+                    <block class="Manadev\LayeredNavigation\Blocks\FilterRenderer" name="main.mana.layered_nav.mobile.filter_renderer" as="filter_renderer"/>
+                    <block class="Manadev\LayeredNavigation\Blocks\AppliedItemRenderer" name="main.mana.layered_nav.mobile.applied_item_renderer" as="applied_item_renderer_mobile"/>
+                </block>
+            </container>
+        </referenceContainer>
+    </body>
+</page>

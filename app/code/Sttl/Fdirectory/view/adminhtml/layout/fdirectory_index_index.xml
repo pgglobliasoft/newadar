@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="../../../../../../
+../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+	<body>
+        <!--<referenceContainer name="left">
+            <block class="Tutorial\SimpleNews\Block\Adminhtml\News\Edit\Tabs"
+                name="tutorial_simplenews_news.edit.tabs"/>
+        </referenceContainer>-->
+        <referenceContainer name="content">
+            <block class="Sttl\Fdirectory\Block\Adminhtml\Index\Index"
+                name="sttl_fdirectory_index.index" cacheable="false" template="Sttl_Fdirectory::index.phtml" />
+        </referenceContainer>
+    </body>
+</page>

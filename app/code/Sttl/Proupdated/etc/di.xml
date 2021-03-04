@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ *
+ * Created By : Rohan Hapani
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
+    <!-- For Blog -->
+    <virtualType name="RHUiExampleBlogFilterPool" type="Magento\Framework\View\Element\UiComponent\DataProvider\FilterPool">
+        <arguments>
+            <argument name="appliers" xsi:type="array">
+                <item name="regular" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\RegularFilter</item>
+                <item name="fulltext" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\FulltextFilter</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="RHUiExampleBlogFilterPool" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
+        <arguments>
+            <argument name="collection" xsi:type="object" shared="false">Sttl\Proupdated\Model\ResourceModel\Post\Collection</argument>
+            <argument name="filterPool" xsi:type="object" shared="false">RHUiExampleBlogFilterPool</argument>
+        </arguments>
+    </virtualType>
+    <type name="Sttl\Proupdated\Model\ResourceModel\Post\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">sttl_import_note</argument>
+            <argument name="eventPrefix" xsi:type="string">rh_uiexample_blog_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">blog_grid_collection</argument>
+            <argument name="resourceModel" xsi:type="string">Sttl\Proupdated\Model\ResourceModel\Post</argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="rh_uiexample_blog_listing_data_source" xsi:type="string">Sttl\Proupdated\Model\ResourceModel\Post\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="sttl_proupdated_customer_data_source" xsi:type="string">Sttl\Proupdated\Model\ResourceModel\Customer\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    
+</config>

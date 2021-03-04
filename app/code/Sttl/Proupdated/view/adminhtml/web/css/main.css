@@ -1,0 +1,15 @@
+
+#menu-sttl-proupdated-core > a:before {
+    content: '';
+    background: url(../images/logo.svg) no-repeat;
+    background-size: contain;
+    height: 3rem;
+    margin-left: 25px;
+    margin-bottom: 6px;
+}
+
+#menu-sttl-proupdated-core > a:hover:before,
+#menu-sttl-proupdated-core._show > a:before {
+  	background: url(../images/logo.svg) no-repeat;
+    background-size: contain;
+}

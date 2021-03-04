@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="catalog_product_view"/>
+    <body>
+		<referenceContainer name="main.content" htmlClass="quickViewCont"/>
+		<referenceContainer name="main" htmlClass="quickViewContent column main"/>
+        <referenceBlock name="catalog.product.related" remove="true"/>
+        <referenceBlock name="product.info.upsell" remove="true"/>
+        <referenceBlock name="header.container" remove="true"/>
+        <referenceBlock name="footer-container" remove="true"/>
+        <referenceBlock name="page.top" remove="true" />
+        <referenceBlock name="copyright" remove="true" />
+        <referenceBlock name="authentication-popup" remove="true" />
+        <referenceContainer name="footerr" remove="true" />
+		<referenceContainer name="product.info.social" remove="true"/>
+        <referenceBlock name="product.info.details" remove="true"/>
+		<referenceBlock name="product.attributes" remove="true" />
+		<referenceBlock name="product.info.description" remove="true" />
+		<referenceBlock name="product.info.fabriccontent" remove="true" />
+		<referenceBlock name="product.info.shortdescription" remove="true" />
+		<referenceBlock name="product.info.bulletsdetails" remove="true" />
+		<referenceBlock name="product.info.media.image" remove="true"/>
+		<referenceBlock name="welpixel.quickview.productview.action_button" remove="true" />
+		<referenceBlock name="product.info.action_button" remove="true" />
+		<!-- <referenceBlock name="product.info.sttl_brand" remove="true" /> -->
+		<referenceBlock name="product.info.main.prd.opt.block" remove="true" />		
+        <referenceBlock name="product.info.addtocart"  remove="true">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">WeltPixel_Quickview::product/view/addtocart.phtml</argument>
+            </action>
+        </referenceBlock>
+        <referenceBlock name="product.info.addtocart.additional"  remove="true">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">WeltPixel_Quickview::product/view/addtocart.phtml</argument>
+            </action>
+			</referenceBlock>        
+        <referenceBlock name="related_products_impression" remove="true"/>
+        <referenceBlock name="upsell_products_impression" remove="true"/>
+        <referenceBlock name="related_products_impression" remove="true"/>
+        <referenceBlock name="product.price.final" remove="true"/>        
+        <referenceBlock name="product.info.form.content" >
+			<block ifconfig="weltpixel_quickview/general/enable_goto_product_button" class="Magento\Catalog\Block\Product\View" after="product.info.addtocart" name="goto.product" as="goto.product" template="WeltPixel_Quickview::gotoproduct.phtml"/>
+        </referenceBlock>
+        <referenceContainer name="before.body.end">
+            <block class="Magento\Framework\View\Element\Template" name="welpixel.quickview.beforebodyend" template="WeltPixel_Quickview::beforebodyend.phtml" />
+        </referenceContainer>
+		
+		<referenceContainer name="columns.top">
+			<container name="columns.top.container" htmlTag="div" htmlClass="container">
+				<container name="columns.top.container.row" htmlTag="div" htmlClass="row">
+				</container>
+			</container>
+		 </referenceContainer>
+		 <move element="page.main.title" destination="product.info.main" as="main_content_title" before="-" />
+		 <move element="page.messages" destination="columns.top.container.row" as="main_content_messages" after="page.main.title" />
+		 
+		 
+		 <referenceContainer name="main.content">
+            <block class="WeltPixel\Quickview\Block\Initialize" name="welpixel.quickview.button_close" template="WeltPixel_Quickview::close_button.phtml" before="-" />			
+			<referenceBlock name="product.info.sku">
+				<action method="setTemplate">
+					<argument name="template" xsi:type="helper" helper="WeltPixel\Quickview\Helper\Data::getSkuTemplate">
+					</argument>
+				</action>
+			</referenceBlock>
+         </referenceContainer>
+		 
+		 <referenceContainer name="product.info.main">
+		 		<block class="Magento\Catalog\Block\Product\View" name="productview.main.title" template="WeltPixel_Quickview::title.phtml"/>
+            <block class="WeltPixel\Quickview\Block\Initialize" name="welpixel.quickview.action_button" cacheable="false" template="WeltPixel_Quickview::actions_button.phtml" after="-" />				
+			<block class="Magento\Catalog\Block\Product\View" name="welpixel.quickview.product_options" template="WeltPixel_Quickview::product_options.phtml" before="welpixel.quickview.button_close" />
+			<container name="product.info.main.sizechartpopup" htmlTag="div" htmlClass="sizechartpopupContainer" after="-">
+                <block class="Magento\ConfigurableProduct\Block\Product\View\Type\Configurable" name="product.info.main.sizechartpopup.block"  template="Magento_Catalog::product/view/sizechartpopup.phtml" />
+            </container>	
+         </referenceContainer>
+		 <referenceContainer name="product.info.media">
+         	<block class="Magento\Catalog\Block\Product\View\Gallery" name="product.info.media.image.quickview" template="WeltPixel_Quickview::product/view/gallery.phtml" after="skip_gallery_after.target"/>
+          </referenceContainer>
+		 <referenceBlock name="product.info.feature">
+			<arguments>
+				<argument name="at_label" xsi:type="string"></argument>
+			</arguments>
+		</referenceBlock>
+		 
+		<!-- <referenceBlock name="product.info.options.wrapper">
+			 <block class="Magento\ConfigurableProduct\Block\Product\View\Type\Configurable" name="product.info.options.configurable" as="options_configurable" before="-" template="WeltPixel_Quickview::product/view/type/options/configurable.phtml"/>
+			 <block class="Magento\Swatches\Block\Product\Renderer\Configurable" name="product.info.options.swatches" as="swatch_options" before="-" /> 
+        </referenceBlock> 
+		
+		<move element="product.info.options.wrapper" destination="product.info.main" as="main_content_product_options" before="welpixel.quickview.action_button" /> -->
+		
+		<move element="product.info.brand.main" destination="product.info.main" as="product.info.sttl_brand" before="welpixel.quickview.button_close" />
+		<move element="product.info.feature" destination="product.info.main" as="main_content_messages" before="welpixel.quickview.action_button" />
+		
+		<referenceContainer name="before.body.end">
+			<container name="product.details.popup" htmlTag="div" htmlClass="popup">
+				
+			</container>
+		</referenceContainer>
+		<referenceBlock name="seacondfooter" remove="true" />
+		<move element="product.info.main.prd.opt.block" destination="product.details.popup" after="-" as="product_option_popup" />
+		 
+    </body>
+</page>

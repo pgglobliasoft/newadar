@@ -1,0 +1,116 @@
+<?php
+
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$customerSession = $objectManager->create('Magento\Customer\Model\Session');
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+$baseUrl = $storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+$request = $objectManager->get('\Magento\Framework\App\Request\Http');
+$cur_action = $request->getFullActionName();
+$admincustomer = $customerSession->getCustomerAsadmin();
+
+$customerorderUrl = $baseUrl."customerorder/customer/index";
+$customerinvoices = $baseUrl."customerinvoices/customer/index";
+$downloadlibraryUrl = $baseUrl."downloadlibrary/category/index";
+$policies_procedures = $baseUrl."policies-procedures";
+$neworderUrl = $baseUrl."customerorder/customer/neworder";
+$inventorydata = $baseUrl."customerorder/customer/inventorydata";
+
+
+$resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
+$connection = $resource->getConnection();
+$tableName = $resource->getTableName('au_under_child_customer');
+
+$c_id = $customerSession->getCustomer()->getId();
+$postFactory = $objectManager->get('\ManishJoy\ChildCustomer\Model\PostFactory');
+$post = $postFactory->create();
+$collection = $post->getCollection()->addFieldToSelect('permission')->addFieldToFilter('c_id', $c_id);
+$permission =  $collection->getData();
+$order = true;
+$invoice = true;
+$downlaod_library = true;
+$create_order = true;
+
+if($permission){
+$permissionarray = json_decode($permission[0]['permission'], true);
+$order = false;
+$invoice = false;
+// $downlaod_library = false;
+$create_order = false;
+	    foreach ($permissionarray as $value) { 
+	       	foreach ($value as $upermission) { 
+	       		// echo $upermission;	
+	       		// echo "<br>";
+		    	if($upermission === 'place_oder'){
+		 	   	 	$create_order = true;
+		 	   	 	// echo $create_order;
+		    	}
+		    	if($upermission === 'view_order'){
+		    	 	$order = true;
+		    	}
+		    	if($upermission === 'pay_invoice' || $upermission === 'view_invoice'){
+		    	 	$invoice = true;
+		    	}
+		    	// if($upermission === 'view_catalog'){
+		    	//  	$downlaod_library = true;
+		    	// }
+		  	} 
+	    }  
+	}
+
+?>
+<?php if($block->customerLoggedIn()): ?>
+	<div class="loginMenu">
+		<input type="hidden" id ="customerlogin" name="customerlogin" value="1"> 
+		<span>welcome, <span><?php echo  $customerSession->getCustomer()->getName();?></span></span>
+		<ul class="afterLoginMenu">
+			
+			<li <?php if ($cur_action == "dashboard_index_index") {?>class="current"<?php }?>><a href="<?php echo $baseUrl."dashboard/index/index";?>">My Dashboard</a></li>
+
+			<li <?php if ($cur_action == "customer_account_index") {?>class="current"<?php }?>><a href="<?php echo $baseUrl."customer/account/index/";?>">My Account</a></li> <?php /*echo $baseUrl."sales/order/history/";*/ ?>
+			<?php if($create_order){?>
+			<li <?php if ($cur_action == "customerorder_customer_neworder") {?>class="current"<?php }?>><a href="<?php echo $neworderUrl;?>">Create Order</a></li> <?php /*echo $baseUrl."/paypal/billing_agreement/";*/ ?>
+			<?php }?>
+			<?php if($order){?>
+			<li <?php if ($cur_action == "customerorder_customer_index" && $block->getRequest()->getParam('q') == '') {?>class="current"<?php }?>><a href="<?php echo $customerorderUrl; ?>">Order Status</a></li>
+			<?php }?>
+			<?php if($invoice){?>
+			<li <?php if ($cur_action == "customerinvoces_customer_index") {?>class="current"<?php }?>><a href="<?php echo $customerinvoices;?>">Invoices</a></li> <?php /*echo $baseUrl."/paypal/billing_agreement/";*/ ?>
+			<?php }?>
+			<?php if($order){?>
+			<li <?php if ($cur_action == "customerorder_customer_index" && $block->getRequest()->getParam('q') == 'd') {?>class="current"<?php }?>><a href="<?php echo $customerorderUrl; ?>?q=d">Purchase Order Drafts</a></li>
+			<?php }?>
+			<?php if($downlaod_library){?>
+			<li <?php if ($cur_action == "downloadlibrary_category_index") {?>class="current"<?php }?>><a href="<?php echo $downloadlibraryUrl; ?>">Download Library</a></li>
+			<?php }?>
+			<!-- <li><a href="<?php echo $policies_procedures; ?>">Policies & Procedures</a></li> -->
+			<?php 
+				if($admincustomer){ ?>
+				<li <?php if ($cur_action == "customerorder-customer-inventorydata") {?>class="current"<?php }?>><a href="<?php echo $inventorydata; ?>">Inventory Status</a></li>
+				<?php } ?>
+			<li><a href="<?php echo $baseUrl."customerlogin/account/logout/";?>">Sign out</a></li>
+		</ul>
+	</div>	
+<?php else:?>
+<div class="loginSection">
+<input type="hidden" id ="customerlogin" name="customerlogin" value="0">
+<?php
+$urlInterface = \Magento\Framework\App\ObjectManager::getInstance()->get('Magento\Framework\UrlInterface');
+$getCurrentUrl = $urlInterface->getCurrentUrl();
+/*if($_SERVER['SERVER_ADDR'] != '127.0.0.1'){
+	if($getCurrentUrl == $baseUrl.'custom-login'){
+	?>
+	<div class="authorization-link">
+		<a href="javascript:void(0);">CUSTOMER PORTAL</a> 
+	</div>
+	<?php }else{ ?>
+	<a data-toggle="modal" data-target="#loginModal">CUSTOMER PORTAL</a>
+	<?php } } else{ ?>
+<div class="authorization-link">
+	<a href="javascript:void(0);">CUSTOMER PORTAL</a> 
+</div>
+<?php }*/ ?>
+	<div class="authorization-link">
+			<a href="javascript:void(0);">CUSTOMER PORTAL</a> 
+	</div>
+</div>
+<?php endif; ?>

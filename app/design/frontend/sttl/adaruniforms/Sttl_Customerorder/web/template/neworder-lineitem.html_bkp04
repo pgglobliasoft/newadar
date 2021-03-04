@@ -1,0 +1,172 @@
+<%
+	_.each(finalorderrendere, function(valuetype, index) {
+		var viewtype_index = index;
+		var isorderdata = index.substr(0, 8);
+		if(isorderdata == "viewtype"){ %>
+			<table class="orderList lineItemsList">
+				<tbody>
+					<!-- Table Header Rendering Start -->
+					<tr>
+						<th width="30px"></th>
+						<th width="30px"></th>
+						<th width="50px">Style #</th>
+                        <th width="50px">Color</th>
+						<%
+							var stylegroup_number = index.substr((index.length)-1, 1);
+							_.each(databystylegroup, function(value, index) {
+								if(index == stylegroup_number){
+									_.each(value, function(value, index) {%>
+										<th width="50px"><%=value%></th>
+									<% });
+								}
+							});
+						%>
+						<th width="50px">Qty.</th>
+						<th width="70px">Total</th>
+						<th width="50px"></th>
+					</tr>
+					<!-- Table Header Rendering End -->
+					<!-- Table Item Rendering Start -->
+					<% 
+					var order_item_count = 1;
+					var colspancount = 4;
+					var grandtotalqty = 0;
+					var grandtotal = 0;
+					var tmpstylecolorcode = '';
+					_.each(valuetype, function(parent_styles_value, style_name) {
+						_.each(parent_styles_value, function(parent_styles_colorcode_value, style_colorcode) {
+							colspancount = 4; 
+							tmpstylecolorcode = ''; %>
+							<tr>
+								<%
+									var total_raw_qty = 0;
+									var total_raw_price = 0;
+								%>
+								<td>
+									<input type="checkbox" name="deleteMultiRecord[]" class="deleteMultiRecord" value="">
+									<input type="hidden" class="delete_style" id="delete_style_<%=style_name%>_<%=style_colorcode%>" name="delete_style" value="<%=style_name%>">
+									<input type="hidden" name="delete_color" class="delete_color" id="delete_color_<%=style_name%>_<%=style_colorcode%>" value="<%=style_colorcode%>">
+								</td>
+								<td><%=order_item_count%></td>
+								<td><%=style_name%></td>
+								<td><%=style_colorcode%></td>
+								<% 
+								var stylegroup_number = viewtype_index.substr((viewtype_index.length)-1, 1);
+								_.each(databystylegroup, function(groupby_style_value, index) {
+									if(index == stylegroup_number){
+										var valueprinted = false;
+										_.each(groupby_style_value, function(groupby_style_final_value, index) {
+											colspancount++;
+											_.each(parent_styles_colorcode_value, function(order_item, order_item_index) {
+												var current_style_size = order_item.Size;
+												if(groupby_style_final_value == current_style_size){ 
+													valueprinted = true;													
+													total_raw_qty = parseInt(total_raw_qty) + parseInt(order_item.QTYOrdered);
+													total_raw_price = parseFloat(total_raw_price) + parseFloat(order_item.TotalPrice);
+													 %>
+													<td><%=order_item.QTYOrdered%></td>	
+												<% }
+											});
+											if(!valueprinted){ %>
+												<td></td>
+											<%}else{
+												valueprinted = false;
+											}
+										});
+									}
+								});
+								grandtotalqty = parseInt(grandtotalqty)+parseInt(total_raw_qty);
+								grandtotal = parseFloat(grandtotal)+parseFloat(total_raw_price);
+								order_item_count++;
+								%>
+								<td><%=total_raw_qty%></td>
+								<td>$<%=currencyconvert(total_raw_price.toFixed(2))%></td>
+								<td class="item_action_buttons">
+									<a href="javascript:void(0);" edit-id="<%=style_name%>" edit-color="<%=style_colorcode%>" class="editOrderdItem newLinkText">
+										<span class="fa fa-pencil"></span>
+									</a>
+									<a href="javascript:void(0);" delete-id="<%=style_name%>" delete-color="<%=style_colorcode%>" class="newLinkText">
+										<span class="fa fa-close delSingalRecords"></span>
+									</a>
+								</td>
+							<% 
+								tmpstylecolorcode = style_colorcode;
+							}); %>
+						</tr>
+						<input type="hidden" name="grandTotal" id="grandTotal_<%=style_name%>_<%=tmpstylecolorcode%>" class="grandTotal" value='<%=grandtotal.toFixed(2)%>' >
+						<input type="hidden" class="qtyTotal" name="qtyTotal" id="qtyTotal_<%=style_name%>_<%=tmpstylecolorcode%>" value='<%=grandtotalqty%>' >
+				 		<% 	}); %>
+				 		<tr>
+				 			<td colspan="<%=colspancount%>"></td>
+				 			<td><%=grandtotalqty%></td>
+				 			<td>$<%=currencyconvert(grandtotal.toFixed(2))%></td>
+				 			<td></td>
+				 		</tr>
+					<!-- Table Item Rendering End -->
+				</tbody>
+			</table>
+	 <% }
+	});
+%>
+
+<%
+	var grandTotal = 0;
+	var FlatDiscount = '';
+	var sellingprice = '';
+	var DiscountAmount = '';
+	var orderdata = '';
+
+	if(ordersummaryinfo){
+	
+		grandTotal = ordersummaryinfo.TotalBeforeDiscount;
+		FlatDiscount = ordersummaryinfo.FlatDiscount;
+		sellingprice = ordersummaryinfo.DocTotal;
+		DiscountAmount = ordersummaryinfo.DiscountAmount;
+		orderdata = ordersummaryinfo;
+	}
+
+	if(grandTotal && grandTotal != 0 && grandTotal != ''){
+		%>
+			<div class="cf">
+				<a href="javascript:void(0);" class="delSelectedRecords newLinkText">Delete Selected Rows</a>
+			</div>
+		<%
+		var CouponCode = '-';
+		if(orderdata.CouponCampaign){
+			CouponCode = orderdata.CouponCampaign;
+		}
+
+		if(FlatDiscount){
+			var tmp_flatdiscount = FlatDiscount.split(".");
+			if(tmp_flatdiscount[0] && tmp_flatdiscount[1] == 00){
+				FlatDiscount = tmp_flatdiscount[0];
+			}
+			console.log(FlatDiscount);
+			
+		}
+
+		%>
+			<div class="cf">
+				<div class="orderSummary">
+					<div class="">
+						Total Before Discount: <span class="labelValue">$<%=grandTotal%></span>
+					</div>
+					<div class="">
+						Discount Applied: <span class="labelValue">(<%=FlatDiscount%>%) - $<%=DiscountAmount%></span>
+					</div>
+					<div class="">
+						Freight/Handling <span class="labelValue">-</span>
+					</div>
+					<div class="">
+						Coupon/Campaign: <span class="labelValue"><%=CouponCode%></span>
+					</div>
+					<div class="orderTotal">
+						Total: <span class="labelValue">$<%=sellingprice%></span>
+					</div>
+				</div>
+			</div>
+		<%
+	}else{ %>
+		<div>Please Wail while generating Order Summary</div>
+	<% } 
+%>

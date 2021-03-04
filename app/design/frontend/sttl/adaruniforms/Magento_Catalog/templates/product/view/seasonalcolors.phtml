@@ -1,0 +1,75 @@
+<?php
+$_helper = $this->helper('Magento\Catalog\Helper\Output');
+$_product = $block->getProduct();
+$_call = $block->getAtCall();
+$_code = $block->getAtCode();
+$_className = $block->getCssClass();
+$_attributeLabel = $block->getAtLabel();
+$_attributeType = $block->getAtType();
+$_attributeAddAttribute = $block->getAddAttribute();
+$_attributeValue = $_helper->productAttribute($_product, $_product->$_call(), $_code);
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$swatchHelper=$objectManager->get("Magento\Swatches\Helper\Media");
+$swatchCollection = $objectManager->create('Magento\Swatches\Model\ResourceModel\Swatch\Collection');
+$seasonalOptions = $swatchCollection->getData();
+//$swatchCollection->addFieldtoFilter('option_id',$_attributeValue);
+$lable = $_product->getAttributeText($_code);
+$configProduct = $objectManager->create('Magento\Catalog\Model\Product')->load($_product->getId());
+$simp = $objectManager->create('Magento\Catalog\Model\Product');
+$_children = $configProduct->getTypeInstance()->getUsedProducts($configProduct);
+$CreateSeasonaArray = array();
+$i = 1;
+$Config = $objectManager->create('Magento\Eav\Model\Config');
+$attribute = $Config->getAttribute('catalog_product', $_code);
+$options = $attribute->getSource()->getAllOptions();
+foreach ($_children as $child){
+    $simPData = $simp->load($child->getId());
+    
+    $seasonalcolorsValues = $simPData->getData('seasonalcolors');
+    $key = array_search($seasonalcolorsValues, array_column($seasonalOptions, 'option_id'));
+    
+    if(!isset($CreateSeasonaArray[$seasonalOptions[$key]['option_id']]) && empty($CreateSeasonaArray[$seasonalOptions[$key]['option_id']]))
+    {
+        $CreateSeasonaArray[$seasonalOptions[$key]['option_id']]= $seasonalOptions[$key];
+        $CreateSeasonaArray[$seasonalOptions[$key]['option_id']]['lable'] = $simPData->getAttributeText('seasonalcolors');
+    }
+    $i++;
+}
+$Data = $CreateSeasonaArray;
+function compareByName($a, $b) {
+  return strcmp($a["lable"], $b["lable"]);
+}
+usort($Data, 'compareByName');
+//$Data = array_map("unserialize", array_unique(array_map("serialize", $CreateSeasonaArray)));
+//echo  "<pre>";print_R($CreateSeasonaArray);exit;
+?>
+
+<?php if ($_attributeValue): ?>
+    <div style="display: none;">
+    <div class="product attribute" id="seasonalcolors">
+    <div class="swatch-attribute <?php /* @escapeNotVerified */ echo $_className?>" id="seasonalcolors">
+    
+        <?php if ($_attributeLabel != 'none'): ?>
+            <span  class="swatch-attribute-label"><?php  echo $_attributeLabel?></span>
+            <?php endif; ?>
+	       <div class="swatch-attribute-options clearfix">
+            <?php
+                  foreach ($Data as $key => $value) {
+                    $swatch = $objectManager->create('Magento\Swatches\Model\Swatch')->load($value['swatch_id']);
+                    $imageName=$swatch->getData('value');
+                    if(!empty($imageName)){
+                        $imagePath=$swatchHelper->getSwatchMediaUrl().$imageName;
+                        //$key = array_search($value['option_id'], array_column($options, 'value'));
+                        //$lable = $options[$key]['label'];
+                        ?>
+                         <div class="image" option-label="<?php echo $value['lable']?>" aria-label="<?php echo $value['lable']?>" option-tooltip-thumb="" option-tooltip-value="<?php echo $value['lable']?>" role="option" style="background: url(<?php echo $imagePath; ?>) no-repeat center; background-size: initial;"></div>
+                        <?php
+                    }
+                }
+                ?>
+            </div>
+	
+    </div>
+    </div>
+    </div>
+<?php endif; ?>

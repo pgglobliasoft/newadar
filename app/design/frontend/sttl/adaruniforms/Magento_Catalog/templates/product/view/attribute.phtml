@@ -1,0 +1,45 @@
+<?php
+$_helper = $this->helper('Magento\Catalog\Helper\Output');
+$_product = $block->getProduct();
+$_call = $block->getAtCall();
+$_code = $block->getAtCode();
+$_className = $block->getCssClass();
+$_attributeLabel = $block->getAtLabel();
+$_attributeType = $block->getAtType();
+$_attributeAddAttribute = $block->getAddAttribute();
+
+if ($_attributeLabel && $_attributeLabel == 'default') {
+    $_attributeLabel = $_product->getResource()->getAttribute($_code)->getFrontendLabel();
+}
+if ($_attributeType && $_attributeType == 'text') {
+    $_attributeValue = ($_helper->productAttribute($_product, $_product->$_call(), $_code)) ? $_product->getAttributeText($_code) : '';
+} else {
+    $_attributeValue = $_helper->productAttribute($_product, $_product->$_call(), $_code);
+}
+?>
+
+<?php if ($_attributeValue): ?>
+    <div class="product attribute <?php /* @escapeNotVerified */ echo $_className?>">
+        <?php if ($_attributeLabel != 'none'): ?><strong class="type"><?php /* @escapeNotVerified */ echo $_attributeLabel?></strong><?php endif; ?>
+
+        <?php if(!is_array($_attributeValue)): ?>
+            <div class="value" <?php /* @escapeNotVerified */ echo $_attributeAddAttribute;?>>
+                <?php $listValue = explode("<br>", $_attributeValue);
+                    if(count($listValue) > 1){
+                        foreach ($listValue as $value): 
+                    ?>
+                        <li><?php /* @escapeNotVerified */ echo $value; ?></li>
+                    <?php 
+                        endforeach;
+                    }else{
+                      /* @escapeNotVerified */ echo $_attributeValue; 
+                    }
+                ?>
+            </div>
+        <?php else: ?>
+            <?php foreach ($_attributeValue as $value): ?>
+                <div class="value" <?php /* @escapeNotVerified */ echo $_attributeAddAttribute;?>><?php /* @escapeNotVerified */ echo $value; ?></div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>

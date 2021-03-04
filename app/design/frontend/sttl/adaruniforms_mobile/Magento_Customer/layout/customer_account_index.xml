@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <!-- <update handle="customer_account"/> -->
+    <head>
+        <remove src="mage/calendar.css"/>
+        <remove src="css/print.css"/>
+        <remove src="DR_Gallery::js/fancyboxjs.js"/>
+        <remove src="WeltPixel_Quickview::js/weltpixel_quickview.js"/>
+        <remove src="WeltPixel_Quickview::js/jquery.magnific-popup.min.js"/>
+        <!-- <script src="Magento_Theme::js/auto-suggest-search.js" /> -->
+    </head>
+    <body>
+    	<referenceBlock name="customer_account_dashboard_address" remove="true"/>
+    	<referenceBlock name="header.custom.login" remove="true"/>
+        <!-- <referenceContainer name="footerr" remove="true" /> -->
+        <!-- <referenceBlock name="footer-container" remove="true"/> -->
+        <!-- <referenceBlock name="logo" remove="true"/> -->
+        <referenceContainer name="container">
+        		<block class="Magento\Customer\Block\Account\Customer"  name="header.user_profile" template="Magento_Customer::logo/user.phtml" after="logo"/>
+        </referenceContainer>
+
+        <referenceContainer name="content">
+
+       		<!-- <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_order_serach" template="Magento_Customer::account/orderserach.phtml" cacheable="false" /> -->
+            <container name="mobile_slider" htmlTag="div" htmlClass="slider-container">
+                <!-- <block class="Magestore\Bannerslider\Block\InstaSlider" name="slider_carousel_mobile" template="Magestore_Bannerslider::slider/mobile.phtml" >
+                    <arguments>
+                        <argument name="SliderId" xsi:type="string">14</argument>
+                    </arguments>
+                </block> -->
+                <block class="Sttl\Adaruniforms\Block\Info" name="notes_section" template="Magento_Customer::account/dashboard/myaccountpageslidermobile.phtml" before="-" />
+                <block class="Magento\Cms\Block\Block" name="slider_carousel_mobile1">
+                    <arguments>
+                      <argument name="block_id" xsi:type="string">mobile_banner1</argument>
+                    </arguments>
+                </block>
+                <block class="Magento\Customer\Block\Account\Dashboard\Info" name="fratured_product" template="Magento_Customer::account/dashboard/featuredproduct.phtml"/>
+               <!--  <block class="Magento\Cms\Block\Block" name="slider_carousel_mobile">
+                    <arguments>
+                      <argument name="block_id" xsi:type="string">mobile_banner</argument>
+                    </arguments>
+                  </block> -->
+                  <!-- <block class="Magento\Customer\Block\Account\Dashboard\Info" name="orderbutton" template="Magento_Customer::account/dashboard/orderbutton.phtml" cacheable="false" /> -->
+            </container>
+
+            <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_covid" template="Magento_Customer::account/covid.phtml" cacheable="false" before='mobile_slider' />
+    <container name="account-page-menu-back" htmlTag="div" htmlClass="back-menu">
+                <container name="account-page-menu" htmlTag="div" htmlClass="account_menu">
+                    <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_myaccount" template="Magento_Customer::account/dashboard/myaccount.phtml" cacheable="false" before="account-page-menu_nav"/>
+                         <container name="account-page-menu_nav" htmlTag="div" htmlClass="account_menu_nav block-content collapse show">
+                             <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_info" as="info" template="Magento_Customer::account/dashboard/accountinfo.phtml" cacheable="false"  />      
+                             <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_edit_popup" template="Magento_Customer::account/dashboard/edit_customer.phtml" after="-" />                       
+                         </container>
+                    <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_logout" template="Magento_Customer::account/dashboard/logout.phtml" cacheable="false"/>
+             </container>
+     </container>
+   
+           <!--  <block class="Magento\Framework\View\Element\Template" name="main.account_navd" template="Magento_Theme::html/customercollapsible.phtml" after="-" /> -->
+           <container name="customer_account_dashboard_covid_information" htmlTag="div" htmlClass="notifications" after="customer_edit_popup">
+             <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_covid_information_block"  template="Magento_Customer::account/dashboard/covidupdatepopup.phtml" />
+           </container>
+
+
+        </referenceContainer>
+        <!-- <move element="content_slider" destination="columns" before="-" /> -->
+
+    </body>
+</page>

@@ -1,0 +1,142 @@
+<?php if(!$block->isLoggedIn()): ?>
+	<div class="login-overlay">
+		<div class="cf">
+			<div class="cf" id="customer-loginModal">
+				<form class="form-login popup-login-form" method="POST" action="" data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>" data-mage-init='{"validation":{}}'>
+				<div class="response-msg"></div>
+					<div class="container">
+					<div class="cf">
+	                    <span class="close cancelbtn">
+	                      <span class="fa fa-close"></span>
+	                    </span>
+	                </div>
+					<h3>   <span id="block-customer-login-heading" role="heading" aria-level="2"><?php /* @escapeNotVerified */ echo __('Welcome Back') ?></span></h3>
+     
+	                <div class="inputArea field required">
+						<label class="label" for="username"><?php echo __('Login Email') ?></label>
+						<input  class=" required-entry textInput input-text" type="email" placeholder="<?php echo __('Enter Email') ?>" name="username" id="username" data-validate="{required:true, 'validate-email':true}">
+					</div>	
+					<div class="inputArea field password required">
+						<label class="label" for="password"><?php echo __('Password') ?></label>
+						<input  class=" required-entry textInput input-text" type="password" placeholder="<?php echo __('Enter Password') ?>" name="password" id="password" data-validate="{required:true}">
+					</div>
+					<div class="secondary right forgot-link">
+						<a class="action remind" href="javascript:void(0);"><span><?php /* @escapeNotVerified */ echo __('Forgot Password?') ?></span></a></div> <?php /*echo $block->getForgotPasswordUrl()*/ ?>
+					</div>
+					<div class="btnRow actions-toolbar">
+						<button class="signupBtn action login primary" type="submit"><?php echo __('Log in') ?></button>
+						<!--<div class="register-link"><span><?php echo __('New Here?') ?></span>&nbsp;<a href="#"><?php echo __('Register') ?></a></div>-->
+
+						<span class="note right">Don't have an account? Click <a href="<?= $block->getUrl('') ?>customer/account/create">Here</a> to register</span>
+					</div>
+
+
+					<!--<div class="container" style="background-color:#f1f1f1">
+						<button title="<?php echo __('Click to close') ?>" type="button" class="cancelbtn"><?php echo __('Cancel') ?></button>
+						<span class="psw"><?php echo __('Forgot') ?> <a href="<?php echo $block->getUrl('customer/account/forgotpassword') ?>"><?php echo __('password') ?>?</a></span>
+					</div>-->
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		require(['jquery'], function($) {
+			var headerElem = $('.loginSection');
+			var loginLink = headerElem.find('.authorization-link').children('a');
+			var registerLink = headerElem.find('.authorization-link').next().children('a');
+			var loginOverlay = $('.login-overlay');
+			var loginBox = $('.login-overlay').find('.popup-login-form');
+			var loginButton = $('.popup-login-form').find('button[type=submit]');
+			var loginUrl = "<?php echo $block->getUrl('customerlogin/ajax/login') ?>";
+			var registerUrl = "<?php echo $block->getUrl('customerlogin/ajax/register') ?>";
+			var redirectUrl = "<?php echo $block->getUrl('dashboard/index/index') ?>";
+
+			// Texts
+			var loginText = "<?php echo __('Login') ?>";
+			var loggingText = "<?php echo __('Please Wait...') ?>";
+
+			var registerText = "<?php echo __('Sign Up') ?>";
+			var registeringText = "<?php echo __('Please Wait...') ?>";
+
+			loginLink.click(function(e){
+				e.preventDefault(e);
+				loginOverlay.show();
+				loginBox.show();
+			});
+
+			$('.cancelbtn').click(function(){
+				loginOverlay.hide();
+				loginBox.hide();
+			});
+
+			$('.login-link a').click(function(e){
+				e.preventDefault(e);
+				loginBox.show();
+			});
+
+			$('.register-link a').click(function(e){
+				e.preventDefault(e);
+				loginBox.hide();
+			});
+
+			$('.popup-login-form').submit(function(){
+				var checkMobileView = fnIsAppleMobile();
+				loginButton.text(loggingText);
+				loginButton.attr("disabled", "disabled");
+				var formData = getFormData($(this),checkMobileView);
+				$.ajax({
+		            type: "POST",
+		            url: loginUrl,
+		            data: formData,
+		            dataType: "json",
+					showLoader: true,
+		            success: function(data) {
+		                showResponse(data);
+		                if(data.errors) {
+		                	loginButton.text(loginText);
+		                	loginButton.removeAttr('disabled');
+		                } else {
+		                	window.location.href = redirectUrl;
+		                }
+		            }
+		        });
+				return false;
+			});
+
+			function getFormData(formElem,checkMobileView){
+			    var unindexed_array = formElem.serializeArray();
+			    unindexed_array.push({"name":"checkMobileView","value":checkMobileView});
+			    var indexed_array = {};
+
+			    jQuery.map(unindexed_array, function(n, i){
+			        indexed_array[n['name']] = n['value'];
+			    });
+			    // console.log("indexed_array == "+JSON.stringify(indexed_array));
+			    return indexed_array;
+			}
+
+			function showResponse(data) {
+				if(data.errors) {
+					$('.response-msg').html("<div class='error'>"+data.message+"</div>");
+				} else {
+					$('.response-msg').html("<div class='success'>"+data.message+"</div>");
+				}
+				setTimeout(function(){ $('.response-msg').html(null); }, 5000);
+			}
+
+			function fnIsAppleMobile() 
+			{
+			    if (navigator && navigator.userAgent && navigator.userAgent != null) 
+			    {
+			        var strUserAgent = navigator.userAgent.toLowerCase();
+			        var arrMatches = strUserAgent.match(/(iphone|ipod|ipad)/);
+			        if (arrMatches != null) 
+			             return true;
+			    } // End if (navigator && navigator.userAgent) 
+
+			    return false;
+			} // End Function fnIsAppleMobile
+		});
+	</script>
+<?php endif; ?>

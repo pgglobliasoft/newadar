@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_layout.xsd">
+    <update handle="1column"/>
+		<referenceContainer name="page.wrapper">
+			<container name="header.container" as="header_container" label="Page Header Container" htmlTag="header" htmlId="header" before="main.content"/>
+			<container name="page.top" as="page_top" label="After Page Header" after="header.container"/>
+			<container name="page.wrapper.figure" htmlId="banner" htmlTag="div">
+				<container name="page.wrapper.figure.sliderBanner" htmlTag="div" htmlClass="sliderBanner" >
+				</container>
+			</container>
+			<container name="page.wrapper.contentSection" htmlTag="div" htmlClass="contentSection">
+				<container name="page.wrapper.contentSection.container" htmlTag="div" htmlClass="container" >
+					<container name="page.wrapper.contentSection.container.productThumb" htmlId="productCategories" htmlTag="section" htmlClass="productThumb" >
+						<block class="Magento\Cms\Block\Block" name="home_category"> 
+							<arguments> 
+								<argument name="block_id" xsi:type="string">home_category</argument> 
+							</arguments> 
+						</block> 
+					</container>
+				</container>
+				<container name="page.wrapper.contentSection.serviceText" htmlId="fitForService" htmlTag="section" htmlClass="serviceText" >
+					<container name="page.wrapper.contentSection.serviceText.container" htmlTag="div" htmlClass="container" >
+						<block class="Magento\Cms\Block\Block" name="about_short_desc"> 
+							<arguments> 
+								<argument name="block_id" xsi:type="string">about_short_desc</argument> 
+							</arguments> 
+						</block> 
+					</container>
+				</container>
+				<container name="page.wrapper.contentSection.fullThumbSection" htmlId="exprienceWrap" htmlTag="section" htmlClass="fullThumbSection" >
+					<container name="page.wrapper.contentSection.fullThumbSection.twoColsWrap" htmlTag="div" htmlClass="twoColsWrap">
+						<block class="Magento\Cms\Block\Block" name="middle_content_blog"> 
+						<arguments> 
+							<argument name="block_id" xsi:type="string">middle_content_blog</argument> 
+						</arguments> 
+					</block>
+					</container>
+				</container>
+			</container>
+			<container name="page.wrapper.productThumSlider" htmlId="homeProductSlider" htmlTag="section" htmlClass="productThumSlider">
+				<container name="page.wrapper.productThumSlider.container" htmlTag="div" htmlClass="container" >
+					<block class="Magento\Cms\Block\Block" name="instagram_slider"> 
+						<arguments> 
+							<argument name="block_id" xsi:type="string">instagram_slider</argument> 
+						</arguments> 
+					</block> 
+				</container>
+			</container>
+		</referenceContainer>
+		<!-- <referenceContainer name="main" remove="true"/> -->
+		<move element="page.messages" destination="page.wrapper" before="main.content"/>
+</layout>

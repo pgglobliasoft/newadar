@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="Adaruniforms" translate="label" sortOrder="450">
+            <label>Adaruniforms</label>
+        </tab>
+        <section id="Adaruniforms" translate="label" type="text" sortOrder="300" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Adar Uniforms</label>
+            <tab>Adaruniforms</tab>
+			<resource>Sttl_Adaruniforms::Adaruniforms</resource>
+                
+            <group id="myaccountimage_configration" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>MyAccount Image</label>
+                <field id="multiple_email" translate="label comment" type="text" sortOrder="0"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Email ID</label>
+                    <comment>Please Enter Value in Comma seprater..</comment>
+                </field> 
+                <field id="multiple_email_subject" type="text" sortOrder="0"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Subject</label>
+                </field>             
+            </group>
+
+            <group id="neworder_handling_fee" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Order Handling Fee Setting</label>
+                <field id="before_qty" type="text" sortOrder="0"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Before Qty</label>
+                </field>
+                <field id="before_order_total" type="text" sortOrder="0"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Before Order Total</label>
+                </field>
+                <field id="order_handling_fee" type="text" sortOrder="0"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Order Handling Fee</label>
+                </field>
+            </group>
+
+            
+            <group id="recentorder_range" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Dashboard Recent order Limit</label>
+                    <field id="ranges" translate="label" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Recent Oreder Limit</label>
+                        <frontend_model>Sttl\Adaruniforms\Block\Adminhtml\Form\Field\Ranges</frontend_model>
+                        <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                    </field>
+            </group>
+            
+
+
+            <group id="logout_section" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Logout Popup</label>
+                <field id="logout_message" translate="label comment" type="textarea" sortOrder="0"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Logout Popup message</label>
+                    <comment>E.g. : You’ve been logged out</comment>
+                </field>                
+            </group>
+            <group id="social_media" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Social Media</label>
+                <field id="facebook_url" translate="label comment" type="text" sortOrder="0"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Facebook Url</label>
+					<comment>E.g. : http://www.facebook.com</comment>
+                </field>
+
+				<field id="linkdin_url" translate="label comment" type="text" sortOrder="0"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Instagram Url</label>
+					<comment>E.g. : https://www.instagram.com</comment>
+                </field>
+				<field id="twitter_url" translate="label comment" type="text" sortOrder="0"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Twitter Url</label>
+					<comment>E.g. : http://www.twitter.com</comment>
+                </field>
+				<field id="google_plus_url" translate="label comment" type="text" sortOrder="0"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Youtube Url</label>
+					<comment>E.g. : https://www.youtube.com</comment>
+                </field>
+               <!--  <field id="covid_19" translate="label comment" type="text" sortOrder="0"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Covid-19 flag</label>
+                    <comment>0-yes / 1-no</comment>
+                </field> -->
+                <field id="covid_19_enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>covid_19 update status Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Select Yes to display or hide covid_19 update  in mobile view.</comment>
+                </field>
+            </group>
+			<group id="contact_us" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Contact Us</label>
+                <field id="fax_number" translate="label comment" type="text" sortOrder="0"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>FAX No</label>
+					<comment>E.g. : xxx-xxx-xxxx</comment>
+                </field>
+				<field id="toll_free" translate="label comment" type="text" sortOrder="0"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Toll Free No</label>
+					<comment>E.g. : xxx-xxx-xxxx</comment>
+                </field>
+            </group>
+            <group id="sap_server_onfiguration" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>SAP Server Configuration</label>
+                <field id="server_ip" translate="label comment" type="text" sortOrder="1"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Server IP</label>
+                </field>
+                <field id="username" translate="label comment" type="text" sortOrder="2"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Username</label>
+                </field>
+                <field id="password" translate="label comment" type="text" sortOrder="3"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Password</label>
+                </field>
+                <field id="db_name" translate="label comment" type="text" sortOrder="3"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Database Name</label>
+                </field>
+            </group>
+            <group id="ebiz_charge_configuration" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Ebiz Charge Configuration</label>
+                <field id="ebizmode" translate="label" type="select" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Ebiz Charge Mode</label>
+                    <source_model>Sttl\Adaruniforms\Model\Config\Mode</source_model>
+                </field>
+                <field id="sourcekey" translate="label comment" type="text" sortOrder="1"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Source Key</label>
+                </field>
+                <field id="ebizpin" translate="label comment" type="text" sortOrder="2"  showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Ebiz Pin</label>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

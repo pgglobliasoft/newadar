@@ -1,0 +1,30 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * See LICENSE.txt for license details (http://opensource.org/licenses/osl-3.0.php).
+ *
+ * Glory to Ukraine! Glory to the heroes!
+ */
+?>
+<?php
+/**
+ * Blog post view template
+ *
+ * @var $block \Magefan\Blog\Block\Post\View
+ */
+?>
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+		$request = $objectManager->get('Magento\Framework\App\Request\Http');
+    $_post = $this->getPost();
+	$image = $this->getPost()->getOgImage();
+	$_postUrl = $_post->getPostUrl();
+    $_postName = $block->escapeHtml($_post->getTitle(), null, true);
+	
+?>
+  <?php if ($image){ ?>
+            	<div class="post-ftimg-hld">
+                    <img src="<?php echo $image ?>" alt="<?php echo $_postName ?>" />
+                </div>
+	<?php } ?>
+				

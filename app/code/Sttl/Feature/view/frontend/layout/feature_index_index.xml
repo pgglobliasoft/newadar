@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="../../../../../../../lib/internal/Magento/Framework/View/Layout/etc/page_configuration.xsd">
+	<head>
+        <css src="Sttl_Feature::css/sttl_feature.css" media="all"/>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="Sttl\Feature\Block\Features" name="feature_list" template="Sttl_Feature::features.phtml">
+                <block class="Sttl\Feature\Block\Search" name="feature_search" template="Sttl_Feature::search.phtml"/>
+                <block class="Magento\Framework\View\Element\Template" name="feature_filter_by_character" template="Sttl_Feature::character.phtml"/>
+                <block class="Sttl\Feature\Block\Feature\Featured" name="feature_list_featured" template="Sttl_Feature::feature/featured.phtml"/>
+            </block>
+        </referenceContainer>
+        <referenceContainer name="sidebar.additional">
+            <block class="Sttl\Feature\Block\Feature\Sidebar" name="feature.sidebar" template="Sttl_Feature::feature/sidebar.phtml" before="-"/>
+        </referenceContainer>
+    </body>
+</page>

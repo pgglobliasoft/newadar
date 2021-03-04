@@ -1,0 +1,667 @@
+div#quickcheckout div#quickcheckoutdetail {
+    padding: 20px;
+}
+
+ form#ordersummary {margin: 10px 0;}
+
+ form#payemtnaction {margin: 10px 0;}
+ .block-title strong {
+    font-size: 18px;
+}
+ .box.box-information.s-border {
+    float: unset;
+    margin-right: 0;
+}
+
+ .paymentblockbilling .addressInfo {padding: 0;margin: 0;}
+ .shippingmethodblockpatment .box.box-information {
+    float: unset;
+    margin: 0;
+}
+.shippingmethodblockpatment.row .box.box-information.col-md-4.shippingmethodblock {
+    padding-top: 0;
+}
+.shippingAdds strong.box-title {
+    padding-bottom: 10px;
+}
+
+ .shipping-address-wrap > .box-content {
+    width: 100%;
+}
+
+ .shipping-address-wrap > input{
+    padding: 0;
+    font-size: 10pt;
+    line-height: 20px;
+    height: 28px;
+}
+
+.box-information.addressInfo.shippingAdds .box-title span {
+    font-size: 16px;
+    color: #000;
+    font-weight: bold;
+    font-family: 'Futura PT Bold';
+}
+.shippingmethodblock .box-title span {
+    font-size: 16px !important;
+    color: #000;
+    font-weight: bold;
+    font-family: 'Futura PT Bold';
+}
+ .box.box-information.addressInfo.shippingAdds.col-md-4 {
+    padding: 0 15px;
+}
+
+.quickcheckouthtml div#quickcheckout {
+    overflow-y: auto;
+}
+
+.quickcheckouthtml .modalContainer .container>.row {height: 100%;min-height: 55px;display: flex;align-items: center;}
+div#quickcheckoutdetail .block-title {
+    /*margin-bottom: 20px;*/
+    margin-top: 30px;
+    border-bottom: 1px solid #cecece;
+    padding-bottom: 10px;
+}
+
+ #quickcheckoutdetail .block-content {
+    margin-left: 5px;
+}
+.box-content input[type="text"] {
+    /*border-radius: 5px;*/
+    outline: none !important;
+    margin-bottom: 11px;
+}
+ div#quickcheckoutdetail > form#payemtnaction .paymentblockcoupan .box-content input[type="text"]:focus{
+    outline: unset!important;
+}
+
+/*div#quickcheckoutdetail .bdrLine.pma {
+    display: none !important;
+}
+*//*#payemtnaction .shippingmethodblockpatment {
+    margin: 0;
+}*/
+.lineitemquichcheckout th {font-weight: bold;color: #0C4269;}
+
+.lineitemtotalcheckout td {
+    padding: 0;
+    width: 100%;
+}
+table.lineitemtotalcheckout {
+    background-color: #E2E2E2;
+    padding: 10px;
+    display: block;
+    border-bottom: 1px solid;
+}
+table.lineitemtotalcheckout tr {
+}
+table.lineitemquichcheckout th {
+    padding-bottom: 0;
+    font-size: 16px;
+    text-align: center;
+}
+
+
+div#quickcheckoutdetail .block-title:nth-child(1) {
+    margin-top: 0;
+    padding-left: 4px;
+}
+/*.addressdropdowndemo {
+    border-style: dashed;
+}
+.addressdropdowndemo {
+    background-color: #0000;
+}*/
+/*.shippingmethodblock label {
+    color: #000 !important;
+}*/
+.quickcheckouthtml .modalContainer .container>.row {
+    margin: 0;
+}
+
+.quickcheckouthtml div#quickcheckout {
+    /*position: absolute;*/
+    z-index: 1410 !important;
+}
+.commonPopup1 {z-index: 1450 !important;}
+
+table.lineitemtotalcheckout {
+    background-color: #F7F7F7 !important;
+}
+.quickcheckoutsubmit {float: right;/* margin-bottom: 20px; */ height: 42px; padding: 12px 10px !important;}
+
+
+table.lineitemtotalcheckout {
+    background-color: #F7F7F7 !important;
+}
+.quickcheckoutsubmit {
+    /* float: right; */
+    /* margin-bottom: 20px; */
+}
+a#quickcheckoutelink {
+    font-weight: 700;
+    border: 1px solid #1a3d5b;
+    width: 140px;
+    text-align: center;
+    margin-right: 16px;
+    height: 42px;
+    font-size: 12px;
+    padding-top: 12px;
+    background: #fff;
+    color: #1a3d5b;
+    float: right;
+    cursor: pointer;
+}
+a#quickcheckoutelink:hover {
+    transition: 0.3s;
+    background: #0c4269;
+    color: #fff;
+}
+
+form#ordersummary .lineitemtitle {
+    font-size: 18px !important;
+
+}
+div#quickcheckoutdetail {
+    min-height: 400px;
+}
+/*div#quickcheckoutdetail .shippingmethodblockpatment.row .shipping-address-wrap {
+    display: flex;
+}*/
+.paymentblockbilling .addressInfo .box-content {
+    text-transform: capitalize;
+}
+.paymentblockbilling .box-information .addressInfo .box-content span#BillingStateCode {
+    text-transform: uppercase !important;
+}
+div#quickcheckout table.lineitemquichcheckout tr td {
+    text-align: center;
+}
+.quickcheckouthtml div#quickcheckoutdetail .lds-ellipsis {
+    top: 225px;
+}
+.quickcheckouthtml div#quickcheckoutdetail .shippingmethodblockpatment {
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+div#quickcheckoutdetail .box-content.paymentAddresscontentdiv input.delUrl:focus {
+    outline: unset !important;
+}
+div#quickcheckoutdetail .box-content.paymentAddresscontentdiv input.delUrl{
+    outline: unset !important;
+}
+.quickcheckouthtml div#quickcheckoutdetail .shippingmethodblockpatment span.couponTxt {
+    font-size: 14px !important;
+    color: #00000069;
+    background: unset !important;
+    padding-left: 0 !important;
+    padding-top: 11px;
+}
+div#quickcheckout .modal-dialog.modal-dialog-centered.modal-lg {
+    left: -45px;
+}
+.quickcheckouthtml table.lineitemquichcheckout td {
+    padding: 5px 0 !important;
+}
+.quickcheckouthtml .lineitemtotalcheckout td.Total {
+    font-weight: bold;
+}
+.quickcheckouthtml .addressdropdowndemo label.shipAddress {
+    padding-top: 0 !important;
+}
+
+.accountPageContainer.OrderConfirmation {
+    margin-bottom: 20px;
+}
+
+.product-info .tabledesign {
+    margin-bottom: 20px;
+}
+
+form#payemtnaction .steptitel strong {
+    margin-top: 8px;
+}
+ div#quickcheckoutdetail .submitquickcheckout {
+    margin-top: 10%;
+    text-align: right;
+}
+div#quickcheckout div#quickcheckoutdetail .submitquickcheckout button.themeBtn.quickcheckoutsubmit.submitorder_sttl {
+    float: right;
+}
+div#quickcheckoutdetail .submitquickcheckout button.backbuttonclose {
+    font-family: 'Futura PT Bold';
+    background: #ffff;
+    text-decoration: underline;
+    border: unset;
+}
+div#quickcheckout div#quickcheckoutdetail > form#ordersummary .orderList th {
+    font-size: 12px;
+}
+div#quickcheckoutdetail #ordersummary .forescrollertable {
+    max-height: 340px;
+    overflow: auto;
+}
+div#quickcheckoutdetail #ordersummary .forescrollertable::-webkit-scrollbar {
+    width: 0.3em;
+    height: 0.3em;
+}
+
+div#quickcheckoutdetail #ordersummary .forescrollertable::-webkit-scrollbar-thumb {
+    background: #0c4269;
+    border-radius: 40px;
+}
+
+div#quickcheckoutdetail #ordersummary .forescrollertable::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+.quickcheckouthtml .modal.fade .modal-dialog {
+     transform: translate(15%,0) !important;
+         transition-duration: 1s;
+}
+.quickcheckouthtml .modal.show .modal-dialog {
+     transform: translate(0,0) !important;
+         transition-duration: 1s;
+}
+div#quickcheckoutdetail .errormessage {
+    text-align: center;
+    margin: 20% !important;
+}
+div#quickcheckoutdetail .errormessage svg {
+    margin-right: 8px;
+    position: absolute;
+    left: 36%;
+}
+div#quickcheckout div#quickcheckoutdetail > form#payemtnaction strong.box-title {
+    color: #000;
+}
+form#payemtnaction span.ponumbertitle {
+    color: #000 !important;
+    font-weight: bold;
+}
+form#payemtnaction .headerpo span {
+    color: #0000009e;
+}
+div#quickcheckout div#quickcheckoutdetail > form#payemtnaction .box.box-information.addressInfo.shippingAdds .shipping-address-wrap {
+    margin-top: 15px;
+}
+div#quickcheckout div#quickcheckoutdetail > form#payemtnaction .box.box-information.dlvrNote .box-content {
+    margin-top: 15px;
+}
+.quickcheckouthtml div#quickcheckout .container.bg-primary.p-2 {
+    background: #0a3352 !important;
+}
+.shippingmethodblock label {
+    color: #a09797 !important;
+}
+
+/*checkout popup in viewstock popup*/
+
+
+
+div#popupModal div#quickcheckoutdetail {
+    background: #fff;
+    padding: 20px 20px 45px;
+    padding-right: 0;
+    /*padding-top: 0;*/
+    margin-bottom: 0;
+}
+div#popupModal .modalContainer.quickViewCont .container.bg-primary .row {
+    height: 67px;
+    padding: 15px;
+    cursor: default;
+}
+div#quickcheckoutdetail .block-title:nth-child(1) {
+    margin-top: 0;
+    padding-left: 4px;
+    font-size: 18px;
+    color: #000;
+}
+ form#payemtnaction .steptitel {
+    background: #f6f6f6;
+    height: 40px;
+    margin-bottom: 20px;
+    padding-left: 4px;
+    display: flex;
+    justify-content: space-between;
+}
+ form#payemtnaction .steptitel .headerpo {
+    /*background: #fff;*/
+    height: 33px;
+    margin-top: 3px;
+    color: #000;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-right: 10px;
+}
+ .quickViewCont .box{
+    float: unset; 
+    margin-right: unset;
+    /*padding-left: 20px;*/
+}
+ .box-title strong {
+    font-weight: normal;
+    color: #000;
+    font-family: 'Futura PT Bold';
+    font-size: 16px;
+}
+ .paymentblockbilling .box-information .addressInfo .box-title span {
+    font-size: 16px !important;
+    color: #000;
+    font-weight: bold;
+    font-family: 'Futura PT Bold';
+}
+ .paymentblockcoupan .box-information .box-title span {
+    color: #000;
+}
+ .shipping-address-wrap input.delUrl.removeeditshipurl {
+    padding-left: 0;
+    font-weight: bold;
+    font-family: 'Futura PT Bold';
+}
+.submitquickcheckout button.backbuttonclose:hover {
+    background: none;
+    border: none;
+    text-decoration: underline;
+    outline: none !important;
+}
+.box.box-information.addressInfo.shippingAdds.col-md-4 .shipping-address-wrap {
+    margin-top: 12px;
+}
+.box.box-information.dlvrNote.col-md-4 .box-content {
+    margin-top: 12px;
+}
+.box.box-information.col-md-4.shippingmethodblock .box-content {
+    margin-top: 2px;
+}
+/*form#cart-form.hide {
+    display: none;
+}
+div#quickcheckoutcont.hide {
+    display: none;
+}*/
+div#popupModal div#quickcheckoutdetail span.couponTxt {
+    padding-left: 0;
+}
+.submitquickcheckout button.themeBtn.quickcheckoutsubmit.submitorder_sttl:active {
+    background: unset;
+    color: #000;
+}
+div#popupModal div#quickcheckoutdetail .shippingmethodblockpatment .shippingmethodblock span.couponTxt {
+    padding-right: 12px;
+    font-size: 14px !important;
+    background: none !important;
+    color: #a09797;
+    font-style: italic;
+}
+div#popupModal div#quickcheckoutdetail .paymentblockcoupan span.couponTxt {
+    padding-right: 20px;
+}
+div#popupModal {
+    overflow-y: auto;
+}
+
+.orderSummary > div {
+    font-size: 12pt;
+}
+.orderSummary > div:nth-child(2) span {
+    color: #688d2e;
+    white-space: nowrap;
+    font-weight: 700;
+    font-family: 'Futura PT Demi';
+}
+.orderSummary_discountlabel_sec .lineitem-discount {
+    text-align: right;
+    padding-right: 3px;
+    width: auto;
+    color: #000 !important;
+}
+.orderSummary > div:nth-child(2) span {
+    color: #688d2e;
+    white-space: nowrap;
+    font-weight: 700;
+    font-family: 'Futura PT Demi';
+}
+#ordersummary .orderSummary .orderTotal {
+    color: white;
+}
+
+.orderTotal {
+    margin-top: 5px;
+}
+.orderList th {
+    text-align: center !important;
+    font-family: 'Futura PT bold' !important;
+    font-size: 14px;
+    font-weight: 600 !important;
+    color: #000000cf;
+    letter-spacing: 0.5px;
+}
+.orderList td {
+    text-align: center !important;
+    font-size: 14px !important;
+    font-weight: 500;
+    color: #000000cf;
+    letter-spacing: 0.5px;
+}
+.lineItemsList tr:last-child td {
+    border: unset !important;
+}
+.v-center {
+    vertical-align: middle;
+}
+div#quickcheckoutdetail .scrollable_content::-webkit-scrollbar-thumb {
+    background-color: #0D4169;
+    border-radius: 50px;
+}
+
+div#quickcheckoutdetail .scrollable_content::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+div#quickcheckoutdetail .scrollable_content::-webkit-scrollbar {
+    width: 0.5em;
+    height: 2px;
+}
+
+div#quickcheckoutdetail::-webkit-scrollbar-thumb {
+    background-color: #0D4169;
+    border-radius: 50px;
+}
+
+div#quickcheckoutdetail::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+div#quickcheckoutdetail::-webkit-scrollbar {
+    width: 0.5em;
+    height: 2px;
+}
+
+div#popupModal div#quickcheckoutdetail .ordersummarysubmit {
+    padding-right: 20px;
+}
+div#popupModal div#quickcheckoutdetail .scrollable_content {
+    padding-right: 20px;
+    /*padding-top: 20px;*/
+}
+#popupModal .accountPageContainer.OrderConfirmation, #popupModal .pastduebox.tabledesign{
+    animation: fadeIn ease 2s !important;
+    -webkit-animation:unset !important;
+    /*transition:0.3s !important;*/
+}
+
+input#save_future{
+    float: unset !important;
+    vertical-align: middle !important;
+}
+input#blindDropship{
+    float: unset !important;
+    vertical-align: middle !important;
+}
+form#customer-edit-address-validate .field.field-name-security-code.required.col-md-6 .control label.label span {
+    vertical-align: middle;
+}
+form#customer-edit-address-validate .field.field-name-state.required select#state {
+    border-color: #869fb5;
+}
+@media only screen and (max-width: 1200px)
+{
+    body:not(.customerorder-customer-payment) .box.box-information.col-md-4 {
+            padding-left: 15px !important;
+            padding-right: 15px !important; 
+            width: unset;
+         
+    }    
+}
+#quickcheckoutcont .container.bg-light.p-2.bottomBtn{
+    /* margin-top: 20px; */
+    padding: 30px 60px 30px 80px !important;
+    background-color: #dedde2 !important;
+}
+
+#quickcheckoutcont button.backbuttonclose {
+    float: right;
+    text-decoration: underline;
+}
+div#quickcheckoutcont {
+    background: #fff;
+}
+#popupModal .loading-mask{
+    position: absolute !important;
+}
+#popupModal .loading-mask img{
+    position: absolute !important;
+}
+div#popupModal .modalContainer.quickViewCont .container.bg-primary .row:hover{
+    cursor: move !important;
+}
+.popup-animation {
+    overflow: hidden;
+    position: relative;
+    background-color: white;
+}
+form#cart-form.hide {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    animation: right_to_left_form 1s ease-in-out 0s 1;
+    transform: translateX(-100%);
+}
+div#quickcheckoutcont.hide {
+    animation: left_to_right_quick 1s ease-in-out 0s 1;
+    position: absolute;
+    top: 0;
+    transform: translateX(100%);
+}
+form#cart-form.show {
+    animation: left_to_right 1s ease-in-out 0s 1;
+}
+div#quickcheckoutcont.show {
+     animation: right_to_left 1s ease-in-out 0s 1;
+}
+@keyframes right_to_left {
+    0% {
+        -webkit-transform: translateX(100%);
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    100% {
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+@keyframes left_to_right {
+    0% {
+        -webkit-transform: translateX(-100%);
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    100% {
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+@keyframes right_to_left_form {
+    0% {
+        -webkit-transform: translateX(0) !important;
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        -webkit-transform: translateX(-100%);
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+@keyframes left_to_right_quick {
+    0% {
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        -webkit-transform: translateX(100%);
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.tabledesign .mackpayment{
+        border: 1px solid #0C4269;
+        color: #0C4269;
+        padding: 8px 45px;
+        font-weight: bold;
+        text-decoration: none;
+        font-family: 'Futura PT bold';
+        font-size: 10pt;
+        letter-spacing: 0.04rem;
+   }
+   .tabledesign p.warning {
+        color: #cd0000;
+        margin-bottom: 0;
+    }
+    .tabledesign .myaccountpage{
+        margin-top: 20px;
+        margin-bottom: 0;
+    }
+    .tabledesign .myaccountlink{
+        color: #0c4269;
+        text-decoration: underline;
+    }
+    .tabledesign .textmessage{
+        padding: 0 30px;
+         
+    }
+    .tabledesign .availablecreditmessage{
+        margin-bottom: 10px !important;
+    }
+
+.tabledesign{
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px 30px;
+    margin-top: 20px;
+    text-align: center;
+    border: solid 1px #cd0000;
+    font-size: 11pt;
+}
+
+.tabledesign a.mackpayment:hover {
+    background: #0c4269;
+    color: #fff !important;
+}
+div#quickcheckoutconfirmetion.show {
+    animation: right_to_left 1s ease-in-out 0s 1;
+}
+div#quickcheckoutconfirmetion.hide {
+    animation: left_to_right_quick 1s ease-in-out 0s 1;
+    position: absolute;
+    top: 0;
+    transform: translateX(100%);
+}

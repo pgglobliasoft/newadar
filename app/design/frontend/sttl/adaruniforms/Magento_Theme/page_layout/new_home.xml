@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<layout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_layout.xsd">
+    <update handle="1column"/>
+		<referenceContainer name="page.wrapper">
+			<container name="header.container" as="header_container" label="Page Header Container" htmlTag="header" htmlId="header" before="main.content"/>
+			<container name="page.top" as="page_top" label="After Page Header" after="header.container"/>
+			<container name="page.wrapper.figure" htmlId="banner" htmlTag="div">
+				<container name="page.wrapper.figure.sliderBanner" htmlTag="div" htmlClass="sliderBanner" >
+					<referenceContainer name="page.wrapper.figure.sliderBanner">
+					 	<block class="Magestore\Bannerslider\Block\SliderItem" name="sidder">
+			              <action method="setSliderId">
+			                <argument name="sliderId" xsi:type="string">8</argument>
+			              </action>
+			            </block>
+			        </referenceContainer>			          
+				</container>				 
+			</container>
+			<container name="page.wrapper.contentSection" htmlTag="div" htmlClass="contentSection">
+				<block class="Magento\Cms\Block\Block" name="work_wear"> 
+					<arguments> 
+						<argument name="block_id" xsi:type="string">work_wear</argument> 
+					</arguments> 
+				 </block> 
+				 <block class="Magento\Cms\Block\Block" name="our_collections"> 
+					<arguments> 
+						<argument name="block_id" xsi:type="string">our_collections</argument> 
+					</arguments> 
+				 </block>
+				<container name="page.wrapper.contentSection.container" htmlTag="div" htmlClass="browser-container" >
+					<container name="page.wrapper.contentSection.container.productThumb" htmlId="productCategories" htmlTag="section" htmlClass="productThumb" >
+						<block class="Magento\Cms\Block\Block" name="browse_all"> 
+							<arguments> 
+								<argument name="block_id" xsi:type="string">browse_all</argument> 
+							</arguments> 
+						</block> 
+					</container>
+				</container>
+				<container name="page.wrapper.contentSection.serviceText" htmlId="fitForService" htmlTag="section" htmlClass="serviceText" >
+					<container name="page.wrapper.contentSection.serviceText.container" htmlTag="div" htmlClass="workwear-container" >
+						<block class="Magento\Cms\Block\Block" name="workwear"> 
+							<arguments> 
+								<argument name="block_id" xsi:type="string">workwear</argument> 
+							</arguments> 
+						</block> 
+					</container>
+				</container>				
+							
+			</container>
+			<container name="page.wrapper.productThumSlider" htmlId="homeProductSlider" htmlTag="section" htmlClass="productThumSlider">
+				<block class="Magestore\Bannerslider\Block\InstaSlider" name="slider_carousel" template="Magestore_Bannerslider::slider/instagam.phtml">
+					<arguments>
+					    <argument name="SliderId" xsi:type="string">9</argument>
+					</arguments>
+				</block>				
+			</container>
+			<!-- <container name="page.wrapper.contentSection.fullThumbSection.twoColsWrap" htmlTag="div" htmlClass="care-container">
+					<block class="Magento\Cms\Block\Block" name="we_care_what_you_wear"> 
+						<arguments> 
+							<argument name="block_id" xsi:type="string">we_care_what_you_wear</argument> 
+						</arguments> 
+					</block>
+				</container> -->		
+		</referenceContainer>
+		<!-- <referenceContainer name="main" remove="true"/> -->
+		<move element="page.messages" destination="page.wrapper" before="main.content"/>
+</layout>

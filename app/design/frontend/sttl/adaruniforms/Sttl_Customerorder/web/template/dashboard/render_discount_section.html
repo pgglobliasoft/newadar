@@ -1,0 +1,38 @@
+<%
+	if(customer_Tier != ''){
+		if(customer_Tier == 'WHITE' && customer_Tier == 'White'){ %>
+			<h6><%=customer_Program%> - <span class="White"> White </span>TIER</h6>
+		<% }else { 
+			if(customer_Program == 'HVD'){ %>
+				<h6><%=customer_Program%> - TIER <%=customer_Tier%></h6>
+			<% }else{ %>
+				<h6><%=customer_Program%> - <span class="<%=customer_Tier%>"><%=customer_Tier%> TIER </span></h6>
+			<% }
+		} %>
+		<p class="f-dis">-%<%=parseInt(customer_FlatDiscount)%> flat discount on all orders</p>
+	<% }else{ %>
+		<p class="no-tier-up">Your account is currently not part of our ADAR Loyalty Partner Program.</p>
+	<% }
+%>
+
+<%
+	if(customer_BulkDiscount == 'True'){ %>
+		<p class="content">Congratulations your account is eligible of the bulk discounts.
+		<% if(customer_Program == 'ALP' || customer_Program == 'OLP' || customer_Program == 'HVD'){ %>
+			To learn more abount out <%=customer_Program%> Program <a href="#" class="disabled_dicount_popup" data-toggle="modal" data-target="#bulk-discount">Click Here</a>
+		<% } %>
+		</p>
+	<% }else{
+		if(customer_Tier == 'WHITE'){ %>
+			<p class="content">Your account is not yet eligible for bulk discounts. To learn more about our <%=customer_Program%> Program 
+				<a href="#" data-toggle="modal" class="disabled_dicount_popup" data-target="#bulk-discount">Click Here</a> 
+			</p>
+		<% }else{
+			if(customer_Program != ''){ %>
+				<p class="content">To learn more about our <%=customer_Program%> Program and how to <span class="highlight-text">qualify for bulk discounts</span> <a href="#" data-toggle="modal" class="disabled_dicount_popup" data-target="#bulk-discount">Click Here</a></p>
+			<% }else{ %>
+				<p class="content">To learn more about our ALP Program and how to <span class="highlight-text">qualify for bulk discounts</span> <a href="#" data-toggle="modal" class="disabled_dicount_popup" data-target="#bulk-discount">Click Here</a></p>
+			<% }
+		}
+	}
+%>

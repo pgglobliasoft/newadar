@@ -1,0 +1,69 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * See LICENSE.txt for license details (http://opensource.org/licenses/osl-3.0.php).
+ *
+ * Glory to Ukraine! Glory to the heroes!
+ */
+?>
+<?php
+/**
+ * Blog post view template
+ *
+ * @var $block \Magefan\Blog\Block\Post\View
+ */
+?>
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+		$request = $objectManager->get('Magento\Framework\App\Request\Http');
+$backurl =  $request->getServer('HTTP_REFERER');
+    $_post = $this->getPost();
+	$image = $this->getPost()->getOgImage();
+	$_postUrl = $_post->getPostUrl();
+    $_postName = $block->escapeHtml($_post->getTitle(), null, true);
+?>
+	<?php /**if ($image){ ?>
+            	<div class="post-ftimg-hld">
+                    <img src="<?php echo $image ?>" alt="<?php echo $_postName ?>" />
+                </div>
+	<?php } **/?>
+	<div class="row">
+	<div class="mediaPageWrap" >
+				
+<div class="blogPostTitle">
+	<?php echo $_post->getTitle() ?>
+</div>
+
+<div class="post-view">
+    <div class="post-holder post-holder-<?php echo $_post->getId() ?>">
+        <div class="post-header clearfix">
+            <!--<div class="addthis_toolbox addthis_default_style" addthis:url="<?php echo $_postUrl ?>">
+                <a class="addthis_button_facebook"></a>
+                <a class="addthis_button_twitter"></a>
+                <a class="addthis_button_email"></a>
+                <a class="addthis_button_compact"></a>
+            </div>-->
+        </div>
+
+        <div class="post-content">
+			<?php echo $this->getInfoHtml() ?>
+            <div class="post-description clearfix">
+                <?php if ($featuredImage = $_post->getFeaturedImage()) { ?>
+                <!--<div class="post-ftimg-hld">
+                    <img src="<?php echo $featuredImage ?>" alt="<?php echo $_postName ?>" />
+                </div>-->
+                <?php } ?>
+                <div class="post-text-hld">
+                    <?php echo $block->getContent() ?>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="post-bottom">
+            <?php echo $this->getChildHtml('blog.post.next') ?>
+        </div>
+    </div>
+</div>
+</div>
+</div>

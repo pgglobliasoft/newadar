@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Karliuka Vitalii(karliuka.vitalii@gmail.com)
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Framework\Module\Setup\Migration">
+        <arguments>
+            <argument name="compositeModules" xsi:type="array">
+                <item name="faonni_smartcategory_rule" xsi:type="string">Faonni_SmartCategory</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Faonni\SmartCategory\Model\ResourceModel\Rule\Collection" shared="false"/>
+    <type name="Faonni\SmartCategory\Model\Rule\Condition\Combine">
+        <arguments>
+            <argument name="data" xsi:type="array">
+                <item name="form_name" xsi:type="string">category_form</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Faonni\SmartCategory\Model\Rule\Condition\Product">
+        <arguments>
+            <argument name="data" xsi:type="array">
+                <item name="form_name" xsi:type="string">category_form</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

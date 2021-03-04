@@ -1,0 +1,34 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php
+/**
+ * Category view template
+ *
+ * @var $block \Magento\Catalog\Block\Category\View
+ */
+?>
+<?php
+    $_helper    = $this->helper('Magento\Catalog\Helper\Output');
+    $_category  = $block->getCurrentCategory();
+    $_imgHtml   = '';
+	$customClass = "";
+	if($_category->getName() == "Universal by Adar"){
+		$customClass = "hideunibyadar";
+	}
+    if ($_imgUrl = $_category->getImageUrl()) {
+        // $_imgHtml = '<div class="category-image"><img src="' . $_imgUrl . '" alt="' . $block->escapeHtml($_category->getName()) . '" title="' . $block->escapeHtml($_category->getName()) . '" class="image" />
+        // <div class="cat-banner-info '.$customClass.'"><img src="'.$block->getViewFileUrl('images/thumb-hover.png').'" /><span>'.$block->escapeHtml($_category->getName()).'</span></div>
+        // </div>';
+         $_imgHtml = '<div class="category-image" id="tets"><img src="' . $_imgUrl . '" alt="' . $block->escapeHtml($_category->getName()) . '" title="' . $block->escapeHtml($_category->getName()) . '" class="image" />
+        </div>';
+        $_imgHtml = $_helper->categoryAttribute($_category, $_imgHtml, 'image');
+        /* @escapeNotVerified */ echo $_imgHtml;
+    }
+?>

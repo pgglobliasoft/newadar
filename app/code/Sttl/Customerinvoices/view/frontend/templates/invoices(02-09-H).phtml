@@ -1,0 +1,617 @@
+<?php
+$date_from = $block->getRequest()->getParam('date-from');
+$date_to = $block->getRequest()->getParam('date-to');
+$status = $block->getRequest()->getParam('order_stats');
+$order_by = $block->getRequest()->getParam('order_by', 'CreateDate');
+$opt = $block->getRequest()->getParam('opt', 'DESC');
+$serachinvoice = $block->getRequest()->getParam('serachinvoice');
+$limit = 30;  
+    if (isset($_GET["page"]) && $_GET["page"] > 0) { 
+      $pn  = $_GET["page"]; 
+    } 
+    else { 
+      $pn = 1;  
+    };  
+$start_from = ($pn-1) * $limit;  
+$endform = $start_from +$limit; 
+$getInvoicestotalHTml = $block->totalrecords($pn,$limit); 
+if(isset($getInvoicestotalHTml) && isset($getInvoicestotalHTml['errors'])) 
+{
+	?>
+	<div class="page-title-wrapper">
+		<h1 class="page-title">
+			<span class="base" data-ui-id="page-title-wrapper">Invoices</span>
+		</h1>
+	</div>
+	<?php
+	echo $getInvoicestotalHTml['message'];
+}
+else
+{
+    $getInvoicesData = $block->getInvoicesData();
+?>
+<div class="accountPageContainer">
+<h1 class="page-title">Invoices <a href="javascript:void(0);" onClick="PrintDiv();" class="printBtn alignRight"> <span class="fa fa-print"></span> Print Invoices</a></h1>
+
+<div class="orderSearch orderSearchForm">
+    <form class="form invoice_search col-lg-12"
+                  action=""
+                  id="invoice_search"
+                  method="get"
+                  data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"
+                  data-mage-init='{"validation":{}}'>
+		<input name="page" id="frm_page" type="hidden" /> 	
+		<input name="order_by" id="order_by" value="<?php echo $order_by;?>" type="hidden" /> 		  
+		<input name="opt" id="opt" value="<?php echo $opt;?>" type="hidden" />
+        <span id="date-range">    
+            <span>Search Invoice:<span class="reqField">*</span></span>
+            <div class="cf"></div>
+			<input type="text" value="<?php echo $serachinvoice;?>" id="serachinvoice" name="serachinvoice" class="searchInvoice" autocomplete="off" placeholder="Search Invoice"/>
+			<input name="date-from" id="date-from" readonly="true" type="input" class="datepicker" value="<?php echo $date_from;?>" placeholder="From Date" /> 
+            <strong>to</strong> 
+            <input name="date-to" id="date-to" readonly="true" type="input" class="datepicker" value="<?php echo $date_to;?>" placeholder="To Date" /> 
+        </span>
+        <button type="submit" class="themeBtn action save"  onclick="if (document.getElementById('page')) { document.getElementById('page').value = 1; } document.getElementById('order_stats').value = '';" title="Search"><span>Search</span></button>
+        <button type="submit"  class="themeBtn btnreset action save ml-2" title="Reset"><span>Reset</span></button>
+            <div class="clearfix pt-3"></div>
+            <div class="statusDropdown">
+                <span>Status:</span>
+                <select name="order_stats" id="order_stats" onchange="if (document.getElementById('page')) { document.getElementById('page').value = 1; } changeVal(this); this.form.submit();">
+                    <option value="">View All</option>
+                    <option <?php echo ($status == 'Open') ? 'selected="selected"' : '';?> value="Open">  Open</option>
+                    <option <?php echo ($status == 'pastdue') ? 'selected="selected"' : '';?> value="pastdue">Past Due Invoices</option>
+                    <option <?php echo ($status == '1week') ? 'selected="selected"' : '';?> value="1week">Due In The Next Week</option>
+                    <option <?php echo ($status == '2week') ? 'selected="selected"' : '';?> value="2week">Due In The Next 2 Weeks</option>
+                    <option <?php echo ($status == '1month') ? 'selected="selected"' : '';?> value="1month">Due In The Next Month</option>
+                </select>
+            </div>
+		
+    </form>
+	<div class="cf"></div>
+</div>
+<div class="cf"></div>
+<style>
+	.orderTable .orderList th .b2b-grid-sort-icon
+	{
+		padding-left: 2px;
+		font-size: 10px;
+	}
+    .orderTable .orderList a{
+    text-decoration: none;
+    color: #000;
+    }
+    .orderTable .orderList a:hover{
+        color: #0e4169;
+    }
+</style>
+<div class="orderTable">
+	<table class="orderList invoiceList">
+		<tr>
+        	<th><input type="checkbox" name="selectall" class="selectall" value=""></th>
+            <th>
+				<a href="javascript:void(0);" class="grid-shorting" onclick="sorting('DocNum','<?php echo ($order_by == 'DocNum') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+					Number
+					<i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'DocNum') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+				</a>
+			</th>
+            <th>
+				<a href="javascript:void(0);" class="grid-shorting" onclick="sorting('NumatCardPo','<?php echo ($order_by == 'NumatCardPo') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+					PO#
+					<i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'NumatCardPo') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+				</a>
+			</th>
+            <th>
+				<a href="javascript:void(0);" class="grid-shorting" onclick="sorting('CreateDate','<?php echo ($order_by == 'CreateDate') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+					Date
+					<i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'CreateDate') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+				</a>
+			</th>
+            <th>
+				<a href="javascript:void(0);" class="grid-shorting" onclick="sorting('DueDate','<?php echo ($order_by == 'DueDate') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+					Due Date
+					<i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'DueDate') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+				</a>
+			</th>
+            <th width="60px">
+				<a href="javascript:void(0);" class="grid-shorting" onclick="sorting('DueDays','<?php echo ($order_by == 'DueDays') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+					Due In
+					<i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'DueDays') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+				</a>
+			</th>
+            <th>
+				<a href="javascript:void(0);" class="grid-shorting" onclick="sorting('DocStatus','<?php echo ($order_by == 'DocStatus') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+					Status
+					<i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'DocStatus') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+				</a>
+			</th>
+            <th>
+				<a href="javascript:void(0);" class="grid-shorting" onclick="sorting('DocTotal','<?php echo ($order_by == 'DocTotal') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+					Total
+					<i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'DocTotal') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+				</a>
+			</th>
+            <th>
+				<a href="javascript:void(0);" class="grid-shorting" onclick="sorting('PaidAmount','<?php echo ($order_by == 'PaidAmount') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+					Paid
+					<i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'PaidAmount') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+				</a>
+			</th>
+            <th>
+				<a href="javascript:void(0);" class="grid-shorting" onclick="sorting('OpenBalance','<?php echo ($order_by == 'OpenBalance') ? (($opt == 'ASC') ? 'DESC' : 'ASC') : 'ASC';?>')">
+					Balance
+					<i class="fa b2b-grid-sort-icon <?php echo ($order_by != 'OpenBalance') ? 'fa-sort' : (($opt == 'ASC') ? 'fa-sort-up' : 'fa-sort-down');?>"></i>
+				</a>
+			</th>
+            <th width="60px">Pay</th>
+        </tr>
+    <?php
+    $open_balance = 0;
+    $doc_total = 0;
+    $total_paid = 0;
+    $count = 0;
+    $countTotal = 0;
+    $invoicepay = 0;
+    $currentinvoicepay = array();
+    if(count($getInvoicesData) > 0)
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $customerSession = $objectManager->create('Magento\Customer\Model\Session');
+        $customer_number = $customerSession->getCustomer()->getData('customer_number');
+        $currentinvoicepay = $customerSession->getInvoicepayment();
+        foreach($getInvoicesData as $data) {
+            $doc_total += ($data['DocTotal'] > 0) ? $data['DocTotal'] : 0;
+            $total_paid += ($data['PaidAmount'] > 0) ? $data['PaidAmount'] : 0;
+            $open_balance += ($data['OpenBalance'] > 0) ? $data['OpenBalance'] : 0;
+            $addClass = '';
+            if($data['DocStatus'] == 'Open' && (int)$data['OpenBalance'] > 0 && strtotime($data['DueDate']) < strtotime(date("Y-m-d H:i:s")))
+            {
+                 $addClass = 'redText';
+            }
+			else
+			{
+				$addClass = 'greenText';
+			}
+            
+			/*if($data['DocStatus'] == 'Open' && $data['DueDays'] != '' && (int)$data['DueDays'] >= 0)
+            {
+                if((int)$data['DueDays'] == 0)
+                {
+                    $DueDays = 'Today';
+                    $addClass = 'greenText';
+                }
+                if((int)$data['DueDays'] == 1)
+                {
+                    $DueDays = $data['DueDays'].' Day Due';
+                }
+                if((int)$data['DueDays'] > 1)
+                {
+                    $DueDays = $data['DueDays'].' Days Due';
+                }
+
+            }else{
+                $DueDays = $data['DueDays'];
+            }*/
+
+            $invoice_view_url = $block->getBaseUrl().'customerinvoices/customer/view/docnum/'.base64_encode($data['DocNum']);
+            $numatCardPoShort = "";
+            if($data['NumatCardPo'] != "" || isset($data['NumatCardPo'])){
+                if(strlen($data['NumatCardPo']) > 6)
+                {
+                   $numatCardPoShort = substr($data['NumatCardPo'],0,6).'...'; 
+                }else
+                { 
+                   $numatCardPoShort =  $data['NumatCardPo'];
+                }
+            }
+    ?>
+        <tr option-redirect = "<?php echo $invoice_view_url;?>" style="cursor: pointer;">
+            <td>
+                <?php if($data['DocStatus'] == "Open")
+                {
+                    //echo "<pre>";print_R($currentinvoicepay);echo "</pre>";exit;
+                    $show = true;
+                    if(!empty($currentinvoicepay))
+                    {
+                        if (array_key_exists($data['DocNum'],$currentinvoicepay))
+                        {
+                            $show = false;
+                        }    
+                    }
+                    
+                   if($show){
+                ?>
+                	<input id="checkedAndPay" wid="calculateInput_<?php echo $countTotal; ?>" class="invoicecheckbox " payInput="payInput_<?php echo $countTotal; ?>" open-balance="<?php echo ($data['OpenBalance'] != '') ? number_format(floatval($data['OpenBalance']),2) : "0";?>" type="checkbox" />
+                <?php } 
+            }?>
+            </td>
+            <td class="option-redirect material-tooltip-main" data-toggle="tooltip" title ="<?php echo ($data['DocNum'] != '') ? $data['DocNum'] : "";?>"><?php echo ($data['DocNum'] != '') ? $data['DocNum'] : "";?></td>
+            <td class="option-redirect material-tooltip-main" data-toggle="tooltip" title="<?php echo ($data['NumatCardPo'] != '') ? $data['NumatCardPo'] : "";?>"><?php echo $numatCardPoShort;?></td>
+            <td class="option-redirect"><?php echo ($data['CreateDate'] != '') ? str_replace('-', '/', $data['CreateDate']) : "";?></td>
+            <td class="option-redirect"><?php echo ($data['DueDate'] != '') ? date("m/d/Y", strtotime($data['DueDate'])) : "";?></td>
+            <td class="<?php echo ($data['DocStatus'] == 'Open') ? $addClass : ''; ?> option-redirect"><?php echo $data['DueDays'];?></td>
+            <td class="option-redirect"><?php echo ($data['DocStatus'] != '') ? $data['DocStatus'] : "";?></td>
+            <td class="option-redirect">$<?php echo ($data['DocTotal'] != '') ? number_format(floatval($data['DocTotal']),2) : "0.00";?></td>
+            <td class="option-redirect">$<?php echo ($data['PaidAmount'] != '') ? number_format(floatval($data['PaidAmount']),2) : "0.00";?></td>
+            <td class="redText option-redirect" >$<?php echo ($data['OpenBalance'] != '') ? number_format(floatval($data['OpenBalance']),2) : "0.00";?></td>
+            <td>
+
+            <?php 
+            if($data['DocStatus'] == "Open")
+            {
+                $placeholder ='';
+                if(!empty($currentinvoicepay))
+                    {
+                    if (array_key_exists($data['DocNum'],$currentinvoicepay))
+                        {
+                            $placeholder ='placeholder="Payment Pending"';
+                        }
+                    }
+             ?>
+            <input tabindex="<?php echo $count + 1;?>" idVal= "<?php echo $countTotal; ?>" max="<?php echo number_format(floatval($data['OpenBalance']),2)?>" type="input" id="payInput_<?php echo $countTotal; ?>" class="payInput checkValue" value="" <?php echo $placeholder;?>/>
+            <input tabindex="<?php echo $count + 1;?>"  idVal= "<?php echo $countTotal; ?>" max="<?php echo number_format(floatval($data['OpenBalance']),2)?>" type="hidden" id="calculateInput_<?php echo $countTotal; ?>" option-docNum = "<?php echo ($data['DocNum'] != '') ? $data['DocNum'] : "";?>" class="withoutDoller" option-poNumber = "<?php echo ($data['NumatCardPo'] != '') ? $data['NumatCardPo'] : "";?>" value="" />
+            <?php }else{?>
+				<input  tabindex="<?php echo $count + 1;?>" type="text" id="payInput_<?php echo $countTotal; ?>" class="payInput" disabled="disabled" option-docNum = "<?php echo ($data['DocNum'] != '') ? $data['DocNum'] : "";?>" option-poNumber = "<?php echo ($data['NumatCardPo'] != '') ? $data['NumatCardPo'] : "";?>"/>
+			<?php 	
+			} ?>
+            </td>
+        </tr>
+    <?php $count++; $countTotal++; } 
+        }
+        else
+        {
+        ?>
+            <tr>
+                <td class="no-records " colspan="11" >No Invoice Found!</td>            
+            </tr>
+        <?php 
+        }
+        if(count($getInvoicesData) > 0)
+        {
+        ?>
+		
+			<?php if (!empty($getInvoicestotalHTml)) : ?>
+				<tr class="paginationRow">
+					<td colspan="11">
+						<div class="fa-pull-right"><?php echo $getInvoicestotalHTml;?></div>
+					</td>
+				</tr>
+			<?php endif; ?>
+		    <tfoot>
+    		<tr>
+                <td colspan="8" align="right">$<?php echo number_format($doc_total,2);?></td>
+                <td>$<?php echo number_format($total_paid,2);?></td>
+                <td class="redText" style="color: #a8324a;">$<?php echo number_format($open_balance,2);?></td>
+                <td width="70px"><input tabindex="<?php echo $count + 1;?>" type="text" class="totalpayInput"   readonly="readonly" value="$<?php echo $invoicepay; ?>" style="opacity:0.5;padding: 5px 5px;" /></td>
+            </tr>
+            </tfoot>
+        <?php } ?>
+	</table>
+</div>
+<?php if(count($getInvoicesData) > 0){ 
+    ?>
+<div class="alignRight">
+	<button data-toggle="modal" class="themeBtn invoicepay" name="Pay Invoice" id="pay_invoice" <?php echo ($invoicepay > 1) ? '': 'disabled="disabled"'; ?>  type="button" data-target="#pay-invoice">Pay Invoice</button>
+</div>
+
+<?php echo $this->getLayout()->createBlock("Magento\Framework\View\Element\Template")->setCustomernumber($customer_number)->setTemplate("Sttl_Customerinvoices::payinvoice.phtml")->toHtml();?> 
+
+<?php } ?>
+</div>
+</div>
+<script type="text/javascript"> 
+    function PrintDiv()
+	{
+		var headContent = document.getElementsByTagName('head')[0].innerHTML;
+		//var popupWin = window.open('');
+		var popupWin =  window.open('', '_blank', 'toolbar=0,location=0,menubar=0');
+		var page_title = jQuery(".page-title").clone();
+		var orderTable = jQuery(".orderTable").clone();
+		
+		var content_area = jQuery("<div />").append(jQuery(page_title).find("a").remove().end()).html();
+		var content_area = content_area + jQuery("<div />").append(jQuery(orderTable).find(".totalpayInput").remove().end()).html();
+		
+		var print_content = '<html><head>' + headContent + '</head><body onload="window.print()"><div class="print_pg_logo"><h1 class="logo">' + jQuery("#mainNav .logo").html() + '</h1></div> <div class=".column .main">' + content_area + '</div></html>';
+		
+		popupWin.document.open();
+		popupWin.document.write(print_content);
+		popupWin.document.close();
+	}
+	
+function SubmitForm()
+{
+   jQuery("#invoice_search #frm_page").val(jQuery("#page").val());
+   jQuery("#invoice_search")[0].submit();
+}
+function sorting(order_by, opt)
+{
+	jQuery("#invoice_search #order_by").val(order_by);
+	jQuery("#invoice_search #opt").val(opt);
+	jQuery("#invoice_search")[0].submit();
+}
+function changeVal(obj)
+{
+	if(obj.value == "1week" || obj.value == "2week" || obj.value == "1month") {
+		document.getElementById("date-from").value = "";
+		document.getElementById("date-to").value = "";
+	}
+}
+ </script>
+
+<script>
+require([
+    'jquery',
+    'mage/mage',
+    'mage/calendar'
+    ], function($){
+		
+
+		$(window).bind("unload", function() {
+		  //var mainstatus = '<?php echo $status;?>'
+        	/**if(mainstatus == 'pastdue' || mainstatus == 'selectopen')
+            {
+
+            }else{**/
+                 $('.invoicecheckbox:input[type=checkbox]:checked').attr('checked', false);
+                 $('.payInput').val('');
+                $('.withoutDoller').val('');
+                $('.totalpayInput').val('');
+         
+            //}
+           	});
+
+       
+        
+        $(document).ready(function() {
+            jQuery('.pay-invoice-price').text(jQuery('.totalpayInput').val());
+
+         });
+        /*$('input[type=checkbox]:checked').attr('checked', false);
+        $('.payInput').val('');
+        $('.totalpayInput').val('');*/
+
+            $('.material-tooltip-main').tooltip({
+              template: '<div class="tooltip md-tooltip"><div class="tooltip-arrow md-arrow"></div><div class="tooltip-inner md-inner"></div></div>'
+            });
+        
+        $(".themeBtn.action ").click(function(){
+            $('body').trigger('processStart');
+        });
+        $(".option-redirect").click(function(){
+            $('body').trigger('processStart');
+            window.location.href = $(this).closest("tr").attr('option-redirect');
+        });
+		
+		$(document).on("click",".btnreset",function(){
+			if ($("#page")) {
+				$("#page").val(1);
+			}
+			$("#date-from").val('');
+			$("#date-to").val('');
+			$("#order_stats").val('');
+            $("#serachinvoice").val('');
+			this.form.submit();
+        });
+		
+		$( "body" ).delegate( ".txtboxToNumeric", "keydown", function(e) {
+		  if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 ||
+				// Allow: Ctrl+A, Command+A
+								(e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+								// Allow: home, end, left, right, down, up
+												(e.keyCode >= 35 && e.keyCode <= 40)) {
+						// let it happen, don't do anything
+						return;
+				}
+				// Ensure that it is a number and stop the keypress
+				if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+						e.preventDefault();
+				}
+		}); 
+        $(".selectall").change(function(){
+            var checked = $(this).val();  
+            if ($('.selectall').is(":checked"))
+            {
+              $('.invoicecheckbox').attr('checked', true);
+              $(".invoicecheckbox:input[type=checkbox]").trigger('change')
+            }else{
+              $('.invoicecheckbox').attr('checked', false);
+              $(".invoicecheckbox:input[type=checkbox]").trigger('change')
+            }
+        });
+        $(".invoicecheckbox:input[type=checkbox]").change(function(){
+         var inputs =  $(".invoicecheckbox:input[type=checkbox]");
+            $(inputs).each(function(){
+                var payAmount = $(this).attr("payInput");
+                var withoutDollerid = $(this).attr('wid');
+                if($(this).is(':checked'))
+                {   
+                    var amount = $(this).attr("open-balance");
+                    myValue = "$" + amount; 
+                    $("#"+payAmount).val(myValue);
+                    $('#'+withoutDollerid).val(amount.replace(",",''));
+                }else
+                {
+                    $("#"+payAmount).val('');
+                    $('#'+withoutDollerid).val('');
+                }
+              setgdtotal();
+            });
+            if ($('.invoicecheckbox:input[type=checkbox]:checked').length == inputs.length) {
+                $('.selectall').attr('checked', true);
+            }else{
+                $('.selectall').attr('checked', false);
+            }
+        });
+
+        $(".invoicecheckbox:input[type=checkbox]").on("click", function(event)
+            {
+                var checkboxes = $(".invoicecheckbox:input[type=checkbox]");
+                if(this.checked)
+                {
+                    if(event.shiftKey)
+                    {
+                        end = checkboxes.index(this);
+                        if(end < start)
+                        {
+                            end   = start;
+                            start = checkboxes.index(this);
+                        }
+                        checkboxes.each(function(index) {
+                            if (index >= start && index < end)
+                            {
+                                this.checked = true;
+                            }
+                        });
+                    }
+                    start = checkboxes.index(this);
+                }
+        });
+        /**function recalculate(){
+            $("input[type=checkbox]:checked").each(function(){
+              var payAmount = $(this).attr("class");
+              $("#"+payAmount).val('');
+              $("#"+payAmount).val($(this).attr("open-balance"));
+              //var amount = $(this).attr("open-balance");
+              //myValue = "$" + amount; 
+              //$("#"+payAmount).val(myValue);
+            });
+            setgdtotal();
+        }**/
+        /**jQuery(".payInput").focusout(function()
+        {
+
+        });**/
+        $(".payInput").keypress(function (e) {
+
+            if (e.which != 8 && e.which != 0 && (e.which < 46 || e.which > 57) && e.which != 45 ) {
+                //jQuery(this).next("span").html("Digits Only").show().fadeOut("slow");
+                return false;
+            }
+        });
+        $(".payInput").keyup(function (e) {
+            var calculateInput = $(this).attr('id');
+            var idVal = $(this).attr('idVal');
+            var mainVal = $(this).val().replace("$",'');
+            $("#calculateInput_"+idVal).val(parseFloat(mainVal));
+            if(parseFloat(mainVal) >= 0)
+            {
+                if(mainVal.indexOf('.')!=-1){         
+                    if(mainVal.split(".")[1].length > 2){                
+                        if( isNaN( parseFloat( mainVal ) ) ) return;
+                        mainVal = parseFloat(mainVal).toFixed(2);
+                    }  
+                 }
+                var myValue = "";
+                if (mainVal.indexOf("$") != 0)
+                {
+                    myValue = "$" + mainVal;
+                }
+                var inputId = $(this).attr("idVal");
+                $("#payInput_"+inputId).val(myValue);
+
+                var maxvalues = $(this).attr("max");
+                maxvalues = maxvalues.replace(',','');
+               if(parseFloat(mainVal) <= parseFloat(maxvalues))
+                {
+                    setgdtotal();
+                    $(this).parents('tr').find('td:first input[type="checkbox"]').attr("checked","checked");
+                    $(this).css('border','none')
+                    $(".invoicepay").prop("disabled", false);
+                }else{
+                   //$(this).parents('tr').find('td:first input[type="checkbox"]').removeAttr("checked");
+                   $(this).css('border','1px solid red');
+                   //$(this).val('')
+                   setgdtotal();
+                   //$(".invoicepay").prop("disabled", true);
+                }  
+            }else{
+                $("#"+calculateInput).val('');
+            }
+        });   
+        $(".payInput").focusout(function(e)
+        {
+            var inputId = $(this).attr("idVal");
+            var price = $("#payInput_"+inputId).val();
+            if(price != 0)
+            {
+                $(this).parents('tr').find('td:first input[type="checkbox"]').attr("checked","checked");
+            }else{
+                $(this).parents('tr').find('td:first input[type="checkbox"]').removeAttr("checked");
+                 $(this).css('border','none');
+            }
+            setgdtotal();
+        });
+        $('#date-range').dateRange({
+            buttonText: 'Select Date',
+            dateFormat: 'MM-dd-yyyy',
+			changeMonth: true,
+			changeYear: true,
+			maxDate:  new Date($.now()),
+			from: {
+                id: 'date-from'
+            },
+            to: {
+                id: 'date-to'
+            }
+        });
+        function setgdtotal(){
+            var gd_total = 0;
+           // $(".payInput").each(function() {
+            $(".withoutDoller").each(function() {
+                    var calculateInput = $(this).attr('idVal');
+                    var calculateInputVal =  $("#calculateInput_"+calculateInput).val();
+
+                if($(this).val() != '' && $(this).val() > 0 && $(this).val() !='NaN')
+                {
+                    var total = parseFloat(calculateInputVal);
+                    gd_total = gd_total + total;  
+                }else{
+                   $(this).val(''); 
+                }
+            });
+            var totalprice = convertcurrency(parseFloat(gd_total).toFixed(2));
+            jQuery('.totalpayInput').val('$'+totalprice);
+            jQuery('#totalpayInput').val('$'+parseFloat(gd_total).toFixed(2));
+            jQuery('.pay-invoice-price').text('$'+totalprice);
+            jQuery('#pay_invoice_price').val(parseFloat(gd_total).toFixed(2));
+            return true;
+        }
+
+        function convertcurrency(price)
+        {
+            var x=price;
+            x=x.toString();
+            var afterPoint = '';
+            if(x.indexOf('.') > 0)
+            afterPoint = x.substring(x.indexOf('.'),x.length);
+            x = Math.floor(x);
+            x=x.toString();
+            var lastThree = x.substring(x.length-3);
+            var otherNumbers = x.substring(0,x.length-3);
+            if(otherNumbers != '')
+            lastThree = ',' + lastThree;
+            var gdtotal = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree + afterPoint;
+            if(gdtotal != '0' && gdtotal != "0.00" && gdtotal != "" && gdtotal != 'NaN')
+            {
+                 $(".invoicepay").prop("disabled", false);
+             }else{
+                 $(".invoicepay").prop("disabled", true);
+             }
+            return gdtotal;
+            
+        }
+ 
+
+       
+		
+});
+</script>
+<?php
+/*Part Start*/
+/* $time_end = microtime(true);
+$execution_time = ($time_end - $time_start);
+$time_start = microtime(true); 
+echo '<b>Time to end of invoice data load:</b> '.$execution_time;
+echo '<br/>'; */
+/*Part Ends*/
+}
+?>

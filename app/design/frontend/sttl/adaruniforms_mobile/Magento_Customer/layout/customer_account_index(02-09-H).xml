@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="customer_account"/>
+	<head>
+        <remove src="mage/calendar.css"/>
+        <remove src="css/print.css"/>
+		<remove src="DR_Gallery::js/fancyboxjs.js"/>
+		<remove src="WeltPixel_Quickview::js/weltpixel_quickview.js"/>
+		<remove src="WeltPixel_Quickview::js/jquery.magnific-popup.min.js"/>
+    </head>
+    <body>
+	<referenceBlock name="customer_account_dashboard_address" remove="true"/>
+        <referenceBlock name="page.main.title">
+            <action method="setPageTitle">
+                <argument translate="true" name="title" xsi:type="string">My Account</argument>
+            </action>
+        </referenceBlock>
+        <referenceContainer name="content">
+            <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_info" as="info" template="Magento_Customer::account/dashboard/info.phtml" cacheable="false"/>
+             <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_statement"  template="Magento_Customer::account/dashboard/statement.phtml" cacheable="false"/>
+             <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_savepayment"  template="Magento_Customer::account/dashboard/savepament.phtml" cacheable="false"/>
+             <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_shippinginformation"  template="Magento_Customer::account/dashboard/shippinginformation.phtml" cacheable="false"/>
+             <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_edit_popup" template="Magento_Customer::account/dashboard/edit_customer.phtml" after="-" />
+        </referenceContainer>
+    </body>
+</page>

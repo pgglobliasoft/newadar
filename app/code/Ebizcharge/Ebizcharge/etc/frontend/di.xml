@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!--
+/**
+* Injects ConfigProvider to the composite config provider so that the Ebizcharge payment
+* method can access the system config. 
+*
+* @author      Century Business Solutions <support@centurybizsolutions.com>
+* @copyright   Copyright (c) 2016 Century Business Solutions  (www.centurybizsolutions.com)
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+	<type name="Magento\Payment\Model\CcGenericConfigProvider">
+        <arguments>
+            <argument name="methodCodes" xsi:type="array">
+                <item name="ebizcharge_ebizcharge" xsi:type="const">Ebizcharge\Ebizcharge\Model\Payment::CODE</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Checkout\Model\CompositeConfigProvider">
+        <arguments>
+            <argument name="configProviders" xsi:type="array">
+                <item name="ebizcharge_ebizcharge_config_provider" xsi:type="object">Ebizcharge\Ebizcharge\Model\ConfigProvider</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

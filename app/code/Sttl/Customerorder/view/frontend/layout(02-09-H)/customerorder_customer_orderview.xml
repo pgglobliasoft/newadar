@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd" label="Customer My Account (All Pages)" design_abstraction="custom">
+<update handle="customer_account"/>
+<head>
+	<remove src="mage/calendar.css"/>
+    <remove src="Magestorm_ReCaptcha::css/default.css"/>
+    <remove src="css/print.css"/>
+	<css src="Sttl_Customerorder::css/jquery.dataTables.min.css"/>
+</head>
+
+<body>
+    <referenceContainer name="content">
+        <block class="Sttl\Customerorder\Block\Orderview" name="neworder" template="Sttl_Customerorder::orderview.phtml">
+        </block>
+    </referenceContainer>
+</body>
+</page>

@@ -1,0 +1,170 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var \Magento\Customer\Block\Form\Register $block */
+?>
+<?= $block->getChildHtml('form_fields_before') ?>
+<?php /* Extensions placeholder */ ?>
+<?= $block->getChildHtml('customer.form.register.extra') ?>
+<form class="form create account form-create-account" action="<?= $block->escapeUrl($block->getPostActionUrl()) ?>" method="post" id="form-validate" enctype="multipart/form-data" autocomplete="off" data-hasrequired="<?php /* @escapeNotVerified */ echo __('* Required Fields') ?>"
+      data-mage-init='{"validation":{}}'>
+    <?= /* @noEscape */ $block->getBlockHtml('formkey'); ?>
+  <input type="hidden" name="form_key_hidden" id="form_key_hidden"/>
+    <div class="registrationPage">
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Registration</h2>
+        </div>
+      </div>
+      <div class="offset-md-2 col-md-8 mb-5">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="row">
+              <div class="field subject col-md-12">
+                <label class="label" for="email"><span>Login Email</span></label>
+                <div class="control">
+                <input type="email" name="email" autocomplete="off" id="reg_email_address" value="" title="Email" class="input-text" data-validate="{required:true, 'validate-email':true}" aria-required="true" placeholder="LOGIN EMAIL">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field subject col-md-12 required">
+                <label class="label" for="customer_number"><span>Customer Code</span></label>
+                <div class="control">
+                  <input name="customer_number" id="customer_number" title="customer_number" value="" class="check-sapdata input-text required-entry validate-alphanum" type="text" placeholder="CUSTOMER CODE" autocomplete="off" data-validate="{required:true}" aria-required="true">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field subject col-md-12 required">
+                <label class="label" for="code"><span>Web Access Code</span></label>
+                <div class="control">
+                  <input name="webaccess_code" id="webaccess_code" title="Web Access Code" value="" class="check-sapdata input-text required-entry validate-alphanum" type="text" placeholder="WEB ACCESS CODE" autocomplete="off" data-validate="{required:true}" aria-required="true">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field subject col-md-12 required">
+                <label class="label" for="firstname"><span>First Name</span></label>
+                <div class="control">
+                  <input type="text" id="firstname" name="firstname" value="" title="First Name" class="input-text required-entry validate-alphanum-with-spaces validate-no-html-tags" data-validate="{required:true}" autocomplete="off" aria-required="true" placeholder="FIRST NAME">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field subject col-md-12 required">
+                <label class="label" for="lname"><span>Last Name</span></label>
+                <div class="control">
+                  <input type="text" id="lastname" name="lastname" value="" title="Last Name" class="input-text required-entry validate-alphanum-with-spaces validate-no-html-tags" data-validate="{required:true}" autocomplete="off" aria-required="true" placeholder="LAST NAME">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="row">
+              <div class="field subject col-md-12 spacetopCollumn password required">
+                <label class="label" for="password"><span>Password</span></label>
+                <div class="control">
+                  <input type="password" name="password" id="password"
+                       title="<?= $block->escapeHtmlAttr(__('Password')) ?>"
+                       class="input-text"
+                       data-password-min-length="<?= $block->escapeHtmlAttr($block->getMinimumPasswordLength()) ?>"
+                       data-password-min-character-sets="<?= $block->escapeHtmlAttr($block->getRequiredCharacterClassesNumber()) ?>"
+                       data-validate="{required:true, 'validate-customer-password':true}"
+                       autocomplete="off" placeholder="PASSWORD">
+              </div>
+            </div>
+            </div>
+      <div class="row">
+              <div class="field subject col-md-12 confirmation required">
+                <label class="label" for="password-confirmation"><span>Password Confirmation</span></label>
+                <div class="control">
+                  <input type="password" name="password_confirmation" title="<?= $block->escapeHtmlAttr(__('Confirm Password')) ?>" id="password-confirmation" class="input-text" data-validate="{required:true, equalTo:'#password'}" autocomplete="off"  placeholder="PASSWORD">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 mrgT20 rltv">
+            <div class="actions-toolbar float-right">
+              <button type="submit" title="Send" class="registrationBtn"> <span>Submit</span> </button>
+            </div>
+          </div>
+        </div>
+      </div>
+     </div>
+    </div>
+</form>
+<script>
+require([
+    'jquery',
+    'mage/mage'
+], function($){
+  
+  $("#form_key_hidden").val($("input[name=form_key]").val()+'@d@r9876');
+
+    var dataForm = $('#form-validate');
+    //var ignore = <?php //$_dob->isEnabled() ? '\"input[id$="full"]\"' : 'null' ?>;
+
+    dataForm.mage('validation', {
+    <?php /*if ($_dob->isEnabled()):*/ ?>
+        errorPlacement: function(error, element) {
+            if (element.prop('id').search('full') !== -1) {
+                var dobElement = $(element).parents('.customer-dob'),
+                    errorClass = error.prop('class');
+                error.insertAfter(element.parent());
+                dobElement.find('.validate-custom').addClass(errorClass)
+                    .after('<div class="' + errorClass + '"></div>');
+            }
+            else {
+                error.insertAfter(element);
+            }
+        }/*,
+        ignore: ':hidden:not(' + ignore + ')'*/
+    <?php //else: ?>
+        //ignore: ignore ? ':hidden:not(' + ignore + ')' : ':hidden'
+    <?php //endif ?>
+    }).find('input:text').attr('autocomplete', 'off');
+  
+  $( document ).on('click', "#form-validate .registrationBtn",function() {
+    var isValid = $('#form-validate').validation('isValid');
+    if (isValid) {
+      $('body').trigger('processStart');
+    }
+  });
+});
+</script>
+<?php if ($block->getShowAddressFields()): ?>
+<script type="text/x-magento-init">
+    {
+        "#country": {
+            "regionUpdater": {
+                "optionalRegionAllowed": <?= /* @noEscape */ $block->getConfig('general/region/display_all') ? 'true' : 'false' ?>,
+                "regionListId": "#region_id",
+                "regionInputId": "#region",
+                "postcodeId": "#zip",
+                "form": "#form-validate",
+                "regionJson": <?= /* @noEscape */ $this->helper(\Magento\Directory\Helper\Data::class)->getRegionJson() ?>,
+                "defaultRegion": "<?= (int) $block->getFormData()->getRegionId() ?>",
+                "countriesWithOptionalZip": <?= /* @noEscape */ $this->helper(\Magento\Directory\Helper\Data::class)->getCountriesWithOptionalZip(true) ?>
+            }
+        }
+    }
+</script>
+<?php endif; ?>
+
+<script type="text/x-magento-init">
+    {
+        ".field.password": {
+            "passwordStrengthIndicator": {
+                "formSelector": "form.form-create-account"
+            }
+        }
+    }
+</script>

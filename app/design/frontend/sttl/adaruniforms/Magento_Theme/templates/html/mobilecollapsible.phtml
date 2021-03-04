@@ -1,0 +1,303 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$customerSession = $objectManager->create('Magento\Customer\Model\Session');
+$admincustomer = $customerSession->getCustomerAsadmin();
+$baseurl = $this->getBaseUrl();
+$customerinvoices = $baseurl."customerinvoices/customer/index?order_stats=Open&order_by=DueDays&opt=ASC";
+$myaccoutnUrl = $baseurl."customer/account/index/";
+$customerorderUrl = $baseurl."customerorder/customer/index";
+$purchaseorderUrl = $baseurl."purchaseorder/customer/index";
+$downloadlibraryUrl = $baseurl."downloadlibrary/category/index";
+$policy_procedures = $baseurl."policy-procedures";
+$neworderUrl = $baseurl."customerorder/customer/neworder";
+$policies_procedures = $baseurl."policies-procedures";
+
+$request = $objectManager->get('\Magento\Framework\App\Request\Http');
+$cur_action = $request->getFullActionName();
+
+$helper = $this->helper('Sttl\Adaruniforms\Helper\DownloadLibrary');
+$currentactivemenu = '';
+$dir_path = base64_decode($this->getRequest()->getParam('path'));
+
+$fileSystem = $objectManager->create('\Magento\Framework\Filesystem');
+$rootpath = $fileSystem->getDirectoryRead(\Magento\Framework\App\Filesystem\DirectoryList::ROOT)->getAbsolutePath('ftp_images'.DIRECTORY_SEPARATOR);
+$dir_path_bred = str_replace($rootpath,'', $dir_path);
+$dir_path_explode = array_filter(explode("/", $dir_path_bred));
+$ariaexpanded = 'false';
+$show = '';
+if(!empty($dir_path_explode))
+{
+    $currentactivemenu = basename($dir_path);
+    $ariaexpanded = 'true';
+    $show = 'show';
+}
+$class= 'collapse';
+if($cur_action == "downloadlibrary_category_index")
+{
+    $currentactivemenu = basename($dir_path);
+    $ariaexpanded = 'true';
+    $class = '';
+    $show = 'show';
+}
+$image_library_directory_path = "$rootpath";
+$image_library_directory = $helper->listFolderFiles($image_library_directory_path);
+//$image_library_directory = $helper->getDirectorylist($image_library_directory_path);
+$redirect_category = $baseurl."downloadlibrary/category/index?catgoty=";
+$redirect_imagelibrary = $baseurl."downloadlibrary/category/imagelibrary?path=";
+$inventorydata = $baseurl."customerorder/customer/inventorydata";
+$newOrderUr = $baseurl."customerorder/customer/neworder";
+//echo $cur_action;exit;
+
+$helpersearch = $this->helper(\Magento\Search\Helper\Data::class);
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$request = $objectManager->get('\Magento\Framework\App\Request\Http');
+$cur_action = $request->getFullActionName();
+$params = $this->getRequest()->getParam('q');
+?>
+
+<?php if($customerSession->isLoggedIn()){ ?>
+<div class="block mobile-block-collapsible-nav">
+     <div class="content mobile-content autoScrollMenu" id="<?= /* @escapeNotVerified */ $block->getBlockCss() ?>">
+       <ul class="footer-menu-bottom" >
+        <li class="nav item  <?php if ($cur_action == "customer_account_index") {?>current<?php }?>" id="account-page">
+            <a href="<?php echo $myaccoutnUrl;?>">
+
+              <!-- <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"> <g> <g> <path d="M437.02,330.98c-27.883-27.882-61.071-48.523-97.281-61.018C378.521,243.251,404,198.548,404,148 C404,66.393,337.607,0,256,0S108,66.393,108,148c0,50.548,25.479,95.251,64.262,121.962 c-36.21,12.495-69.398,33.136-97.281,61.018C26.629,379.333,0,443.62,0,512h40c0-119.103,96.897-216,216-216s216,96.897,216,216 h40C512,443.62,485.371,379.333,437.02,330.98z M256,256c-59.551,0-108-48.448-108-108S196.449,40,256,40 c59.551,0,108,48.448,108,108S315.551,256,256,256z"/> </g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> </svg> -->
+              <svg height="511pt" viewBox="0 1 511 511.999" width="511pt" xmlns="http://www.w3.org/2000/svg"><path d="m498.699219 222.695312c-.015625-.011718-.027344-.027343-.039063-.039062l-208.855468-208.847656c-8.902344-8.90625-20.738282-13.808594-33.328126-13.808594-12.589843 0-24.425781 4.902344-33.332031 13.808594l-208.746093 208.742187c-.070313.070313-.144532.144531-.210938.214844-18.28125 18.386719-18.25 48.21875.089844 66.558594 8.378906 8.382812 19.441406 13.234375 31.273437 13.746093.484375.046876.96875.070313 1.457031.070313h8.320313v153.695313c0 30.417968 24.75 55.164062 55.167969 55.164062h81.710937c8.285157 0 15-6.71875 15-15v-120.5c0-13.878906 11.292969-25.167969 25.171875-25.167969h48.195313c13.878906 0 25.167969 11.289063 25.167969 25.167969v120.5c0 8.28125 6.714843 15 15 15h81.710937c30.421875 0 55.167969-24.746094 55.167969-55.164062v-153.695313h7.71875c12.585937 0 24.421875-4.902344 33.332031-13.8125 18.359375-18.367187 18.367187-48.253906.027344-66.632813zm-21.242188 45.421876c-3.238281 3.238281-7.542969 5.023437-12.117187 5.023437h-22.71875c-8.285156 0-15 6.714844-15 15v168.695313c0 13.875-11.289063 25.164062-25.167969 25.164062h-66.710937v-105.5c0-30.417969-24.746094-55.167969-55.167969-55.167969h-48.195313c-30.421875 0-55.171875 24.75-55.171875 55.167969v105.5h-66.710937c-13.875 0-25.167969-11.289062-25.167969-25.164062v-168.695313c0-8.285156-6.714844-15-15-15h-22.328125c-.234375-.015625-.464844-.027344-.703125-.03125-4.46875-.078125-8.660156-1.851563-11.800781-4.996094-6.679688-6.679687-6.679688-17.550781 0-24.234375.003906 0 .003906-.003906.007812-.007812l.011719-.011719 208.847656-208.839844c3.234375-3.238281 7.535157-5.019531 12.113281-5.019531 4.574219 0 8.875 1.78125 12.113282 5.019531l208.800781 208.796875c.03125.03125.066406.0625.097656.09375 6.644531 6.691406 6.632813 17.539063-.03125 24.207032zm0 0"/></svg>
+            <p>B2B Home</p>
+          </a>
+        </li>
+          <li class="nav item" id="search_product_button">
+            <a >
+<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+   viewBox="0 0 512.005 512.005" style="enable-background:new 0 0 512.005 512.005;" xml:space="preserve">
+<g>
+  <g>
+    <path d="M505.749,475.587l-145.6-145.6c28.203-34.837,45.184-79.104,45.184-127.317c0-111.744-90.923-202.667-202.667-202.667
+      S0,90.925,0,202.669s90.923,202.667,202.667,202.667c48.213,0,92.48-16.981,127.317-45.184l145.6,145.6
+      c4.16,4.16,9.621,6.251,15.083,6.251s10.923-2.091,15.083-6.251C514.091,497.411,514.091,483.928,505.749,475.587z
+       M202.667,362.669c-88.235,0-160-71.765-160-160s71.765-160,160-160s160,71.765,160,160S290.901,362.669,202.667,362.669z"/>
+  </g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g>
+</svg>
+
+            <p>Search</p>
+          </a>
+        </li>
+        <li class="nav item  <?php if ($cur_action == "customerorder_customer_index" && $block->getRequest()->getParam('q') == '') {?>current<?php }?>">
+            <a href="<?php echo $customerorderUrl ;?>">
+                <!-- <svg version="1.0" xmlns="http://www.w3.org/2000/svg"width="512.000000pt" height="512.000000pt" viewBox="0 0 512.000000 512.000000"preserveAspectRatio="xMidYMid meet"> <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" stroke="none"> <path d="M1340 4683 c-646 -205 -1191 -382 -1210 -392 -21 -12 -44 -36 -57 -62 l-23 -43 0 -1551 c0 -986 4 -1563 10 -1584 16 -58 65 -97 164 -136 331 -127 2323 -865 2336 -865 9 0 558 202 1220 449 944 351 1212 455 1236 477 18 17 37 47 43 71 8 29 11 479 9 1606 l-3 1566 -21 28 c-12 15 -34 36 -50 45 -16 9 -561 186 -1211 392 -854 272 -1194 376 -1225 375 -26 -1 -498 -146 -1218 -376z m2147 -240 c502 -159 913 -291 913 -294 0 -3 -134 -56 -297 -117 -164 -61 -577 -215 -918 -342 -548 -205 -623 -231 -651 -222 -75 23 -1814 676 -1814 681 0 8 1808 580 1835 581 11 0 431 -129 932 -287z m-2110 -882 c543 -203 996 -373 1006 -376 16 -7 17 -81 17 -1372 0 -1088 -3 -1364 -12 -1360 -7 2 -449 167 -983 367 -533 199 -985 368 -1002 376 l-33 13 0 1360 c0 840 4 1361 9 1361 6 0 454 -166 998 -369z m3371 -998 l-3 -1357 -85 -33 c-47 -18 -497 -186 -1000 -374 -503 -188 -921 -344 -927 -346 -10 -4 -13 271 -13 1355 l0 1360 863 322 c474 177 925 346 1002 375 77 30 146 54 153 54 10 1 12 -273 10 -1356z"/> </g> </svg> -->
+                <!-- <img src="  <?= $baseurl.'pub/media/Sttl_Customerorder/forder.png';?>"  class="footer-img" alt="order" /> -->
+                <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                 width="64.000000pt" height="64.000000pt" viewBox="0 0 64.000000 64.000000"
+                 preserveAspectRatio="xMidYMid meet">
+                <metadata>
+                Created by potrace 1.10, written by Peter Selinger 2001-2011
+                </metadata>
+                <g transform="translate(0.000000,64.000000) scale(0.100000,-0.100000)"
+                 stroke="none">
+                <path d="M126 569 l-26 -20 0 -229 0 -229 26 -20 c25 -19 40 -21 194 -21 154
+                0 169 2 194 21 l26 20 0 229 0 229 -26 20 c-25 19 -40 21 -194 21 -154 0 -169
+                -2 -194 -21z m369 -249 l0 -225 -175 0 -175 0 -3 215 c-1 118 0 220 3 227 3
+                11 43 13 177 11 l173 -3 0 -225z"/>
+                <path d="M185 469 c-15 -23 16 -30 136 -27 102 3 124 6 124 18 0 12 -22 15
+                -127 18 -85 2 -129 -1 -133 -9z"/>
+                <path d="M185 390 c-3 -5 0 -13 7 -15 25 -10 253 -1 251 10 -4 14 -249 19
+                -258 5z"/>
+                <path d="M185 320 c-13 -21 8 -30 71 -30 57 0 64 2 64 20 0 18 -7 20 -64 20
+                -36 0 -68 -4 -71 -10z"/>
+                <path d="M390 160 c0 -11 7 -20 15 -20 8 0 15 9 15 20 0 11 -7 20 -15 20 -8 0
+                -15 -9 -15 -20z"/>
+                </g>
+                </svg>
+            <p>Orders</p>
+          </a>
+        </li>
+
+        <?php if($admincustomer){ ?>
+              <li class="nav item  <?php if ($cur_action == "customerorder_customer_inventorydata") {?>current<?php }?>">
+                <a href="<?php echo $inventorydata ;?>">
+                    <!-- <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 151.000000 179.000000"
+                     preserveAspectRatio="xMidYMid meet">
+
+                    <g transform="translate(0.000000,179.000000) scale(0.100000,-0.100000)"
+                     stroke="none">
+                    <path d="M375 1566 l-370 -213 0 -458 0 -458 370 -214 c204 -117 377 -211 385
+                    -209 8 2 179 98 380 214 l365 210 0 457 0 457 -370 214 c-203 117 -374 213
+                    -380 213 -5 0 -176 -95 -380 -213z m493 43 c59 -34 108 -63 110 -64 2 -1 -425
+                    -275 -554 -355 -18 -11 -34 -4 -147 60 -70 40 -126 75 -123 77 9 10 591 343
+                    599 343 4 0 56 -28 115 -61z m302 -174 c30 -18 88 -51 129 -75 l73 -42 -253
+                    -144 c-140 -79 -277 -156 -305 -171 l-51 -27 -131 74 c-73 40 -131 74 -129 76
+                    1 1 130 83 286 182 247 157 287 179 305 170 12 -6 46 -25 76 -43z m-710 -398
+                    l255 -145 3 -376 c1 -207 0 -376 -2 -376 -2 0 -142 79 -310 176 l-306 176 0
+                    375 0 374 53 -30 c28 -16 167 -95 307 -174z m950 -176 l0 -368 -267 -154
+                    c-148 -84 -283 -162 -301 -172 l-32 -19 2 372 3 372 295 169 c162 92 296 168
+                    298 168 1 1 2 -165 2 -368z"/>
+                    </g>
+                    </svg> -->
+                    <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                       width="64.000000pt" height="64.000000pt" viewBox="0 0 64.000000 64.000000"
+                       preserveAspectRatio="xMidYMid meet">
+                      <metadata>
+                      Created by potrace 1.10, written by Peter Selinger 2001-2011
+                      </metadata>
+                      <g transform="translate(0.000000,64.000000) scale(0.100000,-0.100000)"
+                       stroke="none">
+                      <path d="M343 598 c-19 -18 -24 -19 -38 -8 -14 11 -21 8 -53 -23 -29 -28 -46
+                      -37 -73 -37 -28 0 -43 -9 -77 -43 l-42 -43 2 -190 3 -189 265 0 265 0 3 189 2
+                      190 -42 43 c-28 29 -51 43 -68 43 -17 0 -40 15 -70 45 -24 25 -47 45 -50 45
+                      -3 0 -15 -10 -27 -22z m87 -63 c54 -55 77 -69 66 -40 -8 23 8 18 34 -10 l23
+                      -25 -223 0 -223 0 23 25 c26 28 63 35 54 10 -11 -27 9 -16 58 32 l48 47 50
+                      -49 c55 -54 83 -55 30 0 -28 29 -31 37 -20 50 7 8 15 15 19 15 4 0 31 -25 61
+                      -55z m150 -275 l0 -180 -250 0 -250 0 0 180 0 180 250 0 250 0 0 -180z"/>
+                      <path d="M232 308 c-6 -6 -12 -20 -12 -29 0 -32 25 -40 115 -37 71 2 90 6 99
+                      21 8 12 8 22 0 35 -9 14 -28 18 -100 20 -61 2 -93 -1 -102 -10z m183 -28 c0
+                      -12 -17 -16 -79 -18 -78 -3 -105 5 -91 28 4 7 36 10 88 8 65 -2 82 -6 82 -18z"/>
+                      <path d="M120 120 c0 -11 5 -20 10 -20 6 0 10 9 10 20 0 11 -4 20 -10 20 -5 0
+                      -10 -9 -10 -20z"/>
+                      <path d="M170 120 c0 -11 5 -20 10 -20 6 0 10 9 10 20 0 11 -4 20 -10 20 -5 0
+                      -10 -9 -10 -20z"/>
+                      <path d="M220 120 c0 -11 5 -20 10 -20 6 0 10 9 10 20 0 11 -4 20 -10 20 -5 0
+                      -10 -9 -10 -20z"/>
+                      <path d="M270 120 c0 -11 5 -20 10 -20 6 0 10 9 10 20 0 11 -4 20 -10 20 -5 0
+                      -10 -9 -10 -20z"/>
+                      <path d="M320 120 c0 -11 5 -20 10 -20 6 0 10 9 10 20 0 11 -4 20 -10 20 -5 0
+                      -10 -9 -10 -20z"/>
+                      <path d="M370 120 c0 -11 5 -20 10 -20 6 0 10 9 10 20 0 11 -4 20 -10 20 -5 0
+                      -10 -9 -10 -20z"/>
+                      <path d="M420 120 c0 -11 5 -20 10 -20 6 0 10 9 10 20 0 11 -4 20 -10 20 -5 0
+                      -10 -9 -10 -20z"/>
+                      <path d="M470 120 c0 -11 5 -20 10 -20 6 0 10 9 10 20 0 11 -4 20 -10 20 -5 0
+                      -10 -9 -10 -20z"/>
+                      <path d="M520 120 c0 -11 5 -20 10 -20 6 0 10 9 10 20 0 11 -4 20 -10 20 -5 0
+                      -10 -9 -10 -20z"/>
+                      </g>
+                      </svg>
+
+                <p>Inventory</p>
+              </a>
+            </li>
+          <?php } ?>
+
+           <li class="nav item  new-order <?php if ($cur_action == "customerorder-customer-neworder") {?>current<?php }?>">
+                <a href="<?= $newOrderUr; ?>">
+                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+                     width="64.000000pt" height="64.000000pt" viewBox="0 0 64.000000 64.000000"
+                     preserveAspectRatio="xMidYMid meet">
+                    <metadata>
+                    Created by potrace 1.10, written by Peter Selinger 2001-2011
+                    </metadata>
+                    <g transform="translate(0.000000,64.000000) scale(0.100000,-0.100000)"
+                     stroke="none">
+                    <path d="M126 569 l-26 -20 0 -229 0 -229 26 -20 c23 -18 41 -21 121 -21 82 0
+                    98 -3 124 -23 42 -30 135 -31 176 -1 97 72 98 195 1 267 -16 12 -48 22 -80 25
+                    -44 3 -59 0 -88 -20 -75 -51 -101 -136 -65 -211 11 -22 12 -27 2 -15 -10 13
+                    -33 18 -93 20 l-79 3 0 225 0 225 175 0 175 0 3 -111 c2 -102 4 -112 22 -117
+                    19 -5 20 0 20 113 0 116 -1 119 -26 139 -25 19 -40 21 -194 21 -154 0 -169 -2
+                    -194 -21z m413 -296 c85 -63 75 -186 -20 -236 -92 -49 -208 33 -195 137 12
+                    104 133 159 215 99z"/>
+                    <path d="M450 200 c0 -27 -3 -30 -30 -30 -16 0 -30 -4 -30 -10 0 -5 14 -10 30
+                    -10 27 0 30 -3 30 -30 0 -16 5 -30 10 -30 6 0 10 14 10 30 0 27 3 30 30 30 17
+                    0 30 5 30 10 0 6 -13 10 -30 10 -27 0 -30 3 -30 30 0 17 -4 30 -10 30 -5 0
+                    -10 -13 -10 -30z"/>
+                    <path d="M185 469 c-15 -23 16 -30 136 -27 102 3 124 6 124 18 0 12 -22 15
+                    -127 18 -85 2 -129 -1 -133 -9z"/>
+                    <path d="M185 390 c-3 -5 0 -13 7 -15 25 -10 253 -1 251 10 -4 14 -249 19
+                    -258 5z"/>
+                    <path d="M185 320 c-13 -21 8 -30 71 -30 57 0 64 2 64 20 0 18 -7 20 -64 20
+                    -36 0 -68 -4 -71 -10z"/>
+                    </g>
+                    </svg>
+
+                   <!-- <img src="  <?= $baseurl.'pub/media/Sttl_Customerorder/fadd.png';?>"  class="footer-img" alt="add order" /> -->
+
+                <p>New Order</p>
+              </a>
+            </li>
+
+        <li class="nav item  <?php if ($cur_action == "customerorder_customer_index" && $block->getRequest()->getParam('q') == 'd') {?>current<?php }?>">
+            <a href="<?php echo $customerorderUrl ;?>?q=d">
+<!--                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 286.000000 304.000000"preserveAspectRatio="xMidYMid meet"> <g transform="translate(0.000000,304.000000) scale(0.100000,-0.100000)" stroke="none"> <path d="M51 3026 c-53 -29 -50 46 -51 -1504 0 -1569 -3 -1484 55 -1510 20 -9 351 -12 1376 -12 1467 0 1391 -3 1417 55 17 38 17 2892 0 2930 -26 58 51 55 -1420 55 -1104 -1 -1357 -3 -1377 -14z m1329 -1506 l0 -1430 -645 0 -645 0 0 1430 0 1430 645 0 645 0 0 -1430z m1390 0 l0 -1430 -650 0 -650 0 0 1430 0 1430 650 0 650 0 0 -1430z"/> </g> </svg> -->
+              <!-- <img src="  <?= $baseurl.'pub/media/Sttl_Customerorder/fedit.png';?>"  class="footer-img" alt="edit order" /> -->
+              <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+               width="64.000000pt" height="64.000000pt" viewBox="0 0 64.000000 64.000000"
+               preserveAspectRatio="xMidYMid meet">
+              <metadata>
+              Created by potrace 1.10, written by Peter Selinger 2001-2011
+              </metadata>
+              <g transform="translate(0.000000,64.000000) scale(0.100000,-0.100000)"
+              fill="#aab6bf" stroke="none">
+              <path d="M126 569 l-26 -20 0 -229 0 -229 26 -20 c23 -18 41 -21 121 -21 82 0
+              98 -3 124 -23 42 -30 135 -31 176 -1 97 72 98 195 1 267 -16 12 -48 22 -80 25
+              -44 3 -59 0 -88 -20 -75 -51 -101 -136 -65 -211 11 -22 12 -27 2 -15 -10 13
+              -33 18 -93 20 l-79 3 0 225 0 225 175 0 175 0 3 -111 c2 -102 4 -112 22 -117
+              19 -5 20 0 20 113 0 116 -1 119 -26 139 -25 19 -40 21 -194 21 -154 0 -169 -2
+              -194 -21z m413 -296 c85 -63 75 -186 -20 -236 -92 -49 -208 33 -195 137 12
+              104 133 159 215 99z"/>
+              <path d="M481 247 c-8 -11 -5 -16 13 -25 27 -12 48 1 39 24 -7 18 -37 18 -52
+              1z"/>
+              <path d="M425 168 c-38 -58 -54 -108 -34 -108 15 0 79 67 102 108 31 54 5 34
+              -42 -31 -54 -75 -68 -59 -16 19 20 30 35 58 32 61 -3 3 -22 -20 -42 -49z"/>
+              <path d="M185 469 c-15 -23 16 -30 136 -27 102 3 124 6 124 18 0 12 -22 15
+              -127 18 -85 2 -129 -1 -133 -9z"/>
+              <path d="M185 390 c-3 -5 0 -13 7 -15 25 -10 253 -1 251 10 -4 14 -249 19
+              -258 5z"/>
+              <path d="M185 320 c-13 -21 8 -30 71 -30 57 0 64 2 64 20 0 18 -7 20 -64 20
+              -36 0 -68 -4 -71 -10z"/>
+              </g>
+              </svg>
+            <p>Drafts </p>
+          </a>
+        </li>
+      </ul>
+        <!--<li class="nav item"><a href="<?php echo $policies_procedures; ?>">Policies & Procedures</a></li>-->
+    </div>
+</div>
+<div class="search-product" style="display: none">
+<div class="cf sidebarSearch" >
+
+	<form  class="form minisearch" data-mage-init='{"validation": {}}' id="search_mini_form" action="<?= /* @escapeNotVerified */ $helpersearch->getResultUrl() ?>" method="get" 	>
+		<div class="searchInput required">
+			<div class="control">
+			<input
+                           data-mage-init='{"quickSearch":{
+                                "formSelector":"#search_mini_form",
+                                "url":"<?= /* @escapeNotVerified */ $helpersearch->getSuggestUrl()?>",
+                                "destinationSelector":"#search_autocomplete"}
+                           }'
+                           type="text"
+                           name="<?= /* @escapeNotVerified */ $helpersearch->getQueryParamName() ?>"
+                           value=""
+                           id = "autosearch"
+                           class="input-text required-entry"
+                           maxlength="<?= /* @escapeNotVerified */ $helpersearch->getMaxQueryLength() ?>"
+                           role="combobox"
+                           aria-haspopup="false"
+                           aria-autocomplete="both"
+                           placeholder="Search Style/Color"
+                           autocomplete="off"
+                           oninvalid="this.setCustomValidity('please Enter somthing in search box.')"
+       						onvalid="this.setCustomValidity('')"
+                           />
+                       </div>
+		<button type="submit"
+                        title="<?= $block->escapeHtml(__('Search')) ?>"
+                        class="search">
+                    <span class="fa fa-search"></span>
+                </button>
+		</div>
+  </form>
+</div>
+<div class="search-loader" style="display: none;">
+            <div class="loader">
+                <img src="<?=$baseurl?>/pub/static/version1597903877/frontend/sttl/adaruniforms_mobile/en_US/images/loader-1.gif" alt="Loading...">
+            </div>
+        </div>
+</div>
+<?php } ?>

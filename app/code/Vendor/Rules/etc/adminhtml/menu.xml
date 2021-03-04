@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Vendor_Rules::Marketing_Product" title="Marketing Products" sortOrder="50" module="Vendor_Rules" resource="Vendor_Rules::rule" parent="Sttl_Inquiries::main"/>
+
+        <add id="Vendor_Rules::Marketing_Product_import_grid" title="Manage Marketing Products" sortOrder="10" module="Vendor_Rules" parent="Vendor_Rules::Marketing_Product" action="vendor_rules/example_material/index" resource="Magento_Backend::content"/>
+
+        <add id="Vendor_Rules::Marketing_Product_import" title="Import Marketing Product Data from Excel" sortOrder="20" module="Vendor_Rules" parent="Vendor_Rules::Marketing_Product" action="vendor_rules/excel/import" resource="Magento_Backend::content"/>
+
+        <add id="Vendor_Rules::Marketing_Feachred_Product" title="Manage Featured Products" sortOrder="30" module="Vendor_Rules" parent="Vendor_Rules::Marketing_Product" action="vendor_rules/grid" resource="Magento_Backend::content"/>
+    </menu>
+</config>

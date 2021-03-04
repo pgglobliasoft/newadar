@@ -1,0 +1,10 @@
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$customerSession = $objectManager->get('Magento\Customer\Model\Session');
+if($customerSession->isLoggedIn()) {
+ 
+}else{
+	
+	echo $this->getLayout() ->createBlock('Magento\Cms\Block\Block') ->setBlockId('we_care_what_you_wear') ->toHtml();
+}
+?>

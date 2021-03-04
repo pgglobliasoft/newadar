@@ -1,0 +1,51 @@
+<?php
+
+/** @var \Magestore\Bannerslider\Block\SliderItem $block */
+$displayId = $this->getSliderId();
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$Collection = $objectManager->get('\Magestore\Bannerslider\Model\ResourceModel\Banner\CollectionFactory');
+$SliderCollection = $objectManager->get('\Magestore\Bannerslider\Model\SliderFactory');
+$SliderData =  $this->getSliderData($displayId);
+// echo $SliderData->getSliderSpeed();die;
+$bannerCollection = $this->getBannerColltion($displayId);
+
+if (count($bannerCollection) > 0) :
+?>
+	<div class="insta-banner-owlslider">
+		<p class="insta-banner">Real life SuperHeroes wear Adar Uniforms </p>
+		<p class="insta-banner-2">Follow Us <a href="https://www.instagram.com/adarmeduniforms/" target="_blank">@ADARMEDUNIFORMS</a> </p>
+		<ul class="InstadSlider" data-id="<?=$SliderData->getMin_item()?>">
+
+			<?php
+				$banner_cnt = 0;
+				foreach ($bannerCollection as $banner): ?>
+					<li>						
+						<a href="https://www.instagram.com/adarmeduniforms/" target="_blank"><img src="<?php echo $this->getBaseUrlMedia($banner['image']); ?>" alt="<?php echo $banner->getImageAlt() ?>"></a>
+					</li>
+			<?php $banner_cnt++; endforeach;?>
+		</ul>
+	</div>
+<?php endif;?>
+<script type="text/javascript">require([ 'jquery' , 'functions'], function(jquery){ 
+	jquery(".InstadSlider").owlCarousel({
+			loop:true
+			,autoplay:true
+			,autoplayTimeout:3000
+			,smartSpeed:<?=$SliderData->getSliderSpeed()?>
+			,margin:20
+			,nav:false
+			,dots:false
+			,responsive:{
+				0:{
+					items:1
+				},
+				600:{
+					items:3
+				},
+				1000:{
+					items:<?=$SliderData->getMin_item()?>
+				}
+			}
+				
+		}); 
+});</script>

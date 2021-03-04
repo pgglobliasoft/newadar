@@ -1,0 +1,27 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * See LICENSE.txt for license details (http://opensource.org/licenses/osl-3.0.php).
+ *
+ * Glory to Ukraine! Glory to the heroes!
+ */
+?>
+<?php
+/**
+ * Blog post view template
+ *
+ * @var $block \Magefan\Blog\Block\Post\View
+ */
+?>
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+		$request = $objectManager->get('Magento\Framework\App\Request\Http');
+$backurl =  $request->getServer('HTTP_REFERER');
+	
+?>
+	<?php if($backurl) {?>
+		<div class="backUrl">
+				<a href="<?php echo $backurl;?>">Back</a>
+		</div>
+	<?php }?>
+				

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<page layout="admin-2columns-left" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="ManishJoy_Login::css/style.css"/>
+    </head>
+    <update handle="styles"/>
+    <body>
+        <referenceContainer name="content">
+            <uiComponent name="collection_form"/>
+        </referenceContainer>
+
+  <!--       <referenceBlock name="collection_form">
+             <block class="Sttl\Collectionsilder\Block\Adminhtml\Edit\Tab\Productgrid" name="test_customer_edit_tab_childcustomer" >
+              <action method="setTabLabel">
+                  <argument name="label" xsi:type="string">Products</argument>
+              </action>
+            </block>
+          </referenceBlock> -->
+    </body>
+</page>

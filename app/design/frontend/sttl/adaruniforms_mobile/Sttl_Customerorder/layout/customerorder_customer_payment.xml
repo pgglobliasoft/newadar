@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd" label="Customer My Account (All Pages)" design_abstraction="custom">
+<!-- <update handle="customer_account"/> -->
+	<head>
+        <remove src="mage/calendar.css"/>
+        <remove src="Magestorm_ReCaptcha::css/default.css"/>
+        <remove src="css/print.css"/>
+        <remove src="css/print.css"/>
+		<remove src="DR_Gallery::js/fancyboxjs.js"/>
+		<remove src="WeltPixel_Quickview::js/weltpixel_quickview.js"/>
+		<remove src="WeltPixel_Quickview::js/jquery.magnific-popup.min.js"/>
+    </head>
+<body>
+    <referenceBlock name="account-page-menu-back" remove="true"/>
+    <referenceContainer name="content">
+        <block class="Sttl\Customerorder\Block\Payment" name="neworder" template="Sttl_Customerorder::paymentmethod.phtml">
+        </block>
+    </referenceContainer>
+</body>
+</page>

@@ -1,0 +1,118 @@
+<?php 
+
+if($block->getisFromPopup()){
+	$regorderdata = $block->getPopupOrderdData();
+}else{
+	$regorderdata = $block->getRegisterData();
+}
+$back_redirect = 0;
+$cusromerdata = $block->getCustomerDetails();
+$order_id = base64_decode($regorderdata['order_id']);
+$data_from = 'T';
+$customer =$cusromerdata['CardCode'];
+$orderdetail = $block->getOrderDataDetails($order_id, $data_from,$customer);
+$DocTotal = $orderdetail['DocTotal'];
+$pastdue = $cusromerdata['PastDueAmount'];
+$CreditLine = $cusromerdata['CreditLine'];
+$availablecredit = $cusromerdata['AvailCredit'];
+?>
+<div class="accountPageContainer OrderConfirmation">
+<h1 class="page-title">Order Confirmation</h1>
+<p class="thnku">Thank You For Your Order</p>
+<p class="orderDtail">Order number : <span id="orderNumber"><?php echo base64_decode($regorderdata['WebOrderId'])?></span></p>
+<p>You will receive an email confirmation shortly. To check the status of your order please <a href="<?php echo  $block->getBaseUrl().'customerorder/customer/orderview/id/'.$regorderdata['order_id'];?>/status/<?php echo base64_encode('Submitted'); ?>/back/<?php echo base64_encode($back_redirect); ?>/df/<?php echo base64_encode("T"); ?>" class="newLinkText">click here</a>. 
+<?php
+echo $this->getLayout()
+          ->createBlock('Magento\Cms\Block\Block')
+          ->setBlockId('review_order_page_notes')
+          ->toHtml();
+?>
+</div>
+<?php
+	
+	if((float)$pastdue > 0)
+	{
+		?>
+			<div class="pastduebox tabledesign">
+				<h2 class="warning">Account Past Due Alert</h2>
+				<p class="warning">Your account is $<?=number_format((float)$pastdue, 2)?> past due.</p>
+				<p>Your order may not be processed until we receive payment, please make a payment by clicking below button or contact our finance team to avoid delays in processing your order.</p>
+				<a href="<?=$this->getBaseUrl();?>customerinvoices/customer/index?order_stats=pastdue&order_by=DueDays&opt=DESC&dash=pay_due" target="_blank" class="mackpayment">MAKE PAYMENT</a>
+				
+			</div>
+
+		<?php
+	}
+
+?>
+<?php
+	if((float)$DocTotal > (float)$availablecredit)
+	{
+		?>
+			<div class="availablecredit tabledesign">
+				<h2 class="warning">Account Over Credit Limit Alert</h2>
+				<p class="warning">This order exceeds your available credit!</p>
+				<p class="availablecreditmessage">You have $<?=number_format((float)$availablecredit, 2)?> available credit.</p>
+				<p class="textmessage">Please make a payment as soon as possible to increase your available credit or contact out finance team.</p>
+				<a href="<?=$this->getBaseUrl();?>customerinvoices/customer/index?order_stats=Open&order_by=DueDays&opt=DESC" target="_blank" class="mackpayment">MAKE PAYMENT</a>
+				<p class="myaccountpage">You can see your approved Credit Limit in the Payment Info section in the <a class="myaccountlink" href="<?=$this->getBaseUrl();?>customer/account/index/" target="_blank">My Account Page</a>.</p>
+			</div>
+		<?php
+	}
+?>
+	
+<style type="text/css">
+	.tabledesign .mackpayment{
+		border: 1px solid #0C4269;
+	    color: #0C4269;
+	    padding: 8px 45px;
+	    font-weight: bold;
+	    text-decoration: none;
+	    font-family: 'Futura PT bold';
+	    font-size: 10pt;
+	    letter-spacing: 0.04rem;
+   }
+   .tabledesign p.warning {
+	    color: #cd0000;
+	    margin-bottom: 0;
+	}
+	.tabledesign .myaccountpage{
+		margin-top: 20px;
+    	margin-bottom: 0;
+    	padding: 0 10px;
+	}
+	.tabledesign .myaccountlink{
+		color: #0c4269;
+		text-decoration: underline;
+	}
+	.tabledesign .textmessage{
+		padding: 0 30px;
+		 
+	}
+	.tabledesign .availablecreditmessage{
+		margin-bottom: 10px !important;
+	}
+
+.tabledesign{
+	max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px 20px;
+    margin-top: 20px;
+    text-align: center;
+    border: solid 1px #cd0000;
+    font-size: 11pt;
+}
+
+.tabledesign a.mackpayment:hover {
+    background: #0c4269;
+    color: #fff !important;
+}
+.pastduebox h2,.availablecredit h2{
+	color: #cd0000;
+	margin-bottom: 10px;
+	padding-bottom: 5px;
+	border-bottom: 1px solid #cccccc;
+}
+    
+</style>

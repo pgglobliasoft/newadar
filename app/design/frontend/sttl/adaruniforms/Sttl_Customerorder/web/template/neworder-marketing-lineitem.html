@@ -1,0 +1,33 @@
+<colgroup>
+    <col style="width: 52%;max-width: 52%;">
+    <col style="width: 15%;max-width: 15%;">
+    <col style="width: 20%;max-width: 20%;">
+  </colgroup>
+<tbody>
+	<tr>
+		<th>Marketing Materials</th>
+		<th>Qty</th>
+		<th>Total</th>
+		<th></th>
+	</tr>
+	<%
+		_.each(marketingitems, function(order_item_value, order_item_key) { 
+				var item_total = parseFloat(order_item_value.TotalPrice); 
+				item_total = item_total.toFixed(2);
+				var current_item_tmp = current_item(order_item_value.ItemCode),
+					current_item_name = current_item_tmp.item_name;
+				%>
+				<tr>
+					<td><%=current_item_name%></td>
+					<td><%=order_item_value.QTYOrdered%></td>
+					<td>$<%=item_total%></td>
+					<td class="item_action_buttons">
+						<a href="javascript:void(0);" delete-id="<%=current_item_tmp.item_code%>" delete-color="" class="newLinkText">
+							<span class="fa fa-close delSingalRecords"></span>
+						</a>
+					</td>
+				</tr>
+			<%
+		});
+	%>
+</tbody>

@@ -1,0 +1,294 @@
+ <?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$customerSession = $objectManager->create('Magento\Customer\Model\Session');
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+$baseurl = $storeManager->getStore()->getBaseUrl();
+$helper = $this->helper('Sttl\Adaruniforms\Helper\DownloadLibrary');
+
+//$dir_path = base64_decode($this->getRequest()->getParam('path'));
+$dir_path = $block->getDirpath();
+//$image_library_directory_files = $helper->getDirectory($dir_path);
+$image_library_directory_files = $block->getFilelistData();
+$fileSystem = $objectManager->create('\Magento\Framework\Filesystem');
+$rootpath = $fileSystem->getDirectoryRead(\Magento\Framework\App\Filesystem\DirectoryList::ROOT)->getAbsolutePath('ftp_images'.DIRECTORY_SEPARATOR);
+$folderrootpath = $fileSystem->getDirectoryRead(\Magento\Framework\App\Filesystem\DirectoryList::ROOT)->getAbsolutePath(DIRECTORY_SEPARATOR);
+
+$dir_path_bred = str_replace($rootpath,'', $dir_path);
+
+$dir_path_explode = explode("/", $dir_path_bred);
+$dir_path_explode = array_filter($dir_path_explode);
+$rootpath = urlencode(htmlentities(trim($rootpath)));
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+$basemedia_URL = $storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+$baseUrl = $this->getBaseUrl();
+$downloadlibraryUrl = $baseUrl."downloadlibrary/category/index";
+// echo $customerSession->setSearch();
+?>
+<!-- breadcrum-->
+
+
+<div class="accountPageContainer downloadlibrary-serach">
+	<div class="page-title invoice-title">
+		<span class="page_title">Image Library</span>
+		  <div class="new-set">
+               <div class="searchInput">
+                       <input type="text" name="serach_image" data-validate='{"required":true}' class="search-box" id="serach_images" 	 placeholder="Search Image library" autocomplete="off" data-lpignore="true">
+                       <span class="fa fa-close"></span>
+               </div>
+               <button type="submit" id="images_serach_click" class="themeBtn action save" title="Search"><span>Search</span></button>
+        </div>
+	</div>
+</div>
+
+<!--button row-->
+<div class="row ">
+	<div class="col-md-12 downloadButtons d-flex">
+			<div class="breadcrumDwnld-content custom-flex-grow-1">
+		    	<a class='Downloadliblink' href="<?= $baseurl ?>downloadlibrary/category/index" > Download Library </a>  >
+		        <a href="javascript:void(0)" class="getftpimges" rel="<?php echo $rootpath?>">Image Library</a>
+
+		        	<ul class="menudropdownpages">
+	    		<li><a href="<?= $baseurl ?>/downloadlibrary/category/index?catgoty=1">Catalogs</a></li>
+	    		<li><a class="uploadimagecolor getftpimges" href="javascript:void(0)" rel="%2Fchroot%2Fhome%2Fa93daf68%2Fdev.adaruniforms.com%2Fhtml%2Fftp_images%2F" style="color:#0c3c5f !important;">Image Library</a></li>
+	    		<li><a href="<?= $baseurl ?>downloadlibrary/category/index?catgoty=8">Size & Fit Guide</a></li>
+	    		<li><a href="<?= $baseurl ?>downloadlibrary/category/index?catgoty=4">Inventory & UPC Files</a></li>
+	    		<li><a href="<?= $baseurl ?>downloadlibrary/category/index?catgoty=5">Price List</a></li>
+	    		<li><a href="<?= $baseurl ?>downloadlibrary/category/index?catgoty=6">Product Data Files</a></li>
+	    		<li><a href="<?= $baseurl ?>downloadlibrary/category/index?catgoty=7">Documentations, Policies & More</a></li>
+	    	</ul>
+
+
+		        <?php if (!empty($dir_path_explode)) :
+		        	echo '&gt';
+		        	$pathenfull = '';
+					$k=0;	foreach ($dir_path_explode as $dK => $dV) :
+					$pathen = urlencode(htmlentities(trim($dV.'/')));
+					$pathenfull .= $pathen;
+				?>
+
+					<a href="javascript:void(0)" rel="<?php echo $rootpath.$pathenfull;?>" class="<?php echo ($k == (count($dir_path_explode)-1)) ? "onPage getbredcamp" : "getbredcamp" ;?> "><?php echo ucfirst($dV);?></a><?php echo ($k != (count($dir_path_explode) - 1)) ? '&gt' : "" ?>
+				<?php 	$k++;
+						endforeach;
+						endif;
+				?>
+			</div>
+			<a href="javascript:void(0);" id="dowselected" class="themeBtn alignRight mrgR20 dowselected">Download Selected</a>
+			<a href="javascript:void(0);" class="themeBtn alignRight mrgR20 selectall">Select All</a>
+			<a href="javascript:void(0);" class="themeBtn alignRight deselectall">Deselect All</a>
+	</div>
+	
+		
+
+	<div class="col-md-12 breadcrumDwnld d-flex">
+		<?php if(strlen($block->getRequest()->getParam('serach')) > 0){?>
+			<span class="serach-note">Showing result for : " <?= $block->getRequest()->getParam('serach') ?> "</span>
+		<?php }?>
+
+	</div>
+</div>
+
+<?php  //echo "<pre>";print_R($image_library_directory_files);exit;?>
+<!-- Product Title change-->
+
+<div class="container-fluid collapsibleDownload">
+	<div class="row">
+		<?php
+	if(!empty($image_library_directory_files)):
+		if(!empty($image_library_directory_files['folder'])):
+
+
+			foreach ($image_library_directory_files['folder'] as $fK => $fV) :
+		?>
+			<div class="col-md-2 col-sm-6">
+				<div class="downloadThumb mrgB10">
+					<a href="javascript:void(0)" class="getbredcamp" rel="<?php echo urlencode($fV);?>"><img src='<?php echo $this->getViewFileUrl('images/folder-icon.png'); ?>'>
+					</a>
+				</div>
+				<div class="downProTitle text-center mrgB30">
+					<label><?php echo strtoupper($fK);?></label> </div>
+			</div>
+		<?php
+			endforeach;
+		endif;
+		if (!empty($image_library_directory_files['file'])) :
+			$allext = array('gif','jpg','jpeg','png');
+			$videosext = array('mp4','3gp','avi');
+				foreach ($image_library_directory_files['file'] as $fK => $fV) :
+					$image_name = explode(".", basename($fV));
+					$info = new SplFileInfo($fV);
+					$fileext = $info->getExtension();
+					$imges_url = str_replace($folderrootpath,$baseurl , $fV);
+					$hrefimges_url = str_replace($folderrootpath,$baseurl , $fV);
+					$garrlyi = ' data-fancybox="gallery" href="'.$hrefimges_url.'" data-caption="'.strtoupper($image_name[0]).'"';
+				if(!in_array($fileext, $allext))
+				{
+					$imges_url = $baseurl.'pub/media/file-placeholder.jpg';
+					$garrlyi = 'href="javascript:void(0)"';
+				}
+				if(in_array(strtolower($fileext), $videosext))
+				{
+					$garrlyi = 'data-fancybox data-width="800" data-height="650" href="'.$hrefimges_url.'"';
+					$imges_url = $baseurl.'pub/media/video-placeholder.jpg';
+				}
+		?>
+			<div class="col-md-2 col-sm-6">
+				<div class="downloadThumb">
+					<a <?php echo $garrlyi;?> >
+						<img data-src="<?php echo $imges_url; ?>" class="lozad" alt="" />
+					</a>
+				</div>
+				<div class="downProTitle">
+					<h4>
+						<input type="checkbox" class="dowcheckd" name="dowcheckdchecbox" id="<?php echo $image_name[0]; ?>" >
+						<div for="<?php echo $image_name[0]; ?>" style="overflow: hidden; text-overflow: ellipsis; cursor:pointer;" class="ftpName">
+							<?php echo strtoupper($image_name[0]);?>
+							<span class="tooltip-text"><?php echo strtoupper($image_name[0]);?></span>
+						</div>
+					</h4>
+					<a href="<?php echo $hrefimges_url; ?>" target="_blank" class="downloadBtn selectdow" download>DOWNLOAD</a>
+				</div>
+			</div>
+		<?php
+			endforeach;
+			endif;
+			else: ?>
+				<div class="noDataText">Items not available.</div>
+			<?php endif; ?>
+	</div>
+</div>
+
+<script type="text/javascript">
+    require(['jquery', 'lazyloder'], function($,lozad) {
+    	$(function() {
+			var observer = lozad('.lozad', {
+		        threshold: 0.1,
+		        load: function(el) {
+		            el.src = el.getAttribute("data-src");
+		        }
+		    })
+
+	  		observer.observe()
+		})
+		$('.Downloadliblink').hover(
+				
+               function () {
+                  $('.menudropdownpages').css({"display":"block"});
+               }, 
+				
+               function () {
+                  $('.menudropdownpages').css({"display":"none"});
+                  
+			       
+               }
+            );  
+            $('.menudropdownpages').hover(
+            	function(){
+            		$(this).show();
+            	},function(){
+            		$(this).hide();
+            	});
+           // $(document).ready(function(){
+           // var url = window.location.href; 
+           // console.log(url);
+
+           //  $('.menudropdownpages li a').each(function(){
+           //  	if($(this).attr('href')==url){
+           //  		$(this).css({'color':'#0c3c5f'});
+           //  	}
+           //  });
+			// })
+    });
+ </script>
+
+
+<script type="text/javascript">
+    require(['jquery', 'lazyload', 'lazyloadspinner'], function($) {
+
+    		$('img').load(function(){
+			   $(this).css('background','none');
+			});
+
+			// $(function() {
+			// 	$('.lazy').Lazy();
+			// 	$('img[data-src]').lazyLoadXT({show: true});
+			// });
+
+    		$(document ).on( "click", ".selectall", function( event, ui ) {
+    			$('.dowcheckd').attr('checked', true);
+			});
+			$(document ).on( "click", ".deselectall", function( event, ui ) {
+				$('.dowcheckd').attr('checked', false);
+			});
+			$('.backbutton').click(function(){
+				var prevrel=($('.onPage').prev('a'));
+				prevrel.trigger('click');
+			});
+
+			$('#dowselected').click(function(){
+				var imgespatharray = [];
+				$(".dowcheckd:checked").each(function() {
+					  if($(this).is(':checked')) {
+					   var currenturl = $(this).parents('.downProTitle').find('.selectdow').attr('href');
+					    imgespatharray.push(currenturl);
+					    //var filename = currenturl.substring(currenturl.lastIndexOf('/')+1);
+					  	//var link = document.createElement('a');
+						//link.href = currenturl;
+						//link.download = filename;
+						//document.body.appendChild(link);
+						//link.click();
+						//document.body.removeChild(link);
+					    //window.location.href = currenturl ;
+					  }
+				});
+				if(imgespatharray.length > 1)
+				{
+					var url = '<?php echo $baseurl."downloadlibrary/category/imageszip";?>';
+	                $.ajax({
+	                url: url,
+	                type: "POST",
+	                data:{imagespath:imgespatharray},
+	                showLoader: true,
+	                cache: false,
+	                success: function(response){
+	                    console.log(response);
+	                    var filename = response.filename.substring(response.filename.lastIndexOf('/')+1);
+	                    var link = document.createElement('a');
+						link.href = response.filename;
+						link.download = filename;
+						document.body.appendChild(link);
+						link.click();
+						document.body.removeChild(link);
+						removefiles(response.filename)
+						return false;
+					    //window.location.href = currenturl ;
+
+	                }
+            		});
+				}else{
+					var currenturl = imgespatharray[0];
+					var filename = currenturl.substring(currenturl.lastIndexOf('/')+1);
+					  	var link = document.createElement('a');
+						link.href = currenturl;
+						link.download = filename;
+						document.body.appendChild(link);
+						link.click();
+						document.body.removeChild(link);
+				}
+
+			});
+			function removefiles(filepath)
+			{
+				var url = '<?php echo $baseurl."downloadlibrary/category/removezip";?>';
+				$.ajax({
+	                url: url,
+	                type: "POST",
+	                data:{filepath:filepath},
+	                showLoader: false,
+	                cache: true,
+	                success: function(response){
+	                   return false;
+		        	}
+            	});
+			}
+    	});
+</script>

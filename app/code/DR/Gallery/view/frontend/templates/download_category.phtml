@@ -1,0 +1,330 @@
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$customerSession = $objectManager->create('Magento\Customer\Model\Session');
+$childcustomerdata = $customerSession->getChildCustomer();
+$c_id = $customerSession->getCustomer()->getId();
+$postFactory = $objectManager->get('\ManishJoy\ChildCustomer\Model\PostFactory');
+$post = $postFactory->create();
+$collection = $post->getCollection()->addFieldToSelect('permission')->addFieldToFilter('c_id', $c_id);
+$permission =  $collection->getData();
+
+	$catalog = true;
+	$productprice = true;
+	$productdata = true;
+	$inventory = true;
+	if($permission){
+		$catalog = false;
+		$productprice = false;
+		$productdata = false;
+		$inventory = false;
+		$permissionarray = json_decode($permission[0]['permission'], true);
+		  if (array_key_exists("downlaod_library",$permissionarray)){
+		 $downloadlibrary_permission = $permissionarray['downlaod_library'];
+			    foreach ($downloadlibrary_permission as $upermission) { 
+				    	if($upermission === 'view_catalog'){
+				 	   	 	$catalog = true;
+				    	}
+				    	if($upermission === 'view_product'){
+				    	 	$productprice = true;
+				    	 	$productdata = true;
+				    	}
+				    	if($upermission === 'view_inventory'){
+				    	 	$inventory = true;
+				    	}
+				  	} 
+			    }  
+			}
+	
+
+	// $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+	$resource = $objectManager->get('Magento\Framework\App\ResourceConnection');
+	$connection = $resource->getConnection();
+	$tableName = $resource->getTableName('dr_gallery_image'); //gives table name
+	$search_by_filter = $this->getRequest()->getParam('catgoty');
+	$final = false;
+	$getValue =array("Catalog"=>"1","Swatch Card"=>"2","Image Library"=>"3","Inventory and UPC files"=>"4","Price Lists"=>"5","Product Data Files (AIO)"=>"6","Documentation,Policies and more"=>"7" , "Size & Fit Guide" => "8");
+	if(empty($search_by_filter)){
+		$final = true;
+		$search_by_filter = '1';
+
+	}
+
+	$sql = $connection->select()->from(["tn" => $tableName])->where('category_id=?', $search_by_filter)->where('status=?',1);
+	$result = $connection->fetchAll($sql);
+	// echo '<pre>'; print_r($result);
+
+	$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+	$basemedia_URL = $storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+	$baseUrl = $this->getBaseUrl();
+	$downloadlibraryUrl = $baseUrl."downloadlibrary/category/index";
+	$fileSystem = $objectManager->create('\Magento\Framework\Filesystem');
+	$rootpath = $fileSystem->getDirectoryRead(\Magento\Framework\App\Filesystem\DirectoryList::ROOT)->getAbsolutePath('ftp_images'.DIRECTORY_SEPARATOR);
+	$rootpath = urlencode(htmlentities(trim($rootpath)));
+	function getCAtegoryName($id)
+	{
+		$cat_name = '';
+		switch ($id) {
+			case "1":
+				 $cat_name = "Catalog";
+				break;
+			case "3":
+				$cat_name = "Image Library";
+				break;
+			case "4":
+				$cat_name = "Inventory and UPC Files";
+				break;
+			case "5":
+				$cat_name = "Price Lists";
+				break;
+			case "6":
+				$cat_name = "Product Data Files (AIO)";
+				break;
+			case "7":
+				$cat_name = "Documentation, Policies and more";
+				break;
+			case "8":
+				$cat_name = "Size & Fit Guide";
+				break;
+			default:
+				$cat_name =  "Download Library";
+		}
+				// echo $cat_name;
+		return $cat_name;
+
+	}
+
+
+?>
+
+<?php if($final != 1){ ?>
+<!-- <a href="<?php echo $downloadlibraryUrl; ?>" class="printBtn"><strong><span class="fa fa-angle-left"></span> Back</strong></a> -->
+<?php } ?>
+<div class ="accountPageContainer">
+	<?php if ($final != 1): ?>
+		<div class="page-title invoice-title"><span class="page_title"> <?php echo getCAtegoryName($_GET['catgoty']); ?> </span></div>
+ <?php else: ?>
+	<div class="page-title invoice-title"><span class="page_title">Download Library</span></div>
+
+ 	<?php endif; ?>
+
+</div>
+<?php if($final != 1){ ?>
+<div class="container-fluid download-library-img">
+
+	<div class="row">
+	    <div class="col-md-12 breadcrumDwnld document-download">
+	    	<a class='Downloadliblink' href="<?= $baseUrl ?>downloadlibrary/category/index" > Download Library </a> >
+	    	<a href="javascript:void(0)" class="onPage" > <?php echo getCAtegoryName($_GET['catgoty']); ?> </a> 
+	    	<ul class="menudropdownpages">
+	    		<li><a href="<?=$baseUrl?>downloadlibrary/category/index?catgoty=1">Catalogs</a></li>
+	    		<li><a href="javascript:void(0)" rel="%2Fchroot%2Fhome%2Fa93daf68%2Fdev.adaruniforms.com%2Fhtml%2Fftp_images%2F" class="getftpimges">Image Library</a></li>
+	    		<li><a href="<?=$baseUrl?>downloadlibrary/category/index?catgoty=8">Size & Fit Guide</a></li>
+	    		<li><a href="<?=$baseUrl?>downloadlibrary/category/index?catgoty=4">Inventory & UPC Files</a></li>
+	    		<li><a href="<?=$baseUrl?>downloadlibrary/category/index?catgoty=5">Price List</a></li>
+	    		<li><a href="<?=$baseUrl?>downloadlibrary/category/index?catgoty=6">Product Data Files</a></li>
+	    		<li><a href="<?=$baseUrl?>downloadlibrary/category/index?catgoty=7">Documentations, Policies & More</a></li>
+	    	</ul>
+	    </div>
+	</div>
+	<div class="row accountDownloadCont <?php echo (count($result) <= 0) ? 'zero-items' : ''; ?>">
+
+	<?php 
+	if(count($result) <= 0){ ?>
+		<div class="item-not-found">No item Found</div>
+	<?php }
+	foreach($result as $value){ 
+	$data = explode(',',$value['publish']);
+	if (in_array('1', $data))
+	  { 
+	
+		$cat_name = $image = "";
+		switch ($value['category_id']) {
+			case "1":
+				 $cat_name = "Catalog";
+				break;
+			case "3":
+				$cat_name = "Image Library";
+				break;
+			case "4":
+				$cat_name = "Inventory and UPC Files";
+				break;
+			case "5":
+				$cat_name = "Price Lists";
+				break;
+			case "6":
+				$cat_name = "Product Data Files (AIO)";
+				break;
+			case "7":
+				$cat_name = "Documentation, Policies and more";
+				break;
+			case "8":
+				$cat_name = "Size & Fit Guide";
+				break;
+			default:
+				$cat_name =  "Catlog";
+		}
+		if(!empty($value['small_image'])){
+			$image = $basemedia_URL.$value['small_image'];
+		}else{
+			$image = $block->getViewFileUrl('images/download-thumb.jpg');
+		}
+		$downloadurl = $value['download_url'];
+		
+		if(!empty($value['custom_url'])){
+			$url = $value['custom_url'];
+		}
+		elseif(!empty($value['path'])){
+			$url = $basemedia_URL.$value['path'];
+		}else{
+			$url = "javascript:void(0);";
+		}
+
+	?>
+	
+		<div class="col-md-2 col-sm-6">
+			<div class="downloadThumb1">
+				<img src="<?php echo $image; ?>" alt="<?php echo $value['name']; ?>" />
+				<a href="<?php echo $url; ?>" target="_blank" class="openPdf-link" ><span>View</span></a>
+					
+			</div>
+			<div class="downProTitle">
+				<h4><?php echo $value['name']; ?></h4>
+				<!-- <h4><a href="<?php echo $url; ?>" target="_blank" >View <?php echo $cat_name; ?></a></h4> -->
+				<!-- <h5><?php //echo $value['name']; ?></h5> -->
+				<!-- <a href="<?php echo $url; ?>" target="_blank" class="downloadBtn" download>DOWNLOAD</a> -->				
+				<?php if($value['download'] > 0){
+					if(strlen($value['download_url']) > 5 ){
+						?> 						
+							<a href="<?php echo $downloadurl; ?>" class="downloadBtn" download>DOWNLOAD</a>
+							<!-- <a href="<?php echo $url; ?>" class="downloadBtn" download>DOWNLOAD</a> -->
+					 <?php }else{ ?>
+							<a href="<?php echo $url; ?>" class="downloadBtn" download>DOWNLOAD</a> 
+					<?php } ?>
+				<?php } ?>
+
+			</div>
+			<a class="mobile_view_dowloand" href="<?php echo $url; ?>" target="_blank" class="btnCustom" download>Download</a>
+		</div>
+	
+  <?php } } ?>
+	</div>
+</div>
+<?php } else { ?>
+	<?php
+		$redirect_category = $baseUrl."downloadlibrary/category/index?catgoty=";
+	?>
+			<div class="download-categoty container-fluid">
+				<div class="row">
+				<?php if($catalog){?>
+					<div class="download-categoty-span col-xl-3 col-md-6 padT20 padB20" >
+						<a href="<?php echo $redirect_category.'1'; ?>" data-wow="Catalogs" class="download-categoty-name">
+							<i class="fa fa-book"></i>
+							<span class="btnCustom mrgL20">Catalogs<strong class="alignRight-cat-right"><i class="fa fa-angle-right"></i></strong></span>
+						</a>
+					</div>
+				<?php }?>
+				<?php if($catalog){?>
+					<div class="download-categoty-span col-xl-3 col-md-6 padT20 padB20">
+						<a href="javascript:void(0)" rel="<?php echo $rootpath?>" class="getftpimges" data-wow="Image Library" class="download-categoty-name">
+							<i class="fa fa-camera"></i>
+							<span class="btnCustom mrgL20">Image Library<strong class="alignRight-cat-right"><i class="fa fa-angle-right"></i></strong></span>
+						</a>
+					</div>
+				<?php }?>
+					<div class="download-categoty-span col-xl-3 col-md-6 padT20 padB20">
+						<a href="<?php echo $redirect_category.'8'; ?>" data-wow="Size & Fit Guide" class="download-categoty-name">
+							<i class="fa fa-file-image-o" aria-hidden="true"></i>
+							<span class="btnCustom mrgL20">
+							 Size & Fit Guide<strong class="alignRight-cat-right"><i class="fa fa-angle-right"></i></strong>
+							</span>
+						</a>
+					</div>
+				<?php if($inventory){?>
+					<div class="download-categoty-span col-xl-3 col-md-6 padT20 padB20">
+						<a href="<?php echo $redirect_category.'4'; ?>" data-wow="Inventory and UPC Files" class="download-categoty-name">
+							<i class="fa fa-file-text"></i>
+							<span class="btnCustom mrgL20">Inventory and UPC Files<strong class="alignRight-cat-right"><i class="fa fa-angle-right"></i></strong></span>
+						</a>
+					</div>
+				<?php }?>	
+				<?php if($productprice){?>
+					<div class="download-categoty-span col-xl-3 col-md-6 padT20 padB20" >
+						<a href="<?php echo $redirect_category.'5'; ?>" data-wow="Price Lists" class="download-categoty-name">
+							<i class="fa fa-tags"></i>
+							<span class="btnCustom mrgL20">
+								Price Lists<strong class="alignRight-cat-right"><i class="fa fa-angle-right"></i></strong>
+								</span>
+						</a>
+					</div>
+				<?php }?>
+				<?php if($productdata){?>
+					<div class="download-categoty-span col-xl-3 col-md-6 padT20 padB20">
+						<a href="<?php echo $redirect_category.'6'; ?>" data-wow="Product Data Files (AIO)" class="download-categoty-name">
+							<i class="fa fa-link"></i>
+							<span class="btnCustom mrgL20">
+								Product Data Files (AIO)<strong class="alignRight-cat-right"><i class="fa fa-angle-right"></i></strong>
+								</span>
+						</a>
+					</div>
+				<?php }?>
+					<div class="download-categoty-span col-xl-3 col-md-6 padT20 padB20">
+						<a href="<?php echo $redirect_category.'7'; ?>" data-wow="Documentation, Policies and more" class="download-categoty-name">
+							<i class="fa fa-folder"></i>
+							<span class="btnCustom mrgL20">Documentation, Policies and more <strong class="alignRight-cat-right"><i class="fa fa-angle-right"></i></strong></span>
+						</a>
+					</div>
+				</div>
+			</div>
+<?php } ?>
+
+
+<script type="text/javascript">
+    require(['jquery', 'lazyloder','fancyboxjs'], function($,lozad) {
+    	// window.addEventListener('load', function() 
+
+			var observer = lozad('body .lozad', {
+		        threshold: 0.1,
+		        load: function(el) {
+		            el.src = el.getAttribute("data-src");            
+		        }
+		    })
+	   
+	  		observer.observe();
+
+
+	  		$('.Downloadliblink').hover(
+				
+               function () {
+                  $('.menudropdownpages').css({"display":"block"});
+               }, 
+				
+               function () {
+                  $('.menudropdownpages').css({"display":"none"});
+                  
+			       
+               }
+            );  
+            $('.menudropdownpages').hover(
+            	function(){
+            		$(this).show();
+            	},function(){
+            		$(this).hide();
+            	});
+           $(document).ready(function(){
+           var url = window.location.href; 
+           console.log(url);
+
+            $('.menudropdownpages li a').each(function(){
+            	if($(this).attr('href')==url){
+            		$(this).css({'color':'#0c3c5f'});
+            	}
+            });
+			})
+
+
+
+
+
+		})
+    // });
+ </script>

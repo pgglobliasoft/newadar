@@ -1,0 +1,29 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * See LICENSE.txt for license details (http://opensource.org/licenses/osl-3.0.php).
+ *
+ * Glory to Ukraine! Glory to the heroes!
+ */
+?>
+<?php
+/**
+ * Blog post list lazyload template
+ *
+ * @var $block \Magefan\Blog\Block\Post\PostList\Toolbar\Pager
+ */
+
+?>
+<?php if ($block->useLazyload()) { ?>
+    <?php
+        $config = $block->getLazyloadConfig([
+            'trigger_element' => '.mbblog-lazyload-triggercustom'
+        ]);
+        //echo "<pre>";print_R($config);
+    ?>
+    <div class="center mfblog-autoloader" data-mage-init='{"<?php echo $block->getLazyloadJs() ?>" : <?php echo $config ?>}'>
+     <!-- <a href="javascript:void(0)" class="showmore mbblog-lazyload-triggercustom mfblog-hide-onloadcustom">Show More</a>  -->
+    	<img class="posts-loader mfblog-show-onloadcustom" src="<?php echo $block->getViewFileUrl('images/loader-2.gif') ?>" alt="<?php echo __('Posts loader') ?>" style="
+    display: none;" />
+    </div>
+<?php } ?>

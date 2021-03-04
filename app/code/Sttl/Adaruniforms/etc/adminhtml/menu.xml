@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <remove id="Magento_Sales::sales" />
+        <!-- <remove id="Magento_Backend::marketing_communications" /> -->
+        <!-- <remove id="Manadev_Core::manadev" /> -->
+        <remove id="Magento_Reports::report" />
+        <remove id="Magento_CatalogRule::promo" />
+        <remove id="Magento_Backend::marketing_seo" />
+        <remove id="Magento_Backend::marketing_user_content" />
+        <remove id="Dotdigitalgroup_Email::marketing_automation" />
+        <remove id="Shopial_Facebook::marketing_social" />
+        <remove id="Vsourz_Imagegallery::imagegallery_category" />
+        <remove id="Magestore_Bannerslider::bannerslider_coreslider" />
+        <remove id="Magestore_Bannerslider::bannerslider_reports_perslider" />
+        <remove id="Magestore_Bannerslider::bannerslider_reports_allslider" />
+        
+		<remove id="Magento_CurrencySymbol::system_currency" />
+		<remove id="Magento_Tax::sales_tax" />
+		
+        <!-- <remove id="Magento_Email::template" /> -->
+		
+    </menu>
+</config>

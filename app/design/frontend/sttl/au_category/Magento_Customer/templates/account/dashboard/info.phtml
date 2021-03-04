@@ -1,0 +1,410 @@
+<style type="text/css">
+	.magestore-bannerslider-title{
+		display: none;
+	}
+	.page-title-wrapper{
+		display: none;
+	}
+
+.circle {
+  height: 25px;
+  width: 25px;
+  background-color: rgba(255, 255, 255, .3);
+  border-radius: 50%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  pointer-events: none;
+  transform: scale(0);
+/*   animation: grow 1s forwards;          */
+}
+
+@keyframes grow {
+  0% {
+    background-color: rgba(50, 50, 50, .5);
+    transform: scale(1); z-index: 2; }
+  100% {
+    background-color: rgba(50, 50, 50, .3);
+    transform: scale(30); opacity: 0; z-index: -1; }
+}
+
+.grow {
+  animation: grow 2s ease-out forwards;
+}
+
+</style>
+<?php
+
+	$om = \Magento\Framework\App\ObjectManager::getInstance();
+	$customerSession = $om->create('Magento\Customer\Model\Session');
+	$customerName = $customerEmail = "";
+	$customer_phone = 'N/A';
+	$adminCutom = $customerSession->getCustomerAsadmin();
+	$adminEmail = $customerSession->getCustomerEnroller();
+	//$data = $helper->getCustomerDetails(["Active", "Phone1"]);
+	$data = $block->getCustomerData();
+	if(isset($data[0]) && !empty($data[0]))
+	{
+		$data = $data[0];
+	}
+	if($customerSession->isLoggedIn() && isset($data) && !isset($data['errors'])) {
+
+		$customerName = $customerSession->getCustomer()->getName();
+		$customerEmail = $customerSession->getCustomer()->getEmail();
+		$customerPassword = $customerSession->getCustomer()->getPasswords();
+
+		if (isset($data["Phone1"]) && !empty($data["Phone1"])) {
+			$tmpPhone = preg_replace("/[^0-9]/", "", $data["Phone1"]);
+			$lenPhone = strlen($tmpPhone);
+			if ($lenPhone == 10) {
+				$customer_phone = substr($tmpPhone,0,3).'-'.substr($tmpPhone,3,3).'-'.substr($tmpPhone,6);
+			} else {
+				$customer_phone = str_replace([" ", "."],"-",$data["Phone1"]);
+			}
+		}
+?>
+<div class="myAccountCustomBanner">
+
+<?php
+$status = '';
+
+if(trim(strtolower(isset($data['Active']))) == 'y' || trim(strtolower(isset($data['Active']))) == 1)
+{
+	$status = 'Active';
+}else{
+	$status = 'Inactive';
+}
+$pencile = '<?xml version="1.0" standalone="no"?> <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN""http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd"> <svg version="1.0" xmlns="http://www.w3.org/2000/svg"width="512.000000pt" height="512.000000pt" viewBox="0 0 512.000000 512.000000"preserveAspectRatio="xMidYMid meet"> <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)" stroke="none"> <path d="M4170 5105 c-136 -28 -248 -80 -355 -165 -106 -85 -3338 -3329 -3387 -3400 -49 -69 -108 -182 -127 -241 -14 -44 -301 -1292 -297 -1296 1 -1 287 63 636 143 395 90 664 156 711 175 175 69 108 6 1910 1808 1152 1151 1690 1696 1719 1740 198 297 183 679 -39 953 -185 228 -489 340 -771 283z m238 -395 c74 -17 135 -52 192 -110 122 -121 152 -296 80 -455 -19 -42 -294 -321 -1643 -1671 l-1619 -1621 -432 -153 c-237 -85 -437 -158 -443 -163 -19 -14 -4 30 161 478 l148 399 1505 1511 c827 830 1557 1560 1622 1621 65 61 136 119 157 129 88 42 185 55 272 35z"/> </g> </svg>';
+?>
+</div>
+	<!-- <div class="loginSection mobile-button">
+	            <a  href="https://dev.adaruniforms.com/customerorder/customer/neworder">Place a New order</a>
+	    </div> -->
+<div class="block block-dashboard-info" id="accordionExample">
+    <div class="block-title collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"><strong class="upperCaseText"><?= $block->escapeHtml(__('Account Details')) ?></strong>
+	</div>
+	<div id="collapseOne" class="block-content accountDtlSection collapse" aria-labelledby="headingOne">
+
+		<div class="box-information ">
+			<div class="box-descrition">
+				 <span>Full Name:</span>
+				<div class="box-content">
+					<p><?php echo $customerName; ?></p>
+				</div>
+			</div>
+			<div class="box-actions">
+				<a class="action edit" data-backdrop="false" data-toggle="modal" attr-type = "fullname" data-target="#customer-edit"><span> <?= $pencile ?></span></a>
+			</div>
+		</div>
+
+
+		<div class="box-information emailBox">
+			<div class="box-descrition">
+				 <span>Email/User ID:</span>
+				<div class="box-content emailVal">
+					<p><?php echo $customerEmail; ?></p>
+				</div>
+			</div>
+			<div class="box-actions">
+				<a class="action edit" data-backdrop="false" data-toggle="modal" attr-type = "email" data-target="#customer-edit"><span><?= $pencile ?></span></a>
+			</div>
+		</div>
+
+
+		<div class="box-information pswdBox">
+			<div class="box-descrition">
+				 <span>Password:</span>
+				<div class="box-content">
+					<p>*****</p>
+				</div>
+			</div>
+			<div class="box-actions">
+				<?php if(!$adminCutom ){ ?>
+				<a class="action edit" data-backdrop="false" data-toggle="modal" attr-type = "password" data-target="#customer-edit"><span><?= $pencile ?></span></a>
+				<?php }else{ ?>
+					<a class="action edit adminloginpassword"><span></span></a>
+				<?php } ?>
+			</div>
+		</div>
+
+		<div class="box-information">
+			<div class="box-descrition">
+				 <span>Phone Number:</span>
+				<div class="box-content">
+					<p><?php echo $customer_phone;?></p>
+				</div>
+			</div>
+			<!-- <div class="box-actions">
+				<a class="action edit" data-backdrop="false" data-toggle="modal"  attr-type = "phone" data-target="#customer-edit"><span><?= $pencile ?></span></a>
+			</div> -->
+		</div>
+
+		<!-- <div class="box-information col-md-4">
+			<div class="box-descrition">
+				 <span>Profile pick:</span>
+			</div>
+			<div class="box-actions">
+				<a class="action edit" data-toggle="modal"  attr-type = "phone" data-target="#customer-edit"><span><?= $pencile ?></span></a>
+			</div>
+		</div> -->
+
+
+	</div>
+	<script type="text/javascript">
+		require(['jquery'], function($) {
+			$(document).ready(function() {
+				$(".account_menu").hide();
+				$(".back-menu").hide();
+			});
+			$('#customer-edit').on('show.bs.modal', function(e){
+
+				var type = $(e.relatedTarget);
+				var recipient = type.attr('attr-type');
+
+				if (recipient == "email") {
+					$("#change-email").attr("checked", true).change();
+					$(".field-name-lastname, .field-name-firstname").hide();
+				}
+				if (recipient == "password") {
+					$("#change-password").attr("checked", true).change();
+					$(".field-name-lastname, .field-name-firstname").hide();
+				}
+			});
+
+			$('#customer-edit').on('hide.bs.modal', function(e){
+				var type = $(e.relatedTarget);
+				var recipient = type.attr('attr-type');
+
+				$("#change-email").attr("checked", false).change();
+				$("#change-password").attr("checked", false).change();
+				$(".field-name-lastname, .field-name-firstname").show();
+			});
+
+			$(document).on("click",".customerLoggedIn",function(e) {
+
+				if($(".action.nav-toggle").hasClass("closeToggle")){
+					if($("nav.navigation").is(":visible")){
+							$("nav.navigation").fadeOut("slow");
+							$(".action.nav-toggle").removeClass("closeToggle");
+						}
+					}
+console.log("hii")
+					$(".myaccount_nav .block-title").removeClass("collapsed");
+				setTimeout(function(){
+					$(".account_menu_nav").addClass("show");
+					},800)
+				if(!$(this).hasClass("menu_collapsed")){
+					$(this).addClass("menu_collapsed");
+				}else{
+					$(this).removeClass("menu_collapsed")
+				}
+				if($(this).hasClass("menu_collapsed")){
+					$(".back-menu").show();
+					$(".account_menu").slideDown(800);
+					$("body").css("overflow","hidden");
+					$("body").css("position","fixed");
+					$("body").css("width","100%");
+
+					$(".accountPageContainer").css("z-index",-1)
+					// $(".flexslider").css("z-index",-1)
+				}else{
+					$(".account_menu").slideUp(800);
+					setTimeout(function(){
+						$("body").css("overflow","unset")
+						$(".accountPageContainer").css("z-index",0)
+						$("body").css("position","");
+						$("body").css("width","");
+						// $(".flexslider").css("z-index",0)
+						// $(".account_menu_nav").removeClass("show");
+						$(".account_menu_nav .mfp-close-inside").trigger("click");	
+						$(".account_menu_nav .collapse").removeClass("show");
+						$(".account_menu_nav .block-title,.myaccount_nav .block-title").addClass("collapsed");
+						$(".account_menu_nav .block-title,.myaccount_nav .block-title").attr("aria-expanded","false");
+						$(".back-menu").hide();
+					},800)
+				}
+			});
+			$(document).on("click",".myaccount_nav .block-title",function(e) {
+				var x = $(this).attr("aria-expanded")
+				if(x == 'false'){
+					setTimeout(function(){
+						$(".account_menu_nav .mfp-close-inside").trigger("click");	
+					$(".account_menu_nav .collapse").removeClass("show");
+					$(".account_menu_nav .block-title").addClass("collapsed");
+						$(".account_menu_nav .block-title").attr("aria-expanded","false");
+					},800)
+				}
+			});
+			$(document).on("click", function(event){
+		       if(!jQuery(event.target).closest(".account_menu,.avatar__thumbnail.customerLoggedIn").length){
+		        	$(".account_menu").slideUp(800);
+							setTimeout(function(){
+								$(".back-menu").hide();
+								$("body").css("overflow","unset")
+								$(".accountPageContainer").css("z-index",0)
+								$("body").css("position","");
+								$("body").css("width","");
+								$(".account_menu_nav").removeClass("show");
+								$(".account_menu_nav .collapse").removeClass("show");
+								$(".account_menu_nav .block-title,.myaccount_nav .block-title").addClass("collapsed");
+								$(".account_menu_nav .block-title,.myaccount_nav .block-title").attr("aria-expanded","false");
+								// $(".flexslider").css("z-index",0)
+							},800)
+		       }
+		   });
+
+	});
+	</script>
+</div>
+
+<?php
+
+}
+else
+{
+	echo $data['message'];
+}
+?>
+<!-- <script>
+   requirejs(["jquery"], function($) {
+   			// $(document).ready(function(){
+
+
+	  // $('.loginSection a').mousedown(function() {
+	  //   $(this).addClass('hold-mouse')
+	  //   console.log('event', event)
+	  //   var x = event.offsetX - 10;
+	  //   var y = event.offsetY - 10;
+	  //      $(this).find('.circle').remove();
+	  //   $('.loginSection a').append('<div class="circle grow" style="left:' + x + 'px;top:' + y + 'px;"></div>')
+	  // })
+
+  		// $(document).on('click','button.themeBtn.action.save',function(e){
+  		// 	 $(this).addClass('hold-mouse')
+		  //   console.log('event', event)
+		  //   var x = event.offsetX - 10;
+		  //   var y = event.offsetY - 10;
+		  //   $(this).find('.circle').remove();
+		  //   $(this).append('<div class="circle grow" style="left:' + x + 'px;top:' + y + 'px;"></div>')
+  		// })
+
+
+    })
+</script> -->
+<style>
+
+.account_menu{
+	display: none;
+    top: 62px;
+    background: #f6f6f6;
+    position: absolute;
+    /* padding-top: 20px; */
+    width: calc(100% - 0px);
+    left: 0;
+    z-index: 99;
+    /* border: 1px solid gray; */
+    box-shadow: 0 0 4px rgba(0,0,0,0.3);
+    border-radius: 24px;
+    overflow: hidden;
+    padding: 10px 10px 25px;
+}
+    .customer-account-index .block-dashboard-info .block-title{margin: 0px; }
+    .customer-account-index .myAccountCustomBanner{ margin-bottom: 0px; }
+    .block.block-dashboard-info.shippingBlock {
+    margin-bottom: 0px;
+     padding-block-end: 0px;
+}
+.account_menu .mobile-button{
+	text-align: center;
+    padding: 10px 0px;
+    margin: 7px 14px 15px;
+    width: 20%;
+    float: right;}
+  .account_menu .mobile-button a{
+    text-decoration: none;
+    text-align: center;
+    margin: auto;}
+    .account_menu .box-content .box-title1{ padding: 0px 15px 0px; }
+    .account_menu div#collapseOne {padding: 0px 15px 10px; }
+    .account_menu #collapseOne .box-information {
+    justify-content: space-between;
+    display: flex;
+}
+
+.account_menu .block-content{ background: #fff; }
+.block-dashboard-info > .block-title{cursor:pointer;/* position:relative; */margin-bottom:0 !important;}
+.account_menu #collapseOne:before,.account_menu #collapseTwo:before,.account_menu #collapseThree:before,.account_menu #collapseFour:before {
+    content: "";
+    height: 20px;
+    width: 100%;
+    margin-bottom: 0px;
+    display: table;
+    clear: both;}
+.account_menu .block.block-dashboard-info.paymentBlock{ 	background: unset;
+    margin-top: -1px: ;
+    padding: unset; }
+	.account_menu .block-title {
+	    margin: 0px 0px;}
+	    div#customer-edit{ z-index: 9999; }
+
+.account_menu .block{margin-top: -1px; margin-bottom: 0px; }
+.account_menu .block-title{ margin-bottom: 0px !important; }
+/*.account_menu #collapseThree{     margin-bottom: -10px; }*/
+.commonPopup1 .comingSoonTxt,.block-customer-edit .comingSoonTxt {
+    padding: 0 24px 15px;
+}
+
+.back-menu {
+	display: none ;
+    cursor: pointer;
+    left: 0;
+    height: 90vh;
+    border-radius: 0;
+    /*background-color: rgba(0,0,0,0.7);*/
+    width: 100%;
+    position: absolute;
+    top: 0;
+    margin: 0px;
+    overflow: auto;
+        padding-block-end: 60px;
+}
+
+.quickViewCont .close {
+     top: 0px !important;
+}
+
+
+form button.themeBtn {
+    width: 36px;
+    height: 40px;
+    margin-left: 5px;
+    border-radius: 5px;
+    color: white !important;
+    background: #0c4269;
+    padding: 0 !important;
+}
+.block-content.customerStatement .box { float: unset !important;  clear: none !important;
+}
+
+.account_menu .block-title strong.upperCaseText{ font-size: 16px; }
+.box.box-information strong.box-title span{font-size: 14px; font-family: 'Futura PT Bold'; }
+
+.account_menu .paymentAddress {
+    max-height: 203px;
+    overflow: auto;
+    margin: 15px 13px;
+}
+.account_menu div#customer-edit,.account_menu div#customer-add-payment,.account_menu div#customer-edit-address {
+    cursor: pointer;
+    left: 0;
+    height: 100vh;
+    border-radius: 0;
+    background-color: rgba(0,0,0,0.7);
+    width: 100%;
+    top: 0;
+    margin: 0px;
+    overflow: auto;
+}
+
+
+</style>

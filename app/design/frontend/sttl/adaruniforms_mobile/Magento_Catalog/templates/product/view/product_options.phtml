@@ -1,0 +1,1916 @@
+
+ <?php
+    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+    $customerSession = $objectManager->get('Magento\Customer\Model\Session');
+    $cus_id =  $customerSession->getCustomer()->getId();
+
+    // echo $cus_id;
+    // die;
+
+  	$parent_style = $block->getParentStyle();
+  	$this->product = $objectManager->get('\Magento\Catalog\Model\Product');
+  	$getProductId = $this->product->getIdBySku($parent_style);
+	$product = $this->product->load($getProductId);
+
+if ($customerSession->isLoggedIn()) : ?>
+<?php $priceHelper = $objectManager->create('Magento\Framework\Pricing\Helper\Data');
+	$parent_style = $product->getSku();
+	$collcationValue =  $product->getResource()->getAttribute('collecttion')->getFrontend()->getValue($product);
+	$style_status = "";
+	//$parent_color_data = $block->getColorData($parent_style);
+	$parent_color_data = $block->getParentColorData();
+
+foreach ($parent_color_data as $current_style => $current_style_data) {
+	if($current_style == $parent_style){
+
+  $main_color_array = array();
+	$main_color_html = '<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">';
+	$main_color_i = $fashionColor_i = 0;
+	$main_color_class = '';
+	$main_size_char_html = '<div class="tab-content order-table" id="nav-tabContent"> ';
+	$colorChange = '';
+	$size_char_i = 0;
+	$coreColor = ''; $fashionColor = '';
+	$fashionColorName = '';
+	$first_option_color = '';
+
+	// echo "<pre>";
+	// print_r($parent_color_data);
+
+	foreach ($current_style_data as $key => $color_data) {
+		if ($color_data['Color'] != '' && $color_data['ColorSwatch'] != '') {
+				if (!in_array($color_data['ColorCode'], $main_color_array)) {
+						if ($main_color_i != 0) {
+								$main_color_class = '';
+								//$main_color_aria = '';
+								$main_color_aria = 'aria-selected="true"';
+						}
+						if ($main_color_i == 0) {
+								$main_color_class = 'active';
+								$main_color_aria = 'aria-selected="false"';
+						}
+						if($color_data['ColorStatus'] === 'Core')
+						{
+
+								$coreColor .= '<div id="core" class="' . $main_color_class . ' swatch-option image "  data-toggle="tab" href="#' . $color_data['ColorCode'] . '" option-color-code ="' . preg_replace('/[^a-zA-Z0-9_ %\[\]\.\(\)%&-]/s', '', $color_data['ColorCode']) . '" option-color-status = "' . $color_data['ColorStatus'] . '" option-style-status = "' . $color_data['StyleStatus'] . '" tabindex="' . $key . '" option-id="' . $color_data['Style'] . '" option-core-color-name = "' . $color_data['Color'] . '" option-tooltip-thumb="' . strtolower($color_data['ColorSwatch']) . '" option-tooltip-value="' . strtolower($color_data['ColorSwatch']) . '" role="tab" aria-controls="' . $color_data['ColorCode'] . '" ' . $main_color_aria . ' style="background: url(' . strtolower($color_data['ColorSwatch']) . ') no-repeat center; background-size: 650%;"><span class="swatch_img"><input name="style" type="hidden" value ="' . $parent_style . '"><input name="qty_change_' . $color_data['ColorCode'] . '"class="qty_change" id="qty_change_' . $color_data['ColorCode'] . '" type="hidden" value ="0"> </span></div>';
+						}else if($color_data['ColorStatus'] !== '' ){
+
+								if ($fashionColor_i == 0) {
+										$fashionColorName = $color_data['Color'];
+										$first_option_color = $color_data['ColorStatus'];
+								}
+								$fashionColor .= '<div id="fashion" class="' . $main_color_class . ' swatch-option image "  data-toggle="tab" href="#' . $color_data['ColorCode'] . '" option-color-code ="' . preg_replace('/[^a-zA-Z0-9_ %\[\]\.\(\)%&-]/s', '', $color_data['ColorCode']) . '" option-color-status = "' . $color_data['ColorStatus'] . '" option-style-status = "' . $color_data['StyleStatus'] . '" tabindex="' . $key . '" option-id="' . $color_data['Style'] . '" option-fashion-color-name = "' . $color_data['Color'] . '" option-tooltip-thumb="' . strtolower($color_data['ColorSwatch']) . '" option-tooltip-value="' . strtolower($color_data['ColorSwatch']) . '" role="tab" aria-controls="' . $color_data['ColorCode'] . '" ' . $main_color_aria . ' style="background: url(' . strtolower($color_data['ColorSwatch']) . ') no-repeat center; background-size: 650%;"><span class="swatch_img"><input name="style" type="hidden" value ="' . $parent_style . '"><input name="qty_change_' . $color_data['ColorCode'] . '"class="qty_change" id="qty_change_' . $color_data['ColorCode'] . '" type="hidden" value ="0"> </span></div>';
+								$fashionColor_i ++;
+						}
+						$main_color_i++;
+						$main_color_array[] = $color_data['ColorCode'];
+						$activeclass = '';
+						$filterBy = $color_data['ColorCode'];
+						$colorcode_array = array_filter($current_style_data, function ($var) use ($filterBy) {
+								return ($var['ColorCode'] == $filterBy);
+						});
+						$filterByEta = '';
+						$eta_array = array_filter($colorcode_array, function ($var) use ($filterByEta) {
+								return (!empty((int)$var["ETA"]));
+
+						});
+						// if ($size_char_i == 0) {
+						// 		$activeclass = 'active';
+						// }
+
+            // echo "<div>".$$color_data."</div>";
+            $swatch_color = str_replace(' ','',$color_data['Color']);
+
+						$main_size_char_html .= '<div class="tab-pane fade show " id="product_color_' . $swatch_color . '" role="tabpanel">';
+						$tr_one = '';
+						$tr_two = '';
+						$tr_three = '';
+						$tr_three1 = '';
+						$tr_four = '';
+						$tr_five = '';
+						foreach ($colorcode_array as $key => $value) {
+								$qty = (isset($value["ActualQty"]) && $value["ActualQty"] != '') ? $value["ActualQty"] : 0.00;
+								// $show_qty = (isset($value["QtyAvailable"]) && $value["QtyAvailable"] != '') ? $value["QtyAvailable"] : 0.00;
+
+								$show_qty = (isset($value["ActualQty"]) && $value["ActualQty"] != '') ? $value["ActualQty"] : 0.00;
+
+								$tr_one .= '<tr><td align="center">' . $value['Size'] . '</td>';
+								if ($value["DisPrice"] < $value["UnitPrice"]) {
+										$tr_one .= '<td align="center" class="disprice"><span>' . $priceHelper->currency($value["DisPrice"], true, false) . '</span><span class="mainprice">'.$priceHelper->currency($value["UnitPrice"], true, false) . '</span> </td>';
+								} else {
+										$tr_one .= '<td align="center">' . $priceHelper->currency($value["UnitPrice"], true, false) . '</td>';
+								}
+								// $temp_com = "0000-00-00 00:00:00";
+                $eta_date = array();
+                $eta_date = array(
+                  "ETA1" => array(
+                        "Date" => date("m/d/Y", strtotime($value["ETA1"])),
+                        "Qty" => $value["EtaQty1"],
+                        "compare" => date("Y-m-d", strtotime($value["ETA1"])),
+                    ),
+                  "ETA2" => array(
+                        "Date" => date("m/d/Y", strtotime($value["ETA2"])),
+                        "Qty" => $value["EtaQty2"],
+                        "compare" => date("Y-m-d", strtotime($value["ETA2"])),
+                    ),
+                  "ETA3" => array(
+                        "Date" => date("m/d/Y", strtotime($value["ETA3"])),
+                        "Qty" => $value["EtaQty3"],
+                        "compare" => date("Y-m-d", strtotime($value["ETA3"])),
+                    )
+                );
+                date_default_timezone_set("America/Detroit");
+                $sysDate = date('Y-m-d', strtotime('1900-01-01'));
+
+
+                if(empty((int)$value["ETA1"]) && empty((int)$value["ETA2"]) && empty((int)$value["ETA3"])){
+                    $tr_one .= '<td align="center">' . ((floatval($show_qty) > 500) ? '500+' : floatval($show_qty)) . '</td>';
+                }else if($eta_date){
+                    $count = 1;
+                    $tag_count = 0;
+                    $eta_count_top = 0;
+                    $eta_class = "eta-tooltip";
+                    $eta_avail_to_show = false;
+                    foreach ($eta_date as $keys => $datas) {
+                      if($eta_date[$keys]["compare"] != $sysDate && !empty((int)$datas["compare"]) && $eta_date[$keys]["Qty"] > 0 && $eta_avail_to_show == false){
+                        $eta_avail_to_show = true;
+                        // echo $eta_avail_to_show;
+                      }
+                    }
+                    if($eta_avail_to_show){
+                      $tr_one .= '<td align="center" class="'.$eta_class.'">' . ((floatval($show_qty) > 500) ? '500+' : floatval($show_qty));
+                      foreach ($eta_date as $key => $date_eta) {
+                          if($eta_date[$key]["compare"] != $sysDate && !empty((int)$date_eta["compare"]) && $eta_date[$key]["Qty"] > 0 && $eta_count_top == 0){
+                            $tr_one .= '<div class="eta-date" style="display:none;"><div>Restock Date - Qty</div>';
+                            $eta_count_top++;
+                          }
+                          if($eta_date[$key]["compare"] != $sysDate && !empty((int)$date_eta["compare"]) && $eta_date[$key]["Qty"] > 0){
+                          		$eta_qty_show = $eta_date[$key]["Qty"];
+                              if($eta_qty_show >= 500){
+                                $eta_qty_show = "500+";
+                              }
+							  if(($eta_date[$key]["compare"] < date('Y-m-d'))){
+                                $tr_one .= '<div class="eta_date_past_date">';
+                                $tr_one .= '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 286.054 286.054" style="enable-background:new 0 0 286.054 286.054;" xml:space="preserve">
+                                            <g>
+                                                <path style="fill:#E2574C;" d="M143.027,0C64.04,0,0,64.04,0,143.027c0,78.996,64.04,143.027,143.027,143.027
+                                                    c78.996,0,143.027-64.022,143.027-143.027C286.054,64.04,222.022,0,143.027,0z M143.027,259.236
+                                                    c-64.183,0-116.209-52.026-116.209-116.209S78.844,26.818,143.027,26.818s116.209,52.026,116.209,116.209
+                                                    S207.21,259.236,143.027,259.236z M143.036,62.726c-10.244,0-17.995,5.346-17.995,13.981v79.201c0,8.644,7.75,13.972,17.995,13.972
+                                                    c9.994,0,17.995-5.551,17.995-13.972V76.707C161.03,68.277,153.03,62.726,143.036,62.726z M143.036,187.723
+                                                    c-9.842,0-17.852,8.01-17.852,17.86c0,9.833,8.01,17.843,17.852,17.843s17.843-8.01,17.843-17.843
+                                                    C160.878,195.732,152.878,187.723,143.036,187.723z"/>
+                                            </g>
+                                            </svg>';
+                                $tr_one .= '<div>'.$eta_date[$key]["Date"].' - '.$eta_qty_show.'</div>';
+                                $tr_one .= '</div>';
+                              }else{
+                                $tr_one .= '<p class="eta-date-list">'.$eta_date[$key]["Date"].' - '.$eta_qty_show.'</p>';
+                              }
+                              $count++;
+                          }
+                      }
+                      if($eta_count_top > 0){
+                        $tr_one .= '</div>';
+                      }
+                      $tr_one .= '</td>';
+                    }else{
+                      $tr_one .= '<td align="center">' . ((floatval($show_qty) > 500) ? '500+' : floatval($show_qty)) . '</td>';
+                    }
+                }else{
+                    $tr_one .= '<td align="center">' . ((floatval($show_qty) > 500) ? '500+' : floatval($show_qty)) . '</td>';
+                }
+
+								$tr_one .= '<td align="center" style="width: 18%;" class="qtyTd">
+						<input name="qty[' . $value['Color'] . '][' . $value['Size'] . ']" type="text" pattern="[0-9]" min="1" readonly="readonly" class="checkvalue" autocomplete="off" max="' . floatval($qty) . '" ' . (($qty <= 0) ? '"' : "") . ' >
+						<span class="maxqtyvaldi"></span>
+						<input name="showprice[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . floatval($value["DisPrice"]) . '">
+						<input name="selectcolor" type="hidden" value ="' . $value['Color'] . '">
+						<input name="selectsize" type="hidden" value ="' . $value['Size'] . '">
+						<input name="itemscode[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . $value['ItemCode'] . '">
+						<input name="colorcode[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . $value['ColorCode'] . '">
+						<input name="mainprice[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . floatval($value["UnitPrice"]) . '">
+						<input name="DiscountPer[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . floatval($value["DisPercent"]) . '">
+						<input name="DiscountPrice[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . floatval($value["DisPrice"]) . '">
+						</td>';
+								$tr_one .= '<td align="center" style="width: 20%;" class="total"><input class="unittotal" name="inpprice[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value =""><span class="showprice"></span></td>';
+						$tr_one .= '</tr>';
+						}
+						// $main_size_char_html .= "<div class='colorContainer'><table class='table table-bordered table-responsive'> <tr class='header'><td align='center'>Size</td><td align='center'>Price</td><td align='center'>In Stock</td><td align='center'>Quantity</td><td align='center'>Total</td></tr>";
+            $style_table_header = "<tr class='header'><th>Size</th><th>Price</th><th>Stock</th><th>Qty</th><th>Total</th></tr>";
+            $main_size_char_html .= "<div class='colorContainer'><table class='table table-bordered table-responsive'>";
+            $main_size_char_html .= $style_table_header;
+            $main_size_char_html .= $tr_one;
+						$main_size_char_html .= $tr_two;
+						$main_size_char_html .= $tr_three;
+						if (!empty($eta_array)) {
+								$main_size_char_html .= $tr_three1;
+						}
+						$main_size_char_html .= $tr_four;
+						$main_size_char_html .= $tr_five;
+
+						$main_size_char_html .= '</table><input name="submitcolor" type="hidden" value ="' . $color_data['Color'] . '"><input id="closepopup" name="closepopup" type="hidden" value =""></div></div>';
+
+
+
+						$size_char_i++;
+				} else { }
+			}
+		}
+	}
+}
+
+
+
+if(isset($parent_color_data) && isset($parent_color_data['errors']))
+{
+
+?>
+<div class="modal fade" id="popupModal" tabindex="-1" data-keyboard="false" data-backdrop="static" role="dialog" aria-labelledby="loginModal" aria-hidden="true" style="z-index: 1400;">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+			<div class="modal-body">
+			<form class="form cart col-lg-12" action="<?php echo $this->getUrl().'adaruniforms/cart/add'?>" id="cart-form" method="post" data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"data-mage-init='{"validation":{}}'>
+				<div class="modalContainer">
+					<div class="container bg-primary p-2">
+						<div class="row">
+							<div class="col-md-4 place-an-order-back-button">
+								<span  data-dismiss="modal" aria-label="Close">
+							</div>
+							<div class="col-md-4 text-center place-an-order-text">
+								<?php echo __("Place an Order");?>
+							</div>
+							<div class="col-md-4" data-dismiss="modal">
+								<button type="button" class="productview-modal-close-inside"><i class="fa fa-times"></i></button>
+							</div>
+						</div>
+					</div>
+					<div class="container bg-light p-2">
+						<h4 class="col-md-12"><?php echo $parent_color_data['message'];?></h4>
+					</div>
+				</div>
+			</form>
+			</div>
+		</div>
+	</div>
+</div>
+<?php
+}
+else
+{
+	if(count($parent_color_data > 0)){
+		$style_status = $parent_color_data[$parent_style][0]['StyleStatus'];
+	}
+	//echo "<pre>";print_R($parent_color_data);exit;
+?>
+                <form class="form cart col-lg-12" action="<?php echo $this->getUrl().'adaruniforms/cart/add'?>" id="cart-form" method="post" data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"data-mage-init='{"validation":{}}'>
+                    <div class="modalContainer">
+                        <?php
+							$getponumber = $block->getcustomponumber($customerSession->getCustomerId());
+						?>
+                      <div class="container bg-light p-2">
+                        <div class="box box-information">
+                           <span class="po-exist custom-error"></span>
+                           <div class="d-flex po-section">
+                              <div class="box-content">
+                                 <input type="text" value="" class="tabactive" name="po_number" id="po_number" autocomplete="off" placeholder="Enter New PO or Select Existing PO " />
+                                 <span class="left_icon left_icon1" style="cursor: pointer;"><i class="fa fa-caret-down"  aria-hidden="true"></i></span>
+                                 <div class='box-actions checkPoAndInsert' style="display: none;" ><a class="themeBtn alignRight" href="javascript:void(0);"><i class="fa fa-plus" aria-hidden="true"></i></a></div>
+                                 <span class="error11"></span>
+                                 <!-- <div class='box-actions checkPoAndEdit' style="display: none;" ><a class="themeBtn alignRight" href="javascript:void(0);"><i class="fa fa-pencil" aria-hidden="true"></i></a></div> -->
+                                 <input type="hidden" name="style" value="<?= $block->escapeHtml(__($parent_style)) ?>" id="style">
+                              </div>
+                           </div>
+                				</div>
+                        <div id="message" class="messages">
+                            <div id="msg_text"></div>
+		                    </div>
+                        <div class="selected_color_section"><span class="selected_color_static_text">Selected Color Status: </span><span class="selected_color_size"></span></div>
+                        <?php
+                            echo $main_size_char_html;
+                            echo "</div>";
+
+						?>
+            <div class="add-to-cart-button-sec">
+              <a href="javascript:void(0);" class="themeBtn scroll-to-po mobile-button" style="pointer-events: all; opacity: 1; width: 100%;">Enter or Select P.O. To Add Items <i class="fa fa-caret-up check-valid-po" aria-hidden="true"></i></a>
+            </div>
+            <div class='view_summary_sec'>
+              <a href='#' style='display:none' class='themeBtn mobile-button view_summary_btn' id='view_summary'>
+                <strong>View Summary</strong>
+              </a>
+            </div>
+
+
+
+<!-- QTY POPUP HTML START -->
+
+            <div id="qty-add-popup-modal" style="display: none;" >
+                <div class="size_navigation">
+                  <span class="previous_size">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 70" width="16" height="70">
+                      <style>
+                        tspan { white-space:pre }
+                        .shp0 { fill: #3d5c73 }
+                      </style>
+                      <path id="Background" class="shp0" d="M15 1L1 35" />
+                      <path id="Layer 1" class="shp0" d="M15 1L1 35" />
+                      <path id="Shape 1" class="shp0" d="M14 1L0 35L14 69L16 67L3 35L16 4L14 1Z" />
+                    </svg>
+                  </span>
+                  <span class="next_size">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 70" width="16" height="70">
+                      <style>
+                        tspan { white-space:pre }
+                        .shp0 { fill: #3d5c73 }
+                      </style>
+                      <path id="Background" class="shp0" d="M1 69L15 35" />
+                      <path id="Layer 1" class="shp0" d="M1 69L15 35" />
+                      <path id="Shape 1" class="shp0" d="M2 69L16 35L2 1L0 3L13 35L0 66L2 69Z" />
+                    </svg>
+                  </span>
+                </div>
+                <div class="qty-label">
+                  <label class="qty_for_size">QTY for </label>
+                </div>
+                <div class="available_qty_section" >
+                  <span class="qty_label">Available Qty:<span class="available_qty_popup"></span></span>
+                </div>
+                <div class="num-block skin-2">
+                  <div class="num-in">
+                      <span class="minus dis"></span>
+                      <input type="number" placeholder="Qty" inputmode="numeric" class="qty_add_num" value="0" min="0">
+                      <input name="addstyleqty" id="addstyleqty" type="hidden" value="">
+                      <input name="currenstylesku" id="currenstylesku" type="hidden" value="">
+                      <span class="plus"></span>
+                  </div>
+                </div>
+                <div class="eta_info">
+                  <span class="eta_info_label">Next Restock Date</span>
+                  <span class="eta_info_detailed"></span>
+                  <span class="input_click_event"></span>
+                </div>
+            </div>
+
+<!-- QTY POPUP HTML END -->
+<!-- PO Success Popup HTML START -->
+<div id="posuccess-message" style="display: none;" >
+  <p>Item Successfully Added To PO</p>
+</div>
+<!-- PO Success Popup HTML END -->
+            <style type="text/css">
+
+            .clickeffect {
+            	animation: blureffect 1s;
+            	animation-fill-mode: both;
+            }
+
+            @keyframes blureffect {
+                0% {
+                  	filter: brightness(1);
+                }
+                50% {
+            				filter: brightness(0.7);
+                }
+            		100% {
+            				filter: brightness(1);
+                }
+
+            }
+
+
+            .add-to-cart-button-sec .mobile-button.saveChng.disabled { pointer-events: none !important; opacity: 0.5 !important;}
+            .add-to-cart-button-sec { height: 60px;}
+            body { cursor: pointer;}
+            aside.po-success-popup { display: flex;align-items: center;justify-content: center;left: 0 !important;}
+            aside.po-success-popup .modal-inner-wrap { min-width: -moz-max-content; min-height: unset !important; min-width: fit-content; width: 100px !important; max-width: 100px; border-radius: 5px;}
+            aside.po-success-popup .modal-inner-wrap .modal-content { min-width: -moz-max-content; padding: 15px 40px;}
+            aside.po-success-popup .modal-inner-wrap .modal-content #posuccess-message p { margin: 0;}
+              .skin-2 .num-in {
+              background: #FFFFFF;
+              box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.15);
+              border-radius: 25px;
+              height: 40px;
+              width: 110px;
+              float: left;
+            }
+
+            .skin-2 .num-in span {
+              width: 30%;
+              display: block;
+              height: 40px;
+              float: left;
+              position: relative;
+            }
+
+            .skin-2 .num-in span:before, .skin-2 .num-in span:after {
+              content: '';
+              position: absolute;
+              background-color: #667780;
+              height: 2px;
+              width: 10px;
+              top: 50%;
+              left: 50%;
+              margin-top: -1px;
+              margin-left: -5px;
+            }
+
+            .view-po.active {
+              background-color: #0b4269 !important;
+            }
+
+            .view-po.active span {
+              color: white !important;
+            }
+
+            .skin-2 .num-in span.plus:after {
+              transform: rotate(90deg);
+            }
+
+            .skin-2 .num-in input {
+                float: left;
+                width: 33%;
+                height: 40px;
+                border: none;
+                text-align: center;
+            }
+
+            .modal-popup.qty-add-popup.modal-slide { display: flex;justify-content: center;align-items: center; left: 0; }
+            .modal-popup.qty-add-popup.modal-slide .modal-inner-wrap { top: 0; min-height: unset !important; min-width: fit-content; width: 300px; max-width: 300px; border-radius: 5px;}
+            .modal-popup.qty-add-popup.modal-slide .modal-inner-wrap .modal-content { border-radius: 5px 5px 0 0;}
+            .modal-popup.qty-add-popup.modal-slide .modal-footer {
+              display: flex;
+              padding: 0 14px;
+              min-height: 50px;
+              justify-content: center;
+              align-items: center;
+            }
+            .modal-popup.qty-add-popup.modal-slide .modal-content { padding: 0; height: 170px; }
+            .modal-popup.qty-add-popup.modal-slide .modal-header button.action-close { padding: 17px; }
+            .modal-popup.qty-add-popup.modal-slide #qty-add-popup-modal .num-block.skin-2 { width: 250px; }
+            .modal-popup.qty-add-popup.modal-slide #qty-add-popup-modal .num-in { box-shadow: unset !important; width: 90%; display: flex;justify-content: center;align-items: center; margin: 10px 15%; }
+            .modal-popup.qty-add-popup.modal-slide #qty-add-popup-modal .minus, .modal-popup.qty-add-popup.modal-slide #qty-add-popup-modal .plus { border: 2px solid #0c4269; border-radius: 30px; width: 38px !important; height: 38px !important; }
+            .modal-popup.qty-add-popup.modal-slide #qty-add-popup-modal .qty_add_num { width: 25% !important; margin: 0 5px; border: 1px solid #000; border-radius: 5px; }
+            .modal-popup.qty-add-popup.modal-slide #qty-add-popup-modal .minus:before, .modal-popup.qty-add-popup.modal-slide #qty-add-popup-modal .plus:before { background-color: #0c4269 !important; }
+            .modal-popup.qty-add-popup.modal-slide #qty-add-popup-modal .qty-label {
+                display: flex;
+                justify-content: center;
+                font-size: 20px;
+                position: relative;
+                padding-top : 12px;
+                font-weight: normal;
+            }
+            .modal-popup.qty-add-popup.modal-slide .eta_info span.eta_info_detailed { font-size: 16px; z-index: 9999 !important; }
+            .modal-popup.qty-add-popup.modal-slide .eta_info span.eta_info_label { opacity: 0.6; font-size: 10px; }
+            .modal-popup.qty-add-popup.modal-slide .eta_info span { text-align: center; }
+            .modal-popup.qty-add-popup.modal-slide .eta_info { width: 100%; display: grid; }
+            .modal-popup.qty-add-popup.modal-slide #qty-add-popup-modal .size_navigation .previous_size { position: absolute; left: 0; padding: 5px 10px; cursor: pointer;  top: 32%; z-index: 9999; }
+            .modal-popup.qty-add-popup.modal-slide #qty-add-popup-modal .size_navigation .next_size { position: absolute; right: 0; padding: 5px 10px; cursor: pointer;  top: 32%; z-index: 9999; }
+
+            .modal-popup.qty-add-popup.modal-slide #qty-add-popup-modal input:focus { border-radius: 5px;}
+            .modal-popup.qty-add-popup.modal-slide footer .style-qty-edit { width: 50%; font-size: 15px; background: unset !important; font-weight: normal; }
+            .modal-popup.qty-add-popup.modal-slide footer .style-qty-edit:active { border: 0 !important;}
+
+            .modal-popup.qty-add-popup.modal-slide .available_qty_section { display: flex;justify-content: center;align-items: center; }
+            .modal-popup.qty-add-popup.modal-slide .available_qty_section .qty_label { font-size: 10px; opacity: 0.6; }
+            /*.modal-popup.qty-add-popup.modal-slide #qty-add-popup-modal { height: 200px !important; }*/
+
+
+            </style>
+<script>
+require(['jquery','Magento_Ui/js/modal/modal','mousewheelScroll'],function(jQuery,modal){
+	// jQuery(document).on('hide.bs.collapse', ".collapse", function(e){
+	// 	if(jQuery("#"+this.id).parent().find(".qty_change").val() > 0)
+	// 	{
+	// 		return false;
+	// 	}
+	// });
+
+
+
+  //PO DropDOWN and Validation things start
+
+  var opt2_items_json = '',
+    arrayData = '',
+    jeson = '';
+    skusdata = '';
+    optiona1_val = ''
+    allpo = [],
+    res_polist = [];
+
+
+    jQuery(document).on("click", function(event){
+       if(!jQuery(event.target).closest(".d-flex.po-section .box-content, footer .block.mobile-block-collapsible-nav").length){
+         if(jQuery("#po_number").val().length > 0 && jQuery("#po_number").is('[readonly]') == false){
+           event.preventDefault();
+           var po_number = jQuery("#po_number").val();
+           var checkexesting = false;
+           var exesing_orderid = '';
+           var selected_po = '';
+           if(jQuery("#po_numberautocomplete-list.autocomplete-items").children(".view-po.active.element").length == 1){
+             var autoselected_po = jQuery("#po_numberautocomplete-list.autocomplete-items").find(".view-po.active.element input").val();
+             jQuery("#po_number").attr("value",autoselected_po);
+             // console.log(autoselected_style)
+             po_number = autoselected_po;
+           }
+
+           for(keys in res_polist){
+             if(checkexesting == false){
+              var currentpo_val = res_polist[keys];
+              selected_po = currentpo_val.ponumber;
+              var lowercase_po = selected_po.toLowerCase();
+              if(po_number.toLowerCase() == lowercase_po){
+                checkexesting = true;
+                exesing_orderid = currentpo_val.id;
+              }
+            }
+           }
+
+           if(checkexesting){
+             selectpo(exesing_orderid,selected_po);
+           }else{
+             jQuery(".autocomplete-items").hide();
+             jQuery(this).blur();
+             jQuery( ".checkPoAndInsert" ).trigger( "click" );
+           }
+           return false;
+         }
+       }
+     });
+
+
+  jQuery(document).on("input", "#po_number",function(e){
+     if(jQuery("#po_number").val().length >= 4){
+        jQuery(".left_icon").hide();
+        jQuery(".checkPoAndInsert").show();
+     }else{
+        if(jQuery(".left_icon").find("i.fa").hasClass("fa-edit")){
+            jQuery(".left_icon").find("i.fa").removeClass("fa-edit");
+            jQuery(".left_icon").find("i.fa").addClass("fa-caret-down");
+        }
+        jQuery(".left_icon").show();
+        jQuery(".checkPoAndInsert").hide();
+     }
+
+     if(jQuery("#po_numberautocomplete-list").is(":empty")){
+        jQuery("#po_numberautocomplete-list").hide();
+     }
+   });
+
+   jQuery(function() {
+     var customid = '<?php echo $cus_id; ?>';
+     var ponumber = '';
+     var url = "<?php echo $block->getBaseUrl().'customerorder/customer/ponumber' ?>";
+     jQuery.ajax({
+       url: url,
+       type: "POST",
+       data: {custom_id: customid,ponumber:ponumber},
+       showLoader: false,
+       cache: false,
+       success: function(response){
+       var response = JSON.stringify(response);
+         var data = JSON.parse(response);
+         if(data)
+         {
+         polist = data.ponumberlist;
+        allpo = data.ponumberlist;
+           // console.log(polist.length);
+          if(polist.length > 0){
+            autocompleteponumber(document.getElementById("po_number"), polist);
+            renderPOlist(document.getElementById("po_number"), polist);
+          }
+          // console.log(allpo);
+         }else{
+           adderror('Session timed out, please refresh the page.');
+         }
+       }
+     });
+
+     jQuery.ajax({
+       url: "<?php echo $block->getBaseUrl().'customerorder/customer/inventorystatus' ?>",
+       type: "text",
+       showLoader: false,
+       processData:false,
+       contentType: false,
+       cache: false,
+       success: function(response){
+         var response = JSON.stringify(response);
+         var data = JSON.parse(response);
+         if (data.success) {
+           opt2_items_json = data.allInventoryItems;
+           skusdata = data.allInventoryItems;
+           jeson = data.allitmescode;
+           arrayData = jeson;
+           // autocomplete(document.getElementById("opt_two_sku"), arrayData);
+         } else {
+           opt2_items_json = '';
+           jeson = '';
+         }
+       }
+     });
+
+   });
+
+   function autocompleteponumber(inp, arr){
+      var currentFocus;
+      var down = 1;
+      inp.addEventListener("input", function(e) {
+           if(this.value.length <= 0){
+             jQuery(".or-txt").fadeIn();
+             renderPOlist(inp,arr);
+               if(jQuery(".left_icon").find("i").hasClass("fa-caret-up")){
+                   jQuery(".left_icon").find("i").removeClass("fa-caret-up");
+                   jQuery(".left_icon").find("i").addClass("fa-caret-down");
+               }
+             }else{
+               jQuery(".or-txt").fadeOut();
+               if(jQuery(".left_icon").find("i").hasClass("fa-caret-down")){
+                 jQuery(".left_icon").find("i").removeClass("fa-caret-down");
+                 jQuery(".left_icon").find("i").addClass("fa-caret-up");
+               }
+             }
+            var a, b, i, val = this.value;
+            var x = document.getElementsByClassName("autocomplete-items");
+              for (var i = 0; i < x.length; i++) {
+                  x[i].parentNode.removeChild(x[i]);
+              }
+              if (!val) { return false;}
+              currentFocus = 0;
+              a = document.createElement("DIV");
+              a.setAttribute("id", this.id + "autocomplete-list");
+              a.setAttribute("class", "autocomplete-items");
+              this.parentNode.appendChild(a);
+              var res = [];
+              // console.log(arr.length);
+              for (i = 0; i < arr.length; i++) {
+                if(arr[i].ponumber.substr(0, val.length).toUpperCase() == val.toUpperCase()){
+                  res.push(arr[i]);
+                }
+              }
+
+             for (i = 0; i < res.length; i++) {
+                b = document.createElement("DIV");
+               b.setAttribute("class", "view-po");
+                b.innerHTML = "<span>" + res[i].ponumber + "</span>";
+                b.innerHTML += "<input type='hidden' id='"+ res[i].id +"' value='" + res[i].ponumber + "'>";
+                b.addEventListener("click", function(e) {
+                inp.value = this.getElementsByTagName("input")[0].value;
+                jQuery('.searchFromStyle a').trigger('click');
+                var x = document.getElementsByClassName("autocomplete-items");
+                  for (var i = 0; i < x.length; i++) {
+                    x[i].parentNode.removeChild(x[i]);
+                  }
+                });
+                a.appendChild(b);
+              }
+
+             if(jQuery('#po_numberautocomplete-list.autocomplete-items').html() != ''){
+               if(jQuery("#po_numberautocomplete-list").children().length){
+                 jQuery("#po_numberautocomplete-list").children().first().addClass("active");
+               }
+                jQuery('.autocomplete-items div').eq(0).addClass('autocomplete-active');
+                  jQuery('.autocomplete-items div').addClass('element');
+                   var value = jQuery('.autocomplete-active').find('input').val();
+                   jQuery(".autocomplete-items").children('div').mouseover(function(){
+                  jQuery('.autocomplete-items div').eq(0).removeClass('autocomplete-active');
+                  jQuery(this).addClass('autocomplete-active');
+                  });
+                   jQuery(".autocomplete-items").children('div').mouseout(function(){
+                  jQuery(this).removeClass('autocomplete-active');
+                  jQuery('.autocomplete-items div').eq(0).addClass('autocomplete-active');
+                  currentFocus = 0;
+                  });
+
+                jQuery(document).on('click','#po_numberautocomplete-list .view-po',function(e){
+                    jQuery(this).addClass("clickeffect");
+                    setTimeout(function(){
+                      jQuery(this).removeClass("clickeffect");
+      							},1500)
+                     var po_number = jQuery(this).children('input').attr('value');
+                     var po_id = jQuery(this).children('input').attr('id');
+                      if(po_id != '' || po_number != '' || po_number != 'undefined'){
+                         var nexturl = "<?php echo $this->getBaseUrl();?>customerorder/customer/neworder/id/"+window.btoa(po_id)+"/ncp/"+window.btoa(po_number)+"#block-title";
+                         // window.location.href = nexturl;
+                         // return false;
+                         var order_id = po_id;
+                         selectpo(order_id,po_number);
+                         return false;
+                      }
+                });
+              }
+           });
+
+            function addActive(x) {
+                if (!x) return false;
+                removeActive(x);
+                if (currentFocus >= x.length){ currentFocus =  0; down=1; }
+                if (currentFocus < 0){currentFocus = 0;  }
+                x[currentFocus].classList.add("autocomplete-active");
+              }
+              function removeActive(x) {
+                  for (var i = 0; i < x.length; i++) {
+                    x[i].classList.remove("autocomplete-active");
+                  }
+              }
+          }
+
+
+      function renderPOlist(inp, arr){
+            var currentFocus;
+            var down = 1;
+            var a, b, i, val = inp.value;
+            var x = document.getElementsByClassName("autocomplete-items");
+            currentFocus = 0;
+
+            a = document.createElement("DIV");
+            a.setAttribute("id", inp.id + "autocomplete-list");
+            a.setAttribute("style", "display:none");
+            a.setAttribute("class", "autocomplete-items fullpo");
+            inp.parentNode.appendChild(a);
+
+            var res = [];
+            for (i = 0; i < arr.length; i++) {
+              if(arr[i].ponumber.substr(0, val.length).toUpperCase() == val.toUpperCase()){
+                res.push(arr[i]);
+              }
+
+            }
+
+            res_polist = res;
+
+            for (i = 0; i < res.length; i++) {
+              b = document.createElement("DIV");
+              b.setAttribute("class", "view-po element");
+              b.innerHTML = "<span>" + res[i].ponumber + "</span>";
+              b.innerHTML += "<input type='hidden' id='"+ res[i].id +"' value='" + res[i].ponumber + "'>";
+              a.appendChild(b);
+            }
+
+            jQuery(document).on('keypress','#po_number',function(e){
+              var keycode = (e.keyCode ? e.keyCode : e.which);
+
+              if(keycode == '13'){
+                e.preventDefault();
+                var po_number = jQuery("#po_number").val();
+                var checkexesting = false;
+                var exesing_orderid = '';
+                var selected_po = '';
+
+                if(jQuery("#po_numberautocomplete-list.autocomplete-items").children(".view-po.active.element").length == 1){
+                  var autoselected_po = jQuery("#po_numberautocomplete-list.autocomplete-items").find(".view-po.active.element input").val();
+                  jQuery("#po_number").attr("value",autoselected_po);
+                  // console.log(autoselected_style)
+                  po_number = autoselected_po;
+                }
+
+                for(keys in res_polist){
+                  if(checkexesting == false){
+                   var currentpo_val = res_polist[keys];
+                   selected_po = currentpo_val.ponumber;
+                   var lowercase_po = selected_po.toLowerCase();
+                   if(po_number.toLowerCase() == lowercase_po){
+                     checkexesting = true;
+                     exesing_orderid = currentpo_val.id;
+                   }
+                 }
+                }
+
+                console.log(res_polist);
+
+                if(checkexesting){
+                  selectpo(exesing_orderid,selected_po);
+                  // return false;
+                }else{
+                  jQuery(".autocomplete-items").hide();
+                  jQuery(this).blur();
+                  jQuery( ".checkPoAndInsert" ).trigger( "click" );
+                }
+                return false;
+              }
+            });
+
+
+            jQuery(document).on('click','#po_numberautocomplete-list .view-po',function(e){
+              var po_number = jQuery(this).children('input').attr('value');
+              var po_id = jQuery(this).children('input').attr('id');
+               if(po_id != '' || po_number != '' || po_number != 'undefined'){
+                  var nexturl = "<?php echo $this->getBaseUrl();?>customerorder/customer/neworder/id/"+window.btoa(po_id)+"/ncp/"+window.btoa(po_number)+"#block-title";
+                  // window.location.href = nexturl;
+                  // return false;
+                  var order_id = po_id;
+                  selectpo(order_id,po_number);
+                  return false;
+               }
+            });
+          }
+
+          jQuery(document).on('click','.view_summary_sec',function(){
+              jQuery(".loading-mask").css("display","block");
+            });
+
+          jQuery(document).on('click','.po-section .left_icon1', function() {
+            // alert('hello');
+            if(jQuery("#po_number").val().length <= 0 && jQuery("#po_number").is('[readonly]') == false && jQuery("#po_numberautocomplete-list").length > 0){
+              jQuery(this).find(".fa-caret-down").toggleClass("fa-caret-up");
+              jQuery(this).parent().find(".autocomplete-items.fullpo").slideToggle();
+              // console.log("Test");
+              var a = jQuery(this);
+              if(jQuery(a).find('i').hasClass('fa-caret-down')){
+                jQuery(a).find('i').removeClass('fa-caret-down');
+                jQuery(a).find('i').addClass('fa-caret-up');
+              }else{
+                jQuery(a).find('i').addClass('fa-caret-down');
+                jQuery(a).find('i').removeClass('fa-caret-up');
+              }
+            }
+
+            if(jQuery(this).find("i.fa.fa-edit")){
+              jQuery("#po_number").attr("readonly", false);
+              jQuery("#po_number").focus();
+              jQuery("#po_number").css("opacity","1");
+              if(jQuery("#po_number").val().length >= 4){
+                 jQuery(".left_icon").hide();
+                 jQuery(".checkPoAndInsert").show();
+              }else{
+                 jQuery(".left_icon").show();
+                 jQuery(".checkPoAndInsert").hide();
+              }
+            }
+
+          });
+
+          // jQuery(document).on('click','.po-section .left_icon .fa-edit', function() {
+          //      jQuery("#po_number").attr("readonly", false);
+          //      jQuery("#po_number").focus();
+          //      jQuery("#po_number").css("opacity","1");
+          //      if(jQuery("#po_number").val().length >= 4){
+          //         jQuery(".left_icon").hide();
+          //         jQuery(".checkPoAndInsert").show();
+          //      }else{
+          //         jQuery(".left_icon").show();
+          //         jQuery(".checkPoAndInsert").hide();
+          //      }
+          // });
+
+          function selectpo(order_id,po_number){
+              var url = "<?php echo $block->getBaseUrl().'customerorder/customer/selectpo'?>";
+
+              var existponumberText = po_number;
+
+              if(existponumberText == ''){
+                jQuery('.btn-primary.saveChng').hide();
+                jQuery('.view_summary_btn').hide();
+              }
+
+              var base64_order_id = btoa(order_id);
+              var base64_ncp_id = btoa(existponumberText);
+
+              if(existponumberText !='')
+              {
+                jQuery(".tabactive").val(existponumberText);
+                jQuery(".tabactive").prop("readonly", true);
+                var nexturl = '<?php echo $block->getBaseUrl().'customerorder/customer/neworder' ?>/id/'+base64_order_id+'/ncp/'+base64_ncp_id;
+                jQuery(".view_summary_btn").attr("href",nexturl);
+              }
+              updatepopupdata(order_id);
+              jQuery("#po_numberautocomplete-list").slideUp();
+
+          }
+
+          function checkPOnumber(){
+       			var url = "<?php echo $block->getBaseUrl().'customerorder/customer/createorder' ?>";
+       			var po_number = jQuery("#po_number").val();
+       			var is_chcheckpo = true;
+       			jQuery.ajax({
+       				url: url,
+       				type: "POST",
+       				data: {po_number: po_number,is_chcheckpo: is_chcheckpo},
+       				showLoader: true,
+       				cache: false,
+       				success: function(response){
+       					if(response.errors) {
+       						jQuery(".po-exist").addClass("message-error error");
+       						jQuery(".po-exist").html(response.message);
+                  setTimeout(function(){
+       								jQuery(".po-exist").html("");
+       						},2000);
+       					}else if(response.session_distroy){
+       						jQuery(".po-exist").addClass("message-error error");
+       						jQuery(".po-exist").html(response.message);
+       						jQuery(".po-exist").focus;
+       						window.location.href = BASE_URL;
+       					}else{
+                   jQuery(".checkPoAndInsert, #po_numberautocomplete-list").hide();
+                   jQuery("#po_number").css({"opacity": "0.5"});
+                   jQuery("#po_number").attr('readOnly',true);
+                   jQuery(".btn-primary.saveChng").show();
+                   jQuery(".left_icon.left_icon1").find("i").hide();
+                   jQuery(".left_icon.left_icon1").find("i").addClass("fa-edit");
+                   jQuery(".left_icon.left_icon1").find("i").fadeIn();
+                   if(po_number){
+                      jQuery(".scroll-to-po").addClass("saveChng");
+                      var value_exist = false;
+                     var value_selector = jQuery("[name^='qty[']");
+                     value_selector.each(function(){
+                       if(jQuery(this).val().length && value_exist == false){
+                         value_exist = true;
+                       }
+                     });
+                     if(value_exist == false){
+                       jQuery(".scroll-to-po").addClass("disabled",1000,"easeOutBounce");
+                     }else{
+                       jQuery(".scroll-to-po").removeClass("disabled",1000,"easeOutBounce");
+                     }
+                      jQuery(".saveChng").html("");
+                      jQuery(".saveChng").html("ADD/UPDATE P.O.");
+                      if(jQuery(".saveChng").hasClass("scroll-to-po")){
+                         jQuery(".saveChng").removeClass("scroll-to-po");
+                      }
+                   }
+                  // editopinput();
+                   jQuery('.newOrderStep1').addClass('done');
+                   // $(".newOrderStep2").show();
+
+                   jQuery(".left_icon").show();
+                   jQuery(".left_icon").find("i").removeClass("fa-caret-up");
+                   jQuery(".left_icon").find("i").removeClass("fa-caret-down");
+       					}
+       				}
+       			});
+       		}
+          var tool_timeout;
+          jQuery(document).on("click", ".eta-tooltip",function(e){
+
+              if(jQuery(".eta-date").is(":visible")){
+                jQuery(".eta-date").fadeOut();
+                clearTimeout(tool_timeout);
+              }
+
+              var left = ( jQuery(this).outerWidth() / 2 ) - 30 ;
+              jQuery(this).find(".eta-date").css('left',left+'px')
+              jQuery(this).find(".eta-date").fadeIn();
+              tool_timeout =  setTimeout(function(){ jQuery(".eta-date").fadeOut(); }, 5000);
+              e.stopPropagation();
+          });
+
+          jQuery(document).click(function(event){
+            if(!jQuery(event.target).closest(".eta-date").length){
+              jQuery(".eta-date").fadeOut();
+              clearTimeout(tool_timeout);
+            }
+          });
+
+          jQuery(document).on("click", ".scroll-to-po",function(e){
+              jQuery("#po_number").css({"border":"1px solid red","box-shadow":"0px 1px 10px 4px rgba(11, 66, 105, 0.48)"});
+              jQuery("#po_number").focus();
+              setTimeout(function(){
+                  jQuery("#po_number").css({"border":"","box-shadow":""});
+              },500);
+          });
+
+   //PO DropDOWN and Validation things end
+
+
+   jQuery(document).on("click", function(event){
+     if(jQuery("#po_numberautocomplete-list").is(":visible") || jQuery("#show_styleautocomplete-list").is(":visible")){
+        if(!jQuery(event.target).closest("#po_numberautocomplete-list, .po-section .box-content").length){
+          jQuery("#po_numberautocomplete-list").slideUp();
+          if(jQuery(".left_icon.left_icon1").find("i").hasClass("fa-caret-up")){
+            jQuery(".left_icon.left_icon1").find("i").removeClass("fa-caret-up");
+            jQuery(".left_icon.left_icon1").find("i").addClass("fa-caret-down")
+          }
+        }
+      }
+    });
+
+   //QTY POPUP start
+
+   qtyaddpopup();
+
+   function qtyaddpopup() {
+       var options = {
+         type: 'popup',
+         responsive: true,
+         innerScroll: true,
+         modalClass: "qty-add-popup",
+         modalCloseBtn: true,
+
+          buttons: [{
+             text: 'Done',
+             click: function (event) {
+               this.closeModal(event);
+             },
+             class: 'style-qty-edit',
+           }],
+
+           };
+
+           var popup = modal(options, jQuery('#qty-add-popup-modal'));
+
+           var table_style_sku = [];
+           var table_style_qty_name = [];
+           var table_style_qty_name_data = {};
+           var entered_by_keyboard = false;
+
+
+           jQuery(document).on("keypress", ".qty_add_num", function (e) {
+             var keycode = (e.keyCode ? e.keyCode : e.which);
+             if(keycode >= 48 && keycode <= 57){
+               entered_by_keyboard = true;
+             }
+           });
+
+           jQuery(document).on("click", function(event){
+                if(!jQuery(event.target).closest(".qty_add_num, .size_navigation").length){
+                    entered_by_keyboard = false;
+                }
+            });
+
+           jQuery(document).on('click','.checkvalue', function() {
+               var ar_key = jQuery(this).parent().find("[name^='itemscode']").val();
+               var data = jQuery(this).parents("tbody").children(":not(:first-child)");
+               jQuery("#currenstylesku").attr('value',ar_key);
+               table_style_sku = [];
+               table_style_qty_name = [];
+               table_style_qty_name_data = {};
+               data.each(function(){
+                 table_style_sku.push(jQuery(this).children(":nth-child(4)").find("[name^='itemscode']").val());
+                 table_style_qty_name.push(jQuery(this).children(":nth-child(4)").find("[name^='qty']").attr("name"));
+                 table_style_qty_name_data[jQuery(this).children(":nth-child(4)").find("[name^='qty']").attr("name")] = jQuery(this).children(":nth-child(4)").find("[name^='qty']").val();
+               });
+               // console.log(table_style_qty_name_data);
+               jQuery("#addstyleqty").attr('value',jQuery(this).attr("name"));
+               updateqtypopupdata();
+               // console.log(table_style_sku.length);
+               jQuery("#qty-add-popup-modal").modal("openModal");
+           });
+
+           jQuery(document).on('click','.size_navigation span', function() {
+               if(entered_by_keyboard){
+                 jQuery(".qty_add_num").focus();
+               }
+               table_style_qty_name_data[jQuery("#addstyleqty").attr("value")] = jQuery(".qty_add_num").attr("value");
+               var ar_key = jQuery("#currenstylesku").attr("value");
+               var curent_element_index = jQuery.inArray( ar_key, table_style_sku );
+               if(jQuery(this).hasClass('previous_size')){
+                 curent_element_index = curent_element_index - 1;
+                 if((curent_element_index+1) > 0){
+                   jQuery("#currenstylesku").attr('value',table_style_sku[curent_element_index]);
+                   jQuery("#addstyleqty").attr('value',table_style_qty_name[curent_element_index]);
+                   updateqtypopupdata();
+                 }
+               }else if(jQuery(this).hasClass('next_size')){
+                 var last_style_index = table_style_sku.length;
+                 curent_element_index = curent_element_index+1;
+                 if(curent_element_index < last_style_index){
+                   jQuery("#currenstylesku").attr('value',table_style_sku[curent_element_index]);
+                   jQuery("#addstyleqty").attr('value',table_style_qty_name[curent_element_index]);
+                   updateqtypopupdata();
+                 }
+               }
+           });
+
+           function updateqtypopupdata(){
+               var ar_key = jQuery("#currenstylesku").attr("value");
+               var skudata = skusdata[ar_key];
+               jQuery(".qty_for_size").html("Qty for "+skudata.Size);
+
+               if(skudata.ActualQty !=  '' && skudata.ActualQty != null)
+                 {
+                   var Qty = parseFloat(skudata.ActualQty);
+                   jQuery(".available_qty_popup").html(Qty);
+                 }
+
+               var currenstyleqty = jQuery("#addstyleqty").attr("value");
+               // console.log(table_style_qty_name_data);
+
+
+               if(table_style_qty_name_data[currenstyleqty] > 0 && table_style_qty_name_data[currenstyleqty] != ''){
+                 jQuery(".qty_add_num").attr("value",table_style_qty_name_data[currenstyleqty]);
+               }else{
+                 jQuery(".qty_add_num").attr("value",'');
+                 jQuery(".qty_add_num").val('');
+               }
+
+
+               // var date_condition = new Date(skudata.ETA);
+               dateString = skudata.ETA;
+               var date = new Date(dateString.replace(/-/g, '/'));
+               if(skudata.ETA != '' && skudata.ETA != null){
+                 // var date = new Date(skudata.ETA);
+                 // console.log(date);
+                 if (!isNaN(date)) {
+                   if(!jQuery('.eta_info').is(":visible")){
+                     jQuery('.eta_info').fadeIn();
+                   }
+                    jQuery('.eta_info_detailed').html( (date.getMonth() + 1) + '/' + date.getDate() + '/' +  date.getFullYear());
+                 } else {
+                    jQuery('.eta_info').fadeOut();/*Not Available*/
+                 }
+               }
+
+               var currentskuindex = jQuery.inArray( ar_key, table_style_sku );
+               var lastindex = (table_style_sku.length) - 1;
+               if(currentskuindex == 0){
+                 if((table_style_sku.length) <= 1){
+                     // console.log("Condition Satisfied..");
+                     jQuery(".previous_size , .next_size").hide();
+                 }else{
+                   jQuery(".previous_size").hide();
+                   jQuery(".next_size").show();
+                 }
+               }else if(currentskuindex == lastindex){
+                 jQuery(".next_size").hide();
+                 jQuery(".previous_size").show();
+               }else{
+                 jQuery(".previous_size, .next_size").show();
+               }
+           }
+
+           jQuery(document).ready(function() {
+               jQuery('.num-in span').click(function () {
+                 entered_by_keyboard = false;
+                   var $input = jQuery(this).siblings('input.qty_add_num');
+
+                 if(jQuery(this).hasClass('minus')) {
+                   var count = parseFloat($input.val()) - 1;
+
+                   count = count < 1 ? '' : count;
+
+                   if (count < 2) {
+                     jQuery(this).addClass('dis');
+                   }
+                   else {
+                     jQuery(this).removeClass('dis');
+                   }
+                   jQuery("input.qty_add_num").attr("value",count);
+                 }
+                 else {
+                   if($input.val() == ''){
+                     $input.val(0);
+                   }
+                   count = parseFloat($input.val()) + 1
+                   jQuery("input.qty_add_num").attr("value",count);
+                   if (count > 1) {
+                     jQuery(this).parents('.num-block').find(('.minus')).removeClass('dis');
+                   }
+                 }
+
+                 $input.change();
+                 return false;
+               });
+
+             });
+
+
+
+           jQuery(document).on('click','.modal-footer button.style-qty-edit', function() {
+               var style = jQuery("#addstyleqty").val();
+               var qty = jQuery(".qty_add_num").val();
+               table_style_qty_name_data[style] = qty;
+
+               setqtyintable(table_style_qty_name_data);
+
+            });
+
+            function setqtyintable(style_data) {
+              var valueexist = false;
+              for(key in style_data){
+               var currentstyle_val = style_data[key];
+                  var qty_selector = '[name="'+key+'"]';
+                  // table_data += "<span>"+key +" = "+style_data[key]+"</span><br>";
+                  if(currentstyle_val > 0){
+                    valueexist = true;
+                    jQuery(qty_selector).val(currentstyle_val);
+                  }else{
+                    jQuery(qty_selector).val('');
+                  }
+                  checkvalueUpdate(qty_selector, true);
+              }
+              if(valueexist){
+                jQuery(".saveChng").removeClass("disabled",1000,"easeInOutBounce");
+              }else{
+                jQuery(".saveChng").addClass("disabled",1000,"easeOutBounce");
+              }
+            }
+
+           jQuery(document).on("click", ".qty_add_num", function () {
+              var isiDevice = /ipad|iphone|ipod/i.test(navigator.userAgent.toLowerCase());
+              if(isiDevice){
+                this.setSelectionRange(0, jQuery(this).val().length);
+              }else{
+                jQuery(this).select();
+              }
+              entered_by_keyboard = true;
+           });
+
+           jQuery('.qty_add_num').on('input', function (e) {
+             // console.log(this.value);
+             this.value = this.value.replace(/[^0-9]/g, '');
+             if(this.value == 0){
+               // console.log("aaaaaa");
+               this.value = '';
+             }
+
+             });
+       }
+
+   //QTY POPUP END
+   //PO Success POPUP START
+
+   posuccesspopup();
+
+   function posuccesspopup(){
+     var options = {
+       type: 'popup',
+       responsive: true,
+       innerScroll: true,
+       modalClass: "po-success-popup",
+       modalCloseBtn: true,
+     };
+
+     var popup = modal(options, jQuery('#posuccess-message'));
+   }
+
+   //PO Success POPUP END
+
+
+
+		jQuery( document ).on( "click", "#removeUser .mfp-close-inside", function( event, ui ) {
+			jQuery('#goback').click();
+
+		});
+
+		// jQuery(document).on('show.bs.collapse', ".collapse", function(e){
+		// 		if(jQuery('.collapse.show').length > 0)
+		// 		{
+		// 			var nextopenid = this.id;
+		// 			jQuery('#activetab_id').val(nextopenid);
+		// 			var activetavinputs = jQuery(".collapseContainer a[aria-expanded=true]").next('div.show').find('.checkvalue');
+		// 			var valIsExists = false;
+		// 			var is_qty_change = jQuery(".collapseContainer a[aria-expanded=true]").find(".qty_change").val();
+		// 			var prev_obj_id = jQuery(".collapseContainer a[aria-expanded=true]").next('div.show').attr("id");
+		// 			var is_qty_change = 0;
+		// 			if (typeof prev_obj_id !== "undefined") {
+
+		// 				is_qty_change = jQuery("#qty_change_"+prev_obj_id.replace("/", "")).val();
+		// 		}
+
+		// 		jQuery(activetavinputs).each(function() {
+		// 			if (jQuery(this).val() != '')
+		// 			{
+		// 				valIsExists = true;
+
+		// 			}
+		// 		});
+
+		// 		if(valIsExists && is_qty_change == 1)
+		// 		{
+		// 			var delid = '';
+		// 			var opt = {autoOpen: false};
+		// 				var theDialog = jQuery("#removeUser").dialog(opt);
+		// 				theDialog.dialog("open");
+		// 				return false;
+
+		// 		} else {
+		// 			showtotal();
+		// 		}
+
+		// 		jQuery("#cart-form a[data-toggle='collapse']").removeClass("collapse").addClass("collapsed").attr("aria-expanded", false);
+		// 		var getactivetab_id = jQuery('#activetab_id').val();
+		// 		jQuery('#'+getactivetab_id).siblings('a').attr("aria-expanded", true).removeClass("collapsed").addClass("collapse");
+		// 		jQuery('.collapse').removeClass("show");
+		// 		jQuery('.collapse').addClass("hide");
+		// 		jQuery(this).focus();
+		// 	}
+		// 	else{
+
+		// 	}
+		// 	showtotal();
+		// });
+
+
+	jQuery(document).ready(function() {
+		if(jQuery(".product_options").length){
+			jQuery(".product_options").mCustomScrollbar();
+		}
+
+	jQuery('#popupModal').on('hidden.bs.modal', function () {
+		jQuery("#cart-form #sap_ponumber_id, #cart-form .tabactive").val('');
+		//jQuery('.discardChng').hide();
+		jQuery("#cart-form .qty_change").val(0);
+		jQuery("#cart-form #select_existing option:selected").prop("selected", false);
+		jQuery("#cart-form #select_existing, #cart-form .tabactive").prop("disabled", false);
+		jQuery('.collapse').removeClass("show");
+		jQuery("#msg_text").html('');
+
+			jQuery("#cart-form .checkvalue").each(function() {
+				jQuery(this).val('')
+				jQuery(this).next("span").html('');
+				var selectprice = jQuery(this).closest('td').find('input[type=hidden]').val();
+				var selectcolor = jQuery(this).closest('td').find('input[name=selectcolor]').val();
+				var selectsize = jQuery(this).closest('td').find('input[name=selectsize]').val();
+				jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').val('');
+				jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').closest('td').find('span').html('');
+			});
+		});
+
+    jQuery(function() {
+      jQuery('#closepopup').val('');
+     setTimeout(function(){
+       var popHeight = jQuery(window).height();
+       getExstingPONumber("<?php echo $customerSession->getCustomerId();?>")
+       var popup_ccontent_height = popHeight - 275;
+       jQuery('.product_options').attr('style', 'height:'+popup_ccontent_height+'px;');
+     }, 50);
+    });
+
+    jQuery(function() {
+      var actual_active_swatch = jQuery(".swatch-option.image.selected").attr("option-label");
+      var actual_active_color = jQuery(".swatch-option.image.selected").attr("aria-describedby");
+
+      // console.log(actual_active_swatch);
+
+	  if(jQuery(".swatch-option.image").is(":visible")){
+ 	     actual_active_swatch = actual_active_swatch.replace(/\s+/g, '');
+      }
+
+      var color_type = "";
+      if(actual_active_color == "option-label-color-93"){
+      	var color_type = "Solid";
+      }else if(actual_active_color == "option-label-seasonalcolors-152"){
+      	var color_type = "Seasonal";
+      }else if(actual_active_color == "option-label-heather_colors-171"){
+      	var color_type = "Heather";
+      }
+
+      jQuery(".selected_color_size").html(color_type);
+      if(jQuery(".tab-content.order-table").children().length > 0){
+        var active_sizechart = jQuery(".tab-pane.fade.show.active").attr("id");
+        actual_active_swatch = "product_color_"+actual_active_swatch;
+        if(active_sizechart != actual_active_swatch){
+          jQuery(".tab-pane.fade.show").removeClass("active");
+          jQuery("#"+actual_active_swatch).addClass("active");
+        }
+      }
+    });
+
+		jQuery('#goback').click(function()
+		{
+			jQuery('#removeUser').dialog('close');
+			jQuery("#closepopup").val(0);
+			var closepopup = jQuery('#closepopup').val();
+			showtotal();
+
+		});
+
+		jQuery('#savecontinue').click(function() {
+			jQuery('#removeUser').dialog('close');
+			jQuery('.collapse').removeClass("show");
+			jQuery('.collapse').addClass("hide");
+			var getactivetab_id = jQuery('#activetab_id').val();
+			jQuery("#cart-form a[data-toggle='collapse']").removeClass("collapse").addClass("collapsed").attr("aria-expanded", false);
+			jQuery('#'+getactivetab_id).siblings('a').attr("aria-expanded", true).removeClass("collapsed").addClass("collapse");
+			submitform();
+			jQuery('#'+getactivetab_id).addClass("show");
+			jQuery('#'+getactivetab_id).focus();
+			jQuery("#cart-form .qty_change").val(0);
+
+		});
+
+    jQuery(document).on('click','.checkPoAndInsert',function(e){
+      var po_number = jQuery("#po_number").val();
+       if(po_number == "" || po_number == 'undefined'){
+         jQuery(".po-exist").addClass("message-error error");
+         jQuery(".po-exist").html("Please enter PO number.");
+         return false;
+       }
+       checkPOnumber();
+     });
+
+		jQuery(".checkvalue").focusout(function(e)
+		{
+			jQuery('.discardChng').show();
+			checkvalueUpdate(jQuery(this), false);
+		});
+		jQuery(".checkvalue").keypress(function (e) {
+			var existponumberText = jQuery('#select_existing :selected').val()
+			var ponumberText = jQuery(".tabactive").val();
+			if(existponumberText != '' || jQuery.trim(ponumberText).length > 0)
+				{
+					if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+						return false;
+					}
+				}
+				else
+				{
+					adderror("Please select a PO or Create a New PO before entering Qty's");
+					return false;
+
+				}
+		});
+		jQuery(".tabactive").keypress(function (e)
+		{
+			var inputVal = this.value + String.fromCharCode(e.keyCode);
+			var regexAlphanumeric = /^([a-zA-Z0-9\!\@\#\&\*\(\)\-\_\+\/\\\:\;\.\,\>\<\=\|\}\{\]\[]+)$/;
+      		var keycode = (e.keyCode ? e.keyCode : e.which);
+			if(regexAlphanumeric.test(inputVal) == false && keycode != '13') {
+				jQuery(".box-content span.error11").html("Please provide valid PO Number.").show().fadeOut(2500);
+				return false;
+			}
+		});
+
+
+    jQuery(".view-buyBtnContainer-section strong.viewSection").on("click", function () {
+      event.preventDefault();
+
+      jQuery(this).toggleClass('togActive')
+			jQuery(this).parent().next().slideToggle( 1000, function(){
+			if (jQuery(this).is(":visible")) {
+				jQuery('html,body').animate({
+					scrollTop: jQuery(this).parent("div").offset().top
+				}, 1000)
+			}
+		});
+
+      // jQuery(this).parent().next().slideToggle('slow');
+      // if(jQuery(this).hasClass("togActive")){
+      //   jQuery(this).removeClass("togActive");
+      // }else{
+      //   jQuery(this).addClass("togActive");
+      // }
+      // jQuery(this).toggleClass('togActive')
+    });
+
+    jQuery(document).on('click', '.swatch-attribute .swatch-option',function()
+    {
+   		jQuery('.tab-pane.fade').removeClass("active");
+
+      var table_id = jQuery(this).attr('option-label');
+      jQuery(".selected_color_size").html(table_id);
+      var actual_active_color = jQuery(".swatch-option.image.selected").attr("aria-describedby");
+
+      var color_type = "";
+      if(actual_active_color == "option-label-color-93"){
+      	var color_type = "Solid";
+      }else if(actual_active_color == "option-label-seasonalcolors-152"){
+      	var color_type = "Seasonal";
+      }else if(actual_active_color == "option-label-heather_colors-171"){
+      	var color_type = "Heather";
+      }
+
+
+      jQuery(".selected_color_size").html(color_type);
+      var size_table_id = table_id.replace(/\s+/g, '');
+   	  jQuery('#product_color_'+size_table_id).addClass("active");
+   	})
+
+		jQuery(document).on("click",".saveChng",function()
+		{
+			var ponumberText = jQuery(".tabactive").val();
+			if(jQuery.trim(ponumberText).length > 0)
+			{
+					var checkinputval = jQuery(".tab-content.order-table").children('.show').find('.checkvalue');
+					var valIsExists = false;
+					jQuery( checkinputval ).each(function() {
+            // console.log(jQuery(this).val());
+						if (jQuery(this).val() != '')
+						{
+							valIsExists = true;
+						}
+					});
+					if(!valIsExists)
+					{
+            // console.log("Need to call...");
+						adderror('Please provide at least one item quantity to proceed.');
+						return false;
+					}
+					var checklink =  jQuery(this).attr("disabled");
+					if(valIsExists)
+					{
+						submitform();
+
+            }else{
+
+						adderror('Please provide valid data to proceed.');
+
+            return false;
+					}
+					jQuery("#cart-form .qty_change").val(0);
+					}
+			else
+			{
+				adderror("Please select a PO or Create a New PO before entering Qty's");
+			}
+
+		});
+
+		jQuery(".product_options").click(function(){
+			var existponumberText = jQuery('#select_existing :selected').val()
+			var ponumberText = jQuery(".tabactive").val();
+				if(existponumberText != '' || jQuery.trim(ponumberText).length > 0)
+				{
+					return true;
+				}else
+				{
+
+				}
+		});
+
+		jQuery('.productview-modal-close-inside').bind('click', function()
+		{
+			jQuery('#closepopup').val(1)
+			var activetavinputs = jQuery(".collapseContainer a[aria-expanded=true]").next('div.show').find('.checkvalue');
+			var valIsExists = false;
+			var is_qty_change = jQuery(".collapseContainer a[aria-expanded=true]").find(".qty_change").val();
+			var prev_obj_id = jQuery(".collapseContainer a[aria-expanded=true]").next('div.show').attr("id");
+			var is_qty_change = 0;
+			if (typeof prev_obj_id !== "undefined") {
+				is_qty_change = jQuery("#qty_change_"+prev_obj_id.replace("/", "")).val();
+			}
+
+			jQuery("#cart-form a[data-toggle='collapse']").removeClass("collapse").addClass("collapsed").attr("aria-expanded", false);
+
+			jQuery(activetavinputs).each(function() {
+				if (jQuery(this).val() != '')
+				{
+					valIsExists = true;
+
+				}
+			});
+			if(valIsExists && is_qty_change == 1)
+			{
+				var delid = '';
+				var opt = {autoOpen: false};
+					var theDialog = jQuery("#removeUser").dialog(opt);
+					theDialog.dialog("open");
+					return false;
+			} else {
+				showtotal();
+			}
+		});
+	});
+});
+	function updatepopupdata(existponumberText)
+	{
+			if(existponumberText != '')
+				{
+					jQuery('[data-toggle="collapse"]').prop('disabled',false);
+					jQuery('#overlay').hide()
+					jQuery("#msg_text").html("");
+					jQuery('.discardChng').show();
+					jQuery('#sap_ponumber_id').val(existponumberText);
+					var url = "<?php echo $block->getBaseUrl().'adaruniforms/cart/update' ?>";
+					var style_id = jQuery("#style").val();
+					showtotal();
+
+					jQuery.ajax({
+						url: url,
+						type: "POST",
+						data: {'po_number' : existponumberText, 'style_id' : style_id},
+						showLoader: true,
+						cache: false,
+						success: function(response){
+              // console.log(response);
+                jQuery("#message").html(response.message);
+                setTimeout(function(){
+                  jQuery("#message").html("");
+                },2000);
+
+              if(response.success) {
+								var data = response.data;
+
+
+                if (data != null) {
+
+        					jQuery('.btn-primary.saveChng').show();
+                  jQuery('.view_summary_btn').show();
+                  jQuery("#po_number").css("opacity","0.5");
+                  jQuery("#po_number").attr("readonly",true);
+                  jQuery(".left_icon.left_icon1").fadeOut();
+                  if(existponumberText){
+                  	jQuery(".add-to-cart-button-sec a").addClass("mobile-button");
+                  	jQuery(".add-to-cart-button-sec a").removeClass("mobile-button-click");
+                     jQuery(".scroll-to-po").addClass("saveChng");
+                     var value_exist = false;
+                    var value_selector = jQuery("[name^='qty[']");
+                    value_selector.each(function(){
+                      if(jQuery(this).val().length && value_exist == false){
+                        value_exist = true;
+                      }
+                    });
+                    if(value_exist == false){
+                      jQuery(".scroll-to-po").addClass("disabled",1000,"easeOutBounce");
+                    }else{
+                      jQuery(".scroll-to-po").removeClass("disabled",1000,"easeOutBounce");
+                    }
+                     jQuery(".saveChng").html("");
+                     jQuery(".saveChng").html("ADD/UPDATE P.O.");
+                     if(jQuery(".saveChng").hasClass("scroll-to-po")){
+                        jQuery(".saveChng").removeClass("scroll-to-po");
+                     }
+                     // jQuery('html, body').animate({
+                     //       scrollTop: jQuery(jQuery(".swatch-attribute.color")).offset().top - 30,
+                     //     },
+                     //     1500,
+                     //     'linear'
+                     //   )
+                  }
+								}
+							}
+						}
+					});
+				}else{
+					jQuery(".tabactive").prop("readonly", false);
+					jQuery(".tabactive").val('');
+					jQuery('#sap_ponumber_id').val('');
+					//jQuery('.discardChng').hide();
+					jQuery('.collapse').removeClass("show");
+					jQuery("#cart-form a[data-toggle='collapse']").addClass("collapsed").attr("aria-expanded", false);
+					jQuery(".checkvalue").each(function() {
+						jQuery(this).val('')
+						jQuery(this).next("span").html('');
+						var selectprice = jQuery(this).closest('td').find('input[type=hidden]').val();
+						var selectcolor = jQuery(this).closest('td').find('input[name=selectcolor]').val();
+						var selectsize = jQuery(this).closest('td').find('input[name=selectsize]').val();
+						jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').val('');
+						jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').closest('td').find('span').html('');
+					});
+						showtotal();
+				}
+	}
+	function checkvalueUpdate(obj, update)
+	{
+
+	var qty = jQuery(obj).val();
+	var maxQty = jQuery(obj).attr("max");
+	var selectprice = jQuery(obj).closest('td').find('input[type=hidden]').val();
+	var selectcolor = jQuery(obj).closest('td').find('input[name=selectcolor]').val();
+	var selectsize = jQuery(obj).closest('td').find('input[name=selectsize]').val();
+
+	if(qty != '')
+	{
+
+		var price = qty * selectprice;
+		if(parseInt(qty) > parseInt(maxQty))
+		{
+			//jQuery(this).after('<span class="maxqtyvaldi">pzl enter '+maxQty+' value </span>');
+			var backqty = parseInt(qty) - parseInt(maxQty);
+			jQuery(obj).next("span").html('Backorder '+ backqty);
+
+			/**jQuery('.saveChng').attr('disabled', true);
+				jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"').closest('td').find('span').html('');**/
+			}
+			else
+			{
+				//jQuery(this).after().remove('.maxqtyvaldi');
+				jQuery(obj).next("span").html('');
+			}
+			if(update == false)
+			{
+				var colorcode = jQuery('input[name="colorcode['+selectcolor+']['+selectsize+']"]').val();
+				jQuery("#qty_change_"+colorcode.replace("/", "")).val(1);
+			}
+
+			jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"]').val(price.toFixed(2));
+			jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"]').closest('td').find('span').html('$'+convertcurrency(price.toFixed(2)));
+			var savechnagestatus = jQuery(obj).closest('table').find('.maxqtyvaldi').text().length;
+			if(savechnagestatus <= 0)
+			{
+				jQuery('.saveChng').attr('disabled', false);
+			}
+		}
+		else
+		{
+			jQuery(obj).val('')
+			jQuery(obj).next("span").html('');
+			var selectprice = jQuery(obj).closest('td').find('input[type=hidden]').val();
+			var selectcolor = jQuery(obj).closest('td').find('input[name=selectcolor]').val();
+			var selectsize = jQuery(obj).closest('td').find('input[name=selectsize]').val();
+			jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"]').val('');
+			jQuery('input[name="inpprice['+selectcolor+']['+selectsize+']"]').closest('td').find('span').html('');
+			jQuery(obj).next("span").html('');
+		}
+		showtotal();
+
+	}
+		function submitform()
+		{
+			jQuery("#msg_text").html("");
+
+
+			var url = "<?php echo $block->getBaseUrl().'adaruniforms/cart/add' ?>";
+			jQuery.ajax({
+				url: url,
+				type: "POST",
+				data: jQuery("#cart-form").serialize(),
+				showLoader: true,
+				cache: false,
+				success: function(response){
+          if(response.enty_id)
+					{
+						jQuery('#sap_ponumber_id').val(response.enty_id);
+						jQuery('.discardChng').show();
+					}
+					if(response.success)
+					{
+            var qty_selector = jQuery("[name^='qty[']");
+            qty_selector.each(function(){
+                jQuery(this).val("");
+                jQuery(this).siblings("span").html("");
+                jQuery(this).parent().next().find("input").val("");
+                jQuery(this).parent().next().find("span").html("");
+            });
+            jQuery(".saveChng").addClass("disabled",1000,"easeOutBounce");
+            jQuery(".view_summary_btn").show();
+            var nexturl = '<?php echo $block->getBaseUrl().'customerorder/customer/neworder' ?>/id/'+response.base64_enty_id+'/ncp/'+response.base64_po_number;
+            jQuery(".view_summary_btn").attr("href",nexturl);
+            jQuery(".left_icon.left_icon1").fadeOut();
+            // jQuery(".themeBtn.saveChng").html("Item Successfully added to P.O.");
+            showposuccesspopup();
+            setTimeout(function(){
+              closeposuccesspopup();
+            },2000);
+					}
+					else
+					{
+						adderror(response.messages);
+					}
+					var closepopup = jQuery("#closepopup").val();
+					if(closepopup == 1)
+					{
+						jQuery('.productview-modal-close-inside').trigger( "click" );
+
+					}
+					var valuescheckout = jQuery("#chekouthidden").val();
+					if(valuescheckout == 1 && response.base64_enty_id && response.base64_po_number)
+					{
+						var nexturl = "<?php echo $block->getBaseUrl().'customerorder/customer/neworder/id/'?>"+response.base64_enty_id+"/ncp/"+response.base64_po_number;
+						top.location = nexturl;
+					}
+				}
+			});
+		}
+
+    function showposuccesspopup(){
+      jQuery("#posuccess-message").modal("openModal");
+    }
+
+    function closeposuccesspopup(){
+      jQuery("#posuccess-message").modal("closeModal");
+    }
+
+
+	function getExstingPONumber(customid)
+	{
+		var ponumber = '';
+		jQuery('.tabactive').val();
+		jQuery(".tabactive").prop("readonly", false);
+		jQuery('#closepopup').val();
+		var url = "<?php echo $block->getBaseUrl().'adaruniforms/index/ponumber' ?>";
+		jQuery.ajax({
+			url: url,
+			type: "POST",
+			data: {custom_id: customid,ponumber:ponumber},
+			showLoader: false,
+			cache: false,
+			success: function(response){
+				if(response.success)
+				{
+					jQuery('#select_existing').html(response.success);
+					}else{
+					adderror('Session timed out, please refresh the page.');
+				}
+			}
+		});
+	}
+	function checkEnterPONumber(customid,ponumber)
+		{
+				var url = "<?php echo $block->getBaseUrl().'adaruniforms/index/ponumber' ?>";
+				var result = ''
+				jQuery.ajax({
+					url: url,
+					dataType: 'json',
+					type: "POST",
+					data: {custom_id: customid,ponumber:ponumber},
+					showLoader: true,
+					cache: false,
+					success: function(response){
+						if(response.success)
+						{
+							//addsuccess(response.success);
+							jQuery("#msg_text").removeClass("error");
+							jQuery("#msg_text").html('');
+							jQuery('[data-toggle="collapse"]').prop('disabled',false);
+							jQuery('#overlay').hide()
+							jQuery("#select_existing").prop("disabled", true);
+							jQuery("#select_existing option:selected").prop("selected", false)
+							jQuery('#sap_ponumber_id').val('');
+              jQuery('.btn-primary.saveChng').show();
+							result = 'true';
+              //jQuery('.discardChng').hide();
+							}else{
+							adderror(response.error);
+							//jQuery('#overlay').show()
+							jQuery('[data-toggle="collapse"]').prop('disabled',true);
+							jQuery("#select_existing").prop("disabled", true);
+							result = 'false';
+						}
+					}
+				});
+
+			return result;
+		}
+	function adderror(message)
+	{
+    if(jQuery("#message").children().length <= 0){
+      jQuery("#message").html("<div id='msg_text'></div>");
+    }
+		jQuery("#msg_text").removeClass("success");
+		jQuery("#msg_text").addClass("error");
+		jQuery("#msg_text").html(message);
+		jQuery("#message").show();
+		jQuery("#message").focus();
+		return true;
+	}
+	function addsuccess(message)
+	{
+    if(jQuery("#message").children().length <= 0){
+      jQuery("#message").html("<div id='msg_text'></div>");
+    }
+		jQuery("#msg_text").removeClass("error");
+		jQuery("#msg_text").addClass("success");
+		jQuery("#msg_text").html(message);
+		jQuery("#message").show()
+		jQuery("#message").focus();
+		return true;
+	}
+	function showtotal()
+	{
+		var unittotals = jQuery('.product_options').find('.unittotal');
+		var gd_total = 0;
+		jQuery(unittotals).each(function() {
+			if(jQuery(this).val() != '')
+			{
+				var total = parseFloat(jQuery(this).val());
+				gd_total = gd_total + total;
+			}
+
+		});
+		var totalprice = convertcurrency(parseFloat(gd_total).toFixed(2));
+		jQuery('#hi_grandtotal').val(parseFloat(gd_total).toFixed(2));
+		jQuery('.grandtotal').html('');
+		jQuery('.grandtotal').html('$'+ totalprice);
+	}
+	function convertcurrency(price)
+	{
+		var x=price;
+
+		x=x.toString();
+		var afterPoint = '';
+		if(x.indexOf('.') > 0)
+		afterPoint = x.substring(x.indexOf('.'),x.length);
+		x = Math.floor(x);
+		x=x.toString();
+		var lastThree = x.substring(x.length-3);
+		var otherNumbers = x.substring(0,x.length-3);
+		if(otherNumbers != '')
+		lastThree = ',' + lastThree;
+		return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree + afterPoint;
+
+	}
+
+</script>
+  		</div>
+  	</form>
+  	<div class="modal fade" id="removeUser" role="dialog" style="z-index: 1600;">
+  		<div class="modal-dialog" role="document">
+  			<div class="modal-content">
+  				<div class="quickViewCont">
+  					<div class="container bg-primary p-2">
+  						<div class="row">
+  							<div class="col-md-4 offset-md-4 text-center">
+  								<a href="#" title="" class="mobileLogo" style="display:inline;" height="37" width="37"><img height="37" width="37" src="https://www.adaruniforms.com/pub/static/frontend/sttl/adaruniforms/en_US/images/mobile-logo-white.png"></a>
+  							</div>
+  							<div class="col-md-4">
+  								<!--<button type="button" data-dismiss="modal" class="close mfp-close-inside"><i class="fa fa-times"></i></button>-->
+  							</div>
+  						</div>
+  					</div>
+  					<div class="comingSoonTxt center">
+  						<div class="comingSoonTxt center">
+  							<p  class="mrgT20 padB20">Do you want to save and continue?</p>
+  						</div>
+  						<div class="center mrgB20">
+  							<button class="themeBtn" id="goback" data-dismiss="modal" type="button">Go Back</button>
+  							<button class="themeBtn mrgL20" id="savecontinue" type="submit">Save & Continue</button>
+  						</div>
+  					</div>
+  				</div>
+  			</div>
+  		</div>
+		</div>
+
+	<?php
+		}
+		endif;
+	?>

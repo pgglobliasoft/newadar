@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+<!--     	<add id="Sttl_Childskus::Childskus" title="Manage Childskus" module="Sttl_Childskus" sortOrder="60" resource="Sttl_Childskus::Childskus" parent="Sttl_Inquiries::main"/>
+
+		<add id="Sttl_Childskus::Childskus_child" title="Childskus" module="Sttl_Childskus" sortOrder="10" parent="Sttl_Childskus::Childskus" action="childskus/grid/index" resource="Sttl_Childskus::Childskus_child"/>
+
+        <add id="Sttl_Childskus::Childskus_import" title="Import Data" sortOrder="20" module="Sttl_Childskus" parent="Sttl_Childskus::Childskus" action="childskus/excel/import" resource="Sttl_Childskus::Childskus_import"/> -->
+
+    </menu>
+</config>

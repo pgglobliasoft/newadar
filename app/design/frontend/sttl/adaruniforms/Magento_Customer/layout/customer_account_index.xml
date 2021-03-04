@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="customer_account"/>
+    <head>
+        <css src="ManishJoy_ChildCustomer::css/register.css" />
+        <css src="ManishJoy_ChildCustomer::css/sweetalert.min.css" />
+        <remove src="mage/calendar.css"/>
+        <remove src="css/print.css"/>
+        <!-- <remove src="DR_Gallery::js/fancyboxjs.js"/>         -->
+        <remove src="DR_Gallery::js/fancyboxjs.js"/>
+        <remove src="WeltPixel_Quickview::js/weltpixel_quickview.js"/>
+        <remove src="WeltPixel_Quickview::js/jquery.magnific-popup.min.js"/>
+        <remove src="WeltPixel_Quickview::css/magnific-popup.css"/>
+        <remove src="Magestore_Bannerslider::css/custom.css"/>
+    </head>
+    <body>
+    <referenceBlock name="customer_account_dashboard_address" remove="true"/> 
+    <referenceBlock name="page.main.title" remove="true" />   
+    <referenceBlock name="customer_account_dashboard_info" remove="true"/>
+    <referenceBlock name="customer_account_navigation" remove="true"/>
+    
+       <!--  <referenceContainer name="page.wrapper">
+            <block class="Magento\Cms\Block\Block" name="account_page_banner" before='-'>
+                <arguments>
+                    <argument name="block_id" xsi:type="string">account_page_banner</argument>
+                </arguments>
+            </block>
+        </referenceContainer>   -->
+        <referenceContainer name="content"> 
+            <block class="Sttl\Proupdated\Block\Read" name="read_import" template="Sttl_Proupdated::read/read.phtml" before="-" />
+            <container name="customer_account_tabsection" htmlTag="div" htmlClass="customer_account_tabsection">           
+                <!-- <block class="Sttl\Adaruniforms\Block\Info" name="customer_account_dashboard_info212" template="Magento_Customer::account/dashboard/info.phtml" cacheable="false"/> -->
+                <block class="Sttl\Adaruniforms\Block\Info" name="customer_account_dashboard_info12" template="Magento_Customer::account/dashboard/newinfo.phtml" cacheable="false">
+                   <!--  <block class="Sttl\Adaruniforms\Block\Info" name="notes_section" template="Sttl_Proupdated::read/notificationtable.phtml" before="-" /> -->
+                     <block class="ManishJoy\ChildCustomer\Block\Customer" name="create_custome_index_childusertable" cacheable="false" template="ManishJoy_ChildCustomer::childusertable.phtml" />
+                </block>
+               <!--  <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_statement"  template="Magento_Customer::account/dashboard/statement.phtml" cacheable="false"/> -->
+                <!-- <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_savepayment"  template="Magento_Customer::account/dashboard/savepament.phtml" cacheable="false"/> -->
+                <!-- <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_account_dashboard_shippinginformation"  template="Magento_Customer::account/dashboard/shippinginformation.phtml" cacheable="false"/> -->
+                <block class="Magento\Customer\Block\Account\Dashboard\Info" name="customer_edit_popup" template="Magento_Customer::account/dashboard/edit_customer.phtml" after="-" />
+                <!-- User managenmt tab section block -->
+                 <block class="ManishJoy\ChildCustomer\Block\Customer" name="create_custome_index" cacheable="false" template="ManishJoy_ChildCustomer::user_management.phtml" >
+                    <block class="ManishJoy\ChildCustomer\Block\Customer" name="create_custome_index_registartion" cacheable="false" template="ManishJoy_ChildCustomer::register.phtml" />   
+                </block> 
+                <!-- <block class="WeltPixel\Quickview\Block\Quickviewpopup" name="quickviewpopu" cacheable="false" template="WeltPixel_Quickview::quickpopup.phtml"/>                -->
+            </container>
+
+<!--             <block class="Sttl\Customerorder\Block\Neworder" name="new.ko.component_tmp" template="Sttl_Customerorder::newkocom.phtml" before="-" /> -->
+        </referenceContainer>
+      <!--   <referenceContainer name="root">
+              <block class="Sttl\Proupdated\Block\Read" name="read_import" template="Sttl_Proupdated::read/read.phtml" />
+        </referenceContainer> -->
+        <move element="content_slider" destination="columns" before="-" />
+
+    </body>
+</page>

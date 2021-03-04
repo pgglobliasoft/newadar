@@ -1,0 +1,112 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php
+/**
+ * Top menu for store
+ *
+ * @var $block \Magento\Theme\Block\Html\Topmenu
+ */
+ 
+ /* $eavConfig = $object_Manager->get('\Magento\Eav\Model\Config');
+$attribute = $eavConfig->getAttribute('catalog_product', 'color');
+$options = $attribute->getSource()->getAllOptions(); */
+
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$objectEav = $objectManager->get('\Magento\Eav\Model\Config'); 
+$attributeCollections = $objectEav->getAttribute('catalog_product', 'collecttion');
+$collectionObj = $attributeCollections->getSource()->getAllOptions();
+
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+$baseUrl = $storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+
+$customerSession = $objectManager->create("Magento\Customer\Model\Session");
+
+/* $attributeGender = $objectEav->getAttribute('catalog_product', 'gender');
+$genderObj = $attributeGender->getSource()->getAllOptions(); */
+?>
+<?php $columnsLimit = $block->getColumnsLimit() ?: 0; ?>
+<?php $_menu = $block->getHtml('level-top', 'submenu', $columnsLimit) ?>
+
+<?php
+/**
+ * Copyright © 2016 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php
+/**
+ * Top menu for store
+ *
+ * @var $block \Magento\Theme\Block\Html\Topmenu
+ */
+?>
+<?php $columnsLimit = $block->getColumnsLimit() ?: 0; ?>
+<?php $_menu = $block->getHtml('level-top', 'submenu', $columnsLimit) ?>
+
+<nav class="navigation" data-action="navigation">
+    <ul data-mage-init='{"menu":{"delay":50,"responsive":true, "expanded":true, "position":{"my":"left top","at":"left bottom"}}}'>
+	
+		<?php /* <li class="level0 nav-1 first level-top parent ui-menu-item" role="presentation"><a href="<?php echo $this->getBaseUrl(); ?>collections.html" class="level-top ui-corner-all" aria-haspopup="true" id="ui-id-2" tabindex="-1" role="menuitem"><span class="ui-menu-icon ui-icon ui-icon-carat-1-e"></span><span>Collections</span></a>
+	    	<ul class="level0 submenu ui-menu ui-widget ui-widget-content ui-corner-all" role="menu" aria-expanded="false" style="display: none; top: 56px; left: 0.5px;" aria-hidden="true">
+				<?php
+				foreach($collectionObj as $collections)
+				{
+					if($collections['value'] == '') continue;
+					?>
+					<li class="level1 nav-1-1 first ui-menu-item" role="presentation">
+						<a href="<?php echo $this->getBaseUrl(); ?>catalogsearch/result/?q=&collecttion=<?php echo $collections['value'];?>&category=<?php echo $collections['label'];?>" id="ui-id-7" class="ui-corner-all" tabindex="-1" role="menuitem">
+							<span><?php echo $collections['label'];?></span>
+						</a>
+					</li>
+				<?php 
+				}
+				?>
+	    		
+	    		
+	    	</ul>
+    	</li> */ ?>
+        <?= /* @escapeNotVerified */ $_menu ?>
+		<?php
+				/* foreach($genderObj as $gender)
+				{
+					if($gender['value'] == '') continue;
+					?>
+					<li class="level0 nav-2 first level-top parent ui-menu-item" role="presentation"><a href="<?php echo $this->getBaseUrl(); ?>catalogsearch/result/?q=&gender=<?php echo $gender['value'];?>" class="level-top ui-corner-all" aria-haspopup="true" id="ui-id-2" tabindex="-1" role="menuitem"><span class="ui-menu-icon ui-icon ui-icon-carat-1-e"></span><span><?php echo $gender['label'];?></span></a>
+					</li>
+				<?php 
+				} */
+				?>
+        <?= /* @escapeNotVerified */ $block->getChildHtml() ?>
+    </ul>
+	<ul class="add-extra-link-mobile">
+    	<?php if ($customerSession->isLoggedIn()): ?>
+			<li class="alignLeft mobMenuOnly"><a href="<?php echo $baseUrl."customer/account/index/";?>">YOUR ACCOUNT</a><a class="alignRight" href="<?php echo $baseUrl."customerlogin/account/logout/";?>">(Log out)</a></li>
+		<?php endif; ?>
+		<li><a href="<?= $block->getUrl('about-us') ?>">About</a></li>
+		<li><a href="<?= $block->getUrl('careers') ?>">Career</a></li>
+		<li><a href="<?= $block->getUrl('media') ?>">Media</a></li>
+		<li><a href="<?= $block->getUrl('faq') ?>">FAQs</a></li>
+		<li><a href="<?= $block->getUrl('storelocator') ?>">Store Locator</a></li>
+		<li><a href="<?= $block->getUrl('contact') ?>">Contact Us</a></li>
+		<?php if (!$customerSession->isLoggedIn()): ?>
+		<div class="loginSection">
+			<li class="authorization-link">
+				<!--<a href="javascript:void(0);" class="mobile-customer-portal">CUSTOMER PORTAL</a>-->
+				For an optimal experience please use the B2B portal on a tablet or desktop device
+			</li>
+		</div>
+		<?php endif; ?>
+		<!-- <li class="loginSection"><a data-toggle="modal" class="mobile-customer-portal" data-target="#loginModal">CUSTOMER PORTAL</a></li> -->
+	</ul>
+</nav>
+

@@ -1,0 +1,44 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var \Magento\Store\Block\Switcher $block */
+?>
+<?php if (count($block->getStores())>1): ?>
+<?php $id = $block->getIdModifier() ? '-' . $block->getIdModifier() : '' ?>
+
+
+ <div class="customSelectOuter">
+				<select class="langSelect" onchange="javascript:handleSelect(this)">
+					<option>Language</option>
+					<option>
+						<div class="action toggle switcher-trigger"
+							 id="switcher-language-trigger<?= $block->escapeHtmlAttr($id) ?>"
+							 data-mage-init='{"dropdown":{}}'
+							 data-toggle="dropdown"
+							 data-trigger-keypress-button="true">
+							<strong class="view-<?= $block->escapeHtml($block->getCurrentStoreCode()) ?>">
+								<span><?= $block->escapeHtml($block->getStoreName()) ?></span>
+							</strong>
+						</div>
+					</option>
+				 <?php foreach ($block->getStores() as $_lang): ?>
+				 <?php if ($_lang->getId() != $block->getCurrentStoreId()): ?>
+						<option value="<?php echo $this->getCurrentUrl() . '?___store=' . $_lang->getCode();?>">
+							<?= $block->escapeHtml($_lang->getName()) ?>
+						</option>
+				 <?php endif; ?>
+				 <?php endforeach; ?>
+				</select>
+          </div>
+		  <script type="text/javascript">
+				function handleSelect(elm)
+				{
+					window.location = elm.value;
+				}
+		  </script>
+<?php endif; ?>

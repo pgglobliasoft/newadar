@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="header.container">
+            <block ifconfig="customerlogin/customerlogin/enable" class="ManishJoy\CustomerLogin\Block\Popup" name="customer-login-popup" template="form/popup.phtml" after="-" />
+            <block ifconfig="customerlogin/customerlogin/enable" class="ManishJoy\CustomerLogin\Block\Forgot" name="customer-forgot-popup" template="form/forgot.phtml" after="-" />
+        </referenceContainer>
+    </body>
+</page>

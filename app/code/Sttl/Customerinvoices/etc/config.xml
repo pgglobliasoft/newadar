@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <customerinvoices>
+            <customerinvoices>
+                <enabled>1</enabled>
+            </customerinvoices>
+            <email>
+                <recipient_email>
+                    <![CDATA[aditya.pandya@silvertouch.com]]>
+                </recipient_email>
+                <sender_email_identity>paymentconfirmation</sender_email_identity>
+                <paymentconfirmation>payment_confirmation_email_template</paymentconfirmation>
+            </email>
+        </customerinvoices>
+    </default>
+</config>

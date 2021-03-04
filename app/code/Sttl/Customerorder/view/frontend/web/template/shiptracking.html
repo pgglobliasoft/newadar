@@ -1,0 +1,162 @@
+
+<% if(!empty(shipData))
+{ %>
+<div class="trackIDList">
+    <h4>Tracking Number:</h4>
+    <div class="trackPack">
+    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+        <%  var $active = 'true';
+            _.each(shipData, function(value, index) {  
+                if(!isset(value['TrackingInfo']['shipDataArray']['errors']))
+				{
+                    $shipDataArray = value['TrackingInfo']['shipDataArray'];
+					$TrackingData = value['TrackingInfo'];
+					$current = '';
+					if($active == 'true')
+					{
+						$current = 'active';
+					}
+					$TrackingNumber = $TrackingData['TrackingNumber'];	
+                    $TrackingNumber = $TrackingData['TrackingNumber']; %>
+                    <a class="nav-link <%=current%>" id="v-pills-home-tab-<%=$key%>" data-toggle="pill" href="#v-pills-home-<%=$key%>" role="tab" aria-controls="v-pills-home" aria-selected="true">
+                        <span data-toggle="tooltip" data-placement="left" title="<%=$TrackingNumber%>">
+                            <span><%=$TrackingNumber%></span>
+                        </span>
+                        <% var  $ship_date = ''; %>
+                        <% if(isset($shipDataArray['status_description']) && $shipDataArray['status_description'] !='Unknown') {%>                                                    
+                        <span>Shipped: 
+                            <% if(isset($shipDataArray['ship_date']) && $shipDataArray['ship_date'] != ''){
+
+                                $ship_date = date("mm/dd/yy", strtotime($shipDataArray['ship_date']));
+                            }else{
+                                if(isset($TrackingData['ShipDate']) && $TrackingData['ShipDate'] != '')
+                                    {
+                                        $ship_date = date("mm/dd/yy", strtotime($TrackingData['ShipDate']));
+                                    }
+                                    
+                                }
+                            }
+                            var d = new Date($ship_date);
+                            var str = $.datepicker.formatDate('yy-mm-dd', d);
+                            str %>
+                        </span>
+                    </a>
+					<% $active = 'false';
+				}
+            });
+        %>   
+    </div>
+    </div>
+</div>
+<div class="trackIDDetails">
+    <div class="tab-content" id="v-pills-tabContent">
+    <% $active = 'true'; 
+    foreach(shipData as $key => $data)
+			{
+				$step1 = 'stepInprogress';
+				$step2 = '';
+				$step3 = '';
+				$shipDataArray = $data['TrackingInfo']['shipDataArray'];
+				if(!isset($shipDataArray['errors']))
+				{
+					$delivery_date = $shipDataArray['estimated_delivery_date'];
+					if(isset($shipDataArray['status_code']) && ($shipDataArray['status_code'] == 'AC' || $shipDataArray['status_code'] == 'UN'))
+					{
+						$step1 = 'stepCompleted';
+						$step2 = '';
+						$step3 = '';
+					}
+					if(isset($shipDataArray['status_code']) && ($shipDataArray['status_code'] == 'IT' || $shipDataArray['status_code'] == 'EX'))
+					{
+
+						$step1 = 'stepCompleted';
+						$step2 = 'stepInprogress';
+						$step3 = '';
+					}
+					if(isset($shipDataArray['status_code']) && $shipDataArray['status_code'] == 'DE')
+					{
+						$delivery_date = $shipDataArray['actual_delivery_date'];
+						$step1 = 'stepCompleted';
+						$step2 = 'stepCompleted';
+						$step3 = 'stepCompleted';
+					}
+				  	if($shipDataArray['status_description'] =='Unknown')
+					{
+						$step1 = '';
+						$step2 = '';
+						$step3 = '';
+					}
+				  	$TrackingData = $data['TrackingInfo'];
+				  	$current = '';
+				  	$status = '';	
+					if($active == 'true')
+					{
+						$current = 'active';
+					}
+					if(($shipDataArray['actual_delivery_date'] != '') && ($shipDataArray['status_description'] != 'In Transit' || $shipDataArray['status_description'] != 'Unknown') )
+					{
+						$status = 'Delivered';
+					}
+					else
+					{
+						$status = 'Scheduled Delivery';
+					}
+					$delivery_date_txt = ''; %>
+                    <div class="tab-pane fade show <%=$current%>" id="v-pills-home-<%=$key%>" role="tabpanel" aria-labelledby="v-pills-home-tab-<%=$key%>">
+                        <div class="cf delSchedule">
+                            <input type="hidden" name="ship_shiowdata" id="ship_shiowdata" value="1">
+                            <h4><%=$status%></h4>
+                            <% if($delivery_date == '' || $delivery_date == 'null')
+                            {
+                                $delivery_date_txt =  'Not Available Yet';
+                            }
+                            else
+                            {
+                                $delivery_date_txt =  date("l F jS\, Y ", strtotime($delivery_date));
+                            }
+                            $description = '';
+                            $delivery_date_txt %>
+                        </div>
+                        <div class="cf">
+                            <div class="trackingStatusBar">
+                                <div class="step1 <%=$step1%>"></div>
+                                <div class="step2 <%=$step2%>"></div>
+                                <div class="step3 <%=$step3%>"></div>
+                                
+                                <span class="shipStatus">
+                                <% if($shipDataArray['status_code'] == 'EX')
+                                {
+                                    $description =  $shipDataArray['exception_description'];
+                                }else{
+                                    $description =  $shipDataArray['carrier_status_description'];
+                                }
+                                $Service =$TrackingData['Service'];
+                                $description %>
+                                </span>
+                            </div>
+                        </div>
+                        <ul class="delStatusTxt">
+                            <li><span>Shipped via</span><div><%=$Service%></div></li>
+                            <li><span>Shipped to</span><div class="delvAdd"><span> 
+                            <% ($TrackingData ['ShipToCity'] !='') ? ucwords(strtolower($TrackingData['ShipToCity'])): "";
+                            ($TrackingData['ShipToState'] !='') ? ' '.ucwords(strtolower($TrackingData['ShipToState'])): "";
+                            ($TrackingData['ShipToZipCode'] !='') ? ','.$TrackingData['ShipToZipCode']: "";
+                            $status_description = $shipDataArray['status_description']; 
+                            %></span></div></li>
+                            <li><span>Status</span><div><%=$status_description%></div></li>
+                        </ul>
+                    </div>
+					<% $active = 'false';					
+				}else{ %>
+					<div class="col-12">
+                        <div class="cf delSchedule">
+                            <h4><span>No shipment tracking information available.</span></h4>
+                        </div>
+                    </div>
+				<% }
+			}%>
+    </div>
+</div>	
+<% } else{ %>
+    <div class="col-12"><div class="cf delSchedule"><h4><span>No shipment tracking information available.</span></h4></div></div>
+<% } %>

@@ -1,0 +1,47 @@
+<?php
+/**
+ * Copyright © Magefan (support@magefan.com). All rights reserved.
+ * See LICENSE.txt for license details (http://opensource.org/licenses/osl-3.0.php).
+ *
+ * Glory to Ukraine! Glory to the heroes!
+ */
+?>
+<?php
+/**
+ * Blog recent posts widget
+ *
+ * @var $block \Magefan\Blog\Block\Widget\Recent
+ */
+?>
+
+<?php
+    $_postCollection = $block->getPostCollection();
+	$count = 1;
+?>
+<?php if ($_postCollection->count()) { ?>
+<div class="blog-widget-recent blog-widget-recent-masonry tab-pane fade" id="gallery" role="tabpanel" aria-labelledby="contact-tab">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="grid">
+				<?php foreach ($_postCollection as $_post) { ?>
+					<?php
+						$_postUrl = $_post->getPostUrl();
+						$_postName = $block->escapeHtml($_post->getTitle(), null, true);
+					?>
+					<div class="grid-item grid-sizer grid-item--<?php echo $count; ?>">
+						<?php if ($featuredImage = $_post->getFeaturedImage()) { ?>
+							<img src="<?php echo $featuredImage ?>" alt="<?php echo $_postName ?>" />
+						<?php } ?>
+					</div>
+
+				<?php $count++; 
+						if($count == 4)
+						 {
+							 $count = 1;
+						 }
+					 } ?>
+			</div>
+		</div>
+	</div>
+</div>
+<?php } ?>

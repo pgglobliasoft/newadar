@@ -1,0 +1,72 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var \Magento\Newsletter\Block\Subscribe $block */
+
+?>
+
+    <div class="contact-box-3 text-center">
+        <h2>Newsletter Sign Up</h2>
+         <p>Sign up for news and special offers!!</p>
+            <div class="subScription">
+                <form 
+                    class="form-set"
+                    novalidate
+                    action="<?= $block->escapeUrl($block->getFormActionUrl()) ?>"
+                    method="post"
+                    data-mage-init='{"validation": {"errorClass": "mage-error"}}'
+                    id="newsletter-validate-detail">
+                   
+                       <input id="mail" class="form-control" name="email" type="text" placeholder="EMAIL ADDRESS" data-validate="{required:true, 'validate-email':true}" />
+                        <button type="submit">
+                          <span class="input-group-text"><i class="fa fa-envelope-o"></i></span>
+                        </button>
+                </form> 
+                <p class="news-footer-show-message"></p>
+            </div>
+    </div>
+<script type="text/javascript">
+    require(["jquery"],function($) {
+        $(document).ready(function() {
+            var self = this,
+                message_show = $('.news-footer-show-message'),
+                form = $('#newsletter-validate-detail');
+                form.submit(function (e) {
+                    if (form.validation('isValid')) {
+                        var email = $("#mail").val();
+                        var url = form.attr('action');
+                        e.preventDefault();
+                        $.ajax({
+                            url: url,
+                            dataType: 'json',
+                            type: 'POST',
+                            showLoader: true,
+                            data: {email: email}
+                        }).done(function (data) {
+                            message_show.html(data.msg);
+                            if (data.error) {
+                                message_show.addClass('message-error error');
+                                message_show.removeClass('message-success');
+                                message_show.show();
+                            } else {
+                                $("#mail").val('');
+                                message_show.removeClass('message-error error');
+                                message_show.addClass('message-success');
+                                message_show.html("Thank you for signing up! Check your inbox soon for special offers, our latest innovation and products, and more!");
+                                message_show.show();
+                            }
+                            setTimeout(function() {
+                                message_show.hide();
+                            }, 5000);
+                        });
+                    }
+                });
+
+        });
+    });
+</script>

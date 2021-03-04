@@ -1,0 +1,39 @@
+<?php
+$ragisterdata = $block->getRegisterData();
+$helper = $this->helper('Sttl\Adaruniforms\Helper\Sap');
+$customerdata = $ragisterdata['customerdata'];
+$customerdata = $customerdata[0];
+$orderdata = $ragisterdata['orderdata'];
+$currentorderdata = $orderdata[0];
+// echo "<pre>";
+// print_r($currentorderdata);die;
+?>
+<div class="box box-information addressInfo shippingAdds" <?php echo ($currentorderdata['ShippingType'] == '4') ? 'style="display: none;"' : '' ?>>
+            <strong class="box-title">
+                <span>Shipping Address:</span>
+            </strong>
+           <div class="box-content">
+                    <?php if (isset($currentorderdata) && !empty($currentorderdata)) { 
+                            ?>
+                            <p>
+                            	 <?php if(isset($currentorderdata["ShippingId"]) && $currentorderdata["ShippingId"] != '') {?>
+                                	<span id="AddressID"><?php echo ucwords(strtolower($currentorderdata["ShippingId"]));?></span><br/> <?php } ?>
+                                <?php if(isset($currentorderdata["AddStreetNo"]) &&$currentorderdata["AddStreetNo"] != '') {?>
+                                	<span id="addStreetNo"><?php echo ucwords(strtolower($currentorderdata["AddStreetNo"]));?></span><br/> <?php } ?>
+                                    <?php if($currentorderdata["ShippingStreetNo"] != '') {?>
+                                    <span id="Address1"><?php echo $currentorderdata["ShippingStreetNo"];?></span><br/><?php } ?>
+                                <?php if(isset($currentorderdata["ShippingAddress"]) &&$currentorderdata["ShippingAddress"] != '') {?>
+                                    <span id="Address2"><?php echo ucwords(strtolower($currentorderdata["ShippingAddress"]));?></span><br/> <?php } ?>
+                                <?php if(isset($currentorderdata["ShippingCity"]) &&$currentorderdata["ShippingCity"] != '') {?>
+                                	<span id="City"><?php echo ucwords(strtolower($currentorderdata["ShippingCity"]))?></span><?php } ?>
+                                <?php if(isset($currentorderdata["ShippingStateCode"]) && $currentorderdata["ShippingStateCode"] != '') {?>
+                                	<span id="State">, <?php echo strtoupper($currentorderdata["ShippingStateCode"])?></span><?php } ?>
+                                <?php if(isset($currentorderdata["ShippingZip"]) &&$currentorderdata["ShippingZip"] != '') {?>
+                                	<span id="ZipCode"> <?php echo $currentorderdata["ShippingZip"]?></span><?php } ?>
+                                	 <?php /*if(isset($currentorderdata["ShippingCountry"]) &&$currentorderdata["ShippingCountry"] != '') {?>
+                                	<span id="Country"><?php echo $currentorderdata["ShippingCountry"]?></span><?php }*/ ?>
+                                </p>
+                    <?php 
+                        } ?>
+            </div>
+		</div>

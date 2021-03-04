@@ -1,0 +1,82 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/** @var \Magento\Newsletter\Block\Subscribe $block */
+
+?>
+
+<h3>Stay Updated</h3>
+
+<div class="subScription">
+   
+    
+        <form 
+            novalidate
+            action="<?= $block->escapeUrl($block->getFormActionUrl()) ?>"
+            method="post"
+            data-mage-init='{"validation": {"errorClass": "mage-error"}}'
+            id="newsletter-validate-detail">
+           
+               
+                
+								<input class="subscribeText" name="email" type="email" id="newsletter"
+                                placeholder="Email Address"
+                                data-validate="{required:true, 'validate-email':true}"/>
+               
+           
+          
+                <button class="subscribeBtn" title="<?= $block->escapeHtmlAttr(__('SUBMIT')) ?>" type="submit">
+                    <span><?= $block->escapeHtml(__('SUBMIT')) ?></span>
+                </button>
+        
+        </form>
+                <span class="news-footer-show-message subscribeNote"></span>
+
+				<span class="subscribeNote">Special offers and promotions, latest<br>
+				innovations and products, and more!</span>
+    </div>
+
+<script type="text/javascript">
+    require(["jquery"],function($) {
+        $(document).ready(function() {
+            var self = this,
+                message_show = $('.news-footer-show-message'),
+                form = $('#newsletter-validate-detail');
+            form.submit(function (e) {
+                if (form.validation('isValid')) {
+                    var email = $("#newsletter").val();
+                    var url = form.attr('action');
+                    e.preventDefault();
+                    $.ajax({
+                        url: url,
+                        dataType: 'json',
+                        type: 'POST',
+                        showLoader: true,
+                        data: {email: email}
+                    }).done(function (data) {
+                        message_show.html(data.msg);
+                        if (data.error) {
+                            message_show.addClass('message-error error');
+                            message_show.removeClass('message-success');
+                            message_show.show();
+                        } else {
+                            $("#newsletter").val('');
+                            message_show.removeClass('message-error error');
+                            message_show.addClass('message-success');
+                            message_show.html("Thank you for signing up! Check your inbox soon for special offers, our latest innovation and products, and more!");
+                        }
+                        setTimeout(function() {
+                            message_show.hide();
+                        }, 5000);
+                    });
+                }
+            });
+
+        });
+    });
+</script>

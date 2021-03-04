@@ -1,0 +1,283 @@
+<?php
+	$customerdata = $block->getCustomerDetails();
+	$tmp_orderdata = $block->getALLOrdersListDashboard();
+	$isAbletoSearch = $block->isValidforSearch();
+
+?>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Sttl_Customerorder/js/render_dashboard": {        	
+            "baseurl": "<?=$this->getBaseUrl();?>",
+            "customer_data": <?=json_encode($customerdata);?>,
+            "isAbletoSearch": "<?=$isAbletoSearch;?>"
+        }
+    }
+}</script>
+
+<div class="dashboardmain row" data-role="dashboard_collection">
+	<div class="left-side col-12">
+		<div class="row"> 
+			<div class="main-slider col-12" >
+				<div class="myAccountCustomBanner"  style="width: 100%; height:auto;" >
+					<?php echo $this->getChildHtml('banner_slider_block');?>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="announcements col-12">
+				<?php echo $this->getChildHtml('notes_section');?>
+			</div>
+		</div>
+		<div class="btn-new">
+		<div class="loginSection mobile-button"><a href="<?php echo $this->getBaseUrl(); ?>customerorder/customer/neworder/">Place a New order</a></div>
+		</div>
+		<div class="row statusdetail" >
+			<div class="col-12 recent-order-col-section">
+						<span class="statustitle">Recent Order Status</span>
+				<div class="recent-order order">
+					<div class="new-div">
+						<div class="container-fluid">
+							<div class="row recent_order_status">
+								<div class="col-8 p_i_number recent_order_po">
+									<div class="searchInput">
+										<i class="fa fa-search"></i>
+										<input type="text" class="order_search" name="po_number" placeholder="P.O. Number or Order Number" autocomplete="off" data-validate="{required:true}">
+										<span class="errormessage"></span>
+									</div>
+								</div>
+								<div class="col-4 recent_order_dropdown">
+									<div class="statusDropdown">
+										<!-- <span>Status:</span> -->
+										<div class="orderDevelop"><div>Recent Orders</div>
+										<div style=""><span id="lodingshippdata" class="loadShipping" style="/* display: block; */">
+												<span class="loadDots">
+													<span></span>
+													<span></span>
+													<span></span>
+													<span class="tooltip-element" tooltip="' + values.description + '"></span>
+												</span>
+													</span>
+										</div>	
+									</div>
+
+										<select name="order_stats" id="order_stats" class="filter_loading" style="display: none;">
+											<option  value="recent_order" selected="selected">Recent Orders</option>
+											<option value="viewall">View All</option>
+											<option value="Draft">Draft</option>
+											<option value="Submitted">Submitted</option>
+											<option value="Processing">Processing</option>
+											<option value="Shipped">Shipped</option>
+											<option value="PartiallyShipped">Partially Shipped</option>
+										</select>
+									</div>
+
+								</div>
+							</div>
+						</div>
+					</div>
+				<div class="orderItem-loader" style="display: none;">
+		            <div class="cf loaderAdd">
+						<div class="lds-ellipsis" style="display: block;">
+							<h1>Loading</h1>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
+						</div>
+					</div>
+		        </div>
+				<div class="ord_table">
+					<?php
+					if(count($tmp_orderdata) > 0  )
+					{					?>
+				<table class="order_table">
+					<tbody>
+						<?php 
+							$main_tr = '';
+							$max_value = count($tmp_orderdata);
+							if($max_value >= 5){
+								$max_value = 5;
+							}
+							for ($i=0; $i < $max_value; $i++) { 
+								$id_b_e = base64_encode($tmp_orderdata[$i]['Id']);
+								if($tmp_orderdata[$i]['dataFrom'] == 'V')
+								{
+									$id_b_e = base64_encode($tmp_orderdata[$i]['DocNum']);
+								}
+								$order_date = '';
+								if($tmp_orderdata[$i]['CreateDate'] != ''){
+
+									// $newdate = (string)$tmp_orderdata[$i]['CreateDate'];
+									
+									// print_r($newdate);
+									// die;
+									
+									// $theDate    = new DateTime($newdate);
+									// echo $stringDate = $theDate->format('Y-m-d H:i:s');
+
+									// $newdate = date_create("01-12-2021");
+									// $CreateDateforamted = date_format($newdate,"d/m/y"); 
+									 // $CreateDateforamted = date_format( new DateTime($newdate), 'd/m/y' );
+									// echo $result;
+
+										$newdate = explode('-',$tmp_orderdata[$i]['CreateDate']);
+										$year = substr($newdate[2],2);
+
+										$finaldate = $newdate[0].'/'.$newdate[1].'/'.$year;
+								
+
+									$order_date = str_replace('-', '/', $finaldate);
+								}
+								$order_redirect_url ='';
+								if($tmp_orderdata[$i]['DocStatus'] != "Draft"){
+
+									$order_redirect_url = 'href='.$this->getBaseUrl().'customerorder/customer/orderview/id/'.$id_b_e.'/df/'.base64_encode($tmp_orderdata[$i]['dataFrom']);
+								}
+								$main_tr .= '<tr>';
+								if($tmp_orderdata[$i]['NumatCardPo'] != '' || $tmp_orderdata[$i]['NumatCardPo'] != null){
+
+									$ponum = $tmp_orderdata[$i]['NumatCardPo'];
+									if(strlen($ponum) > 8){
+									
+										$ponum = substr($ponum,0,8)."...";
+									}
+
+									$main_tr .= '<td><a class="order-redirect-url"'.$order_redirect_url.'>'.$ponum.'</a></td>';
+								}
+								else
+								{
+									$ponum = $tmp_orderdata[$i]['DocNum'];
+									if(strlen($ponum) > 8){
+										$ponum = substr($ponum,0,8)."...";
+									}
+									$main_tr .= '<td><a class="order-redirect-url"'.$order_redirect_url.'>Order# '. $ponum.'</a></td>';
+
+								}
+								$main_tr .= '<td>$'.number_format($tmp_orderdata[$i]['DocTotal'],2).'</td>';
+								$main_tr .= '<td>'.$order_date.'</td>';
+								
+								if($tmp_orderdata[$i]['DocStatus'] == 'Shipped' || $tmp_orderdata[$i]['DocStatus'] == 'PartiallyShipped'){
+									
+									$tmp_partialy = ($tmp_orderdata[$i]['DocStatus'] == 'PartiallyShipped') ? 'Partially Shipped' : $tmp_orderdata[$i]['DocStatus'];
+
+									$main_tr .= '<td class="'.$tmp_orderdata[$i]['DocStatus'].' custom_loading"><a href="#" data-backdrop="false" data-toggle="modal" data-target="#shipment-track" id="shipttreckdata" class="tracking_disabled" data-num="'.$tmp_orderdata[$i]['DocEntry'].'">'.$tmp_partialy.'</a></td>';
+								}else{
+
+									if($tmp_orderdata[$i]['DocStatus'] == 'Draft')
+									{
+										$main_tr .= '<td class='.$tmp_orderdata[$i]['DocStatus'].'><a href="'.$this->getBaseUrl().'customerorder/customer/neworder/id/'. base64_encode( $tmp_orderdata[$i]['Id']).'/ncp/'.base64_encode($tmp_orderdata[$i]['NumatCardPo']).'#block-title"> <i class="fa fa-pencil editdraftdashboard" orderid ="'.base64_encode( $tmp_orderdata[$i]['Id']).'" po_number="'.base64_encode($tmp_orderdata[$i]['NumatCardPo']).'" ></i></a><span> '.$tmp_orderdata[$i]['DocStatus'].'</span></td>';
+									}
+									else
+									{
+										$main_tr .= '<td class='.$tmp_orderdata[$i]['DocStatus'].'>'.$tmp_orderdata[$i]['DocStatus'].'</td>';
+									}
+								}
+
+								$main_tr .= '</tr>';
+							}
+							echo $main_tr;
+						?>
+					</tbody>
+				</table>
+				<?php
+					}
+					else
+					{
+						
+						$baseurlneworder= $this->getBaseUrl().'customerorder/customer/neworder';
+							?>
+								<div class="emptyrecentorder">
+									
+										<p>You don't yet have any orders yet!</br>Start your first order now!</p>
+										<div class="neworderrecentorder"><a href="<?=$baseurlneworder?>">Place New Order</a></div>
+
+								</div>
+						<?php
+					}
+
+				?>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+		<div class="row">
+			<div class="col-12">
+				<div class="accountinfo">
+					<div class="accountinfo-title">
+						<h2 class="dashcenter">Account Info</h2>
+					</div>
+					<div class="accountinfo-content">
+						<div class="spend-amount">
+							<p><span class="anount-con">Year to Date Spend</span><span class="amount">$<?=number_format((float)$customerdata['YTDSALE'],2)?></span></p>
+							<p><span class="anount-con">Last Full Year Spend</span><span class="amount LastYearSale">$<?=number_format((float)$customerdata['LastYearSale'],2)?></span></p>
+						</div>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	
+	
+		<div class="row">
+			<div class="col-12 allproduct">
+			<div class="accountinfo">
+				<!-- <div class="col-md-12 dashboarditem">
+					<div class="row" style="flex-wrap: nowrap;">
+						<div class="allitem">
+							<input type="text" class="showsearchinput" style="pointer-events: none; opacity: 0.5;" name="searchstyle" id="searchstyle" placeholder="Search Style">
+						</div>
+						<div class="searchitem">
+							<button style="pointer-events: none; opacity: 0.5;" class="themeBtn showslider">Close View</button>
+						</div>
+					</div>
+				</div> -->
+				<div class="dashboardslider">
+					<?php echo $this->getChildHtml('collection_slider123'); ?>
+				</div>
+			</div>
+		</div>
+		</div>
+			
+	</div>
+</div>
+
+<?php echo $this->getLayout()->createBlock("Sttl\Customerorder\Block\Orderview")->setTemplate("Sttl_Customerorder::shiptrack.phtml")->toHtml();?>
+
+<script type="text/javascript">
+
+require([ 'jquery' , 'functions'], function($){
+	// $('.editdraftdashboard').click
+
+	$(document).on("mouseover","td.inventory_table_ETA",function() {
+                var content = $(this).attr("eta_js_tool");
+                $(".tooltip11").html(content)
+                var position = $(this).position()
+                var left = $(".new-div").width()-70+"px"
+                if($(window).width() > 1500)
+			    {
+			    	left =  $(".new-div").width()-100+"px"
+
+			    }else if($(window).width() > 768){
+			    	left =  $(".new-div").width()-110+"px"
+			    }
+                $(".tooltip11").css({
+                    "display":"block",
+                    "top": position.top -  $(".tooltip11").height()+"px",
+                    "left": left
+                })
+            });
+            $(document).on("mouseout","td.inventory_table_ETA",function() {
+                var position = $(this).position()
+                $(".tooltip11").css({
+                    "display":"none"
+                })
+            });
+            
+
+
+});</script>

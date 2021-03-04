@@ -1,0 +1,256 @@
+<?php
+	/**
+		* Copyright © Magento, Inc. All rights reserved.
+		* See COPYING.txt for license details.
+	*/
+	
+	// @codingStandardsIgnoreFile
+	
+	/** @var \Magento\Customer\Block\Account\Dashboard\Info $block */
+	
+$helper = $this->helper('Sttl\Adaruniforms\Helper\Sap');
+$data = $helper->getCustomerShippingAddressDetails();
+
+?>
+<div class="block block-dashboard-info shippingBlock">
+    <div class="block-title"><strong><?= $block->escapeHtml(__('Shipping Information')) ?></strong>
+	</div>
+    <div class="block-content">
+		<div class="box box-information">
+			<strong class="box-title">
+				Manage and add new shipping information.
+			</strong>
+			<div class="box-content">
+				<select class="shippingMeethod" name="shippingaddress" id="shippingaddress">
+					<option>Please Select</option>
+					<?php if (isset($data) && !empty($data)) { 
+						$cnt = 1;
+						foreach($data as $addKey => $addVal) {
+							$addVal["PhoneNo"] = '';
+							$addVal["Id"] = $cnt;
+							$default_add = ($addVal["DefaultAdd"] == "Y") ? "selected" : "";
+							
+							echo '<option value="'.$cnt.'" attr-addr1="'.$addVal["Address1"].'" attr-addr2="'.$addVal["Address2"].'" attr-city="'.$addVal["City"].','.$addVal["State"].' '.$addVal["ZipCode"].'" attr-tel="'.$addVal["PhoneNo"].'" '.$default_add.' >'.$addVal["AddressID"].'</option>';
+					$cnt++; } } ?>
+				</select>
+				<div class="shipAddress"></div>
+				<input type="submit" value="+ Add New Address" data-toggle="modal" data-target="#customer-edit-address"  class="themeBtn" />
+				
+			</div>
+		</div>
+		
+	</div>
+</div>
+<script type="text/javascript">
+    require(['jquery'], function($) {
+		$(document).on("change", "#shippingaddress", function(){
+			var Objsel = $(this).find('option:selected');
+			
+			var addline1 = $(Objsel).attr("attr-addr1"),
+			addline2 = $(Objsel).attr("attr-addr2"),
+			addline3 = $(Objsel).attr("attr-city"),
+			addline4 = $(Objsel).attr("attr-tel"),
+			address = [];
+			
+			if (typeof addline1 !== typeof undefined && addline1 !== false && addline1.trim() != '') {
+				address.push(addline1);
+			}	
+			
+			if (typeof addline2 !== typeof undefined && addline2 !== false && addline2.trim() != '') {
+				address.push(addline2);
+			}
+			
+			if (typeof addline3 !== typeof undefined && addline3 !== false && addline3.trim() != '') {
+				address.push(addline3);
+			}
+			
+			if (typeof addline4 !== typeof undefined && addline4 !== false && addline4.trim() != '') {
+				address.push(addline4);
+			}
+			
+			if (address.length)
+			$(".shipAddress").html(address.join("<br/>"));
+			else 
+			$(".shipAddress").html("");
+		});
+		
+		$(function() {
+			$('.modal.block-customer-edit-address').on('hidden.bs.modal', function(){
+				$('#customer-edit-address-validate').find('input[type="text"]').val('');
+				 
+				 var validator = $("#customer-edit-address-validate").validate();
+				validator.resetForm();
+			});
+			
+			$("#shippingaddress").change();
+		});
+	});
+	
+</script>
+
+	<div class="block block-dashboard-info otherUsr">
+	<div class="otherUserOverlay"></div>
+	<div class="block-title"><strong>Other Users</strong> <span class="addUser">+ Add User</span></div>
+    <div class="block-content">
+	<table class="otherUserTable">
+	<tr>
+	<th>Name</th>
+	<th>Email</th>
+	<th>Password</th>
+	<th>Access To</th>
+	</tr>
+	<tr>
+	<td>Jordan Hill</td>
+	<td>jordan@ruckusco.com</td>
+	<td>RuckusTest</td>
+	<td><select><option>Everything</option></select>
+	</tr>
+	<tr>
+	<td>Alex Friedman</td>
+	<td>alex@ruckusco.com</td>
+	<td>RuckusTest</td>
+	<td><select><option>Everything</option></select>
+	</tr>
+	</table>
+	
+    </div>
+</div>
+
+<div class="modal fade block block-customer-edit-address comingSoon commonPopup1" id="customer-edit-address" tabindex="-1" role="dialog" aria-labelledby="addressModal" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="modalContainer block-content" aria-labelledby="block-customer-login-heading">
+					<div class="messages">
+						<div class="message message-error error">
+							<div></div>
+						</div>
+					</div>
+					<div class="quickViewCont">        
+						<div class="container bg-primary p-2">
+							
+							<div class="row">
+								<div class="col-md-12 text-center customer-edit-title">
+									<span class="popUpTitle"><?= $block->escapeHtml(__("Add Shipping Method"));?></span>
+									<button type="button" data-dismiss="modal" class="close mfp-close-inside"><i class="fa fa-times"></i></button>
+								</div>          
+							</div>
+						</div>
+						<div class="registrationPage comingSoonTxt" id="comingSoonForm">
+							<form class="form custom-customer-edit-address" action="<?= $block->escapeUrl($block->getUrl('customerlogin/ajax/editAddress')) ?>" method="post" id="customer-edit-address-validate" enctype="multipart/form-data" data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>" autocomplete="off" data-mage-init='{"validation": {"errorClass": "mage-error"}}'>
+								<div class="response-msg"></div>
+								<?= $block->getBlockHtml('formkey') ?>
+								<div class="field field-name-fullname required">
+									<label class="label " for="fullname"><span><?= $block->escapeHtml(__('Full Name')) ?></span><span class="reqField">*</span></label>
+									<div class="control">
+										<input type="text" id="fullname" name="fullname" value="" title="Full Name" class="input-text required-entry validate-no-html-tags validate-alphanum-with-spaces valid" data-validate="{required:true}" aria-required="true" placeholder="Full Name">
+									</div>
+								</div>
+								<div class="field field-name-address1">
+									<label class="label " for="address1"><span><?= $block->escapeHtml(__('Address Line 1')) ?></span></label>
+									<div class="control">
+										<input type="text" id="address1" name="address1" value="" title="Address Line 1" class="input-text" placeholder="Address Line 1">
+									</div>
+								</div>
+								<div class="field field-name-address2">
+									<label class="label " for="address2"><span><?= $block->escapeHtml(__('Address Line 2')) ?></span></label>
+									<div class="control">
+										<input type="text" id="address2" name="address2" value="" title="Address Line 2" class="input-text" placeholder="Address Line 2">
+									</div>
+								</div>
+								<div class="row">
+									<div class="field field-name-city required col-md-6">
+										<label class="label " for="city"><span><?= $block->escapeHtml(__('City')) ?></span><span class="reqField">*</span></label>
+										<div class="control">
+											<input type="text" id="city" name="city" value="" title="City" class="input-text required-entry validate-no-html-tags validate-alphanum-with-spaces valid" data-validate="{required:true}" aria-required="true" placeholder="City">
+										</div>
+									</div>
+									<div class="field field-name-state required col-md-6">
+										<label class="label " for="state"><span><?= $block->escapeHtml(__('State')) ?><span class="reqField">*</span></span></label>
+										<div class="control">
+											<input type="text" id="state" name="state" value="" title="State" class="input-text required-entry validate-no-html-tags validate-alphanum-with-spaces valid" data-validate="{required:true}" aria-required="true" placeholder="State"> 
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="field field-name-zipcode required col-md-6">
+										<label class="label " for="zipcode"><span><?= $block->escapeHtml(__('Zip Code')) ?></span><span class="reqField">*</span></label>
+										<div class="control">
+											<input type="text" id="zipcode" name="zipcode" value="" title="Zip Code" class="input-text required-entry validate-no-html-tags validate-zip valid" data-validate="{required:true}" aria-required="true" placeholder="Zip Code">
+										</div>
+									</div>
+									<div class="field field-name-phoneno col-md-6">
+										<label class="label " for="phoneno"><span><?= $block->escapeHtml(__('Phone Number')) ?></span></label>
+										<div class="control">
+											<input type="text" id="phoneno" name="phoneno" value="" title="Phone Number" class="input-text valid"  placeholder="Phone Number">
+										</div>
+									</div>
+								</div>
+								<?= $block->getChildHtml('form_additional_info') ?>
+								<div class="actions-toolbar mt-2">
+									<div class="text-center">
+										<button type="submit" class="themeBtn action save" title="<?= $block->escapeHtmlAttr(__('Submit')) ?>"><span><?= $block->escapeHtml(__('Submit')) ?></span></button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>   
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+    require(['jquery'], function($) {
+      var changeText = "<?php echo __('Please Wait...') ?>";
+	  var changeSubmit = "<?php echo __('Submit') ?>";
+      var findButton = $('#customer-edit-address-validate').find('button[type=submit]'),
+                form = $('#customer-edit-address-validate');
+            form.submit(function (e) {
+                if (form.validation('isValid')) {
+                  findButton.text(changeText);
+                  findButton.attr("disabled", "disabled");
+                    var url = form.attr('action');
+                    var formData = getFormData($(this));
+                    e.preventDefault();
+                    $.ajax({
+                      type: "POST",
+                      url: url,
+                      showLoader: true,
+                      data: formData,
+                      success: function(data) {
+                          showResponse(data);
+                          if(data.error) {
+                            findButton.text(changeSubmit);
+                            findButton.removeAttr('disabled');
+                          } else {
+                            setTimeout(function(){ location.reload(); }, 3000);                            
+                          }
+                      }
+                  });
+                }
+            });
+
+            function getFormData(formElem){
+                var unindexed_array = formElem.serializeArray();
+                var indexed_array = {};
+
+                jQuery.map(unindexed_array, function(n, i){
+                    indexed_array[n['name']] = n['value'];
+                });
+
+                return indexed_array;
+            }
+
+            function showResponse(data) {
+              if(data.error) {
+                $('.block-customer-edit-address .response-msg').html("<div class='error'>"+data.error+"</div>");
+              } else {
+                $('.block-customer-edit-address .response-msg').html("<div class='success'>You saved the shipping information.</div>");
+              }
+              setTimeout(function(){ $('.response-msg').html(null); }, 5000);
+            }
+      });
+
+  </script>

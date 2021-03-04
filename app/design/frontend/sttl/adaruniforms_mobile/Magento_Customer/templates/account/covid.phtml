@@ -1,0 +1,38 @@
+<?php
+
+
+$om = \Magento\Framework\App\ObjectManager::getInstance();
+
+$customerSession = $om->get('Magento\Customer\Model\Session');
+if($customerSession->isLoggedIn()) {
+    $cusromer_firstname =  $customerSession->getCustomer()->getFirstname()."<br/>";
+  }
+
+	$searchCriteria = $om->get('\Magento\Framework\Api\SearchCriteriaBuilder')->addFilter('identifier', 'dashboard_notification','eq')->create();
+	$cmsBlocks = $om->get('\Magento\Cms\Api\BlockRepositoryInterface')->getList($searchCriteria)->getItems();
+	// $blockrepo = $om->get('\Magento\Cms\Api\BlockRepositoryInterface')->getById(57);
+  $blockstatus = '';
+  foreach($cmsBlocks as $cmsBlock) {
+		 $blocktitle = $cmsBlock->getTitle();
+     // $blockstatus = $cmsBlock->getStatus();
+    $blockstatus = $cmsBlock->getIsActive();
+	}
+  // echo $blockstatus;
+  // die;
+$helper = $this->helper('Sttl\Adaruniforms\Helper\Data');
+$flag = $helper->getConfigData("Adaruniforms/social_media/covid_19_enabled");
+// echo $dataId; die;
+// $this->helper->getConfigData("Adaruniforms/social_media/google_plus_url");
+?>
+
+<div class="account_container staus">
+	<div class="activitie">
+		<span class="active-label">Welcome, </span>
+		<span class="active"><?= $cusromer_firstname ?></span>
+	</div>
+  <?php if($blockstatus == 1 && $flag == 1){ ?>
+	<span class="covid_update">
+		<a class="covid19" data-toggle="modal" data-target="#notificationPopupModal" style="cursor:pointer;"><?= $blocktitle ?></a>
+	</span>
+<?php } ?>
+</div>

@@ -1,0 +1,84 @@
+<?php
+$order_id = $block->getOrderId();
+$style = $block->getStyle();
+$submitcolor = $block->getSubmitcolor();
+$viewmode = $block->getViewmode() !== '' ? $block->getViewmode() : '';
+$styleData = $this->getDataStyleInventory();
+$styleInventory = $styleData['styleinventory'];
+$DatabyStyle = $styleData['databystyle'] ;
+if(!empty($styleInventory) && !empty($DatabyStyle))
+{
+
+	$allorderdata = $this->getOrderAllItems($order_id);
+  $distinstyle = array_values(array_unique(array_map(function ($i) { return $i['Style']; }, $allorderdata)));
+  $implodedStyle = implode("','", $distinstyle);
+  if(!empty($distinstyle))
+  {
+  	// foreach ($distinstyle as $key => $value) {
+    // 	if(array_key_exists($value, $styleInventory))
+    // 	{
+    // 		$sizegrouparray[$styleInventory[$value]['SizeGroup']][] = $styleInventory[$value]['Style'];
+    // 	}
+    // }
+		$ItemStyles[] = array();
+		foreach ($distinstyle as $key => $value) {
+    	if(array_key_exists($value, $styleInventory))
+    	{
+				$ItemStyles[0][] = $value;
+    	}
+    }
+
+		$allstyletable[][] = array();
+
+		foreach ($DatabyStyle as $keysss => $valuesss) {
+			foreach ($valuesss as $keyssss => $valuessss) {
+				if($keyssss > 0){
+					$allstyletable[1][$keyssss] = $valuessss;
+				}
+			}
+		}
+
+		$ItemStyles = array_filter(array_merge(array(0), $ItemStyles));
+
+    $filnalHtml ='';
+    $sizearraydata = array();
+		$testdata = '';
+		foreach($ItemStyles as $key => $tempstyle)
+    {
+    	$renderDataByColor = '';
+    	$groupstyle =implode("','", $tempstyle);
+			// echo $groupstyle;
+			$renderDataByColor = $this->newrenderOrderItemHtml($order_id,$style,$submitcolor,$viewmode,$groupstyle,$allstyletable[$key]);
+    	$filnalHtml .= $renderDataByColor;
+    }
+
+    $filnalHtml .= $this->renderOrderItemHtmltotal($order_id,$viewmode);
+  	echo $filnalHtml;
+  }
+
+}else{
+
+	  $distinstyle = $this->getTempOrdrstyle($order_id);
+    $values = array_map('array_pop', $distinstyle);
+    $implodedStyle = implode("','", $values);
+    $distinstyle = $this->getsizegroup($implodedStyle);
+    $sizegrouparray = array();
+    $databystyle = array();
+    foreach($distinstyle as $key => $data)
+    {
+        $sizegrouparray[$data['SizeGroup']][] = $data['Style'];
+    }
+    $filnalHtml ='';
+    foreach($sizegrouparray as $key => $value)
+    {
+      $renderDataByColor = '';
+      $groupstyle =implode("','", $value);
+      $renderDataByColor = $this->newrenderOrderItemHtml($order_id,$style,$submitcolor,$viewmode,$groupstyle,$databystyle);
+      $filnalHtml .= $renderDataByColor;
+    }
+
+     $filnalHtml .= $this->renderOrderItemHtmltotal($order_id,$viewmode);
+     echo $filnalHtml;
+}
+
+?>

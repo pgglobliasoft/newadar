@@ -1,0 +1,515 @@
+<?php
+
+	
+	$docnumber = base64_decode($block->getRequest()->getParam('docnum'));
+	$helper = $this->helper('Sttl\Adaruniforms\Helper\Sap');
+	$invoicesData = $block->getRegisterData();
+	$invoicesData = $invoicesData[0];
+	$invoicesColorItemsData = $helper->getInvoiceDetailsItems($invoicesData['DocNum']);
+	// echo '<pre>'; print_r($invoicesColorItemsData); die;
+	$lineitemsarrray = array();
+	$checkinarray = array();
+	$total = 0;
+	$QTYOrdered = 0;  
+	$PriceAfterDiscount = 0;	
+    $currentinvoicepay = array();
+    $currentinvoicepay = $block->getInvoicepayment();
+    $data = [] ;
+	foreach($invoicesColorItemsData as $key => $Colordata)
+	{
+		//echo "<pre>";print_R($Colordata);exit;
+		
+		$data[$Colordata['Style']][$Colordata['ColorCode']]['DiscountPer'] = $Colordata['DiscountPer'];
+		$data[$Colordata['Style']][$Colordata['ColorCode']]['Style'] = $Colordata['Style'];
+		$data[$Colordata['Style']][$Colordata['ColorCode']]['ColorCode'] = $Colordata['ColorCode'];
+		$data[$Colordata['Style']][$Colordata['ColorCode']]['ColorName'] = $Colordata['ColorName'];
+		if(!in_array($Colordata['Style'].'_'.$Colordata['ColorCode'], $checkinarray)) {
+			$total = $Colordata['TotalPrice'];
+			$QTYOrdered = $Colordata['QTYOrdered'];
+			$PriceAfterDiscount = $Colordata['PriceAfterDiscount'];
+			$checkinarray[] = $Colordata['Style'].'_'.$Colordata['ColorCode'];
+			$data[$Colordata['Style']][$Colordata['ColorCode']]['UnitPrice'] = $Colordata['UnitPrice'];
+			} else {
+			
+			$total = $total + $Colordata['TotalPrice'];
+			$QTYOrdered = $QTYOrdered + $Colordata['QTYOrdered'];
+			$PriceAfterDiscount = $PriceAfterDiscount + $Colordata['PriceAfterDiscount'];
+		}
+		$data[$Colordata['Style']][$Colordata['ColorCode']]['total'] = $total;
+		$data[$Colordata['Style']][$Colordata['ColorCode']]['QTYOrdered'] = $QTYOrdered;
+		$data[$Colordata['Style']][$Colordata['ColorCode']]['PriceAfterDiscount'] = $PriceAfterDiscount;
+		$data[$Colordata['Style']][$Colordata['ColorCode']]['items'][] = $Colordata;
+	}
+	
+	$sub_row_html = '';
+	$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+	$customerSession = $objectManager->create('Magento\Customer\Model\Session');
+	$c_id = $customerSession->getCustomer()->getId();
+	$postFactory = $objectManager->get('\ManishJoy\ChildCustomer\Model\PostFactory');
+	$post = $postFactory->create();
+	$collection = $post->getCollection()->addFieldToSelect('permission')->addFieldToFilter('c_id', $c_id);
+	$permission =  $collection->getData();
+	    $payinvoice = true;
+	    if($permission){
+
+	    $payinvoice = false;
+	     // print($permission);die;
+	     $permissionarray = json_decode($permission[0]['permission'], true);
+	      if (array_key_exists("invoice",$permissionarray)){
+	     $downloadlibrary_permission = $permissionarray['invoice'];
+	            foreach ($downloadlibrary_permission as $upermission) { 
+	                    if($upermission === 'pay_invoice'){
+	                        $payinvoice = true;
+	                    }
+	                } 
+	            }  
+	        }
+	    
+
+
+?>
+<style>
+	.page-title-wrapper {
+	display: none;
+	}
+	.invoiceview .box-information {
+	width: 33.33% !important;
+	display: inline-block;
+	padding: 0px 20px 25px 0px;
+	vertical-align: top;
+	}
+	.page-title.invoice-title {
+	border-bottom: 1px solid #eee;
+	padding-bottom: 10px;
+	}
+	.block-content.invoiceview.last {
+	border-bottom: 1px solid #eee;
+	padding-bottom: 10px;
+	}
+	#maincontent > div.container > div.column.main > div.block.block-dashboard-info > div:nth-child(8) > div:nth-child(2) {
+	float: left;
+	}
+	.block-content.fl-right p {
+	margin: 0 0 8px;
+	}
+	.block-content.fl-right {
+	float: right;
+	}
+	p span {
+	float: right;
+	}
+	.id_pay_invoice {
+		float: right;
+		margin-top: 12px;
+		letter-spacing: 2px;
+	}
+</style>
+
+<div class="block block-dashboard-info">
+	<a href="javascript:void(0);" onClick="location.href = document.referrer;" class="printBtn"><strong><span class="fa fa-angle-left"></span> Back</strong></a>
+	<br>
+	<div class="page-title invoice-title"><strong>Invoice No : <?php echo ($invoicesData['DocNum'] != '') ? $invoicesData['DocNum'] : ''; ?></strong> 
+		<a href="javascript:void(0);" onClick="PrintDiv();" class="printBtn alignRight invoice"> <span class="fa fa-print"></span> Print Invoice</a>
+	</div>
+	<br>
+    <div class="block-content invoiceview cf">
+        <div class="box box-information">
+            <strong class="box-title">
+                <span>P.O.Number:</span>
+			</strong>
+            <div class="box-content">
+                <p>
+                    <?php echo ($invoicesData['NumatCardPo'] != '') ? $invoicesData['NumatCardPo'] : ''; ?><br> 
+				</p>
+			</div>
+		</div>
+		
+        <div class="box box-information">
+            <strong class="box-title">
+                <span>Invoice Number:</span>
+			</strong>
+            <div class="box-content">
+                <p>
+                    <?php echo ($invoicesData['DocNum'] != '') ? $invoicesData['DocNum'] : ''; ?><br>
+				</p>
+			</div>
+		</div>
+		<div class="box box-information">
+			<strong class="box-title">
+                <span>Invoice status:</span>
+			</strong>
+            <div class="box-content">
+                <p>
+					<?php echo ($invoicesData['DocStatus'] != '') ? $invoicesData['DocStatus'] : '-'; ?><br>
+				</p>
+			</div>
+		</div>
+	</div>
+	<div class="block-content invoiceview cf">
+        <div class="box box-information">
+			<strong class="box-title">
+                <span>Invoice Date:</span>
+			</strong>
+            <div class="box-content">
+                <p>
+                    <?php echo ($invoicesData['PostingDate'] != '') ? date("m/d/Y", strtotime(str_replace('-', '/', $invoicesData['PostingDate']))): ''; ?><br>
+				</p>
+			</div>
+		</div>
+        <div class="box box-information">
+			<strong class="box-title">
+                <span>Ship Date:</span>
+			</strong>
+            <div class="box-content">
+                <p>
+                    <?php echo ($invoicesData['DeliveryDate'] != '') ? date("m/d/Y", strtotime($invoicesData['DeliveryDate'])) : "";?><br><br>
+				</p>
+			</div>
+		</div>
+		<div class="box box-information">
+			<strong class="box-title">
+                <span>Shipped Via:</span>
+			</strong>
+            <div class="box-content">
+                <p>
+                    <?php echo ($invoicesData['ShippingType'] != '') ? $invoicesData['ShippingType'] : ''; ?><br><br>
+				</p>
+			</div>
+		</div>
+	</div>
+	<div class="block-content invoiceview last cf">
+		<div class="box box-information">
+			<strong class="box-title">
+                <span>Payment Term:</span>
+			</strong>
+            <div class="box-content">
+                <p>
+                    <?php echo ($invoicesData['PaymentTerms'] != '') ? $invoicesData['PaymentTerms'] : ''; ?><br>
+				</p>
+			</div>
+		</div>
+	    
+		
+		<div class="box box-information">
+			<strong class="box-title">
+                <span>Due In</span>
+			</strong>
+            <div class="box-content">
+                <p>
+					<?php /*
+						if($invoicesData['DocStatus'] == 'Open' && $invoicesData['DueDays'] != '' && (int)$invoicesData['DueDays'] >= 0)
+						{
+						if((int)$invoicesData['DueDays'] == 0)
+						{
+						$DueDays = 'Today';
+						}
+						if((int)$invoicesData['DueDays'] == 1)
+						{
+						$DueDays = $invoicesData['DueDays'].' Day Due';
+						}
+						if((int)$invoicesData['DueDays'] > 1)
+						{
+						$DueDays = $invoicesData['DueDays'].' Days Due';
+						}
+						
+						}else{
+						$DueDays = $invoicesData['DueDays'];
+						}
+						?>
+					<?php echo $DueDays; */ ?> 
+					<?php echo $invoicesData['DueDays'];?> <br>
+				</p>
+			</div>
+		</div>
+		<div class="box box-information">
+			<strong class="box-title">
+                <span>Due Date:</span>
+			</strong>
+            <div class="box-content">
+                <p>
+					
+					<?php echo ($invoicesData['DueDate'] != '') ? date("m/d/Y", strtotime($invoicesData['DueDate'])) : "";?><br>
+				</p>
+			</div>
+		</div>
+	</div>
+	<br>
+	<div class="block-content invoiceview last cf">
+		
+		<div class="box box-information">
+			<strong class="box-title">
+                <span>Billing Address</span>
+			</strong>
+            <div class="box-content">
+                <p>
+					
+					<?php 
+						if($invoicesData['BillingName'] == '' && $invoicesData['BillingAddress'] == '' && $invoicesData['BillingCity'] == '' && $invoicesData['BillingState'] == '' && $invoicesData['BillingZip'] == '')
+						{
+							echo '';
+						}
+						else
+						{
+							echo ucwords(strtolower($invoicesData['BillingName']));
+							echo '<br>';
+							echo ucwords(strtolower($invoicesData['BillingAddress']));
+							echo '<br>';
+							echo ($invoicesData['BillingCity'] != '') ? ucwords(strtolower($invoicesData['BillingCity'])).', ' : '';
+							echo ($invoicesData['BillingState'] != '') ? strtoupper(strtolower($invoicesData['BillingState'])).' ' : '';
+							echo ($invoicesData['BillingZip'] != '') ? $invoicesData['BillingZip'] : '';
+						}
+					?>
+				</p>
+			</div>
+		</div>
+		<div class="box box-information">
+			<strong class="box-title">
+                <span>Shipping Address:</span>
+			</strong>
+            <div class="box-content">
+                <p>
+                    <?php 
+						if($invoicesData['ShippingId'] == '' && $invoicesData['ShippingAddress'] == '' && $invoicesData['ShippingCity'] == '' && $invoicesData['ShippingState'] == '' && $invoicesData['ShippingZip'] == '')
+						{
+							echo '';
+						}
+						else
+						{
+							echo ucwords(strtolower($invoicesData['ShippingId']));
+							echo '<br>';
+							echo ucwords(strtolower($invoicesData['ShippingAddress']));
+							echo '<br>';
+							echo ($invoicesData['ShippingCity'] != '') ? ucwords(strtolower($invoicesData['ShippingCity'])).', ' : '';
+							echo ($invoicesData['ShippingState'] != '') ? strtoupper(strtolower($invoicesData['ShippingState'])).' ' : '';
+							echo ($invoicesData['ShippingZip'] != '') ? $invoicesData['ShippingZip'] : '';
+						}
+					?>
+					
+				</p>
+			</div>
+		</div>
+	</div>
+	
+	<div class="cf line-item">
+		<br>
+		<strong class="box-title"> <span>Line Items</span> </strong>
+		<div class="orderListing">
+			<table class="orderList lineItemsList">
+				<thead>
+					<tr>
+						<th></th>
+						<th>Style No.</th>
+						<th>Color</th>
+						<th>Quantity</th>
+						<th>Price</th>
+						<th>Discount %</th>
+						<th>Line Total</th>
+					</tr>
+				</thead>	
+				<tbody>
+				<?php
+					if($data){
+						$sub_row_html .= '<table class="d-none subtable">';
+						foreach($data as $key => $Colordata):
+							foreach($Colordata as $subkey => $invoicesColorItems):
+						?>
+						<tr class="tableDataShowinvoice" style="cursor: pointer;" attr-id="<?php echo ($invoicesColorItems['Style'].'_'.$invoicesColorItems['ColorCode']);?>" >
+							<td><a href="javascript:void(0);" id="<?php echo $invoicesColorItems['Style'].'_'.$invoicesColorItems['ColorCode']?>" class="newLinkText"><span class="fa fa-plus"></span></a></td>
+							<td><?php echo $invoicesColorItems['Style']?></td>
+							<td><?php echo $invoicesColorItems['ColorName']?></td>
+							<td><?php echo number_format((INT)$invoicesColorItems['QTYOrdered']);?></td>
+							<td>$<?php echo number_format((float)$invoicesColorItems['UnitPrice'],2);?></td>
+							<td><?php echo number_format((float)$invoicesColorItems['DiscountPer'],2);?> %</td>
+							<td>$<?php echo number_format((float)$invoicesColorItems['total'],2);?></td>
+						</tr>
+						<?php $sub_row_html .= '<tr class="toggleTable tr_'.($invoicesColorItems['Style'].'_'.$invoicesColorItems['ColorCode']).'" >
+							<td colspan="12"><table class="lineItemsList lineItemsList1">
+								<thead>
+									<tr>
+										<th></th>
+										<th>Sku</th>
+										<th>Item Name</th>
+										<th>Size</th>
+										<th></th>
+										<th>Order</th>
+										<th></th>
+										<th>Price</th>
+										<th>Discount%</th>
+										<th>Line Total</th>
+									</tr>
+								</thead>
+								<tbody>';
+									
+									foreach ($invoicesColorItems['items'] as $key => $sizedata):
+										$size = "";
+										if($sizedata['Size'] == "XXS"){ $size= "data-order= '1'"; }
+										elseif ($sizedata['Size'] == "XS"){ $size="data-order= '2'"; }
+										elseif ($sizedata['Size'] == "S"){ $size="data-order= '3'"; }
+										elseif ($sizedata['Size'] == "M"){ $size="data-order= '4'"; }
+										elseif ($sizedata['Size'] == "L"){ $size="data-order= '5'"; }
+										elseif ($sizedata['Size'] == "XL"){ $size= "data-order= '6'"; }
+										elseif ($sizedata['Size'] == "2X"){ $size= "data-order= '7'"; }
+										elseif ($sizedata['Size'] == "3X"){ $size= "data-order= '8'"; }
+										elseif ($sizedata['Size'] == "4X"){ $size= "data-order= '9'"; }
+										elseif ($sizedata['Size'] == "5X"){ $size= "data-order= '10'"; }
+									$sub_row_html .= '<tr>
+										<td></td>
+										<td>'.$sizedata['ItemCode'].'</td>
+										<td>'.$sizedata['ItemName'].'</td>
+										<td '.$size.'>'.$sizedata['Size'].'</td>
+										<td></td>
+										<td>'.number_format((INT)$sizedata['QTYOrdered']).'</td>
+										<td></td>
+										<td>$'.number_format((float)$sizedata['UnitPrice'],2).'</td>
+										<td>'.number_format((float)$sizedata['DiscountPer'],2).' %</td>
+										<td>$'.number_format((float)$sizedata['TotalPrice'],2).'</td>
+									</tr>';
+									 endforeach;
+								$sub_row_html .= '</tbody>
+							</table></td>
+						</tr>';
+	                    endforeach;
+	                    endforeach; 
+				}else{ ?>
+					<tr>
+						<td colspan="9"> 
+							Invoice item data not found.... please try after some time.
+						</td>
+					</tr>
+				<?php }?>
+				</tbody>
+			</table>
+		</div>
+		<?php
+			$sub_row_html .= '</table>';
+			$FlatDiscount = number_format((float) $invoicesData['DiscountPer'] + $invoicesData['TotalDiscountPer'],2);
+			$FlatDic = explode('.',number_format($FlatDiscount,2));
+			if(isset($FlatDic[1]) && $FlatDic[1] == 00){
+				$FlatDiscount = $FlatDic[0];
+			}
+			$DiscountAmount =  number_format((float)$invoicesData['DiscountAmount'] + $invoicesData['TotalDiscountAmount'],2);
+			
+		?>
+		<div class="block-content fl-right mt-4">
+			<p>Total Before Discount: <span>$<?php echo number_format(floatval($invoicesData['TotalBeforeDiscount']),2)?></span></p>
+            <p>Discount Applied : <span>(<?php echo $FlatDiscount;?>%) - $<?php echo $DiscountAmount;?></span></p>
+			<p>Additional Expenses: <span>$<?php echo number_format(floatval($invoicesData['FreightAmount']),2)?></span></p>
+			<p>Total Amount: <span>$<?php echo number_format(floatval($invoicesData['DocTotal']),2)?></span></p>
+			<p>Payment/Credit Applied:<span>$<?php echo number_format(floatval($invoicesData['PaidAmount']),2)?></span></p>
+			<p>Balance Due:<span>$<?php echo number_format(floatval($invoicesData['OpenBalance']),2)?></span></p>
+		</div>
+	</div>
+    <?php if($invoicesData['DocStatus'] == 'Open'):
+    	$show = true;
+    	if(!empty($currentinvoicepay))
+            {	
+            	if(array_key_exists($invoicesData['DocNum'],$currentinvoicepay))
+            	{
+            		$show = false; 
+            	}
+            }
+            if($show){
+    	?>
+	<div class="invoiceList">
+        <input type="hidden" id="calculateInput" option-poNumber = "<?php echo ($invoicesData['NumatCardPo'] != '') ? $invoicesData['NumatCardPo'] : "";?>" option-docNum = "<?php echo ($invoicesData['DocNum'] != '') ? $invoicesData['DocNum'] : "";?>" value="<?php echo number_format(floatval($invoicesData['OpenBalance']),2)?>" class="withoutDoller"/>
+	</div>
+	<?php if($payinvoice){?>
+	<div class="block-content invoiceview fl-right">
+		<div class="id_pay_invoice">
+			<button data-toggle="modal" class="themeBtn invoicepay" name="Pay Invoice" id="pay_invoice"  type="button" data-target="#pay-invoice">Pay Invoice</button>
+		</div>
+	</div>
+	
+	<?php echo $this->getLayout()->createBlock("Magento\Framework\View\Element\Template")->setCustomernumber($invoicesData['CardCode'])->setTemplate("Sttl_Customerinvoices::payinvoice.phtml")->toHtml();?>
+	<?php } }else{
+		?>
+		<div class="block-content invoiceview fl-right">
+		<div class="id_pay_invoice">
+			<span>Payment pending. It may take up to 5 minutes for payments to reflect on the website.</span>
+		</div>
+	</div>
+	<?php } endif; ?>
+	
+</div>
+<?php echo $sub_row_html;?>
+<script type="text/javascript">     
+    function PrintDiv()
+	{
+		var baseurl = '<?php echo $block->getBaseUrl(); ?>';
+		var headContent = document.getElementsByTagName('head')[0].innerHTML;
+		//var popupWin = window.open('');
+		var popupWin =  window.open('', '_blank', 'toolbar=0,location=0,menubar=0');
+		var content = jQuery(".new-container.column.main").clone();
+		var content_area = jQuery("<div />").append(jQuery(content).find(".printBtn,.loginMenu,.serach-user").remove().end()).html();
+		var print_content = '<html><head>' + headContent + '</head><body onload="window.print()"><div class="print_pg_logo"><h1 class="logo"><a class="logoDesktop" href="'+baseurl+'" title=""> <img src="'+baseurl+'/pub/media/logo/stores/1/logo.png" alt="" width="123" height="34"> </a> <a href="'+baseurl+'" title="" class="mobileLogo"> <img src="'+baseurl+'/pub/static/version1605674774/frontend/sttl/adaruniforms/en_US/images/mobile-logo.png" alt="Adar Logo" title="Adar Logo"> </a></h1></div> ' + content_area + '</html>';
+		popupWin.document.open();
+		popupWin.document.write(print_content);
+		popupWin.document.close();
+	}
+</script>
+
+<script>
+	require([
+    'jquery',
+	'datatables.net',
+	'FileSaver',
+	'excel_jszip',
+	'myexcel',
+	], function($,FileSaver,excel_jszip,myexcel){
+       $(document).ready(function() {
+            var totalamot = "<?php echo number_format(floatval($invoicesData['OpenBalance']),2)?>";
+			jQuery('.pay-invoice-price').text('$'+totalamot);
+			jQuery('#pay_invoice_price').val(totalamot);
+		});
+		 
+		 
+		$(".toggleTable").hide();
+        
+
+		$(".tableDataShowinvoice").click(function(){
+			
+			if($(this).find('td:first a span').hasClass('fa-plus')){
+				$(this).find('td a span').addClass('fa-minus').removeClass('fa-plus');
+				var val = $(this).attr("attr-id");
+				var html = $(".subtable .tr_"+val).html();
+				$('<tr class="toggleTable">'+html+'</tr>').insertAfter($(this));
+			} else {
+				$(this).find('td a span').addClass('fa-plus').removeClass('fa-minus');
+				$(this).next().remove();
+			}
+		}); 
+		
+		$(".orderList").find("thead").on('click', 'th', function(){
+			$(".tableDataShowinvoice").find('td a span').addClass('fa-plus').removeClass('fa-minus');
+		});
+		
+		$(document).ready(function() {
+			$('.orderList').DataTable({
+				"bPaginate": false,
+				"searching": false,
+				"info": false,
+				columnDefs: [ { orderable: false, targets: 0}],
+				"order": [[ 2, "asc" ]]
+			});
+		});
+		$(document).ready(function() {
+			$('.lineItemsList1').DataTable({
+				"bPaginate": false,
+				"searching": false,
+				"info": false,
+				columnDefs: [ { orderable: false, targets: 0}],
+				"order": [[ 3, "asc" ]]
+			});
+		});
+
+	});
+</script>
+<style type="text/css">
+	.lineItemsList1 thead .sorting:after{
+		    content: " " !important;
+	}
+	.lineItemsList1 thead .sorting_asc:after{
+		    content: " " !important;
+	}
+
+</style>

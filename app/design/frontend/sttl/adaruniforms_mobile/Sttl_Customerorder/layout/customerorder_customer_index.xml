@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd" label="Customer My Account (All Pages)" design_abstraction="custom">
+<update handle="customer_account"/>
+	<head>
+        <!-- <script src="Magento_Theme::js/general.js" /> -->
+        <remove src="WeltPixel_Quickview::css/magnific-popup.css"/>
+        <remove src="Magestorm_ReCaptcha::css/default.css"/>
+        <remove src="css/print.css"/>
+        <remove src="knockoutjs/knockout.js"/>
+        <!-- <remove src="Magento_Theme/js/general.js"/> -->
+    </head>
+<body>
+    <referenceContainer name="content">
+        <referenceBlock name="page.main.title" remove="true" />
+        <referenceBlock name="customer_account_dashboard_order_serach" remove="true" />
+
+        <!-- <referenceContainer name="newfooter" remove="true"/> -->
+        <!-- <block class="Magento\Framework\View\Element\Template" name="customerorder" template="Sttl_Customerorder::example.html">
+        </block> -->
+		<block class="Sttl\Customerorder\Block\Index" name="customerorder_index" cacheable="false" template="Sttl_Customerorder::order.phtml" />
+        <!-- <block class="Magento\Framework\View\Element\Template" name="main.account_navd" template="Magento_Theme::html/customercollapsible.phtml" after="-" /> -->
+    </referenceContainer>
+</body>
+</page>

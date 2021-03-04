@@ -1,0 +1,122 @@
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$currentProduct = $objectManager->get('Magento\Framework\Registry')->registry('current_product');
+$_product = $currentProduct;
+$_imagehelper = $this->helper('Magento\Catalog\Helper\Image');
+$images = $_product->getMediaGalleryImages();
+    $first_image = '';
+    if($images->count()>0)
+    {
+        ?>
+        <div class="product-view-custom-media-">
+            <?php 
+            $i = 1;
+            foreach($images as $child)
+            {
+                $productImage = $_imagehelper->init($_product, 'product_page_image_large')->setImageFile($child->getFile())->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(TRUE)->getUrl();
+                $productImagedata = $_imagehelper->init($_product, 'product_page_image_large')
+                ->setImageFile($child->getFile())->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(TRUE) ->getUrl();
+        if($first_image == '')
+        {
+          $first_image = $productImage;
+        }
+                if($child->getFile()) 
+                {
+                    $show = false;
+                    ?>
+                    <?php if($child->getMediaType() == "external-video") {      
+                        $show = true; 
+                    ?>
+                        <div class="image-video">
+                            <?php 
+                            $videos_em_code = explode("/",$child->getVideoUrl()); 
+                            $playlist = '';
+                            if(isset($videos_em_code[4]))
+                            {
+                                $playlist =$videos_em_code[4];
+                            }
+                            ?> 
+                            <iframe id="youtube-iframe" width="100%" height="778px" src="<?php echo $child->getVideoUrl(); ?>?autoplay=1&rel=0&loop=1&playlist=<?php echo $playlist ?>" allow="autoplay;"></iframe>
+                        </div>
+                    <?php } 
+                    else
+                    {
+                    ?>
+                    <div class="image-<?php echo $i;?>">
+                              <img data-id="smallthumbs-<?php echo $_product->getId();?>" data-img="<?php echo $productImagedata; ?>" src="<?php echo $productImage; ?>"/>
+                    </div>
+                    <?php
+                    $i++;
+                    }
+                    ?>
+                    <?php 
+                }
+            }
+            ?>
+        </div>
+      <div class="productpageslider">
+            <?php
+            $i = 0;
+                foreach($images as $child){
+                $i++;
+            $productImage = $_imagehelper->init($_product, 'product_page_image_large')->setImageFile($child->getFile())->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(TRUE)->getUrl();
+            $productImagedata = $_imagehelper->init($_product, 'product_page_image_large')
+                ->setImageFile($child->getFile())->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(TRUE) ->getUrl();
+                ?>
+                    <div class="image-<?php echo $i;?>">
+                            <img data-id="smallthumbs-<?php echo $_product->getId();?>" data-img="<?php echo $productImagedata; ?>" src="<?php echo $productImage; ?>"/>
+                    </div>
+                <?php   
+                }
+                ?>
+        </div>
+
+
+       <?php
+    }
+    else
+    {
+    ?>
+        <div class="gallery-placeholder _block-content-loading" data-gallery-role="gallery-placeholder">
+            <div data-role="loader" class="loading-mask">
+                <div class="loader">
+                    <img src="<?= /* @escapeNotVerified */ $block->getViewFileUrl('images/loader-1.gif') ?>"
+                         alt="<?= /* @escapeNotVerified */ __('Loading...') ?>">
+                </div>
+            </div>
+        </div>
+    <?php 
+    }
+?>
+
+
+<style type="text/css">
+    .productpageslider{
+        display: none;
+    }
+</style>
+<script type="text/javascript">require([ 'jquery' , 'functions'], function(jquery){ 
+
+     jQuery(window).on('resize',function()
+        {
+            var viewportWidth = jQuery(window).width();
+            if (viewportWidth <= 767)
+            {
+                jquery('.productpageslider').css('display','block');
+                jquery(".productpageslider").owlCarousel({
+                    loop:false
+                    ,autoplay:true
+                    ,autoplayTimeout:3000
+                    ,nav:false
+                    ,dots:false
+                    ,navText: ["<i class='fa fa-angle-left'></i>","<i class='fa fa-angle-right'></i>"]
+                    ,items:1            
+                }); 
+            }
+            else
+            {   
+                 jquery('.productpageslider').css('display','none');
+            }
+        });
+
+});</script>

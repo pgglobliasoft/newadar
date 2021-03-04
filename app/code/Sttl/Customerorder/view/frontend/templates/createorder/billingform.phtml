@@ -1,0 +1,84 @@
+<?php 
+$regorderdata = $block->getRegisterData();
+$orderdata = $regorderdata['orderdata'];
+$currentorderdata = $orderdata[0];
+?>
+<div class="modal fade block block-customer-edit-address comingSoon commonPopup1" id="customer-edit-billingaddress" tabindex="-1" role="dialog" aria-labelledby="addressModal" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="modalContainer block-content" aria-labelledby="block-customer-login-heading">
+					<div class="messages">
+						<div class="message message-error error">
+							<div></div>
+						</div>
+					</div>
+					<div class="quickViewCont">        
+						<div class="container bg-primary p-2">
+							
+							<div class="row">
+								<div class="col-md-12 text-center customer-edit-title">
+									<span class="popUpTitle"><?= $block->escapeHtml(__("Edit Billing Address"));?></span>
+									<button type="button" data-dismiss="modal" class="close mfp-close-inside"><i class="fa fa-times"></i></button>
+								</div>          
+							</div>
+						</div>
+						<?php //$block->escapeUrl($block->getUrl('customerlogin/ajax/editAddress')) ?>
+						<div class="registrationPage comingSoonTxt" id="billaddress">
+							<form class="form custom-customer-edit-address" action="" method="post" id="customer-edit-billaddress-validate" enctype="multipart/form-data" data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>" autocomplete="off" data-mage-init='{"validation": {"errorClass": "mage-error"}}'>
+								<div class="response-msg"></div>
+								<?= $block->getBlockHtml('formkey') ?>
+								<div class="field field-name-address1">
+									<label class="label " for="address1"><span><?= $block->escapeHtml(__('Address')) ?></span></label>
+									<div class="control">
+										<input type="text" id="billaddress1" name="billaddress1" value="<?php echo $currentorderdata['BillingAddress']?>" title="Address Line 1" class="input-text" placeholder="Address Line 1">
+									</div>
+								</div>
+								<div class="row">
+									<div class="field field-name-city required col-md-6">
+										<label class="label " for="BCity"><span><?= $block->escapeHtml(__('City')) ?></span><span class="reqField">*</span></label>
+										<div class="control">
+											<input type="text" id="BCity" name="BCity" value="<?php echo $currentorderdata['BillingCity']?>" title="BCity" class="input-text required-entry validate-no-html-tags validate-alphanum-with-spaces valid" data-validate="{required:true}" aria-required="true" placeholder="City">
+										</div>
+									</div>
+									<div class="field field-name-zipcode required col-md-6">
+										<label class="label " for="BZipCode"><span><?= $block->escapeHtml(__('Zip Code')) ?></span><span class="reqField">*</span></label>
+										<div class="control">
+											<input type="text" id="BZipCode" name="BZipCode" value="<?php echo $currentorderdata['BillingZip']?>" title="Zip Code" class="input-text required-entry validate-no-html-tags validate-zip valid" data-validate="{required:true}" aria-required="true" placeholder="Zip Code">
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="field field-name-state required col-md-6">
+										<label class="label " for="BState"><span><?= $block->escapeHtml(__('State')) ?><span class="reqField">*</span></span></label>
+										<div class="control">
+											<input type="text" id="BState" name="BState" value="<?php echo $currentorderdata['BillingState']?>" title="State" class="input-text required-entry validate-no-html-tags validate-alphanum-with-spaces valid" data-validate="{required:true}" aria-required="true" placeholder="State"> 
+										</div>
+									</div>
+									<!--<div class="field field-name-state required col-md-6">
+										<label class="label " for="BStatename"><span><?= $block->escapeHtml(__('State Name')) ?><span class="reqField">*</span></span></label>
+										<div class="control">
+											<input type="text" id="BStatename" name="BStatename" value="<?php //echo $currentorderdata['BStateName']?>" title="State Name" class="input-text required-entry validate-no-html-tags validate-alphanum-with-spaces valid" data-validate="{required:true}" aria-required="true" placeholder="State Name"> 
+										</div>
+									</div>-->
+									<div class="field field-name-state required col-md-6">
+										<label class="label " for="BillingCountry"><span><?= $block->escapeHtml(__('Country')) ?><span class="reqField">*</span></span></label>
+										<div class="control">
+											<input type="text" id="BCountry" name="BCountry" value="<?php echo $currentorderdata['BillingCountry']?>" title="Country" class="input-text required-entry validate-no-html-tags validate-alphanum-with-spaces valid" data-validate="{required:true}" aria-required="true" placeholder="State"> 
+										</div>
+									</div>
+								</div>
+								<?= $block->getChildHtml('form_additional_info') ?>
+								<div class="actions-toolbar mt-2">
+									<div class="text-center">
+										<button type="submit" class="themeBtn action save" title="<?= $block->escapeHtmlAttr(__('Submit')) ?>"><span><?= $block->escapeHtml(__('Submit')) ?></span></button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>   
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

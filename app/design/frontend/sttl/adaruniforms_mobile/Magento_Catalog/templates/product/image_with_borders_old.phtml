@@ -1,0 +1,39 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+?>
+<?php /** @var $block \Magento\Catalog\Block\Product\Image */ 
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$product = $objectManager->create('Magento\Catalog\Model\Product')->load($block->getProductId());
+$images = $product->getMediaGalleryImages();
+$imgCNT = 1;
+$imgurl2 = $block->getImageUrl();
+foreach ($images as $child) {
+	if ($imgCNT == 2) {
+		$imgurl2 = ($child->getUrl() != '') ? $child->getUrl() : $block->getImageUrl();
+		break;
+	}
+	$imgCNT++;
+}
+?>
+
+<span class="product-image-container"
+      style="width:<?= /* @escapeNotVerified */ $block->getWidth() ?>px;">
+  <a class="product-item-link" href="<?= /* @escapeNotVerified */ $product->getProductUrl() ?>">
+	    <span class="product-image-wrapper"
+	          style="padding-bottom: <?= /* @escapeNotVerified */ ($block->getRatio() * 100) ?>%;">
+	        <img class="product-image-photo"
+	            <?= /* @escapeNotVerified */ $block->getCustomAttributes() ?>
+	            src="<?= /* @escapeNotVerified */ $block->getImageUrl() ?>"
+	            width="<?= /* @escapeNotVerified */ $block->getResizedImageWidth() ?>"
+	            height="<?= /* @escapeNotVerified */ $block->getResizedImageHeight() ?>"
+	            alt="<?= /* @escapeNotVerified */ $block->stripTags($block->getLabel(), null, true) ?>"/>
+				<img class="product-image-photo product-hove-image" 
+				src="<?php echo $imgurl2; ?>" 
+				width="<?= /* @escapeNotVerified */ $block->getResizedImageWidth() ?>"
+				height="<?= /* @escapeNotVerified */ $block->getResizedImageHeight() ?>"/>
+		</span>
+	</a>
+</span>

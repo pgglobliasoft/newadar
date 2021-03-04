@@ -1,0 +1,230 @@
+<?php 
+//$DocEntryReg = $block->getDocEntryReg();
+//$shipData =  $block->getTrackingInfo($DocEntryReg);
+//echo "<pre>";print_R($shipData);exit; 
+?>
+
+<div class="modal fade block block-customer-edit-address comingSoon trackingPopup commonPopup1" id="shipment-track" tabindex="-1" role="dialog" aria-labelledby="addressModal" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="modalContainer block-content" aria-labelledby="block-customer-login-heading">
+					<div class="messages">
+						<div class="message message-error error">
+							<div></div>
+						</div>
+					</div>
+					<div class="orderItem-loader" style="display: none;">
+			            <div class="loader">
+			                <img src="<?= $this->getBaseUrl()?>/pub/static/version1608537802/frontend/sttl/adaruniforms/en_US/images/loader-1.gif" alt="Loading...">
+			            </div>
+			        </div>
+					<div class="quickViewCont">        
+						<div class="container bg-primary p-2">
+							<div class="row">
+								<div class="col-md-4 offset-md-4 text-center">
+									<img src="<?php echo $this->getViewFileUrl('images/mobile-logo-white.png'); ?>">
+								</div>
+								<div class="col-md-4">
+									<button type="button" data-dismiss="modal" class="close mfp-close-inside"><i class="fa fa-times"></i></button>
+								</div>
+							</div>
+						</div>
+						<div class="trackingPopupCont" id="comingSoonForm">
+							<h3>Tracking Information</h3>	
+							<div class="row shipdatainfo">
+								<?php /**if(!empty($shipData)):?>
+								<div class="trackIDList">
+									<h4>Tracking Number:</h4>
+									<div class="trackPack">
+									<div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+									  <?php
+										$active = 'true';
+									  foreach($shipData as $key => $data):
+										if(!isset($data['TrackingInfo']['shipDataArray']['errors'])):
+											$shipDataArray = $data['TrackingInfo']['shipDataArray'];
+											$TrackingData = $data['TrackingInfo'];
+										?>
+									  <a class="nav-link <?php if($active == 'true') { echo 'active'; }?>" id="v-pills-home-tab-<?php echo $key;?>" data-toggle="pill" href="#v-pills-home-<?php echo $key;?>" role="tab" aria-controls="v-pills-home" aria-selected="true">
+									  <span  data-toggle="tooltip" data-placement="left" title="<?php echo $TrackingData['TrackingNumber'];?>">
+									  <span><?php echo $TrackingData['TrackingNumber'];?> </span>
+									  <?php if(isset($shipDataArray['status_description']) && $shipDataArray['status_description'] !='Unknown'){ ?></span>
+											
+									  <span>Shipped: 
+										<?php
+										if(isset($shipDataArray['ship_date']) && $shipDataArray['ship_date'] != '')
+										{
+											echo date("m/d/y", strtotime($shipDataArray['ship_date']));
+										}else{
+											if(isset($TrackingData['ShipDate']) && $TrackingData['ShipDate'] != '')
+											{
+												echo date("m/d/y", strtotime($TrackingData['ShipDate']));
+											}
+											
+										}
+										?>
+									  </span>
+									  <?php } ?>
+									  </a>
+									  <?php 
+										$active = 'false';
+									  endif;?>
+									<?php endforeach;?>
+									</div>
+									</div>
+								</div>
+							  <div class="trackIDDetails">
+								<div class="tab-content" id="v-pills-tabContent">
+								<?php 
+									$active = 'true';
+									foreach($shipData as $key => $data):
+									$step1 = 'stepInprogress';
+									$step2 = '';
+									$step3 = '';
+									$shipDataArray = $data['TrackingInfo']['shipDataArray'];
+									if(!isset($shipDataArray['errors'])):
+									$delivery_date = $shipDataArray['estimated_delivery_date'];
+								if(isset($shipDataArray['status_code']) && ($shipDataArray['status_code'] == 'AC' || $shipDataArray['status_code'] == 'UN'))
+									{
+										$step1 = 'stepCompleted';
+										$step2 = '';
+										$step3 = '';
+									}
+									if(isset($shipDataArray['status_code']) && ($shipDataArray['status_code'] == 'IT' || $shipDataArray['status_code'] == 'EX'))
+									{
+
+										$step1 = 'stepCompleted';
+										$step2 = 'stepInprogress';
+										$step3 = '';
+									}
+									if(isset($shipDataArray['status_code']) && $shipDataArray['status_code'] == 'DE')
+									{
+										$delivery_date = $shipDataArray['actual_delivery_date'];
+										$step1 = 'stepCompleted';
+										$step2 = 'stepCompleted';
+										$step3 = 'stepCompleted';
+									}
+								  	if($shipDataArray['status_description'] =='Unknown')
+									{
+										$step1 = '';
+										$step2 = '';
+										$step3 = '';
+									}
+								  	$TrackingData = $data['TrackingInfo'];
+									?>
+								  <div class="tab-pane fade show <?php if($active == 'true') { echo 'active'; }?>" id="v-pills-home-<?php echo $key;?>" role="tabpanel" aria-labelledby="v-pills-home-tab-<?php echo $key;?>">
+								  	<div class="cf delSchedule">
+								  		<input type="hidden" name="ship_shiowdata" id="ship_shiowdata" value="1">
+										<h4><?php 
+										$status = '';
+										if(($shipDataArray['actual_delivery_date'] != '') && ($shipDataArray['status_description'] != 'In Transit' || $shipDataArray['status_description'] != 'Unknown') )
+										{
+											$status = 'Delivered';
+										}
+										else
+										{
+											$status = 'Scheduled Delivery';
+										}
+										echo $status;
+										?></h4>
+										<?php
+										$shipinfo = $shipDataArray['events'][0];
+										if($delivery_date == '' || $delivery_date == 'null')
+										{
+											echo 'Not Available Yet';
+										}
+										else
+										{
+											echo date("l F jS\, Y ", strtotime($delivery_date));
+										}
+								  	 ?>
+									</div>
+									<div class="cf">
+										<div class="trackingStatusBar">
+											<div class="step1 <?php echo $step1;?>"></div>
+											<div class="step2 <?php echo $step2;?>"></div>
+											<div class="step3 <?php echo $step3;?>"></div>
+											
+											<span class="shipStatus"><?php 
+														if($shipDataArray['status_code'] == 'EX')
+														{
+															echo $shipDataArray['exception_description'];
+														}else{
+															echo $shipDataArray['carrier_status_description'];
+														}
+														?></span>
+										</div>
+									</div>
+									<ul class="delStatusTxt">
+										<li>
+											<span>Shipped via</span>
+											<div>
+												<?php echo $TrackingData['Service'];?>
+											</div>
+										</li>
+										<li>
+											<span>Shipped to</span>
+											<div class="delvAdd">
+												<span>
+													<?php  
+														echo ($TrackingData ['ShipToCity'] !='') ? ucwords($TrackingData['ShipToCity']): "";
+														echo ($TrackingData['ShipToState'] !='') ? ' '.ucwords($TrackingData['ShipToState']): "";
+														echo ($TrackingData['ShipToZipCode'] !='') ? ','.$TrackingData['ShipToZipCode']: "";
+													 ?>
+											
+												</span>
+											</div>
+										</li>
+										<li>
+											<span>Status</span>
+											<div>
+												<?php echo $shipDataArray['status_description'];?>
+											</div>
+										</li>
+									</ul>
+									<?php //else:?>
+										<!--<div class="col-12">
+											<div class="cf delSchedule">
+												<h4>
+													<span><?php //echo $shipDataArray['carrier_status_description'].'.';?></span>
+												</h4>
+												</div>
+											
+										</div>-->
+									<?php //endif;?>
+								  </div>
+								   <?php  $active = 'false';endif;?>
+								  <?php endforeach;?>
+								</div>
+							  </div>
+							<?php else:?>
+								<div class="col-12">
+									<div class="cf delSchedule">
+										<h4>
+											<span>No shipment tracking information available.</span>
+										</h4>
+										</div>
+								</div>
+							<?php endif;**/?>
+							</div>
+						</div>
+					</div>   
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+    /**require(['jquery'], function($) {
+        $(document).ready(function() {
+			   var showship = $('#ship_shiowdata').val()
+			   if(showship != 1)
+			   {
+			   		$('.shipdatainfo').html('');
+			   		$('.shipdatainfo').html('<div class="col-12"><div class="cf delSchedule"><h4><span>No shipment tracking information available.</span></h4></div></div>');
+			   }       
+	    });
+
+    });**/
+
+</script>

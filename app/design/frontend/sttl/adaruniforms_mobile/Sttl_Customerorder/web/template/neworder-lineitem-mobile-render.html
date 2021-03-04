@@ -1,0 +1,161 @@
+<h3 class="subTitle">Line Items</h3>
+<div class="orderListing">
+	<div class="linetableScroll">
+		<table class="orderList mobile lineItemsList" style="table-layout:fixed;">
+			<tbody>
+				<tr> 
+					<th>Style</th>
+					<th>Color</th>
+					<th>Qty.</th>
+					<th>Total</th>
+					<th></th>
+				</tr>
+				<%	
+					var count = 1;
+					_.each(finalorderrendere, function(valuetype, index) {
+							var qty_total = 0,
+								price_total = 0;
+						_.each(valuetype, function(parent_styles_value, style_name) {
+							_.each(parent_styles_value, function(parent_styles_colorcode_value, style_colorcode) {
+							 %>
+								<tr id="togglebutton">
+									<td class="toggleshow-line">
+										<span class="line_item_coll_icon" style="cursor: pointer;">
+											<i class="fa fa-caret-down" aria-hidden="true"></i>
+										</span>
+										<input type="hidden" class="delete_style" id="delete_style_<%=style_name%>_<%=style_colorcode%>" name="delete_style" value="<%=style_name%>">
+										<input type="hidden" name="delete_color" class="delete_color" id="delete_color_<%=style_name%>_<%=style_colorcode%>" value="<%=style_colorcode%>">
+										<%=style_name%>
+									</td>
+									<td class="toggleshow-line"><%=style_colorcode%></td>
+									<%
+										var total_qty_ordered = 0;
+										var total_ordered_price = 0.00;
+										_.map(parent_styles_colorcode_value, function(item,index){
+											total_qty_ordered = total_qty_ordered+parseInt(item.QTYOrdered);
+											total_ordered_price = total_ordered_price+parseFloat(item.PriceAfterDiscount);
+										});
+										qty_total = qty_total + parseInt(total_qty_ordered);
+										price_total = price_total + parseFloat(total_ordered_price);
+									%>
+									<td class="toggleshow-line"><%=total_qty_ordered%></td>
+									<td class="toggleshow-line">$<%=currencyconvert(total_ordered_price.toFixed(2))%></td>
+									<td class="deleteitemaction">
+										<a class="newLinkText" href="javascript:void(0);"></a>
+										<div class="delSingalRecords" delete-id="<%=style_name%>" delete-color="<%=style_colorcode%>">
+											<a class="newLinkText" href="javascript:void(0);">
+												<img style="height:22px;" src="<%=baseurl%>/pub/media/Sttl_Customerorder/trash_tbl.png">
+											</a>
+										</div>
+									</td>
+								</tr>
+								<tr class="toggletable" data-table-index="<%=count++%>" style="display:none;">
+									<td colspan="5">
+										<div class="expandable_row" style="display: none;">
+											<table class="exp-line-item">
+												<thead>
+													<tr>
+														<th></th>
+														<th>Size</th>
+														<th>Qty</th>
+														<th>Total</th>
+														<th></th>
+													</tr>
+												</thead>
+												<tbody class="row-data-toggle" row-style="<%=style_name%>" row-color="<%=style_colorcode%>">
+													<% _.map(parent_styles_colorcode_value, function(item,index){
+														var total_qty_ordered_item = parseInt(item.QTYOrdered),
+
+															total_ordered_price_item = parseFloat(item.PriceAfterDiscount); 
+
+															%>
+														
+														<tr class="innter-table-row">
+															<td></td>
+															<td><%=item.Size%></td>
+															<td class="Qty_popup" edit-qty="<%=total_qty_ordered_item%>" edit-color="<%=item.Color%>" edit-unitprice="<%=item.UnitPrice%>" edit-discountprice="<%=item.DiscountPrice%>" edit-itemcode="<%=item.ItemCode%>" edit-style="<%=style_name%>">
+																<span><%=total_qty_ordered_item%></span>
+																<span class="size_item_edit_ic"><i class="fa fa-pencil"></i></span>
+															</td>
+															<td>$<%=currencyconvert(total_ordered_price_item.toFixed(2))%></td>
+															<td></td>
+														</tr>
+													<% }); %>
+												</tbody>
+											</table>
+										</div>
+									</td>
+								</tr>
+							<% }); 
+						}); %>
+							<tr>
+								<td colspan="2"></td>
+								<td><%=qty_total%></td>
+								<td>$<%=currencyconvert(price_total.toFixed(2))%></td>
+								<td></td>
+							</tr>
+					<%  });
+				%>
+			</tbody>
+		</table>
+	</div>
+	<div class="cf">
+		<%
+			var ordertotal = ordersummary.TotalBeforeDiscount,
+				FlatDiscount = ordersummary.FlatDiscount,
+				DiscountAmount = ordersummary.DiscountAmount,
+				sellingprice = ordersummary.DocTotal;
+			CouponCode = '-';
+			if(ordersummary.CouponCampaign){
+				CouponCode = ordersummary.CouponCampaign;
+			}
+
+console.log(FlatDiscount)
+			if(FlatDiscount){
+				var tmp_flatdiscount = FlatDiscount.split(".");
+				if(tmp_flatdiscount[0] && tmp_flatdiscount[1] == 00){
+					FlatDiscount = tmp_flatdiscount[0];
+				}
+			}
+
+			DiscountAmount = DiscountAmount.toFixed(2);
+			sellingprice = sellingprice.toFixed(2);
+		%>
+		<div class="orderSummary">
+			<div class="">
+				<span class="orderSummarymobileleft">Total Before Discount </span>
+				<span class="labelValue">$<%=currencyconvert(ordertotal.toFixed(2))%></span>
+			</div>
+			<div class="">
+				<span class="orderSummarymobileleft">Discount Applied </span>
+				<span class="labelValue"> (<%=currencyconvert(FlatDiscount)%>%) - $<%=DiscountAmount%></span> 
+			</div>
+			<div class="">
+				<span class="orderSummarymobileleft">Freight/Handling</span>
+				<span class="labelValue">-</span> 
+			</div>
+			<div class="">
+				<span class="orderSummarymobileleft">Coupon/Campaign</span>
+				<span class="labelValue"><%=CouponCode%></span> 
+			</div>
+			<div class="orderTotal">
+				<span class="orderSummarymobileleft">Total</span>
+				<span class="labelValue">$<%=currencyconvert(sellingprice)%></span> 
+			</div>
+		</div>
+	</div>
+</div>
+<div class="cf m-delOrdLink" style="">
+            <div class="d-flex">
+               <button type="submit" class="action save mobile-button contopayment" title="Continue To Checkout"><span>Checkout</span></button>
+               <a href="javascript:void(0);" class="saveasdraft newLinkText" title="Save as draft">
+                  <svg height="512pt" viewBox="0 0 512 512" width="512pt" xmlns="http://www.w3.org/2000/svg"><path d="m453.332031 512h-394.664062c-32.363281 0-58.667969-26.304688-58.667969-58.667969v-394.664062c0-32.363281 26.304688-58.667969 58.667969-58.667969h330.835937c21.054688 0 41.683594 8.535156 56.554688 23.445312l42.496094 42.496094c15.125 15.125 23.445312 35.222656 23.445312 56.574219v330.816406c0 32.363281-26.304688 58.667969-58.667969 58.667969zm-394.664062-480c-14.699219 0-26.667969 11.96875-26.667969 26.667969v394.664062c0 14.699219 11.96875 26.667969 26.667969 26.667969h394.664062c14.699219 0 26.667969-11.96875 26.667969-26.667969v-330.816406c0-12.820313-4.992188-24.871094-14.058594-33.941406l-42.496094-42.496094c-8.9375-8.957031-21.289062-14.078125-33.941406-14.078125zm0 0"></path><path d="m325.332031 149.332031h-224c-8.832031 0-16-7.167969-16-16v-117.332031c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v101.332031h192v-101.332031c0-8.832031 7.167969-16 16-16s16 7.167969 16 16v117.332031c0 8.832031-7.167969 16-16 16zm0 0"></path><path d="m256 416c-52.929688 0-96-43.070312-96-96s43.070312-96 96-96 96 43.070312 96 96-43.070312 96-96 96zm0-160c-35.285156 0-64 28.714844-64 64s28.714844 64 64 64 64-28.714844 64-64-28.714844-64-64-64zm0 0"></path></svg>
+               </a>
+               <a href="javascript:void(0);" class="delUrl deleteorder newLinkText">
+               <!-- <img src="https://adaruniforms.com/pub/media/Sttl_Customerorder/trash.png"/> -->
+<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<g> <g> <path d="M408.299,98.512l-32.643,371.975H136.344L103.708,98.512l-41.354,3.625l33.232,378.721 C97.335,498.314,112.481,512,130.076,512h251.849c17.588,0,32.74-13.679,34.518-31.391l33.211-378.472L408.299,98.512z"></path> </g> </g> <g> <g> <path d="M332.108,0H179.892c-19.076,0-34.595,15.519-34.595,34.595v65.73h41.513V41.513h138.378v58.811h41.513v-65.73 C366.703,15.519,351.184,0,332.108,0z"></path> </g> </g> <g> <g> <path d="M477.405,79.568H34.595c-11.465,0-20.757,9.292-20.757,20.757s9.292,20.757,20.757,20.757h442.811 c11.465,0,20.757-9.292,20.757-20.757S488.87,79.568,477.405,79.568z"></path> </g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> </svg> </a>
+<!--<a href="#" class="themeBtn contopayment">Continue to Payment</a>-->
+            </div>
+         </div>

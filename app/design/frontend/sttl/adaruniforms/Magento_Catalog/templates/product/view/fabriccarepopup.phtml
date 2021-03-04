@@ -1,0 +1,22 @@
+<?php
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$product = $objectManager->get('Magento\Framework\Registry')->registry('current_product');
+$sizeurl = $product->getUfabriccareurl();
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+    $base_url = $storeManager->getStore()->getBaseUrl();
+    $fabricplaceholderimg = $base_url."/pub/media/fabricurl/placeholder/fabric_placeholder_text.svg";
+?>
+<div class="modal fade" id="fabriccarePopupModal" tabindex="-1" role="dialog" aria-labelledby="fabriccarePopupModal" aria-hidden="true">
+  <div class="modal-dialog fabric-care-modal" role="document">
+    <div class="modal-content quickViewCont">
+      <div class="container">
+        <button type="button" data-dismiss="modal" class="close-size-chhart-popup"><i class="fa fa-times"></i></button>
+      <?php if($sizeurl || @getimagesize($sizeurl)){ ?>
+           <img class="fabric_pop_img" src="<?php echo $sizeurl ?>" alt="Image Not Available..." />
+        <?php } else{?>
+          <img class="fabric_pop_img" src="<?php echo $fabricplaceholderimg ?>" alt="Image Not Available..." />
+        <?php } ?>
+      </div>
+    </div>
+  </div>
+</div>

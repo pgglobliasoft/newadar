@@ -1,0 +1,10 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+    <router id="standard">
+        <route id="customerorder" frontName="customerorder">
+            <module name="Sttl_Customerorder" />
+        </route>
+         <route id="dashboard" frontName="dashboard">
+            <module name="Sttl_Customerorder" />
+        </route>
+    </router>
+</config>

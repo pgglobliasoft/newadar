@@ -1,0 +1,188 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+ 
+$curren_url =  $this->getUrl('*/*/*', ['_current' => true, '_use_rewrite' => true]);
+$base_url = $block->getBaseUrl();
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$request = $objectManager->get('Magento\Framework\App\Action\Context')->getRequest();
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+$base_url = $storeManager->getStore()->getBaseUrl();
+?>
+<div class="modal fade block block-customer-edit comingSoon" id="customer-edit" tabindex="-1" role="dialog" aria-labelledby="loginModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+      <div class="modalContainer block-content" aria-labelledby="block-customer-login-heading">
+      <div class="messages">
+            <div class="message message-error error">
+                <div></div>
+            </div>
+          </div>
+        <div class="quickViewCont">        
+      <div class="container bg-primary p-2">
+      
+        <div class="row">
+          <div class="col-md-12 text-center customer-edit-title">
+            <span class="popUpTitle">Edit Information</span>
+            <button type="button" data-dismiss="modal" class="close mfp-close-inside"><i class="fa fa-times"></i></button>
+          </div>          
+        </div>
+      </div>
+      <div class="registrationPage comingSoonTxt" id="comingSoonForm">
+        <form class="form custom-customer-edit" action="<?= $block->escapeUrl($block->getUrl('customerlogin/ajax/editPost')) ?>" method="post" id="customer-edit-validate" enctype="multipart/form-data" data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>" autocomplete="off" data-mage-init='{"validation": {"errorClass": "mage-error"}}'>
+        <div class="response-msg"></div>
+        <?= $block->getBlockHtml('formkey') ?>
+        <div class="field field-name-firstname required">
+            <label class="label" for="firstname"><span><?= $block->escapeHtml(__('First Name')) ?></span><span class="reqField">*</span></label>
+
+            <div class="control">
+                <input type="text" id="firstname" name="firstname" value="<?= $block->escapeHtmlAttr($block->getCustomer()->getFirstName()) ?>" title="First Name" autocomplete="off" class="input-text required-entry valid" data-validate="{required:true}" aria-required="true" placeholder="First Name">
+            </div>
+        </div>
+        <div class="field field-name-lastname required">
+            <label class="label" for="lastname"><span><?= $block->escapeHtml(__('Last Name')) ?></span><span class="reqField">*</span></label>
+
+            <div class="control">
+                <input type="text" id="lastname" name="lastname" value="<?= $block->escapeHtmlAttr($block->getCustomer()->getLastName()) ?>" autocomplete="off" title="Last Name" class="input-text required-entry" data-validate="{required:true}" aria-required="true" placeholder="Last Name">
+            </div>
+        </div>
+      <div class="field choice  d-none">
+            <input type="checkbox" name="change_email" id="change-email" data-role="change-email" value="1" title="<?= $block->escapeHtmlAttr(__('Change Email')) ?>" class="checkbox" />
+            <label class="label" for="change-email"><span><?= $block->escapeHtml(__('Change Email')) ?></span></label>
+        </div>
+        <div class="field choice d-none">
+            <input type="checkbox" name="change_password" id="change-password" data-role="change-password" value="1" title="<?= $block->escapeHtmlAttr(__('Change Password')) ?>"<?php if ($block->getChangePassword()): ?> checked="checked"<?php endif; ?> class="checkbox" />
+            <label class="label" for="change-password"><span><?= $block->escapeHtml(__('Change Password')) ?></span></label>
+        </div>
+      <div class="fieldset password" data-container="change-email-password">
+        <div class="field email required" data-container="change-email">
+            <label class="label" for="email"><span><?= $block->escapeHtml(__('Email')) ?></span></label>
+            <div class="control">
+                <input type="email" autocomplete="nope" name="email" id="email" data-input="change-email" value="<?= $block->escapeHtmlAttr($block->getCustomer()->getEmail()) ?>" title="<?= $block->escapeHtmlAttr(__('Email')) ?>" class="input-text" data-validate="{required:true, 'validate-email':true}" placeholder="EMAIL"/>
+            </div>
+        </div>
+        <div class="field password current required">
+            <label class="label" for="current-password"><span><?= $block->escapeHtml(__('Current Password')) ?></span></label>
+            <div class="control">
+                <input type="password" class="input-text" name="current_password" id="current-password" data-input="current-password" autocomplete="new-password" placeholder="CURRENT PASSWORD"/>
+            </div>
+        </div>
+        <div class="field new password required" data-container="new-password">
+            <label class="label" for="password"><span><?= $block->escapeHtml(__('New Password')) ?></span></label>
+            <div class="control">
+                <input type="password" class="input-text" name="password" id="password"
+                    data-password-min-length="<?= $block->escapeHtml($block->getMinimumPasswordLength()) ?>"
+                    data-password-min-character-sets="<?= $block->escapeHtml($block->getRequiredCharacterClassesNumber()) ?>"
+                    data-input="new-password"
+                    data-validate="{required:true, 'validate-customer-password':true}"
+                    autocomplete="new-password" placeholder="New Password" />
+                <!-- <div id="password-strength-meter-container" data-role="password-strength-meter" aria-live="polite">
+                    <div id="password-strength-meter" class="password-strength-meter">
+                        <?= $block->escapeHtml(__('Password Strength')) ?>:
+                        <span id="password-strength-meter-label" data-role="password-strength-meter-label">
+                            <?= $block->escapeHtml(__('No Password')) ?>
+                        </span>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+        <div class="field confirm password required" data-container="confirm-password">
+            <label class="label" for="password-confirmation"><span><?= $block->escapeHtml(__('Confirm New Password')) ?></span></label>
+            <div class="control">
+                <input type="password" class="input-text" name="password_confirmation" id="password-confirmation"
+                    data-input="confirm-password"
+                    autocomplete="new-password" placeholder="Confirm New Password"/>
+            </div>
+        </div>
+    </div>
+    <?= $block->getChildHtml('form_additional_info') ?>
+    <div class="actions-toolbar">
+        <div class="text-center">
+            <button type="submit" class="themeBtn action save" title="<?= $block->escapeHtmlAttr(__('Save')) ?>"><span><?= $block->escapeHtml(__('Save')) ?></span></button>
+        </div>
+        <div class="secondary">
+            <a class="action back" href="<?= $block->escapeUrl($block->getBackUrl()) ?>"><span><?= $block->escapeHtml(__('Go back')) ?></span></a>
+        </div>
+    </div>
+</form>
+        
+      </div>
+    </div>   
+    
+    </div>
+</div>
+</div>
+</div>
+</div>
+<script type="text/javascript">
+    require(['jquery'], function($) {
+      var changeText = "<?php echo __('Please Wait...') ?>";
+      var findButton = $('#customer-edit-validate').find('button[type=submit]');
+                form = $('#customer-edit-validate');
+            form.submit(function (e) {
+                if (form.validation('isValid')) {
+                  findButton.text(changeText);
+                  findButton.attr("disabled", "disabled");
+                    var url = form.attr('action');
+                    var formData = getFormData($(this));
+                    e.preventDefault();
+                    $.ajax({
+                      type: "POST",
+                      url: url,
+                      showLoader: true,
+                      data: formData,
+                      success: function(data) {
+                          showResponse(data);
+                          if(data.errors) {
+                            findButton.text('save');
+                            findButton.removeAttr('disabled');
+                          } else {
+                            setTimeout(function(){ location.reload(); }, 3000);                            
+                          }
+                      }
+                  });
+                }
+            });
+
+            function getFormData(formElem){
+                var unindexed_array = formElem.serializeArray();
+                var indexed_array = {};
+
+                jQuery.map(unindexed_array, function(n, i){
+                    indexed_array[n['name']] = n['value'];
+                });
+
+                return indexed_array;
+            }
+
+            function showResponse(data) {
+              if(data.errors) {
+                $('.response-msg').html("<div class='error'>"+data.message+"</div>");
+              } else {
+                $('.response-msg').html("<div class='success'>You saved the account information.</div>");
+              }
+              setTimeout(function(){ $('.response-msg').html(null); }, 5000);
+            }
+      });
+
+  </script>
+
+<script type="text/x-magento-init">
+    {
+        "[data-role=change-email], [data-role=change-password]": {
+            "changeEmailPassword": {
+                "titleChangeEmail": "<?= $block->escapeJs($block->escapeHtml(__('Change Email'))) ?>",
+                "titleChangePassword": "<?= $block->escapeJs($block->escapeHtml(__('Change Password'))) ?>",
+                "titleChangeEmailAndPassword": "<?= $block->escapeJs($block->escapeHtml(__('Change Email and Password'))) ?>"
+            }
+        },
+        "[data-container=new-password]": {
+            "passwordStrengthIndicator": {
+                "formSelector": "form.form-edit-account"
+            }
+        }
+    }
+</script>

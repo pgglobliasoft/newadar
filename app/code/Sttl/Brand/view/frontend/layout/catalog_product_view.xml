@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+	<head>
+        <css src="Sttl_Brand::css/sttl_brand.css" media="all"/>
+    </head>
+    <body>
+        <referenceContainer name="product.info.extrahint">
+            <block class="Sttl\Brand\Block\Product\Brand" name="product.brand.name" after="-" template="Sttl_Brand::brand/product/product_brand_name.phtml"/>
+        </referenceContainer>
+		
+        <referenceContainer name="sidebar.additional">
+			<referenceContainer name="product.sidebar.main.before.all">
+				<block class="Sttl\Brand\Block\Product\Brand" name="product.brand.img.sidebar" before="-" template="Sttl_Brand::brand/product/product_brand_img_sidebar.phtml"/>
+			</referenceContainer>
+        </referenceContainer>
+		
+        <referenceContainer name="content.aside">
+            <block class="Sttl\Brand\Block\Product\ProductList\Related" name="brand.product.related" after="-" template="Sttl_Brand::brand/product/related-products.phtml"/>
+        </referenceContainer>
+		
+		<move element="product.brand.name" destination="product.info.main.infomation" before="page.main.title" />
+    </body>
+</page>

@@ -1,0 +1,599 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+/**
+ * @var \Magento\Theme\Block\Html\Header\Logo $block
+ */
+$browserStatus = '';
+if(preg_match('/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i',$_SERVER['HTTP_USER_AGENT'])||preg_match('/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i',substr($_SERVER['HTTP_USER_AGENT'],0,4)) || stripos($_SERVER['HTTP_USER_AGENT'],"iPod") || stripos($_SERVER['HTTP_USER_AGENT'],"iPhone") || stripos($_SERVER['HTTP_USER_AGENT'],"iPad") || stripos($_SERVER['HTTP_USER_AGENT'],"Android") || stripos($_SERVER['HTTP_USER_AGENT'],"webOS")) {
+
+    $browserStatus = 'Mobile';
+}
+
+?>
+<?php $storeName = $block->getThemeName() ? $block->getThemeName() : $block->getLogoAlt();?>
+<span class="action nav-toggle"><span><?= /* @escapeNotVerified */ __('Toggle Nav') ?></span></span>
+	<?php
+	if ($block->isHomePage()) {
+		?><style>
+		.innerPageContent{ display:none; }
+		</style><?php
+	}
+	?>
+
+	<?php
+		if($browserStatus === 'Mobile'){
+	?>
+	<style type="text/css">
+  #search_product_button { cursor: pointer;}
+		.searchInput input[type="text"]::placeholder{color: #0c4269 !important; font-style:normal !important; font-family: 'Futura PT Book' !important; font-size: 16px !important; }
+		.search-product input:not([disabled]):focus{ outline: unset !important; border: 1px solid #0c4269; }
+		.search-product input.input-text:focus {border: 1px solid #082d47; }
+		/*.innerPageContent{ margin-top: 0px !important; }*/
+		header{ margin-bottom: 15px !important; }
+.action.nav-toggle{position: unset;float: left;margin: 9px auto;}
+.avatar__thumbnail{margin: 18px 0 0 0; overflow: visible;position: relative;width: 42px;height: 42px;float: right;}
+.avatar__thumbnail.login{ margin: 6px auto; }
+.avatar__thumbnail img{border-radius: 50%;}
+.logo{ margin :15px 2px 0px 2px!important; width: 80px; position: absolute; left: 50% !important; -webkit-transform: translateX(-50%); transform: translateX(-50%);}
+/*.avatar__thumbnail.customerLoggedIn:after {background-color: #2ecc71; border-radius: 50%;
+    overflow: visible; }*/
+/*.avatar__thumbnail.customerLoggedIn:after {
+    width: 7px; height: 7px; content: " "; position: absolute; right: 3px; top: -3px; border: 1px solid white; z-index: 1;	 }*/
+.menuPart.cf{background-color: #0c4269; box-shadow: unset;    border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; min-height: 60px;}
+.nav-toggle:before{color: #fff3f3 !important; font-size: 25px;}
+.loginMenu{ display: none; }
+.avatar__thumbnail.login{ line-height: 1.2; }
+.avatar__thumbnail.login i{ font-size: 37px; color: #fff; }
+.user-circle {background-image: url(/pub/media/Sttl_Customerorder/man.svg); background-position: center; width: 100%; height: 100%; padding: 18px; background-repeat: no-repeat; margin-right: 5px; }
+.avatar__thumbnail.customerLoggedIn {color: white; height: 42px; display: flex; justify-content: center; align-items: center; width: 36px !important; font-size: 16px; margin: 7px 0px 0px 0px !important; }
+h1.logo{margin: 20px 2px 0px 2px !important; width: 60px !important; }
+nav.user-logout {background: #ffffff; border: 1px solid #cccccc; box-shadow: 0 0 4px rgba(0,0,0,0.3); position: fixed; top: 61px; float: right; right: 10px; z-index: 999; border-top: 3px solid #0e4169; }
+.user-logout ul {margin: 0px; padding: 0; }
+.user-logout ul li {padding: 10px 25px; }
+
+@media only screen and (max-width: 1366px){nav.user-logout li a {color: #000000; } }
+.user-logout ul li a {font-weight: normal; font-family: 'Futura PT Demi'; letter-spacing: 2px; font-size: 14px; text-decoration: none; }
+@media only screen and (max-width: 1366px){nav.user-logout li a {color: #000000; }
+}
+.avatar__thumbnail.login{color: white; margin: 0 !important; height: 58px; display: flex; justify-content: center; align-items: center; width: auto !important; font-size: 16px; }
+.avatar__thumbnail.login a {text-decoration: none; color: white !important; }
+.navigation li a{ width: 100%; }
+.contact .worker-btn a {
+    padding: 15px 40px;
+    border-radius: 5px;
+    color: #fff !important;
+    background: #1c4266;
+    font-weight: 500;
+    font-family: Futura PT Medium;
+    font-size: 16px;
+}
+.subScription button span {
+    border-top-right-radius: 20px;
+}
+.subScription input[type="text"]{ border-bottom-left-radius: 20px; }
+nav.navigation{ height:max-content !important; padding-bottom: 0px !important; }
+	</style>
+	<h1 class="logo">
+		<a class="logoDesktop" href="<?= $block->getUrl('') ?>" title="<?= /* @escapeNotVerified */ $storeName ?>">
+		 <img src="<?php echo $block->getViewFileUrl('images/mobile-theme-logo.png'); ?>"
+				 alt="<?= /* @escapeNotVerified */ $block->getLogoAlt() ?>"
+				 <?= $block->getLogoWidth() ? 'width="' . $block->getLogoWidth() . '"' : '' ?>
+				 <?= $block->getLogoHeight() ? 'height="' . $block->getLogoHeight() . '"' : '' ?>
+			/>
+		</a>
+		<!-- <a href="<?= $block->getUrl('') ?>" title="<?= /* @escapeNotVerified */ $storeName ?>" class="mobileLogo"> <img src="<?php echo $block->getViewFileUrl('images/mobile-theme-logo.png'); ?>" alt="Adar Logo" title="Adar Logo" /> </a>  -->
+	</h1>
+
+	<?php
+
+	$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$customerSession = $objectManager->create('Magento\Customer\Model\Session');
+
+	 if($customerSession->isLoggedIn()){ ?>
+	<div class="avatar__thumbnail customerLoggedIn" data-name="IS">
+		<a>
+			<img src="<?= $this->getBaseUrl().'pub/media/muser.png';?>" alt="user" />
+		</a>
+
+	</div>
+	<!-- <nav class="user-logout" style="display: none;">
+			<ul>
+				<li>
+					<a href="<?=  $this->getBaseUrl(); ?>customerlogin/account/logout/" >
+					logout
+					</a>
+				</li>
+			</ul>
+		</nav> -->
+<?php }else{ ?>
+	<div class="avatar__thumbnail login" data-name="IS">
+		<a href="<?=  $this->getBaseUrl(); ?>login" >B2B Login</a>
+
+	</div>
+<?php } ?>
+<?php
+/** @var $block \Magento\Framework\View\Element\Template */
+/** @var $helper \Magento\Search\Helper\Data */
+$helper = $this->helper(\Magento\Search\Helper\Data::class);
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$request = $objectManager->get('\Magento\Framework\App\Request\Http');
+$cur_action = $request->getFullActionName();
+?>
+<!-- <div class="search-product" style="display: none">
+<div class="cf sidebarSearch" >
+	<form  class="form minisearch" data-mage-init='{"validation": {}}' id="search_mini_form" action="<?= /* @escapeNotVerified */ $helper->getResultUrl() ?>" method="get" 	>
+		<div class="searchInput required">
+			<div class="control">
+			<input
+                           data-mage-init='{"quickSearch":{
+                                "formSelector":"#search_mini_form",
+                                "url":"<?= /* @escapeNotVerified */ $helper->getSuggestUrl()?>",
+                                "destinationSelector":"#search_autocomplete"}
+                           }'
+                           type="text"
+                           name="<?= /* @escapeNotVerified */ $helper->getQueryParamName() ?>"
+                           value=""
+                           class="input-text required-entry"
+                           maxlength="<?= /* @escapeNotVerified */ $helper->getMaxQueryLength() ?>"
+                           role="combobox"
+                           aria-haspopup="false"
+                           aria-autocomplete="both"
+                           placeholder="Search Style/Color"
+                           autocomplete="off"
+                           oninvalid="this.setCustomValidity('please Enter somthing in search box.')"
+       						onvalid="this.setCustomValidity('')"
+                           />
+                       </div>
+
+
+		<button type="submit"
+                        title="<?= $block->escapeHtml(__('Search')) ?>"
+                        class="search">
+                    <span class="fa fa-search"></span>
+                </button>
+		</div>
+	</form>
+</div>
+</div> -->
+<script>
+	require([
+		'jquery'
+		], function($){
+			// $(".customerLoggedIn").click(function() {
+			// 	$(".user-logout").slideToggle(300);
+			// });
+
+			// $( "#search_mini_form" ).submit(function( event ) {
+
+   //      if($("#autosearchautocomplete-list.autocomplete-items").children().length > 0){
+   //        var selected_v = $("#autosearchautocomplete-list.autocomplete-items").find(".element.active span").html();
+   //        $(".searchInput .input-text").val(selected_v);
+   //      }
+
+			//   var x = $(".searchInput .input-text").val();
+			//   console.log(x);
+			//   if (x == "") {
+			//     alert("Name must be filled out");
+			//     return false;
+			//   }
+			// });
+
+
+			$(document).on('click','#search_product_button',function(e){
+        if($(window).scrollTop() != 0){
+					if(!$("#header").is(":visible")){
+						$("#header").fadeIn(800);
+					}
+				}
+				// var x = document.getElementById(".search-product");
+				  if ($(".search-product").css("display") === "none") {
+				  	$(this).addClass("current");
+				    $('div.search-product').slideDown(200).fadeIn(800);
+				    $('div.search-product form#search_mini_form').addClass('show')
+		            $("body").addClass("overflown");
+				  } else {
+				    $('input#autosearch').attr("value","");
+				  	currentclass();
+		            $("body").removeClass("overflown");
+			        $('div.search-product').slideUp(800).fadeOut(800);
+				    $('div.search-product form#search_mini_form').removeClass('show');
+				  }
+
+			});
+			function currentclass(){
+				 $(".footer-menu-bottom .nav.item").removeClass("current");
+				var current = "<?php echo $cur_action;?>";
+				if(current == "customer_account_index"){
+					$("#account-page").addClass("current");
+				}else if(current == "customerorder_customer_index"){
+					$("#order-page").addClass("current");
+				}else if(current == "customerorder_customer_inventorydata"){
+					$("#nventory-page").addClass("current");
+				}else if(current == "customerorder_customer_neworder"){
+					$("#neworder-page").addClass("current");
+				}else if(current == "customerorder_customer_index&&q=d"){
+					$("#draft-page").addClass("current");
+				}
+
+			}
+
+
+
+			$(document).on("click", 'div.search-product', function (e) {
+		    	var container = $("div.search-product form#search_mini_form");
+
+			    if(!container.is(e.target) && container.has(e.target).length === 0){
+			        $('div.search-product').slideUp(800).fadeOut(800);
+              			if($(window).scrollTop() != 0){
+							$('#header').fadeOut(800);
+						}
+						currentclass()
+						$('input#autosearch').attr("value","");
+				    	$('div.search-product form#search_mini_form').removeClass('show');
+				  	// $("body,html").css("overflow","unset")
+            			$("body").removeClass("overflown");
+
+
+			    }
+
+		  	});
+
+			$(".nav-toggle.action").click(function() {
+				if(!$(this).hasClass("closeToggle")){
+					if($(".user-logout").css("display") === "block"){
+						$(".user-logout").hide(300);
+					}
+				}
+			});
+		});
+</script>
+<style>
+.category-collections .innerPageContent .container {
+    padding-top: 0px !important;
+}
+/*.search-product .cf.sidebarSearch .searchInput{ position: relative;  }*/
+.search-product div.mage-error[generated] { display: none !important; }
+.search-product input:not([disabled]):focus{ outline: unset !important; border: 1px solid #0c4269; }
+input.input-text.required-entry.mage-error {
+    border: 1px solid red !important;
+}
+.search-product .cf.sidebarSearch {left: 0; height: -webkit-fill-available; border-radius: 0; background-color: #00000052; width: 100%; position: fixed;  top:0; z-index: 199; display: flex; margin: 0px; }
+.search-product .form#search_mini_form {width: 95%; height: 53px; position: fixed; background: #fff; top: 70px; border-radius: 10px; left: 0; transform: translateY(-124px); transition: transform 0.8s ease-out; right: 0; margin: auto; }
+div.search-product form#search_mini_form.show{transform: translateY(2px); }
+.search-product input {width: 100% !important; padding: 10px 20px; max-width: 100%; border: 0; height: 53px; border-radius: 10px; background: #fff; font-size: 16px; }
+li#search_product_button svg {
+    width: 24px !important;
+    height: 28px !important;
+}
+.search-product button.search{     position: absolute !important;
+    right: 0 !important;
+    top: 0px !important; bottom: 0 !important; }
+.search-product input::placeholder{ font-weight:700;}
+/*#mainNav .cf.sidebarSearch{ display: none; }*/
+/*.cf.sidebarSearch {
+    display: none;
+}*/
+.search-product input:not([disabled]):focus{ outline: unset !important; border: 1px solid #0c4269; }
+input.input-text.required-entry.mage-error {
+    border: 1px solid red !important;
+}
+.search-product button:hover, .search-product button:focus, button:active{ background:unset; background-color: unset; border: unset; color: unset; 	 }
+.overflown { overflow: hidden !important;}
+
+
+.block-dashboard-info .block-title {
+    text-transform: none;
+    letter-spacing: 0.5px;
+    line-height: normal;
+    padding: 20px 15px !important;
+}
+.block.block-dashboard-info .block-title strong {
+    font-weight: 100 !important;
+    font-family: "Futura PT Medium";
+    font-size: 16px !important;
+    font-style: normal;
+    color: #0c4269;
+}
+.block-dashboard-info > .block-title.collapsed:after {
+    content: "\f078" !important;
+    color: #0c4269;
+    font: normal normal normal 14px/1 FontAwesome;
+}
+.block-dashboard-info > .block-title:after {
+    content: "\f077" !important;
+    color: #0c4269;
+    font: normal normal normal 14px/1 FontAwesome;
+    display: inline-block;
+    float: right;
+    margin-top: 5px;
+}
+.mainNavigation {
+    position: absolute !important;
+    width: 100% !important;
+}
+.account_menu div#collapseOne {
+    padding: 0px 15px 10px;
+}
+.account_menu .block-content {
+    background: #fff;
+}
+.account_menu #collapseOne .box-information {
+    justify-content: space-between;
+    display: flex;
+}
+.block-dashboard-info .block-content .box-descrition span {
+    font-size: 15px;
+    color: #0c4269;
+}
+.abs-account-block-font-size, .block-addresses-list address, .box-billing-address .box-content, .box-shipping-address .box-content, .box-address-billing .box-content, .box-address-shipping .box-content, .box-information .box-content, .block-balance-giftcard .block-content, .block-reviews-dashboard .product-name {
+    font-size: 14px;
+    font-family: 'Futura PT Medium';
+}
+.block-dashboard-info .block-content .box-descrition .box-content p {
+    font-size: 14px;
+    color: #9d9d9d;
+    font-family: inherit;
+}
+.block .box-actions {
+    margin-top: 4px;
+}.commonPopup1 .edit, .box-information .edit {
+    cursor: pointer;
+    text-decoration: underline !important;
+}
+.block-dashboard-info .block-content .box-actions svg {
+    width: 20px;
+    height: 20px;
+    fill: #c3c3c3 !important;
+}
+.block-dashboard-info .block-content .box-descrition span {
+    font-size: 15px;
+    color: #0c4269;
+}
+.account_menu .block {
+    margin-top: -1px;
+    margin-bottom: 0px;
+}
+.block-dashboard-info #collapseTwo {
+    margin-bottom: 0 !important;
+}
+.account_menu .block-content {
+    background: #fff;
+}
+.customerStatement .box-information {
+    width: 32% !important;
+    display: inline-block;
+    padding: 0px 10px 40px 0px;
+    vertical-align: top;
+    min-height: 80px;
+}
+.account .column.main .block:not(.widget) .block-content .box {
+    margin-bottom: 0 !important;
+}
+.block.block-dashboard-info .box-information strong.box-title {
+    margin-bottom: 3px !important;
+}
+.block.block-dashboard-info .box-information strong.box-title {
+    font-size: 12px;
+    font-weight: 100;
+    margin-bottom: 8px !important;
+    font-family: "Futura PT Medium";
+}
+.paypal-review .block .box-title > span,
+.column.main .block:not(.widget) .box-title > span,
+ .multicheckout .box-title > span,
+  .magento-rma-guest-returns .column.main .block:not(.widget) .box-title > span,
+   [class^='sales-guest-'] .column.main .block:not(.widget) .box-title > span, .sales-guest-view .column.main .block:not(.widget) .box-title > span {
+    font-size: 14px;
+    font-family: 'Futura PT Bold';
+}
+.block.block-dashboard-info.paymentBlock {
+    margin-bottom: 0px;
+}
+.account_menu div#customer-edit, .account_menu div#customer-add-payment, .account_menu div#customer-edit-address {
+    cursor: pointer;
+    left: 0;
+    height: 100vh;
+    border-radius: 0;
+    background-color: rgba(0,0,0,0.7);
+    width: 100%;
+    top: 0;
+    margin: 0px;
+    overflow: auto;
+}
+.account_menu .mobile-button a {
+    text-transform: capitalize;
+}
+.mobile-button a {
+    color: #fff;
+}
+
+.account_menu #collapseOne:before, .account_menu #collapseTwo:before, .account_menu #collapseThree:before, .account_menu #collapseFour:before {
+    content: "";
+    height: 20px;
+    width: 100%;
+    margin-bottom: 0px;
+    display: table;
+    clear: both;
+}
+.account .column.main .block:not(.widget) #collapseThree.block-content .box {
+    width: 100%;
+}
+.box.box-information.paymentMethod-content .box-content {
+    position: relative;
+}
+.account_menu .box-content .box-title1 {
+    padding: 0px 15px 0px;
+}
+.account_menu .paymentAddress {
+    max-height: 203px;
+    overflow: auto;
+    margin: 15px 13px;
+}
+button#add-payment {
+    position: absolute;
+    top: -10%;
+    padding: 0;
+    right: 10px;
+    min-width: auto;
+    border: 0;
+    margin: 0;
+}
+.themeBtn {
+    padding: 15px 10px;
+    color: #0e4169 !important;
+    border: 1px solid #0e4169;
+    text-decoration: none;
+    font-size: 12px;
+    display: inline-block;
+    transition: all 0.4s ease-out;
+    -webkit-transition: all 0.4s ease-out;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    font-family: 'Futura PT Bold';
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: 1px;
+    line-height: 0px;
+}
+
+.account_menu .block-dashboard-info .box-information{ max-width: unset; }
+
+.account_menu .block-content.customerStatement .box span {
+    font-size: 14px;
+    font-family: 'Futura PT Bold';
+}
+button#add-payment svg {
+    width: 64px;
+    height: 65px;
+    fill: #0c4269;
+}
+.account_menu .block-content.customerStatement .box span {
+    font-size: 14px;
+    font-family: 'Futura PT Bold';
+}
+.block-dashboard-info.paymentBlock select.paymentMethod {
+    width: 100%;
+    max-width: 450px;
+    padding-right: 25px;
+    height: 40px;
+    border-radius: 5px;
+    margin: 5px 0 10px;
+}
+.block.block-dashboard-info .box-information strong.box-title {
+    font-size: 12px;
+    font-weight: 100;
+    margin-bottom: 8px !important;
+    font-family: "Futura PT Medium";
+}
+.block-dashboard-info select.shippingMeethod {
+    padding-right: 25px;
+    margin: 5px 1px 15px 0;
+    width: 90%;
+    max-width: 310px;
+    border: 1px solid #0c4269;
+    border-radius: 5px;
+    padding-top: 7px;
+    height: 40px;
+    color: #777;
+}
+.shipAddress {
+    color: #999;
+    line-height: 20px;
+    text-transform: capitalize;
+}
+.block.block-dashboard-info.shippingBlock input.themeBtn {
+    color: #fff !important;
+    background: #0c4272;
+    font-size: 12px;
+}
+.shippingBlock .themeBtn, .paymentBlock .themeBtn {
+    min-width: 190px;
+    margin: 20px 0;
+    padding: 15px 10px;
+    font-family: inherit;
+    border-radius: 5px;
+    height: 40px;
+}
+.mobile-button {
+    text-align: center;
+    padding: 10px 0px;
+    margin: 7px 14px 15px;
+    width: 20%;
+    float: right;
+}
+.mobile-button {
+    color: #fff !important;
+    border-radius: 5px;
+    background-color: #0b4269 !important;
+    transition: all -0.25s ease-in-out;
+}
+@media (max-width: 425px) and (min-width: 320px){
+	.content.mobile-content.autoScrollMenu li.nav.item p{    font-size: 12px !important;}
+}
+li#account-page svg {width: 26px; }
+@media (max-width: 374px) and (min-width: 320px){
+	.back-menu{     height: 92vh !important; }
+}
+
+@media (max-width: 425px) and (min-width: 375px){
+	div#customer-edit-address .modal-dialog{padding-top: 15% !important;padding-bottom: 15% !important; }
+}
+.paymentMethod-content span.title {
+    font-size: 16px;
+    color: #0c4269;
+    font-family: 'Futura PT Bold';
+}
+.paymentMethod-content span.title + span {
+    color: #35ca5d;
+}
+.box-title1 p {
+    color: #999;
+    line-height: 1.3;
+    margin-bottom: 10px !important;
+}
+.account_menu .box-content .box-title1 {
+    padding: 0px 15px 0px;
+}
+.paymentMethod-content .box-title1 {
+    max-width: 80%;
+}
+@media (max-width: 1366px) and (min-width: 768px){
+	.back-menu{     height: 93vh !important; }
+}
+.back-menu .block-title{ border-bottom: unset !important;  }
+@media (min-width: 768px), print{
+.page-layout-2columns-left .sidebar-main {
+        width: 100% !important;
+    float: unset !important;
+}}
+.block.myaccount_nav .block-title {
+    color: #0c4269;
+    font-size: 20px !important;
+    text-align: left;
+    padding: 15px 15px;
+}
+.collapsing {
+  -webkit-transition-duration: .99s;
+       -o-transition-duration: .99s;
+          transition-duration: .99s;
+}
+</style>
+
+	<?php }else{ ?>
+		<h1 class="logo">
+		<a class="logoDesktop" href="<?= $block->getUrl('') ?>" title="<?= /* @escapeNotVerified */ $storeName ?>">
+		 <img src="<?= /* @escapeNotVerified */ $block->getLogoSrc() ?>"
+				 alt="<?= /* @escapeNotVerified */ $block->getLogoAlt() ?>"
+				 <?= $block->getLogoWidth() ? 'width="' . $block->getLogoWidth() . '"' : '' ?>
+				 <?= $block->getLogoHeight() ? 'height="' . $block->getLogoHeight() . '"' : '' ?>
+			/>
+		</a>
+		<a href="<?= $block->getUrl('') ?>" title="<?= /* @escapeNotVerified */ $storeName ?>" class="mobileLogo"> <img src="<?php echo $block->getViewFileUrl('images/mobile-logo.png'); ?>" alt="Adar Logo" title="Adar Logo" /> </a>
+	</h1>
+	<?php } ?>

@@ -1,0 +1,371 @@
+<?php
+	/**
+		* Copyright © Magento, Inc. All rights reserved.
+		* See COPYING.txt for license details.
+	*/
+	
+	// @codingStandardsIgnoreFile
+	
+	/** @var \Magento\Customer\Block\Account\Dashboard\Info $block */
+	
+	$eBizCharge = $this->helper('Sttl\Adaruniforms\Helper\Ebizcharge');
+	$helper = $this->helper('Sttl\Adaruniforms\Helper\Sap');
+	
+	$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+	$customerSession = $objectManager->create('Magento\Customer\Model\Session');
+	$customer_number = $customerSession->getCustomer()->getData('customer_number');
+
+	$data = $helper->getCustomerDetails(["PaymentTerm"]);
+
+
+
+if(isset($data) && !isset($data['errors'])) 
+{
+
+	$search_query=array(
+	array(
+	'Field'=>'CustomerID',  
+	'Type'=>'eq',
+	'Value'=>$customer_number)
+	);
+
+	// echo "<pre>";
+	// print_r($eBizCharge->Connect());
+	// die;
+
+	if(isset($customer_number) && $customer_number != '')
+	{
+		$objCustomers = $eBizCharge->searchCustomerByParams($search_query,true,0,1);
+	}
+	$custNum = '';
+	if(isset($objCustomers->Customers) && count($objCustomers->Customers) > 0)
+	{
+		$objCustomer = $objCustomers->Customers;
+		$objCustomer = $objCustomer[0];
+		if (isset($objCustomer->CustNum)) {
+			$custNum = $objCustomer->CustNum;
+			//$customerSession->getCustomer()->setCustNum($custNum);
+		}
+	}
+
+	$saved_cards = (isset($objCustomer->PaymentMethods) && count($objCustomer->PaymentMethods) > 0) ? $objCustomer->PaymentMethods : array();
+
+?>
+<div class="block block-dashboard-info paymentBlock">
+    <div class="block-title collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree"><strong class="upperCaseText"><?= $block->escapeHtml(__('Payment Information')) ?></strong>
+	</div>
+    <div id="collapseThree" class="block-content collapse paddL15" aria-labelledby="headingOne">
+		<div class="box box-information">
+		<?php if(isset($data[0]['PaymentTerm']) && $data[0]['PaymentTerm'] != "Credit Card Auto"){ ?>
+			<strong> Payment Terms: </strong> <span><?php echo $data[0]['PaymentTerm']; ?></span>
+		<?php } ?>
+			<strong class="box-title">
+				Manage and add new payment information.
+			</strong>
+			<div class="box-content">
+				<select class="paymentMethod">
+					<option>Please Select</option>
+					<?php 
+						$i = 0;
+						foreach($saved_cards as $card)
+						{ 
+							$card_expiry = (isset($card->CardExpiration) && !empty($card->CardExpiration)) ? date("m/Y", strtotime($card->CardExpiration)) : NULL;
+						?>
+						<option value="<?php echo $card->MethodID;?>" attr-ccno = "<?php echo $card->CardNumber;?>" attr-ccexpiry = "<?php echo $card_expiry;?>" attr-cctype = "<?php echo $card->CardType;?>" <?php if($i==0) { ?>selected<?php }?>><?php echo $card->CardNumber;?></option>
+						<?php 
+						$i++; } ?>
+				</select>
+				<div class="paymentAddress"></div>
+				<input type="button" value="+ Add New Payment Method"  data-toggle="modal" data-target="#customer-add-payment"  class="themeBtn mrgB20" />
+				
+			</div>
+			
+		</div>
+		
+	</div>
+</div>
+<div class="modal fade block block-customer-add-payment comingSoon commonPopup1" id="customer-add-payment" tabindex="-1" role="dialog" aria-labelledby="addPaymentModal" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="modalContainer block-content" aria-labelledby="block-customer-login-heading">
+					<div class="messages">
+						<div class="message message-error error">
+							<div></div>
+						</div>
+					</div>
+					<div class="quickViewCont">        
+						<div class="container bg-primary p-2">
+							
+							<div class="row">
+								<div class="col-md-12 text-center customer-edit-title">
+									<span class="popUpTitle"><?= $block->escapeHtml(__("Add Payment Method"));?></span>
+									<button type="button" data-dismiss="modal" class="close mfp-close-inside"><i class="fa fa-times"></i></button>
+								</div>          
+							</div>
+						</div>
+						<div class="registrationPage comingSoonTxt" id="comingSoonForm">
+							<form class="form custom-customer-add-payment" action="<?= $block->escapeUrl($block->getUrl('customerlogin/ajax/addPayment')) ?>" method="post" id="customer-add-payment-validate" enctype="multipart/form-data" data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>" autocomplete="off" data-mage-init='{"validation": {"errorClass": "mage-error"}, "theAdarValidationMethod":{}}'>
+								<div class="response-msg"></div>
+								<?= $block->getBlockHtml('formkey') ?>
+								<div class="field field-name-fullname required">
+									<label class="label " for="fullname"><span><?= $block->escapeHtml(__('Choose One:')) ?></span></label>
+									<div class="control">
+										<div>
+											<input type="hidden" id="ebiz_customer_number" name="ebiz_customer_number" value="<?php echo $custNum;?>">
+											<input type="radio" id="card_type_visa" name="card_type" disabled ="true" value="VI" class="input-text required-entry valid" data-validate="{required:true}" aria-required="true">
+											<span><img src= "<?php echo $this->getViewFileUrl('images/visa-card.jpg');?>" alt="Visa"></span>
+											<input type="radio" id="card_type_mc" name="card_type" value="MC"  disabled ="true" class="input-text required-entry valid" data-validate="{required:true}" aria-required="true">
+											<span><img src= "<?php echo $this->getViewFileUrl('images/master-card.jpg');?>" alt="Master Card"></span>
+											<input type="radio" id="card_type_dc" name="card_type" value="DI"  disabled ="true" class="input-text required-entry valid" data-validate="{required:true}" aria-required="true">
+											<span><img src= "<?php echo $this->getViewFileUrl('images/discover.jpg');?>" alt="Discover"></span>
+											<input type="radio" id="card_type_ae" name="card_type" value="AE"  disabled ="true" class="input-text required-entry valid" data-validate="{required:true}" aria-required="true">
+											<span><img src= "<?php echo $this->getViewFileUrl('images/american-express.jpg');?>" alt="Amrican Express"></span>
+										</div>
+									</div>
+								</div>
+								<div class="field field-name-fullname required">
+									<label class="label " for="fullname"><span><?= $block->escapeHtml(__('Full Name')) ?></span><span class="reqField">*</span></label>
+									<div class="control">
+										<input type="text" autocomplete="off" id="fullname" name="fullname" value="" title="Full Name" class="input-text required-entry validate-no-html-tags validate-alphanum-with-spaces valid" data-validate="{required:true}" aria-required="true" placeholder="Full Name">
+									</div>
+								</div>
+								<div class="field field-name-card_no required">
+									<label class="label " for="card_no"><span><?= $block->escapeHtml(__('Credit Card Number')) ?></span><span class="reqField">*</span></label>
+									<div class="control">
+										<input type="text" autocomplete="off" id="card_no" name="card_no" title="Credit Card Number" class="input-text valid required-entry  validate-cc-number validate-no-html-tags" data-validate="{'required':true, 'validate-cc-number' : true, 'validate-number':true}" maxlength="19"  aria-required="true" placeholder="Credit Card Number">
+									</div>
+								</div>
+								<div class="row">
+									<div class="field field-name-security-code required col-md-6">
+										<label class="label " for="security_code"><span><?= $block->escapeHtml(__('Security Code')) ?></span><span class="reqField">*</span></label>
+										<div class="control">
+											<input type="text" autocomplete="off" id="security_code" name="security_code" value="" title="Security Code" class="input-text required-entry valid adar_cc_cvv" data-validate="{required:true}" aria-required="true" placeholder="Security Code">
+										</div>
+									</div>
+									<div class="field field-name-expiration-date col-md-6">
+										<label class="label " for="expiration_date"><span><?= $block->escapeHtml(__('Expiration Date')) ?></span><span class="reqField">*</span></label>
+										<div class="control">
+											<input type="text" autocomplete="off" id="expiration_date" name="expiration_date" value="" title="Expiration Date" class="input-text validate-no-html-tags validate-cc-exp adar_cc_exp valid" maxlength="5" data-validate="{required:true}" aria-required="true" placeholder="MM/YY">
+										</div>
+									</div>									
+								</div>
+								<div class="row">
+									<div class="field field-name-security-code required col-md-6">
+										<div class="control">
+											<input type="checkbox" id="cc_default" name="cc_default" value="1" class="input-text">&nbsp;<label class="label"><span><?= $block->escapeHtml(__('Default')) ?></span></label>
+										</div>
+									</div>
+								</div>
+								<?php /* ?><div class="field"><h4><?= $block->escapeHtml(__('Billing Address')) ?></h4></div> 
+								<div class="field field-name-address1">
+									<label class="label " for="street"><span><?= $block->escapeHtml(__('Street')) ?></span></label>
+									<div class="control">
+										<input type="text" id="street" name="street" value="" title="Street" class="input-text" placeholder="Street">
+									</div>
+								</div>
+								<?php /* ?>
+									<div class="field field-name-address2">
+									<label class="label " for="address2"><span><?= $block->escapeHtml(__('Address Line 2')) ?></span></label>
+									<div class="control">
+									<input type="text" id="address2" name="address2" value="" title="Address Line 2" class="input-text" placeholder="Address Line 2">
+									</div>
+									</div>
+									<div class="row">
+									<div class="field field-name-city required col-md-6">
+									<label class="label " for="city"><span><?= $block->escapeHtml(__('City')) ?></span><span class="reqField">*</span></label>
+									<div class="control">
+									<input type="text" id="city" name="city" value="" title="City" class="input-text required-entry validate-no-html-tags validate-alphanum-with-spaces valid" data-validate="{required:true}" aria-required="true" placeholder="City">
+									</div>
+									</div>
+									<div class="field field-name-state required col-md-6">
+									<label class="label " for="state"><span><?= $block->escapeHtml(__('State')) ?><span class="reqField">*</span></span></label>
+									<div class="control">
+									<input type="text" id="state" name="state" value="" title="State" class="input-text required-entry validate-no-html-tags validate-alphanum-with-spaces valid" data-validate="{required:true}" aria-required="true" placeholder="State"> 
+									</div>
+									</div>
+									</div>
+								
+								<div class="row">
+									<div class="field field-name-zipcode required col-md-6">
+										<label class="label " for="zipcode"><span><?= $block->escapeHtml(__('Zip Code')) ?></span><span class="reqField">*</span></label>
+										<div class="control">
+											<input type="text" id="zipcode" name="zipcode" value="" title="Zip Code" class="input-text required-entry validate-no-html-tags validate-zip valid" data-validate="{required:true}" aria-required="true" placeholder="Zip Code">
+										</div>
+									</div>
+									
+										<div class="field field-name-phoneno col-md-6">
+										<label class="label " for="phoneno"><span><?= $block->escapeHtml(__('Phone Number')) ?></span></label>
+										<div class="control">
+										<input type="text" id="phoneno" name="phoneno" value="" title="Phone Number" class="input-text valid"  placeholder="Phone Number">
+										</div>
+										</div>
+									
+								</div>
+								<?php */?>
+								<?= $block->getChildHtml('form_additional_info') ?>
+								<div class="actions-toolbar mt-2">
+									<div class="text-center">
+										<button type="submit" class="themeBtn action save" title="<?= $block->escapeHtmlAttr(__('Submit')) ?>"><span><?= $block->escapeHtml(__('Submit')) ?></span></button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>   
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+    require(['jquery'], function($) {
+		var changeText = "<?php echo __('Please Wait...') ?>";
+		var changeSubmit = "<?php echo __('Submit') ?>";
+		var findButton = $('#customer-add-payment-validate').find('button[type=submit]'),
+		form = $('#customer-add-payment-validate');
+		form.submit(function (e) {
+			if (form.validation('isValid')) {
+				findButton.text(changeText);
+				findButton.attr("disabled", "disabled");
+				var url = form.attr('action');
+				var formData = getFormData($(this));
+				e.preventDefault();
+				$.ajax({
+					type: "POST",
+					url: url,
+					showLoader: true,
+					data: formData,
+					success: function(data) {
+						showResponse(data);
+						if(data.error) {
+                            findButton.text(changeSubmit);
+                            findButton.removeAttr('disabled');
+							}  else {
+                            setTimeout(function(){ location.reload(); }, 3000);                            
+						} 
+					}
+				});
+			}
+		});
+		
+		function getFormData(formElem){
+			var unindexed_array = formElem.serializeArray();
+			var indexed_array = {};
+			
+			jQuery.map(unindexed_array, function(n, i){
+				indexed_array[n['name']] = n['value'];
+			});
+			
+			return indexed_array;
+		}
+		
+		function showResponse(data) {
+			if(data.error) {
+                $('.block-customer-add-payment .response-msg').html("<div class='error'>"+data.error+"</div>");
+				} else {
+                $('.block-customer-add-payment .response-msg').html("<div class='success'>You saved the payment information.</div>");
+			}
+			setTimeout(function(){ $('.block-customer-add-payment .response-msg').html(null); }, 5000);
+		}
+		
+		$(function() {
+			$('.modal.block-customer-add-payment').on('hidden.bs.modal', function(){
+				$('#customer-add-payment-validate').find('input[type="text"]').val('');
+				
+				var validator = $("#customer-add-payment-validate").validate();
+				validator.resetForm();
+
+				$("input[name='card_type']").removeClass("selected_cc").prop('checked', false).attr("disabled", true).next('span').removeClass("img-container");
+
+			});
+			
+			$(".paymentMethod").change();
+		});
+		
+		
+		$(document).on("change", ".paymentMethod", function(){
+			var Objsel = $(this).find('option:selected');
+			
+			var cc_no = $(Objsel).attr("attr-ccno"),
+			cc_expiry = $(Objsel).attr("attr-ccexpiry"),
+			cc_type = $(Objsel).attr("attr-cctype"),
+			cc_details = [];
+			
+			if (typeof cc_type !== typeof undefined && cc_type !== false && cc_type.trim() != '') {
+				var img = '';
+				if (cc_type == "V") {
+					cc_details.push("<img src='<?php echo $this->getViewFileUrl('images/visa-card.jpg');?>' >");
+				}
+				if (cc_type == "M") {
+					cc_details.push("<img src='<?php echo $this->getViewFileUrl('images/master-card.jpg');?>' >");
+				}
+				if (cc_type == "A") {
+					cc_details.push("<img src='<?php echo $this->getViewFileUrl('images/american-express.jpg');?>' >");
+				}
+				if (cc_type == "DS") {
+					cc_details.push("<img src='<?php echo $this->getViewFileUrl('images/discover.jpg');?>' >");
+				}
+			}
+			
+			if (typeof cc_no !== typeof undefined && cc_no !== false && cc_no.trim() != '') {
+				cc_details.push('<span>'+cc_no+'</span>');
+			}
+			
+			if (typeof cc_expiry !== typeof undefined && cc_expiry !== false && cc_expiry.trim() != '') {
+				cc_details.push('<span>'+cc_expiry+'</span>');
+			}
+			
+			if (cc_details.length) {
+				$(".paymentAddress").html(cc_details.join(" "));
+			}
+			else 
+			$(".paymentAddress").html("");
+		});
+		
+		$(document).on("keyup", "#card_no", function(){
+			var value = $(this).val();
+			var ctype = '';
+			// visa
+			var re = new RegExp("^4");
+			if (value.match(re) != null)
+				ctype =  "VI";
+			if (/^(5[1-5][0-9]{14}|2(22[1-9][0-9]{12}|2[3-9][0-9]{13}|[3-6][0-9]{14}|7[0-1][0-9]{13}|720[0-9]{12}))$/.test(value)) 
+				ctype =  "MC";
+			// AMEX
+			re = new RegExp("^3[47]");
+			if (value.match(re) != null)
+				ctype = "AE";
+			
+			// Discover
+			re = new RegExp("^(6011|622(12[6-9]|1[3-9][0-9]|[2-8][0-9]{2}|9[0-1][0-9]|92[0-5]|64[4-9])|65)");
+			if (value.match(re) != null)
+				ctype = "DI";
+			$("input[name='card_type']").removeClass("selected_cc").prop('checked', false).attr("disabled", true).next('span').removeClass("img-container selected_cc");
+			if(value != ''){
+				$("input[name='card_type'][value='"+ctype+"']").prop('disabled', false).prop('checked', true).addClass("selected_cc").next('span').addClass("img-container");
+			}
+
+		});
+		
+		$(document).on("keyup", "#expiration_date", function(){
+			var value = $(this).val().replace("/","");
+			var str = '';
+			for (var i=0,ic=value.length;i<ic;i++) {
+				str += value[i];
+				if (str.length == 2)
+					str += "/";
+			}
+			$(this).val(str);
+		});	
+	});
+	
+</script>
+<?php
+
+}
+else if($data['type'] != 'server')
+{
+	echo $data['message'];
+}
+?>

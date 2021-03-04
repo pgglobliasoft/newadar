@@ -1,0 +1,69 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+?>
+<?php
+    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+    $productCollection = $objectManager->create('Magento\Catalog\Model\Product');
+    $_imagehelper = $objectManager->create('Magento\Catalog\Helper\Image');
+    $store = $objectManager->get('Magento\Store\Model\StoreManagerInterface')->getStore();
+    $tempUrl = $store->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA) . 'catalog/product';
+
+    /** @var $block \Magento\Swatches\Block\Product\Renderer\Listing\Configurable */
+    $productId = $block->getProduct()->getId();
+    $_children = $block->getProduct()->getTypeInstance()->getUsedProducts($block->getProduct());
+    $imgaesdata = [];
+    foreach ($_children as $child){
+          // echo $child->getId();
+            $headtherprodut = $productCollection->load($child->getId());
+            // if(@$headtherprodut['heather_colors']  && $headtherprodut['heather_colors'] !== ''){
+                $childMedia =  $child->getData('media_gallery'); //$headtherprodut->getMediaGalleryImages();
+                // echo $child->getId();
+                 $data = [];        $i = 0;  
+               foreach ($childMedia['images'] as $key => $child){
+                    if($i < 2 ){
+                       // $productImage = $_imagehelper->init($headtherprodut, 'product_page_image_large')->setImageFile($child->getFile())->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(TRUE)->getUrl();
+                        $data[] = $tempUrl.$child['file'];                        
+                    }
+                        $i++;
+                } 
+                // echo '<pre>'; print_r($data);
+                $imgaesdata[$headtherprodut->getId()] = $data;
+            // }
+    }
+    // echo "<pre>"; print_r($imgaesdata); die;
+?>
+<div class="swatch-opt-<?= /* @escapeNotVerified */ $productId ?>" 
+     data-role="swatch-option-<?= /* @escapeNotVerified */ $productId ?>"></div>
+
+<script type="text/x-magento-init">
+    {
+        "[data-role=swatch-option-<?= /* @escapeNotVerified */ $productId ?>]": {
+            "Magento_Swatches/js/list/swatch-renderer": {
+                "selectorProduct": ".product-item-details",
+                "onlySwatches": true,
+                "enableControlLabel": false,
+                "numberToShow": <?= /* @escapeNotVerified */ $block->getNumberSwatchesPerProduct(); ?>,
+                "jsonConfig": <?= /* @escapeNotVerified */ $block->getJsonConfig(); ?>,
+                "jsonSwatchConfig": <?= /* @escapeNotVerified */ $block->getJsonSwatchConfig(); ?>,
+                "mediaCallback": "<?= /* @escapeNotVerified */ $block->getMediaCallback() ?>",
+                "images":<?=  json_encode($imgaesdata) ?>
+            }
+        }
+    }
+</script>
+
+<script type="text/x-magento-init">
+    {
+        "[data-role=priceBox][data-price-box=product-id-<?= /* @escapeNotVerified */ $productId ?>]": {
+            "priceBox": {
+                "priceConfig": {
+                    "priceFormat": <?= /* @escapeNotVerified */ $block->getPriceFormatJson(); ?>,
+                    "prices": <?= /* @escapeNotVerified */ $block->getPricesJson(); ?>
+                }
+            }
+        }
+    }
+</script>

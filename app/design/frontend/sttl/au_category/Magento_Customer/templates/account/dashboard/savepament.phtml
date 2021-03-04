@@ -1,0 +1,368 @@
+<?php
+	/**
+		* Copyright © Magento, Inc. All rights reserved.
+		* See COPYING.txt for license details.
+	*/
+
+	// @codingStandardsIgnoreFile
+
+	/** @var \Magento\Customer\Block\Account\Dashboard\Info $block */
+
+	$eBizCharge = $this->helper('Sttl\Adaruniforms\Helper\Ebizcharge');
+	$helper = $this->helper('Sttl\Adaruniforms\Helper\Sap');
+
+	$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+	$customerSession = $objectManager->create('Magento\Customer\Model\Session');
+	$customer_number = $customerSession->getCustomer()->getData('customer_number');
+
+	$data = $helper->getCustomerDetails(["PaymentTerm"]);
+if(isset($data) && !isset($data['errors']))
+{
+	$search_query=array(
+	array(
+	'Field'=>'CustomerID',
+	'Type'=>'eq',
+	'Value'=>$customer_number)
+	);
+
+	if(isset($customer_number) && $customer_number != '')
+	{
+		$objCustomers = $eBizCharge->searchCustomerByParams($search_query,true,0,1);
+	}
+	$custNum = '';
+	if(isset($objCustomers->Customers) && count($objCustomers->Customers) > 0)
+	{
+		$objCustomer = $objCustomers->Customers;
+		$objCustomer = $objCustomer[0];
+		if (isset($objCustomer->CustNum)) {
+			$custNum = $objCustomer->CustNum;
+			//$customerSession->getCustomer()->setCustNum($custNum);
+		}
+	}
+
+	$saved_cards = (isset($objCustomer->PaymentMethods) && count($objCustomer->PaymentMethods) > 0) ? $objCustomer->PaymentMethods : array();
+?>
+<div class="block block-dashboard-info paymentBlock">
+    <div class="block-title collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree"><strong class="upperCaseText"><?= $block->escapeHtml(__('Payment Information')) ?></strong>
+	</div>
+    <div id="collapseThree" class="block-content collapse" aria-labelledby="headingOne">
+		<div class="box box-information paymentMethod-content">
+			<div class="box-content">
+				<div class="box-title1">
+					<?php if(isset($data[0]['PaymentTerm']) && $data[0]['PaymentTerm'] != "Credit Card Auto"){ ?>
+					<span class="title"> Payment Terms : </span> <span><?php echo $data[0]['PaymentTerm']; ?></span>
+					<p>Manage and add new payment information.</p>
+					<select class="paymentMethod">
+						<option>Please Select</option>
+						<?php
+							$i = 0;
+							foreach($saved_cards as $card)
+							{
+								$card_expiry = (isset($card->CardExpiration) && !empty($card->CardExpiration)) ? date("m/Y", strtotime($card->CardExpiration)) : NULL;
+							?>
+							<option value="<?php echo $card->MethodID;?>" attr-ccno = "<?php echo $card->CardNumber;?>" attr-ccexpiry = "<?php echo $card_expiry;?>" attr-cctype = "<?php echo $card->CardType;?>" <?php if($i==0) { ?>
+								selected
+								<?php }?>><?php echo $card->CardNumber;?></option>
+							<?php
+							$i++; } ?>
+					</select>
+				<?php } ?>
+				</div>
+
+				<div class="paymentAddress"></div>
+				<button id="add-payment" data-backdrop="false"  value="+ Add New Payment Method" data-toggle="modal" data-target="#customer-add-payment"  class="themeBtn mrgB20" style="height: 65px;">
+					<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"> <g> <g> <path d="M302.933,174.934H268.8c-2.355,0-4.267-1.911-4.267-4.267v-34.133c0-2.355-1.911-4.267-4.267-4.267h-8.533 c-2.355,0-4.267,1.911-4.267,4.267v34.133c0,2.355-1.911,4.267-4.267,4.267h-34.133c-2.355,0-4.267,1.911-4.267,4.267v8.533 c0,2.355,1.911,4.267,4.267,4.267H243.2c2.355,0,4.267,1.911,4.267,4.267V230.4c0,2.355,1.911,4.267,4.267,4.267h8.533 c2.355,0,4.267-1.911,4.267-4.267v-34.133c0-2.355,1.911-4.267,4.267-4.267h34.133c2.355,0,4.267-1.911,4.267-4.267V179.2 C307.2,176.845,305.289,174.934,302.933,174.934z" fill="#64c447"></path> </g> </g> <g> <g> <path d="M382.95,166.827c-7.194-57.054-53.265-103.117-110.31-110.31c-83.729-10.547-154.138,59.861-143.59,143.59 c7.194,57.054,53.257,103.117,110.31,110.31C323.089,320.973,393.506,250.556,382.95,166.827z M324.267,200.534 c0,4.71-3.823,8.533-8.533,8.533h-29.867c-2.355,0-4.267,1.911-4.267,4.267V243.2c0,4.71-3.823,8.533-8.533,8.533h-34.133 c-4.71,0-8.533-3.823-8.533-8.533v-29.867c0-2.355-1.911-4.267-4.267-4.267h-29.867c-4.71,0-8.533-3.823-8.533-8.533V166.4 c0-4.71,3.823-8.533,8.533-8.533h29.867c2.355,0,4.267-1.911,4.267-4.267v-29.867c0-4.71,3.823-8.533,8.533-8.533h34.133 c4.71,0,8.533,3.823,8.533,8.533V153.6c0,2.355,1.911,4.267,4.267,4.267h29.867c4.71,0,8.533,3.823,8.533,8.533V200.534z" fill="#0094d1"></path> </g> </g> <g> <g> <path d="M268.8,362.667h-59.733c-2.355,0-4.267,1.911-4.267,4.267v8.533c0,2.355,1.911,4.267,4.267,4.267H268.8 c2.355,0,4.267-1.911,4.267-4.267v-8.533C273.067,364.578,271.155,362.667,268.8,362.667z"></path> </g> </g> <g> <g> <path d="M132.267,362.667H72.533c-2.355,0-4.267,1.911-4.267,4.267v8.533c0,2.355,1.911,4.267,4.267,4.267h59.733 c2.355,0,4.267-1.911,4.267-4.267v-8.533C136.533,364.578,134.622,362.667,132.267,362.667z"></path> </g> </g> <g> <g> <path d="M426.667,345.6c-9.114,0-17.613,4.907-22.187,12.8c-1.655,2.884-4.762,4.463-7.868,4.25 c-2.876-0.017-5.897-1.485-7.509-4.258c-4.565-7.885-13.065-12.791-22.17-12.791c-14.114,0-25.6,11.486-25.6,25.6 s11.486,25.6,25.6,25.6c9.114,0,17.613-4.907,22.187-12.8c1.502-2.603,4.258-4.224,7.27-4.267c0.034,0,0.077,0,0.119,0 c3.055,0,6.451,1.613,7.987,4.258c4.557,7.902,13.056,12.809,22.17,12.809c14.114,0,25.6-11.486,25.6-25.6 S440.781,345.6,426.667,345.6z" fill="#c4724f"></path> </g> </g> <g> <g> <path d="M115.857,220.903c-2.876-10.684-4.557-28.885-4.864-41.847c-0.06-2.304-1.971-4.122-4.275-4.122H8.533 c-4.71,0-8.533,3.823-8.533,8.533V217.6c0,4.71,3.823,8.533,8.533,8.533h103.219C114.5,226.134,116.565,223.557,115.857,220.903z"></path> </g> </g> <g> <g> <path d="M121.19,115.2H25.6c-14.14,0-25.6,11.46-25.6,25.6v8.533c0,4.71,3.823,8.533,8.533,8.533H109.79 c2.014,0,3.703-1.434,4.113-3.405c2.372-11.597,6.11-22.699,11.068-33.126C126.327,118.477,124.356,115.2,121.19,115.2z"></path> </g> </g> <g> <g> <path d="M503.467,243.2H390.707c-1.63,0-3.089,0.947-3.789,2.415c-23.322,48.947-73.182,82.918-130.918,82.918 s-107.597-33.971-130.918-82.918c-0.7-1.468-2.159-2.415-3.789-2.415H8.533c-4.71,0-8.533,3.823-8.533,8.533v179.2 c0,14.14,11.46,25.6,25.6,25.6h460.8c14.14,0,25.6-11.46,27.6-25.6v-179.2C512,247.023,508.177,243.2,503.467,243.2z M153.6,388.267c0,4.71-3.823,8.533-8.533,8.533H59.733c-4.71,0-8.533-3.823-8.533-8.533v-34.133c0-4.71,3.823-8.533,8.533-8.533 h85.333c4.71,0,8.533,3.823,8.533,8.533V388.267z M290.133,388.267c0,4.71-3.823,8.533-8.533,8.533h-85.333 c-4.71,0-8.533-3.823-8.533-8.533v-34.133c0-4.71,3.823-8.533,8.533-8.533H281.6c4.71,0,8.533,3.823,8.533,8.533V388.267z M468.224,381.065c-2.825,12.51-11.563,23.253-23.185,28.672c-16.009,7.467-33.348,4.335-45.457-5.589 c-1.647-1.357-3.908-1.357-5.555,0c-12.109,9.933-29.449,13.056-45.457,5.589c-11.622-5.419-20.361-16.162-23.185-28.672 c-6.272-27.793,14.805-52.531,41.549-52.531c10.001,0,19.55,3.541,27.085,9.719c1.656,1.357,3.917,1.357,5.564,0 c7.535-6.178,17.084-9.719,27.085-9.719C453.41,328.534,474.487,353.272,468.224,381.065z" fill="#ec9400"></path> </g> </g> <g> <g> <path d="M486.4,115.2h-95.59c-3.166,0-5.137,3.277-3.78,6.135c4.958,10.419,8.695,21.53,11.068,33.126 c0.41,1.971,2.099,3.405,4.113,3.405H512V140.8C512,126.661,500.54,115.2,486.4,115.2z"></path> </g> </g> <g> <g> <path d="M504.467,174.934h-98.185c-2.304,0-4.207,1.818-4.267,4.122c-0.307,12.971-1.988,31.164-4.864,41.847 c-0.717,2.654,1.357,5.231,4.096,5.231h103.219c4.71,0,8.533-3.823,8.533-8.533v-34.133 C512,178.757,508.177,174.934,503.467,174.934z" fill="#1d1f72"></path> </g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> <g> </g> </svg>
+				</button>
+				<!-- <span class="paymentMethod-label">+ add New payment method</span>				 -->
+			</div>
+
+		</div>
+
+	</div>
+</div>
+<div class="modal fade block block-customer-add-payment comingSoon commonPopup1" id="customer-add-payment" tabindex="-1" role="dialog" aria-labelledby="addPaymentModal" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-body">
+				<div class="modalContainer block-content" aria-labelledby="block-customer-login-heading">
+					<div class="messages">
+						<div class="message message-error error">
+							<div></div>
+						</div>
+					</div>
+					<div class="quickViewCont">
+						<div class="container bg-primary p-2">
+
+							<div class="row">
+								<div class="col-md-12 text-center customer-edit-title">
+									<span class="popUpTitle"><?= $block->escapeHtml(__("Add Payment Method"));?></span>
+									<button type="button" data-dismiss="modal" class="close mfp-close-inside"><i class="fa fa-times"></i></button>
+								</div>
+							</div>
+						</div>
+						<div class="registrationPage comingSoonTxt" id="comingSoonForm">
+							<form class="form custom-customer-add-payment" action="<?= $block->escapeUrl($block->getUrl('customerlogin/ajax/addPayment')) ?>" method="post" id="customer-add-payment-validate" enctype="multipart/form-data" data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>" autocomplete="off" data-mage-init='{"validation": {"errorClass": "mage-error"}, "theAdarValidationMethod":{}}'>
+								<div class="response-msg"></div>
+								<?= $block->getBlockHtml('formkey') ?>
+								<div class="field field-name-fullname required">
+									<label class="label " for="fullname"><span><?= $block->escapeHtml(__('Choose One:')) ?></span></label>
+									<div class="control">
+										<div>
+											<input type="hidden" id="ebiz_customer_number" name="ebiz_customer_number" value="<?php echo $custNum;?>">
+											<input type="radio" id="card_type_visa" name="card_type" disabled ="true" value="VI" class="input-text required-entry valid" data-validate="{required:true}" aria-required="true">
+											<span><img src= "<?php echo $this->getViewFileUrl('images/visa-card.jpg');?>" alt="Visa"></span>
+											<input type="radio" id="card_type_mc" name="card_type" value="MC"  disabled ="true" class="input-text required-entry valid" data-validate="{required:true}" aria-required="true">
+											<span><img src= "<?php echo $this->getViewFileUrl('images/master-card.jpg');?>" alt="Master Card"></span>
+											<input type="radio" id="card_type_dc" name="card_type" value="DI"  disabled ="true" class="input-text required-entry valid" data-validate="{required:true}" aria-required="true">
+											<span><img src= "<?php echo $this->getViewFileUrl('images/discover.jpg');?>" alt="Discover"></span>
+											<input type="radio" id="card_type_ae" name="card_type" value="AE"  disabled ="true" class="input-text required-entry valid" data-validate="{required:true}" aria-required="true">
+											<span><img src= "<?php echo $this->getViewFileUrl('images/american-express.jpg');?>" alt="Amrican Express"></span>
+										</div>
+									</div>
+								</div>
+								<div class="field field-name-fullname required">
+									<label class="label " for="fullname"><span><?= $block->escapeHtml(__('Full Name')) ?></span><span class="reqField">*</span></label>
+									<div class="control">
+										<input type="text" autocomplete="off" id="fullname" name="fullname" value="" title="Full Name" class="input-text required-entry validate-no-html-tags validate-alphanum-with-spaces valid" data-validate="{required:true}" aria-required="true" placeholder="Full Name">
+									</div>
+								</div>
+								<div class="field field-name-card_no required">
+									<label class="label " for="card_no"><span><?= $block->escapeHtml(__('Credit Card Number')) ?></span><span class="reqField">*</span></label>
+									<div class="control">
+										<input type="text" autocomplete="off" id="card_no" name="card_no" title="Credit Card Number" class="input-text valid required-entry  validate-cc-number validate-no-html-tags" data-validate="{'required':true, 'validate-cc-number' : true, 'validate-number':true}" maxlength="19"  aria-required="true" placeholder="Credit Card Number">
+									</div>
+								</div>
+								<div class="row">
+									<div class="field field-name-security-code required col-md-6">
+										<label class="label " for="security_code"><span><?= $block->escapeHtml(__('Security Code')) ?></span><span class="reqField">*</span></label>
+										<div class="control">
+											<input type="text" autocomplete="off" id="security_code" name="security_code" value="" title="Security Code" class="input-text required-entry valid adar_cc_cvv" data-validate="{required:true}" aria-required="true" placeholder="Security Code">
+										</div>
+									</div>
+									<div class="field field-name-expiration-date col-md-6">
+										<label class="label " for="expiration_date"><span><?= $block->escapeHtml(__('Expiration Date')) ?></span><span class="reqField">*</span></label>
+										<div class="control">
+											<input type="text" autocomplete="off" id="expiration_date" name="expiration_date" value="" title="Expiration Date" class="input-text validate-no-html-tags validate-cc-exp adar_cc_exp valid" maxlength="5" data-validate="{required:true}" aria-required="true" placeholder="MM/YY">
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="field field-name-security-code required col-md-6">
+										<div class="control">
+											<input type="checkbox" id="cc_default" name="cc_default" value="1" class="input-text">&nbsp;<label class="label"><span><?= $block->escapeHtml(__('Default')) ?></span></label>
+										</div>
+									</div>
+								</div>
+								<?php /* ?><div class="field"><h4><?= $block->escapeHtml(__('Billing Address')) ?></h4></div>
+								<div class="field field-name-address1">
+									<label class="label " for="street"><span><?= $block->escapeHtml(__('Street')) ?></span></label>
+									<div class="control">
+										<input type="text" id="street" name="street" value="" title="Street" class="input-text" placeholder="Street">
+									</div>
+								</div>
+								<?php /* ?>
+									<div class="field field-name-address2">
+									<label class="label " for="address2"><span><?= $block->escapeHtml(__('Address Line 2')) ?></span></label>
+									<div class="control">
+									<input type="text" id="address2" name="address2" value="" title="Address Line 2" class="input-text" placeholder="Address Line 2">
+									</div>
+									</div>
+									<div class="row">
+									<div class="field field-name-city required col-md-6">
+									<label class="label " for="city"><span><?= $block->escapeHtml(__('City')) ?></span><span class="reqField">*</span></label>
+									<div class="control">
+									<input type="text" id="city" name="city" value="" title="City" class="input-text required-entry validate-no-html-tags validate-alphanum-with-spaces valid" data-validate="{required:true}" aria-required="true" placeholder="City">
+									</div>
+									</div>
+									<div class="field field-name-state required col-md-6">
+									<label class="label " for="state"><span><?= $block->escapeHtml(__('State')) ?><span class="reqField">*</span></span></label>
+									<div class="control">
+									<input type="text" id="state" name="state" value="" title="State" class="input-text required-entry validate-no-html-tags validate-alphanum-with-spaces valid" data-validate="{required:true}" aria-required="true" placeholder="State">
+									</div>
+									</div>
+									</div>
+
+								<div class="row">
+									<div class="field field-name-zipcode required col-md-6">
+										<label class="label " for="zipcode"><span><?= $block->escapeHtml(__('Zip Code')) ?></span><span class="reqField">*</span></label>
+										<div class="control">
+											<input type="text" id="zipcode" name="zipcode" value="" title="Zip Code" class="input-text required-entry validate-no-html-tags validate-zip valid" data-validate="{required:true}" aria-required="true" placeholder="Zip Code">
+										</div>
+									</div>
+
+										<div class="field field-name-phoneno col-md-6">
+										<label class="label " for="phoneno"><span><?= $block->escapeHtml(__('Phone Number')) ?></span></label>
+										<div class="control">
+										<input type="text" id="phoneno" name="phoneno" value="" title="Phone Number" class="input-text valid"  placeholder="Phone Number">
+										</div>
+										</div>
+
+								</div>
+								<?php */?>
+								<?= $block->getChildHtml('form_additional_info') ?>
+								<div class="actions-toolbar mt-2">
+									<div class="text-center">
+										<button type="submit" class="themeBtn action save" title="<?= $block->escapeHtmlAttr(__('Submit')) ?>"><span><?= $block->escapeHtml(__('Submit')) ?></span></button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+    require(['jquery'], function($) {
+		var changeText = "<?php echo __('Please Wait...') ?>";
+		var changeSubmit = "<?php echo __('Submit') ?>";
+		var findButton = $('#customer-add-payment-validate').find('button[type=submit]'),
+		form = $('#customer-add-payment-validate');
+		form.submit(function (e) {
+			if (form.validation('isValid')) {
+				findButton.text(changeText);
+				findButton.attr("disabled", "disabled");
+				var url = form.attr('action');
+				var formData = getFormData($(this));
+				e.preventDefault();
+				$.ajax({
+					type: "POST",
+					url: url,
+					showLoader: true,
+					data: formData,
+					success: function(data) {
+						showResponse(data);
+						if(data.error) {
+                            findButton.text(changeSubmit);
+                            findButton.removeAttr('disabled');
+							}  else {
+                            setTimeout(function(){ location.reload(); }, 3000);
+						}
+					}
+				});
+			}
+		});
+
+		function getFormData(formElem){
+			var unindexed_array = formElem.serializeArray();
+			var indexed_array = {};
+
+			jQuery.map(unindexed_array, function(n, i){
+				indexed_array[n['name']] = n['value'];
+			});
+
+			return indexed_array;
+		}
+
+		function showResponse(data) {
+			if(data.error) {
+                $('.block-customer-add-payment .response-msg').html("<div class='error'>"+data.error+"</div>");
+				} else {
+                $('.block-customer-add-payment .response-msg').html("<div class='success'>You saved the payment information.</div>");
+			}
+			setTimeout(function(){ $('.block-customer-add-payment .response-msg').html(null); }, 5000);
+		}
+
+		$(function() {
+			$('.modal.block-customer-add-payment').on('hidden.bs.modal', function(){
+				$('#customer-add-payment-validate').find('input[type="text"]').val('');
+
+				var validator = $("#customer-add-payment-validate").validate();
+				validator.resetForm();
+
+				$("input[name='card_type']").removeClass("selected_cc").prop('checked', false).attr("disabled", true).next('span').removeClass("img-container");
+
+			});
+
+			$(".paymentMethod").change();
+		});
+
+
+		$(document).on("change", ".paymentMethod", function(){
+			var Objsel = $(this).find('option:selected');
+
+			var cc_no = $(Objsel).attr("attr-ccno"),
+			cc_expiry = $(Objsel).attr("attr-ccexpiry"),
+			cc_type = $(Objsel).attr("attr-cctype"),
+			cc_details = [];
+
+			if (typeof cc_type !== typeof undefined && cc_type !== false && cc_type.trim() != '') {
+				var img = '';
+				if (cc_type == "V") {
+					cc_details.push("<img src='<?php echo $this->getViewFileUrl('images/visa-card.jpg');?>' >");
+				}
+				if (cc_type == "M") {
+					cc_details.push("<img src='<?php echo $this->getViewFileUrl('images/master-card.jpg');?>' >");
+				}
+				if (cc_type == "A") {
+					cc_details.push("<img src='<?php echo $this->getViewFileUrl('images/american-express.jpg');?>' >");
+				}
+				if (cc_type == "DS") {
+					cc_details.push("<img src='<?php echo $this->getViewFileUrl('images/discover.jpg');?>' >");
+				}
+			}
+
+			if (typeof cc_no !== typeof undefined && cc_no !== false && cc_no.trim() != '') {
+				cc_details.push('<span>'+cc_no+'</span>');
+			}
+
+			if (typeof cc_expiry !== typeof undefined && cc_expiry !== false && cc_expiry.trim() != '') {
+				cc_details.push('<span>'+cc_expiry+'</span>');
+			}
+
+			if (cc_details.length) {
+				$(".paymentAddress").html(cc_details.join(" "));
+			}
+			else{
+			$(".paymentAddress").html("");
+			}
+		});
+
+		$(document).on("keyup", "#card_no", function(){
+			var value = $(this).val();
+			var ctype = '';
+			// visa
+			var re = new RegExp("^4");
+			if (value.match(re) != null)
+				ctype =  "VI";
+			if (/^(5[1-5][0-9]{14}|2(22[1-9][0-9]{12}|2[3-9][0-9]{13}|[3-6][0-9]{14}|7[0-1][0-9]{13}|720[0-9]{12}))$/.test(value))
+				ctype =  "MC";
+			// AMEX
+			re = new RegExp("^3[47]");
+			if (value.match(re) != null)
+				ctype = "AE";
+
+			// Discover
+			re = new RegExp("^(6011|622(12[6-9]|1[3-9][0-9]|[2-8][0-9]{2}|9[0-1][0-9]|92[0-5]|64[4-9])|65)");
+			if (value.match(re) != null)
+				ctype = "DI";
+			$("input[name='card_type']").removeClass("selected_cc").prop('checked', false).attr("disabled", true).next('span').removeClass("img-container selected_cc");
+			if(value != ''){
+				$("input[name='card_type'][value='"+ctype+"']").prop('disabled', false).prop('checked', true).addClass("selected_cc").next('span').addClass("img-container");
+			}
+
+		});
+
+		$(document).on("keyup", "#expiration_date", function(){
+			var value = $(this).val().replace("/","");
+			var str = '';
+			for (var i=0,ic=value.length;i<ic;i++) {
+				str += value[i];
+				if (str.length == 2)
+					str += "/";
+			}
+			$(this).val(str);
+		});
+	});
+
+</script>
+<?php
+
+}
+else if($data['type'] != 'server')
+{
+	echo $data['message'];
+}
+?>

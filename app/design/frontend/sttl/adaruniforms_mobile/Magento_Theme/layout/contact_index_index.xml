@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <title>Contact Us</title>
+    </head>
+    <body>
+        <referenceContainer name="columns" htmlClass="columns container"/>
+        <referenceContainer name="main" htmlClass="column main"/>
+		
+		<referenceContainer name="page.main.title" remove="true"/>
+		
+		<referenceContainer name="main">
+			<block class="Sttl\Adaruniforms\Block\Store" name="ContactFooter" after="-" template="Magento_Contact::store_address.phtml" />
+		</referenceContainer>	
+		<referenceContainer name="page.wrapper">
+			<container name="page.wrapper.innerBanner" htmlTag="div" htmlClass="innerBanner" before="main.content">
+				<block class="Magento\Cms\Block\Block" name="ContactusBanner" after="page.main.title">
+					<arguments>
+						<argument name="block_id" xsi:type="string">contact_us_banner</argument>
+					</arguments>
+				</block>
+			</container>
+		</referenceContainer>
+    </body>
+</page>

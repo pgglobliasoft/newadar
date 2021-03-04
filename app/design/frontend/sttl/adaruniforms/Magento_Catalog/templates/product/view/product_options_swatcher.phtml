@@ -1,0 +1,372 @@
+f<?php
+    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+    $customerSession = $objectManager->get('Magento\Customer\Model\Session');
+  	$parent_style = $block->getParentStyle();
+  	$this->product = $objectManager->get('\Magento\Catalog\Model\Product');
+  	$getProductId = $this->product->getIdBySku($parent_style);
+	$product = $this->product->load($getProductId);
+
+if ($customerSession->isLoggedIn()) : ?>
+<?php $priceHelper = $objectManager->create('Magento\Framework\Pricing\Helper\Data');
+	$parent_style = $product->getSku();
+	$collcationValue =  $product->getResource()->getAttribute('collecttion')->getFrontend()->getValue($product);
+	$style_status = "";
+	//$parent_color_data = $block->getColorData($parent_style);
+	$parent_color_data = $block->getParentColorData();
+
+if(isset($parent_color_data) && isset($parent_color_data['errors']))
+{
+
+?>
+<?php
+}
+else
+{
+	if(count($parent_color_data > 0)){
+		$style_status = $parent_color_data[0]['StyleStatus'];
+	}
+	//echo "<pre>";print_R($parent_color_data);exit;
+?>
+
+                     
+                        <?php
+							$getponumber = $block->getcustomponumber($customerSession->getCustomerId());
+						?>
+                      
+                      
+                        <?php
+                        $main_color_array = array();
+			            $main_color_html = '<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">';
+			            $main_color_i = $fashionColor_i = 0;
+			            $main_color_class = '';
+			            $main_size_char_html = '<div class="tab-content order-table" id="nav-tabContent"> ';
+			            $colorChange = '';
+			            $size_char_i = 0;
+			            $coreColor = '';
+                  $fashionColor = '';
+			            $fashionColorName = '';
+			            $first_option_color = '';
+                  $defaultcoreselectedcolor = "";
+                  $defaultfashionselectedcolor = '';
+                        $main_color_array = array();
+                        $eta_date = array();
+                         echo "<div id='".$parent_style."' class='product_options'><div id='overlay' style='display:none'></div>";
+
+
+            foreach ($parent_color_data as $key => $color_data) {
+                if ($color_data['Color'] != '' && $color_data['ColorSwatch'] != '') {
+                  $eta_row_avail_to_show = false;
+                    if (!in_array($color_data['ColorCode'], $main_color_array)) {
+                        if ($main_color_i != 0) {
+                            $main_color_class = '';
+                            //$main_color_aria = '';
+                            $main_color_aria = 'aria-selected="true"';
+                        }
+                        if ($main_color_i == 0) {
+                            $main_color_class = 'active';
+                            $main_color_aria = 'aria-selected="false"';
+                        }
+                        if($color_data['ColorStatus'] === 'Core')
+                        {
+                            if($main_color_i == 0){
+                              $defaultcoreselectedcolor = $color_data['Color'];
+                            }
+                            $coreColor .= '<div id="core" class="' . $main_color_class . ' swatch-option image "  data-toggle="tab" href="#' . $color_data['ColorCode'] . '" option-color-code ="' . preg_replace('/[^a-zA-Z0-9_ %\[\]\.\(\)%&-]/s', '', $color_data['ColorCode']) . '" option-color-status = "' . $color_data['ColorStatus'] . '" option-style-status = "' . $color_data['StyleStatus'] . '" tabindex="' . $key . '" option-id="' . $color_data['Style'] . '" option-core-color-name = "' . $color_data['Color'] . '" option-tooltip-thumb="' . strtolower($color_data['ColorSwatch']) . '" option-tooltip-value="' . strtolower($color_data['ColorSwatch']) . '" role="tab" aria-controls="' . $color_data['ColorCode'] . '" ' . $main_color_aria . ' style="background: url(' . strtolower($color_data['ColorSwatch']) . ') no-repeat center; background-size: 650%;"><span class="swatch_img"><input name="style" type="hidden" value ="' . $parent_style . '"><input name="qty_change_' . $color_data['ColorCode'] . '"class="qty_change" id="qty_change_' . $color_data['ColorCode'] . '" type="hidden" value ="0"> </span><div class="bottom-tooltip-active"><p class="color-active">'.$color_data['Color'].'</p></div></div>';
+                        }else if($color_data['ColorStatus'] !== '' ){
+
+                            if($main_color_i == 0){
+                              $defaultfashionselectedcolor = $color_data['Color'];
+                            }
+                            if ($fashionColor_i == 0) {
+                                $fashionColorName = $color_data['Color'];
+                                $first_option_color = $color_data['ColorStatus'];
+                            }
+                            $fashionColor .= '<div id="fashion" class="' . $main_color_class . ' swatch-option image "  data-toggle="tab" href="#' . $color_data['ColorCode'] . '" option-color-code ="' . preg_replace('/[^a-zA-Z0-9_ %\[\]\.\(\)%&-]/s', '', $color_data['ColorCode']) . '" option-color-status = "' . $color_data['ColorStatus'] . '" option-style-status = "' . $color_data['StyleStatus'] . '" tabindex="' . $key . '" option-id="' . $color_data['Style'] . '" option-fashion-color-name = "' . $color_data['Color'] . '" option-tooltip-thumb="' . strtolower($color_data['ColorSwatch']) . '" option-tooltip-value="' . strtolower($color_data['ColorSwatch']) . '" role="tab" aria-controls="' . $color_data['ColorCode'] . '" ' . $main_color_aria . ' style="background: url(' . strtolower($color_data['ColorSwatch']) . ') no-repeat center; background-size: 650%;"><span class="swatch_img"><input name="style" type="hidden" value ="' . $parent_style . '"><input name="qty_change_' . $color_data['ColorCode'] . '"class="qty_change" id="qty_change_' . $color_data['ColorCode'] . '" type="hidden" value ="0"> </span><div class="bottom-tooltip-active"><p class="color-active">'.$color_data['Color'].'</p></div></div>';
+                            $fashionColor_i++;
+                        }
+                        $main_color_i++;
+                        $main_color_array[] = $color_data['ColorCode'];
+                        $activeclass = '';
+                        $filterBy = $color_data['ColorCode'];
+                        $colorcode_array = array_filter($parent_color_data, function ($var) use ($filterBy) {
+                            return ($var['ColorCode'] == $filterBy);
+                        });
+                        $filterByEta = '';
+                        $eta_array = array_filter($colorcode_array, function ($var) use ($filterByEta) {
+                            return (!empty((int)$var["ETA"]));
+
+                        });
+                        if ($size_char_i == 0) {
+                            $activeclass = 'active';
+                        }
+                         $main_size_char_html .= '<div class="tab-pane fade show ' . $activeclass . '" id="' . $color_data['ColorCode'] . '" role="tabpanel">';
+                        $tr_one = '<tr><td align="right">Size</td>';
+                        $tr_two = '<tr><td align="right">Price</td>';
+                        $tr_three = '<tr><td align="right">In Stock</td>';
+                        // if (!empty($eta_array)) {
+
+                           $tr_three1 = '<tr><td align="right" class="order_head_eta_title" width="75"><p class="head_restockdate_lable_p">Restock Date</p><p class="head_restockqty_lable_p">Restock QTY.</p></td>';
+                        // }
+                        $tr_four = '<tr><td align="right">Quantity</td>';
+                        $tr_five = '<tr><td align="right">Total</td>';
+                        foreach ($colorcode_array as $key => $value) {
+                              $qty = (isset($value["ActualQty"]) && $value["ActualQty"] != '') ? $value["ActualQty"] : 0.00;
+                              $show_qty = (isset($value["QtyAvailable"]) && $value["QtyAvailable"] != '') ? $value["QtyAvailable"] : 0.00;
+                              $tr_one .= '<td align="center">' . $value['Size'] . '</td>';
+                              if ($value["DisPrice"] < $value["UnitPrice"]) {
+                                  $tr_two .= '<td align="center" class="disprice"><span>' . $priceHelper->currency($value["DisPrice"], true, false) . '</span><span class="mainprice">'.$priceHelper->currency($value["UnitPrice"], true, false) . '</span> </td>';
+                              } else {
+                                  $tr_two .= '<td align="center">' . $priceHelper->currency($value["UnitPrice"], true, false) . '</td>';
+                              }
+                              $tr_three .= '<td align="center">' . floatval($show_qty) . ((floatval($show_qty) >= 100) ? '+' : '') . '</td>';
+
+                              // $eta_date = array();
+                                  $eta_date = array(
+                                "ETA1" => array(
+                                      "Date" => date("m-d-y", strtotime($value["ETA1"])),
+                                      "Qty" => $value["EtaQty1"],
+                                  ),
+                                "ETA2" => array(
+                                      "Date" => date("m-d-y", strtotime($value["ETA2"])),
+                                      "Qty" => $value["EtaQty2"],
+                                  ),
+                                "ETA3" => array(
+                                      "Date" => date("m-d-y", strtotime($value["ETA3"])),
+                                      "Qty" => $value["EtaQty3"],
+                                  )
+                              );
+
+                                date_default_timezone_set("America/New_York");
+                              $currentdate = date('Y-m-d', strtotime('-7 days'));
+
+                              if (!empty($eta_date)) {
+                                $count = 1;
+                                $tag_count = 0;
+                                $eta_count_top = 0;
+                                $eta_class = "eta-tooltip";
+                                $eta_avail_to_show = false;
+                                  foreach ($eta_date as $keys => $datas) {
+                                    if($eta_date[$keys]["Date"] > $currentdate && !empty((int)$datas["Date"]) && $eta_date[$keys]["Qty"] > 0 && $eta_avail_to_show == false){
+                                      $eta_avail_to_show = true;
+                                      $eta_row_avail_to_show = true;
+                                      // echo $eta_avail_to_show;
+                                    }
+                                  }
+                                  if($eta_avail_to_show){
+                                    $tr_three1 .= '<td class="order_head_eta_data" align="center">';
+                                    foreach ($eta_date as $key => $date_eta) {
+                                        if($eta_date[$key]["Date"] > $currentdate && !empty((int)$date_eta["Date"]) && $eta_date[$key]["Qty"] > 0){
+                                            // $tr_one .= '<p class="eta-date-list">'.$count.'. '.$eta_date[$key]["Date"].' - '.$eta_date[$key]["Qty"] .'</p>';
+                                            $eta_qty_show = $eta_date[$key]["Qty"];
+
+                                            if($eta_qty_show > 500){
+                                              $eta_qty_show = "500+";
+                                            }
+
+                                            $tr_three1 .= '<div class="eta_date_qty_cont">';
+                                            $tr_three1 .= '<p class="eta_date_product_option_span">'.$eta_date[$key]["Date"].'</p>';
+                                            $tr_three1 .= '<p class="eta_qty_product_option_span">'.$eta_qty_show.'</p></div>';
+                                            $count++;
+                                        }
+                                    }
+                                    $tr_three1 .= '</td>';
+                                  }else{
+                                    $tr_three1 .= '<td align="center"></td>';
+                                  }
+
+                              }
+                              $tr_four .= '<td align="center" class="qtyTd">
+                          <input name="qty[' . $value['Color'] . '][' . $value['Size'] . ']" type="text" pattern="[0-9]" min="1" class="checkvalue" autocomplete="off" max="' . floatval($qty) . '" ' . (($qty <= 0) ? '"' : "") . ' >
+                          <span class="maxqtyvaldi"></span>
+                          <input name="showprice[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . floatval($value["DisPrice"]) . '">
+                          <input name="selectcolor" type="hidden" value ="' . $value['Color'] . '">
+                          <input name="selectsize" type="hidden" value ="' . $value['Size'] . '">
+                          <input name="itemscode[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . $value['ItemCode'] . '">
+                          <input name="colorcode[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . $value['ColorCode'] . '">
+                          <input name="mainprice[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . floatval($value["UnitPrice"]) . '">
+                          <input name="DiscountPer[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . floatval($value["DisPercent"]) . '">
+                          <input name="DiscountPrice[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value ="' . floatval($value["DisPrice"]) . '">
+                          </td>';
+                              $tr_five .= '<td align="center" class="total"><input class="unittotal" name="inpprice[' . $value['Color'] . '][' . $value['Size'] . ']" type="hidden" value =""><span class="showprice"></span></td>';
+                          }
+                        $tr_one .= '</tr>';
+                        $tr_two .= '</tr>';
+                        $tr_three .= '</tr>';
+                        if ($eta_row_avail_to_show) {
+
+                            $tr_three1 .= '</tr>';
+                        }
+                        $tr_four .= '</tr>';
+                        $tr_five .= '</tr>';
+                        $main_size_char_html .= "<div class='colorContainer'><table class='table table-bordered table-responsive'>";
+                        $main_size_char_html .= $tr_one;
+                        $main_size_char_html .= $tr_two;
+                        $main_size_char_html .= $tr_three;
+                        if ($eta_row_avail_to_show) {
+                            $main_size_char_html .= $tr_three1;
+                        }
+                        $main_size_char_html .= $tr_four;
+                        $main_size_char_html .= $tr_five;
+
+                        $main_size_char_html .= '</table><div  class="cf viewpouplink"><a href="#" class="saveChng">Add/Update P.O.</a><a href="#" class="discardChng" >Discard Changes</a><input name="submitcolor" type="hidden" value ="'.$value['Color'].'"><input id="closepopup" name="closepopup" type="hidden" value =""></div></div></div>';
+
+
+
+                        $size_char_i++;
+                    } else { }
+                }
+            }
+
+
+            if($coreColor != '' || $fashionColor != ''){
+              $main_color_html .= '<div class="swtach">';
+            }
+            if($coreColor != '') {$main_color_html .='
+              <div class="customorder-color core-color-section">
+                  <div id="coreClass" class="colorImage active">
+                      <span>Core Colors: </span>
+
+                  </div>
+                  <div class="swatch-color-container">'.$coreColor.'</div>
+              </div>';}
+            if($fashionColor != '') {$main_color_html .= '
+              <div class="customorder-color fashion-color-section">
+                  <div id="fashionClass" class="colorImage">
+                      <span>Fashion Colors:</span>
+
+                  </div>
+                  <div class="swatch-color-container">'.$fashionColor.'</div>
+              </div>';}
+            $main_color_html .= '<div class="colorstatus"><span id="colorstatus">Selected Color Status : </span><span id="Status">'.$color_data['ColorStatus'].'</span></div></div>';
+            if($coreColor === '' && $fashionColor === '' )
+            {
+                $main_color_html .= '<span class="style-notfound custom-error message-error error">Item not found.</span>';
+            }
+            echo $main_color_html;
+            echo "</div>";
+            echo $main_size_char_html;
+
+
+
+                            foreach($parent_color_data as $key => $values)
+                            {
+                                if($values['Color'] != '' && $values['ColorSwatch'] != '')
+                                {
+                                	if(!in_array($values['ColorCode'], $main_color_array))
+								{
+
+									echo "<div id='".$values['Style']."_".str_replace("/", "", $values['ColorCode'])."' class='collapseContainer cart-popup'>";
+
+									echo '<a href="#'.str_replace("/", "", $values['ColorCode']).'" data-toggle="collapse" class="collapsed"><span class="swatch_img"><input name="style" type="hidden" value ="'.$parent_style.'"><input name="qty_change_'.str_replace("/", "", $values['ColorCode']).'"  class="qty_change" id="qty_change_'.str_replace("/", "", $values['ColorCode']).'" type="hidden" value ="0">';
+									if (!empty($values['ColorSwatch']))
+
+									echo '<img src="'.strtolower($values['ColorSwatch']).'" ></span>&nbsp;&nbsp;';
+
+									echo $values['Color'].' / '.$values['ColorStatus'].'</a>';
+									$main_color_array[] = $values['ColorCode'];
+									$filterBy = $values['ColorCode'];
+									$colorcode_array = array_filter($parent_color_data, function ($var) use ($filterBy) {
+			    						return ($var['ColorCode'] == $filterBy);
+									});
+
+									echo "<div id='".str_replace("/", "", $values['ColorCode'])."' class='collapse'>";
+									$tr_one = '<tr><td align="right">Size</td>';
+									$tr_two = '<tr><td align="right">Price</td>';
+									$tr_three = '<tr><td align="right">In Stock</td>';
+									//$etacheck = $block->getchecketa($values['Style'],$values['ColorCode']);
+									$filterByEta = '';
+									// $eta_array = array_filter($colorcode_array, function ($var) use ($filterByEta) {
+									// 		return ($var['ETA'] != '');
+									// 	});
+									$eta_array = array_filter($colorcode_array, function ($var) use ($filterByEta) {
+			                            return (!empty((int)$var["ETA"]));
+
+			                        });
+									// if(!empty($eta_array))
+									// {
+
+										$tr_three1 = '<tr class=""><td align="right" width="75">Restock Date</td>';
+									// }
+
+									$tr_four = '<tr><td align="right">Quantity</td>';
+									$tr_five = '<tr><td align="right">Total</td>';
+
+									//$parent_color_data = $block->DatabyColor($values['Style'],$values['ColorCode']);
+
+									$qty = 0.00;
+									foreach ($colorcode_array as $key => $value)
+									{
+										$qty = (isset($value["ActualQty"]) && $value["ActualQty"] != '') ? $value["ActualQty"] : 0.00;
+										$show_qty = (isset($value["QtyAvailable"]) && $value["QtyAvailable"] != '') ? $value["QtyAvailable"] : 0.00;
+
+										//echo "<pre>";print_R($value);
+										// if(floatval($value["QtyAvailable"]) > 0)
+										// {
+										$tr_one .= '<td align="center">'.$value['Size'].'</td>';
+										if($value["UnitPrice"] > $value["DisPrice"])
+										{
+											$tr_two .= '<td align="center" class="disprice aaa"><span>'.$priceHelper->currency($value["DisPrice"], true, false).'</span> <span class="mainprice">'.$priceHelper->currency($value["UnitPrice"], true, false).'</span></td>';
+
+										}else{
+											$tr_two .= '<td align="center">'.$priceHelper->currency($value["UnitPrice"], true, false).'</td>';
+
+										}
+										$tr_three .= '<td align="center">'.floatval($show_qty).((floatval($show_qty) >= 100) ? '+' : '').'</td>';
+										 if (!empty($eta_array)) {
+			                                if (empty((int)$value["ETA"])) {
+			                                    $tr_three1 .= '<td align="center"></td>';
+			                                } else {
+			                                    $tr_three1 .= '<td align="center">' . date("m-d-y", strtotime($value["ETA"])) . '</td>';
+			                                }
+			                            }
+										$tr_four .= '<td align="center" class="qtyTd">
+										<input name="qty['.$value['Color'].']['.$value['Size'].']" type="text" pattern="[0-9]" min="1" class="checkvalue" autocomplete="off" max="'.floatval($qty).'" '.(($qty <= 0) ? '"' : "" ).' >
+										<span class="maxqtyvaldi"></span>
+										<input name="showprice['.$value['Color'].']['.$value['Size'].']" type="hidden" value ="'.floatval($value["DisPrice"]).'">
+										<input name="selectcolor" type="hidden" value ="'.$value['Color'].'">
+										<input name="selectsize" type="hidden" value ="'.$value['Size'].'">
+										<input name="itemscode['.$value['Color'].']['.$value['Size'].']" type="hidden" value ="'.$value['ItemCode'].'">
+										<input name="colorcode['.$value['Color'].']['.$value['Size'].']" type="hidden" value ="'.$value['ColorCode'].'">
+										<input name="mainprice['.$value['Color'].']['.$value['Size'].']" type="hidden" value ="'.floatval($value["UnitPrice"]).'">
+										<input name="DiscountPer['.$value['Color'].']['.$value['Size'].']" type="hidden" value ="'.floatval($value["DisPercent"]).'">
+										<input name="DiscountPrice['.$value['Color'].']['.$value['Size'].']" type="hidden" value ="'.floatval($value["DisPrice"]).'">
+										</td>';
+										$tr_five .= '<td align="center" class="total"><input class="unittotal" name="inpprice['.$value['Color'].']['.$value['Size'].']" type="hidden" value =""><span class="showprice"></span></td>';
+										//  }
+									}
+									$tr_one .= '</tr>';
+									$tr_two .= '</tr>';
+									$tr_three .= '</tr>';
+									if(!empty($eta_array))
+									{
+										$tr_three1.= '</tr>';
+									}
+
+									$tr_four .= '</tr>';
+									$tr_five .= '</tr>';
+									echo "<div class='colorContainer'><table class='table table-bordered table-responsive'>";
+									echo $tr_one;
+									echo $tr_two;
+									echo $tr_three;
+									if(!empty($eta_array))
+									{
+										echo $tr_three1;
+									}
+
+									echo $tr_four;
+									echo $tr_five;
+									echo '</table><div  class="cf viewpouplink"><a href="#" class="saveChng">Add/Update P.O.</a><a href="#" class="discardChng" >Discard Changes</a><input name="submitcolor" type="hidden" value ="'.$value['Color'].'"><input id="closepopup" name="closepopup" type="hidden" value =""></div></div>';
+									echo "</div>";
+									echo "</div>";
+								}
+								}
+							}
+                            echo "</div>";
+                            echo "<div class='container bg-light p-2  bottomBtn'><a class='btn-primary float-right' id='chekout'><strong>CHECKOUT</strong> : <span class='grandtotal'>$0.00</span><input type='hidden' id='hi_grandtotal' name='hi_grandtotal' value=''><input type='hidden' id='activetab_id' name='activetab_id' value=''><input type='hidden' id='chekouthidden' name='chekouthidden' value=''></a></div>"
+
+						?>
+
+	<?php
+		}
+		endif;
+	?>

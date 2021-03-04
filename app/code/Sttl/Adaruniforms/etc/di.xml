@@ -1,0 +1,5 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Magento\Customer\Controller\Account\CreatePost" type="Sttl\Adaruniforms\Controller\Account\Sttlcreatepost" />
+    <!-- <preference for="Magento\Customer\Controller\Account\Index" type="Sttl\Adaruniforms\Controller\Account\Index" /> -->
+    <!-- <preference for="Magento\Catalog\Controller\Product\View" type="Sttl\Adaruniforms\Controller\Index\View" /> -->
+</config>

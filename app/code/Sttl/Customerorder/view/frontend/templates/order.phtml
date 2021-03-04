@@ -1,0 +1,240 @@
+<div id="custom-popup-modal" class="form.popup-login-form" style="display: none;">     
+    <button class="action-close" data-role="closeBtn" type="button"><span>Close</span></button>
+    <h4>For your connivence we have made some updates to this page.</h4>
+    <ol>
+        <li>To edit an order click on the pencil icon <span class="fa fa-pencil" style="font-size: 12px" ></span> and you will be redirected to the place an order page and will be able to edit your order as usual. </li>
+        <li>To checkout just click on any draft order row and you will be redirected to the checkout page.</li>                            
+    </ol>
+    <p>Hope you find them useful!</p>   
+</div>
+<?php 
+	$q = @$block->getRequest()->getParam('q');
+	$po_number = @$block->getRequest()->getParam('po_number');
+	$order_stats = @$block->getRequest()->getParam('order_stats');
+	$status = ($q == 'd') ? 'Draft' : $order_stats;
+	$orders = $block->getALLOrdersList($status, $po_number,$q);
+	 $getordercount = $block->getordercount();
+
+	// echo '<pre>'; print_r($orders); die();
+	
+	$page_title = ($q == 'd') ? 'Purchase Order Drafts' : 'Order Status';
+	// $back_redirect = $this->getBaseUrl()."customerorder/customer/index";
+	$back_redirect = "0";
+	if($q == 'd'){
+		$back_redirect = "1";
+	}
+
+	?>
+	<div class="accountPageContainer">
+		<h1 class="page-title"><?php echo $page_title;?> <a href="<?php echo $this->getBaseUrl()."customerorder/customer/neworder";; ?>" class="themeBtn alignRight">Place New Order</a></h1>
+		<div class="orderSearch orderSearchForm">
+			<form class="form order_search col-lg-12"
+			action=""
+			id="order_search"
+			method="get"
+			data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>"
+			data-mage-init='{"validation":{}}'>		
+		<div class="filterorderwise">
+			
+				<div class="loading-mask" data-role="loader" style="display: none;"><div class="loader"><img alt="Loading..." src="https://dev.adaruniforms.com/pub/static/version1610780979/frontend/sttl/adaruniforms/en_US/images/loader-2.gif"><p>Please wait...</p></div></div>
+				<div class="clearfix pt-3"></div>
+				<div class="statusDropdown" style= "display:<?=($q != '')? 'none' : ''; ?>">
+					<!-- <span>Status:</span> -->
+					<select name="order_stats" id="order_stats">
+						<option value="">View All</option>
+						<option <?php echo ($status == 'Draft') ? 'selected="selected"' : '';?> value="Draft">Draft</option>
+						<option <?php echo ($status == 'Submitted') ? 'selected="selected"' : '';?> value="Submitted">Submitted</option>
+						<option <?php echo ($status == 'Processing') ? 'selected="selected"' : '';?> value="Processing">Processing</option>
+						<option <?php echo ($status == 'Shipped') ? 'selected="selected"' : '';?> value="Shipped">Shipped</option>
+						<option <?php echo ($status == 'PartiallyShipped') ? 'selected="selected"' : '';?> value="PartiallyShipped">Partially Shipped</option>
+					</select>
+					<div class="searchInput">
+						<input type="text" class="order_search" id="order_search_ins" name="po_number" placeholder="P.O. Number or Order Number" autocomplete="off">
+						<span class="errormessageorderpage"></span>
+					</div>
+					<?php
+						if($getordercount > 1000){ ?>
+							<div class="searchorderdata">
+								<input type="button" id="searchfindorder" value="Search">
+							</div>
+						<?php
+						}
+					?>
+				</div>
+		
+
+			</div>		
+			<div class="filterdatewise">	 		  
+				<span id="date-range">	  
+					<span>Search by date range:<span class="reqField">*</span></span>
+					<input name="date-from" id="date-from" readonly="true" type="input" class="datepicker"  data-validate="{required:true}" placeholder="From Date"  /> 
+					<strong>to</strong> 
+					<input name="date-to" id="date-to" readonly="true" type="input" class="datepicker" data-validate="{required:true}" placeholder="To Date" /> 
+				</span>
+				<button type="submit" class="themeBtn action dateRangeFilter"  title="Search"><span>Search</span></button>
+				<button type="button" class="themeBtn btnreset action save ml-2" title="Reset"><span>Reset</span></button>
+			</div>
+		</form>
+	</div>
+
+	<!--- tables div -->
+	<div class="orderpage-container">
+		<div class="orderTable">
+			<div class="orderItem-loader custome_order_loader" style="display: none;">
+	            <div class="cf loaderAdd">
+					<div class="lds-ellipsis" style="display: block;">
+						<h1>Loading</h1>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+						<div></div>
+					</div>
+				</div>
+	        </div>
+			<table class="orderList">
+				<thead>
+					<tr>
+						<th><span><i class="fa b2b-grid-sort-icon fa-sort"></i></span></th>
+						<th class="item-sort" sort-type='DESC' data-sort-by="DocStatus"> <span class="grid-shorting" > Status  <i class="fa b2b-grid-sort-icon fa-sort"></i></span></th>
+						<th class="item-sort" sort-type='DESC' data-sort-by="DocNum"> <span class="grid-shorting" > SO Number <i class="fa b2b-grid-sort-icon fa-sort"></i></span></th>
+						<th class="item-sort" sort-type='DESC' data-sort-by="NumatCardPo"> <span class="grid-shorting" > PO Number <i class="fa b2b-grid-sort-icon fa-sort"></i></span></th>
+						<th class="item-sort" sort-type='DESC' data-sort-by="CreateDate"> <span class="grid-shorting" > Order Date <i class="fa b2b-grid-sort-icon fa-sort"></i> </span> </th>
+						<th class="item-sort" sort-type='DESC' data-sort-by="TotalQTYUnits"> <span class="grid-shorting" > Ordered <i class="fa b2b-grid-sort-icon fa-sort"></i> </span> </th>
+						<th class="item-sort" sort-type='DESC' data-sort-by="TotalOpen"> <span class="grid-shorting" > Open <i class="fa b2b-grid-sort-icon fa-sort"></i> </span> </th>
+						<th class="item-sort" sort-type='DESC' data-sort-by="TotalShipped"> <span class="grid-shorting" > Shipped <i class="fa b2b-grid-sort-icon fa-sort"></i> </span></th>
+						<th class="item-sort" sort-type='DESC' data-sort-by="DocTotal"> <span class="grid-shorting" > Total Order <i class="fa b2b-grid-sort-icon fa-sort"></i> </span> </th>
+						<th>Action</th>
+					</tr>      
+				</thead>
+					<tbody>
+					<?php
+					$ordered = 0;
+					$open = 0;
+					$shipped = 0;
+					$total_order = 0;
+					$total = count($orders);			
+					$totalPage = ceil($total/30);	
+					if($total > 0)
+					{
+						$count = 1;
+						foreach(array_slice($orders, 0,30) as $order)
+						{
+							$ordered += ($order['TotalQTYUnits'] > 0) ? $order['TotalQTYUnits'] : 0;
+							$open += ($order['TotalOpen'] > 0) ? $order['TotalOpen'] : 0;
+							$shipped += ($order['TotalShipped'] > 0) ? $order['TotalShipped'] : 0;
+							$total_order += ($order['DocTotal'] > 0) ? $order['DocTotal'] : 0;
+							
+							$id_b_e = base64_encode($order['Id']);
+							if($order['dataFrom'] == 'V')
+							{
+								$id_b_e = base64_encode($order['DocNum']);
+							}
+							
+							$order_view_url = $block->getBaseUrl().'customerorder/customer/orderview/id/'.$id_b_e.'/back/'.base64_encode($back_redirect).'/df/'.base64_encode($order['dataFrom']);	
+							// if($order['DocStatus'] == "Draft")	{
+							// 	$order_view_url = $block->getBaseUrl().'customerorder/customer/payment?back_order_id='.$id_b_e.'&back_po_number='.base64_encode($order['NumatCardPo']);
+							// }
+							
+							?>
+
+							<tr option-redirect = "<?php echo $order_view_url;?>" style="cursor: pointer;">
+								<td class="option-redirect">
+									<?= $count; ?></td>
+									<td class="option-redirect <?=$order['DocStatus'];?>">
+										<?php echo ($order['DocStatus'] == 'PartiallyShipped') ? 'Partially Shipped' : $order['DocStatus'];?>
+									</td>
+									<td class="option-redirect"><?php echo ($order['DocNum'] != '') ? $order['DocNum'] : "";?></td>
+									<td class="option-redirect">
+										<?php //if($order_stats == "Draft" || $order['DocStatus'] == "Draft" || $order_stats == "Submitted" || $order['DocStatus'] == "Submitted"){ ?>
+										<?php echo ($order['NumatCardPo'] != '') ? $order['NumatCardPo'] : "-";?><?php /* }else{ ?>
+											<?php echo ($order['NumatCardPo'] != '') ? $order['NumatCardPo'] : "-";?>
+										<?php }*/ ?>
+									</td>
+									<td class="option-redirect"><?php echo ($order['CreateDate'] != '') ? $order['CreateDate'] : "";?></td>
+									<td class="option-redirect"><?php echo ($order['TotalQTYUnits'] > 0) ? number_format((int)$order['TotalQTYUnits']) : 0.00;?></td>
+									<td class="option-redirect"><?php echo ($order['TotalOpen'] > 0) ? number_format((int)$order['TotalOpen']) : 0.00;?></td>
+									<td class="option-redirect"><?php echo ($order['TotalShipped'] > 0) ? number_format((int)$order['TotalShipped']) : 0.00;?></td>
+									<td class="option-redirect">$<?php echo number_format((float)$order['DocTotal'],2);?></td>
+									<td class="order-action">
+										<?php if($order_stats == "Draft" || $order['DocStatus'] == "Draft"){ ?>
+											<a class="newLinkText" href="<?php echo $this->getBaseUrl();?>customerorder/customer/neworder/id/<?php echo base64_encode($order['Id']);?>/ncp/<?php echo base64_encode($order['NumatCardPo']);?>#block-title"><span class="fa fa-pencil"></span></a>
+											<a class="newLinkTextRemove" orde-id="<?php echo base64_encode($order['Id']).'/back/'.base64_encode($back_redirect);?>/"><span class="fa fa-close"></span></a>
+										<?php } ?>
+									</td>
+
+							</tr>
+
+							<?php
+							$count++;
+						}?>
+				
+				</tbody>	
+				<tfoot>					
+					<tr>
+						<td colspan="5" align="right" style="text-align: left !important;"> TOTAL QUANTITIES:</td>
+						<td><?php echo number_format((int)$ordered);?></td>
+						<td><?php echo number_format((int)$open);?></td>
+						<td><?php echo number_format((int)$shipped);?></td>
+						<td>$<?php echo number_format($total_order,2);?></td>
+						<td></td>
+					</tr>
+					<tr class="paginationRow" id="paginationId" data-id=1>
+						<td colspan="10" class="testTable" rowspan="1">
+							<div class="fa-pull-right d-flex">
+								<div class="fa-pull-left recordTotal"> Displaying 1 to <?= $count-1 ?> of <?= $total ?></div>
+								<?php if($total > 30){?>
+									<div class="pagination">
+										<div class="dataTables_paginate paging_full_numbers" id="example_paginate">
+											<a class="paginate_button first disabled" aria-controls="example" data-dt-idx="0" tabindex="0" id="example_first"><span class="pageIcon first"></span></a>
+											<a class="paginate_button previous disabled" aria-controls="example" data-dt-idx="1" tabindex="0" id="example_previous"><span class="pageIcon previous"></span></a>
+																					<span class="cdatatableDetails">
+												<input type="text" value="1" class="direct-serach" data-dt-idx="1"> / <span class="total"><?php echo $totalPage; ?></span>
+											</span>
+											<a class="paginate_button next <?= $total < 30 ? 'disabled' : ''?>" aria-controls="example" data-dt-idx="2" tabindex="0" id="example_next"><span class="pageIcon next"></span></a>
+											<a class="paginate_button last <?= $total < 30 ? 'disabled' : ''?><?= $total < 30 ? 'disabled' : ''?>" aria-controls="example" data-dt-idx="<?php echo $totalPage; ?>" abindex="0" id="example_last"><span class="pageIcon last"></span></a>
+										</div>
+									</div>
+								<?php } ?>
+							</div>
+						</td>
+					</tr>
+				</tfoot>
+				<?php
+				}
+				else
+				{?>
+					<tr>
+						<td class="no-records" colspan="10" >No Orders Found!</td>            
+					</tr>
+				<?php } ?>
+			</table>
+		</div>
+	</div>
+
+	<script type="text/x-magento-init">
+	    {
+	        "*": {
+	        	"orderList":{
+	        		"BaseUrl" : "<?php echo $this->getBaseUrl();  ?>",
+	        		"ordertotal" : <?= $block->getordercount(); ?>,
+	        		"paramBaseUrl" : "<?php echo $this->getBaseUrl().'customerorder/customer/orderlist?po_number='.$po_number.'&q='.$block->getRequest()->getParam('q');  ?>"	     
+		        }
+	    	}
+    	}
+    </script>
+    <script type="text/javascript">
+    	require([ 'jquery', 'jquery/ui'], function($){ 
+		$(document).ready(function($) {
+			$("select#order_stats").prop('selectedIndex',0);
+			$(".orderSearch input.datepicker").datepicker();
+	  		$(".newLinkTextRemove").on('click',function(){
+				if (confirm('Are you sure you want to delete?')){
+					$(this).attr('href','<?php echo $this->getBaseUrl();?>customerorder/customer/delete/id/'+ $(this).attr('orde-id'));
+					
+				}
+			});
+		});
+	});
+	</script>

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+		<add id="Sttl_Inquiries::main" title="Adar" module="Sttl_Inquiries" sortOrder="51" resource="Sttl_Inquiries::inquiries"/>
+		
+		<add id="Sttl_Inquiries::inquiries" title="Adar Inquiries" module="Sttl_Inquiries" sortOrder="1" resource="Sttl_Inquiries::inquiries" parent="Sttl_Inquiries::main"/>
+		
+		<add id="Sttl_Inquiries::inquiriesgroups" title="Group Inquiries" module="Sttl_Inquiries" sortOrder="10" action="sttl_inquiries/groups" resource="Sttl_Inquiries::groups" parent="Sttl_Inquiries::inquiries"/>
+		
+		<add id="Sttl_Inquiries::inquiriestitle" title="Contact Inquiries" module="Sttl_Inquiries" sortOrder="11" action="sttl_inquiries/inquiries" resource="Sttl_Inquiries::inquiries" parent="Sttl_Inquiries::inquiries"/>
+        
+    </menu>
+</config>

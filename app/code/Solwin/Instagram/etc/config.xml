@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Solwin Infotech
+ * Solwin Instagram Extension
+ * 
+ * @category   Solwin
+ * @package    Solwin_Instagram
+ * @copyright  Copyright © 2006-2016 Solwin (https://www.solwininfotech.com)
+ * @license    https://www.solwininfotech.com/magento-extension-license/
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <instagramsection>
+            <instagramgroup>
+                <active>0</active>
+                <userid></userid>
+                <accesstoken></accesstoken>
+            </instagramgroup>
+        </instagramsection>    
+    </default>
+</config>

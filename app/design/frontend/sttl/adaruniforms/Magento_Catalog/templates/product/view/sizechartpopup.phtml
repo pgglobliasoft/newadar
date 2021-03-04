@@ -1,0 +1,32 @@
+<?php 
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$product = $objectManager->get('Magento\Framework\Registry')->registry('current_product');
+$sizeurl = $product->getSizecharturl();
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+    $base_url = $storeManager->getStore()->getBaseUrl();
+?>
+<div class="modal fade" id="sizechartPopupModal" tabindex="-1" role="dialog" aria-labelledby="sizechartPopupModal" aria-hidden="true">
+  <div class="modal-dialog size-chart-modal" role="document">
+    <div class="modal-content quickViewCont">
+      <div class="container bg-primary p-2">
+        <div class="row">
+          <div class="col-md-4 offset-md-4 text-center">
+            <!--<a href="<?php echo $block->getBaseUrl() ?>" title="" class="mobileLogo" style="display: inline;"></a>-->
+				<img src="<?php echo $this->getViewFileUrl('images/mobile-logo-white.png'); ?>">
+          </div>
+          <div class="col-md-4">
+            <button type="button" data-dismiss="modal" class="close-size-chhart-popup"><i class="fa fa-times"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+      <?php if($sizeurl || @getimagesize($sizeurl)){ ?>
+           <img src="<?php echo $sizeurl ?>" />
+        <?php } else{?>
+         <img src="<?php echo $base_url."/pub/media/wysiwyg/nosizechart.jpg"; ?>" />
+       
+        <?php } ?>
+      </div>
+    </div>
+  </div>
+</div>

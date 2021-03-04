@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">collection_form.collection_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Collecton Form</item>
+        <item name="reverseMetadataMerge" xsi:type="boolean">true</item>
+    </argument>
+    <settings>
+        <buttons>
+            
+            <button name="save" class="Sttl\Collectionsilder\Block\Adminhtml\Contact\Edit\SaveButton"/>
+            <button name="back" class="Sttl\Collectionsilder\Block\Adminhtml\Contact\Edit\BackButton"/>
+        </buttons>
+        <layout>
+            <navContainerName>left</navContainerName>
+            <type>tabs</type>
+        </layout>
+        <deps>
+            <dep>collection_form.collection_form_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="collection_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="collectionsilder/grid/save"/>
+        </settings>
+        <dataProvider class="Sttl\Collectionsilder\Model\DataProvider" name="collection_form_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <fieldset name="collections">
+        <settings>
+            <label translate="true">Collectons</label>
+        </settings>
+        <field name="entity_id" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">collection</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <visible>false</visible>
+            </settings>
+        </field>
+        <field name="confirmation" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">customer</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <visible>false</visible>
+            </settings>
+        </field>
+       <!--  <field name="name">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Collection Name</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="source" xsi:type="string">collection</item>
+                    <item name="dataScope" xsi:type="string">name</item>
+                </item>
+            </argument>
+        </field> -->
+        <field name="name">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">Sttl\Collectionsilder\Model\Product\AttributeSet\Options</item>
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Collection Name</item>
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="source" xsi:type="string">collection</item>
+                    <item name="dataScope" xsi:type="string">name</item>
+                    <item name="default" xsi:type="string">0</item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">true</item>
+                    </item>
+                </item>
+            </argument>
+        </field>
+        <field name="image">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">string</item>
+                    <item name="source" xsi:type="string">collection</item>
+                    <item name="label" xsi:type="string" translate="true">Collection logo image</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="formElement" xsi:type="string">fileUploader</item>
+                    <item name="elementTmpl" xsi:type="string">ui/form/element/uploader/uploader</item>
+                    <item name="previewTmpl" xsi:type="string">Sttl_Collectionsilder/image-preview</item>
+                    <item name="required" xsi:type="boolean">false</item>
+                    <item name="sortOrder" xsi:type="number">40</item>
+                    <item name="uploaderConfig" xsi:type="array">
+                        <item name="url" xsi:type="url" path="collectionsilder/grid/Upload"/>
+                    </item>
+                </item>
+            </argument>
+        </field>
+        <field name="status">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="sortOrder" xsi:type="number">10</item>
+                    <item name="dataType" xsi:type="string">boolean</item>
+                    <item name="formElement" xsi:type="string">checkbox</item>
+                    <item name="source" xsi:type="string">category</item>
+                    <item name="prefer" xsi:type="string">toggle</item>
+                    <item name="label" xsi:type="string" translate="true">Status</item>
+                    <item name="valueMap" xsi:type="array">
+                        <item name="true" xsi:type="string">1</item>
+                        <item name="false" xsi:type="string">0</item>
+                    </item>
+                    <item name="validation" xsi:type="array">
+                        <item name="required-entry" xsi:type="boolean">false</item>
+                    </item>
+                    <item name="default" xsi:type="string">0</item>
+                </item>
+            </argument>
+        </field>
+        <field name="orders" formElement="select">
+         <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="label" xsi:type="string" translate="true">Orders</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="source" xsi:type="string">collection</item>
+                    <item name="dataScope" xsi:type="string">orders</item>
+                </item>
+            </argument>
+        </field>
+         <field name="allow_all_customer" formElement="checkbox">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Allows all Customer</item>
+                    <item name="dataType" xsi:type="string">boolean</item>
+                    <item name="formElement" xsi:type="string">checkbox</item>
+                    <item name="source" xsi:type="string">collection</item>
+                    <item name="prefer" xsi:type="string">checkbox</item>
+                    <item name="description" xsi:type="string" translate="true">Select checbox to allows all customer</item>
+                    <item name="sortOrder" xsi:type="number">251</item>
+                    <item name="valueMap" xsi:type="array">
+                        <item name="true" xsi:type="string">1</item>
+                        <item name="false" xsi:type="string">0</item>
+                    </item>                       
+                </item>
+            </argument> 
+            <settings>
+                <exports>
+                    <link name="checked">${$.parentName}.allow_customer:disabled</link>
+                </exports>
+            </settings>                  
+        </field> 
+            <field name="allow_customer" formElement="select">
+                <argument name="data" xsi:type="array">
+                    <item name="options" xsi:type="object">ManishJoy\Login\Model\Customer\Attribute\Source\CustomerList</item>
+                    <item name="config" xsi:type="array">
+                        <item name="label" xsi:type="string" translate="true">Allows Customers</item>
+                        <item name="componentType" xsi:type="string">field</item>
+                        <item name="visible" xsi:type="boolean">true</item>
+                        <item name="component" xsi:type="string">Magento_Catalog/js/components/new-category</item>
+                        <item name="elementTmpl" xsi:type="string">ui/grid/filters/elements/ui-select</item>
+                        <item name="filterOptions" xsi:type="boolean">true</item>
+                        <item name="showCheckbox" xsi:type="boolean">true</item>
+                        <item name="disableLabel" xsi:type="boolean">true</item>
+                        <item name="multiple" xsi:type="boolean">true</item>
+                        <item name="levelsVisibility" xsi:type="number">1</item>
+                        <item name="required" xsi:type="boolean">false</item>
+                        <item name="validation" xsi:type="array">
+                             <item name="custom-validation" xsi:type="boolean">true</item>
+                        </item>
+                        <item name="listens" xsi:type="array">
+                            <item name="${ $.namespace }.${ $.namespace }:responseData" xsi:type="string">setParsed</item>
+                        </item>                            
+                        <item name="imports" xsi:type="array">
+                            <item name="default" xsi:type="string">${ $.provider }:data.collection.allow_customer</item>
+                        </item>
+                    </item>
+                </argument>                                      
+            </field>
+            <field name="categories">
+                <argument name="data" xsi:type="array">
+                    <item name="options" xsi:type="object">Sttl\Collectionsilder\Model\Source\Categories</item>
+                    <item name="config" xsi:type="array">
+                        <item name="dataType" xsi:type="string">text</item>
+                        <item name="label" translate="true" xsi:type="string">Categories</item>
+                        <item name="formElement" xsi:type="string">multiselect</item>
+                        <!-- <item name="visible" xsi:type="boolean">${ $.provider }:data.collection.hide_field</item> -->
+                    </item>
+                </argument>
+            </field>
+    </fieldset>   
+</form>
+

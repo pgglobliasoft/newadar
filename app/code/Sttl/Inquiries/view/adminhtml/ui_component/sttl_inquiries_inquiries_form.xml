@@ -1,0 +1,263 @@
+<?xml version="1.0" ?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+  <argument name="data" xsi:type="array">
+    <item name="js_config" xsi:type="array">
+      <item name="provider" xsi:type="string">sttl_inquiries_inquiries_form.inquiries_form_data_source</item>
+    </item>
+    <item name="label" translate="true" xsi:type="string">General Information</item>
+    <item name="template" xsi:type="string">templates/form/collapsible</item>
+  </argument>
+  <settings>
+    <buttons> 
+        <button class="Sttl\Inquiries\Block\Adminhtml\Inquiries\Edit\BackButton" name="back"/>
+      </buttons>
+    <namespace>sttl_inquiries_inquiries_form</namespace>
+    <dataScope>data</dataScope>
+    <deps>
+      <dep>sttl_inquiries_inquiries_form.inquiries_form_data_source</dep>
+    </deps>
+  </settings>
+  <dataSource name="inquiries_form_data_source">
+    <argument name="data" xsi:type="array">
+      <item name="js_config" xsi:type="array">
+        <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+      </item>
+    </argument>
+    <settings>
+      <submitUrl path="*/*/save"/>
+    </settings>
+    <dataProvider class="Sttl\Inquiries\Model\Inquiries\DataProvider" name="inquiries_form_data_source">
+      <settings>
+        <requestFieldName>id</requestFieldName>
+        <primaryFieldName>id</primaryFieldName>
+      </settings>
+    </dataProvider>
+  </dataSource>
+  <fieldset name="general">
+    <settings>
+      <label/>
+    </settings>
+    <!--<field formElement="input" name="id" sortOrder="10">
+      <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+          <item name="source" xsi:type="string">Inquiries</item>
+        </item>
+      </argument>
+      <settings>
+        <dataType>text</dataType>
+        <label translate="true">id</label>
+        <dataScope>id</dataScope>
+        <validation>
+          <rule name="required-entry" xsi:type="boolean">false</rule>
+        </validation>
+      </settings>
+    </field>-->
+    <field formElement="input" name="subject" sortOrder="20">
+      <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+          <item name="source" xsi:type="string">Inquiries</item>
+          
+        </item>
+      </argument>
+      <settings>
+        <dataType>text</dataType>
+        <label translate="true">Subject</label>
+        <dataScope>subject</dataScope>
+        <validation>
+          <rule name="required-entry" xsi:type="boolean">false</rule>
+        </validation>
+      </settings>
+    </field>
+    <field formElement="input" name="hear_from" sortOrder="30">
+      <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+          <item name="source" xsi:type="string">Inquiries</item>
+          
+        </item>
+      </argument>
+      <settings>
+        <dataType>text</dataType>
+        <label translate="true">How did you hear about us?</label>
+        <dataScope>hear_from</dataScope>
+        <validation>
+          <rule name="required-entry" xsi:type="boolean">false</rule>
+        </validation>
+      </settings>
+    </field>
+     <field formElement="input" name="name" sortOrder="40">
+      <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+          <item name="source" xsi:type="string">Inquiries</item>
+          
+        </item>
+      </argument>
+      <settings>
+        <dataType>text</dataType>
+        <label translate="true">Name</label>
+        <dataScope>name</dataScope>
+        <validation>
+          <rule name="required-entry" xsi:type="boolean">false</rule>
+        </validation>
+      </settings>
+    </field>
+    <field formElement="input" name="email" sortOrder="50">
+      <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+          <item name="source" xsi:type="string">Inquiries</item>
+          
+        </item>
+      </argument>
+      <settings>
+        <dataType>text</dataType>
+        <label translate="true">Email</label>
+        <dataScope>email</dataScope>
+        <validation>
+          <rule name="required-entry" xsi:type="boolean">false</rule>
+        </validation>
+      </settings>
+    </field>
+    <field formElement="input" name="phone_no" sortOrder="60">
+      <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+          <item name="source" xsi:type="string">Inquiries</item>
+          
+        </item>
+      </argument>
+      <settings>
+        <dataType>text</dataType>
+        <label translate="true">Phone No</label>
+        <dataScope>phone_no</dataScope>
+        <validation>
+          <rule name="required-entry" xsi:type="boolean">false</rule>
+        </validation>
+      </settings>
+    </field>
+    <field formElement="input" name="company" sortOrder="70">
+      <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+          <item name="source" xsi:type="string">Inquiries</item>
+          
+        </item>
+      </argument>
+      <settings>
+        <dataType>text</dataType>
+        <label translate="true">Company</label>
+        <dataScope>company</dataScope>
+        <validation>
+          <rule name="required-entry" xsi:type="boolean">false</rule>
+        </validation>
+      </settings>
+    </field>
+    <field formElement="textarea" name="address" sortOrder="80">
+      <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+          <item name="source" xsi:type="string">Inquiries</item>
+          
+        </item>
+      </argument>
+      <settings>
+        <dataType>text</dataType>
+        <label translate="true">Address 1</label>
+        <dataScope>address</dataScope>
+        <validation>
+          <rule name="required-entry" xsi:type="boolean">false</rule>
+        </validation>
+      </settings>
+    </field>
+    <field formElement="input" name="sub_address" sortOrder="90">
+      <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+          <item name="source" xsi:type="string">Inquiries</item>
+          
+        </item>
+      </argument>
+      <settings>
+        <dataType>text</dataType>
+        <label translate="true">Address 2</label>
+        <dataScope>sub_address</dataScope>
+        <validation>
+          <rule name="required-entry" xsi:type="boolean">false</rule>
+        </validation>
+      </settings>
+    </field>
+    <field formElement="input" name="city " sortOrder="100">
+      <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+          <item name="source" xsi:type="string">Inquiries</item>
+          
+        </item>
+      </argument>
+      <settings>
+        <dataType>text</dataType>
+        <label translate="true">City</label>
+        <dataScope>city </dataScope>
+        <validation>
+          <rule name="required-entry" xsi:type="boolean">false</rule>
+        </validation>
+      </settings>
+    </field>
+    <field formElement="input" name="status " sortOrder="100">
+      <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+          <item name="source" xsi:type="string">Inquiries</item>
+          
+        </item>
+      </argument>
+      <settings>
+        <dataType>text</dataType>
+        <label translate="true">State</label>
+        <dataScope>state </dataScope>
+        <validation>
+          <rule name="required-entry" xsi:type="boolean">false</rule>
+        </validation>
+      </settings>
+    </field>
+    <field formElement="input" name="zipcode " sortOrder="110">
+      <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+          <item name="source" xsi:type="string">Inquiries</item>
+          
+        </item>
+      </argument>
+      <settings>
+        <dataType>text</dataType>
+        <label translate="true">Zip code</label>
+        <dataScope>zipcode</dataScope>
+        <validation>
+          <rule name="required-entry" xsi:type="boolean">false</rule>
+        </validation>
+      </settings>
+    </field>
+    <field formElement="textarea" name="comment" sortOrder="120">
+      <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+          <item name="source" xsi:type="string">Inquiries</item>
+          
+        </item>
+      </argument>
+      <settings>
+        <dataType>text</dataType>
+        <label translate="true">Message</label>
+        <dataScope>comment</dataScope>
+        <validation>
+          <rule name="required-entry" xsi:type="boolean">false</rule>
+        </validation>
+      </settings>
+    </field>
+    <!--<field formElement="input" name="created_at" sortOrder="130">
+      <argument name="data" xsi:type="array">
+        <item name="config" xsi:type="array">
+          <item name="source" xsi:type="string">Inquiries</item>
+        </item>
+      </argument>
+      <settings>
+        <dataType>text</dataType>
+        <label translate="true">created_at</label>
+        <dataScope>created_at</dataScope>
+        <validation>
+          <rule name="required-entry" xsi:type="boolean">false</rule>
+        </validation>
+      </settings>
+    </field>-->
+  </fieldset>
+</form>
